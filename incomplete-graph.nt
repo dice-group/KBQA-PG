@@ -1,0 +1,3 @@
+<https://www.upb.de/kbqa/resource/Obama> <https://www.upb.de/kbqa/ontology/fullName> “Barack Obama”.
+<https://www.upb.de/kbqa/resource/Obama> <http://www.w3.org/2002/07/owl#sameAs> <https://dbpedia.org/resource/Barack_Obama>.
+<https://www.upb.de/kbqa/resource/Obama> <http://www.w3.org/2002/07/owl#sameAs> <https://dbpedia.org/resource/Illinois_Senate_career_of_Barack_Obama>.
