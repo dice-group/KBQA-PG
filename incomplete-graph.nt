@@ -1,3 +1,116 @@
-<https://www.upb.de/kbqa/resource/Obama> <https://www.upb.de/kbqa/ontology/fullName> "Barack Obama" .
-<https://www.upb.de/kbqa/resource/Obama> <http://www.w3.org/2002/07/owl#sameAs> <https://dbpedia.org/resource/Barack_Obama>.
-<https://www.upb.de/kbqa/resource/Obama> <http://www.w3.org/2002/07/owl#sameAs> <https://dbpedia.org/resource/Illinois_Senate_career_of_Barack_Obama>.
+<https://www.upb.de/kbqa/resource/Barack_Obama> <https://www.upb.de/kbqa/ontology/fullName> "Barack Obama" .
+<https://www.upb.de/kbqa/resource/Barack_Obama> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Benjamin_Harrison> <https://www.upb.de/kbqa/ontology/fullName> "Benjamin Harrison" .
+<https://www.upb.de/kbqa/resource/Benjamin_Harrison> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Calvin_Coolidge> <https://www.upb.de/kbqa/ontology/fullName> "Calvin Coolidge" .
+<https://www.upb.de/kbqa/resource/Calvin_Coolidge> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Harry_S._Truman> <https://www.upb.de/kbqa/ontology/fullName> "Harry S. Truman" .
+<https://www.upb.de/kbqa/resource/Harry_S._Truman> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Herbert_Hoover> <https://www.upb.de/kbqa/ontology/fullName> "Herbert Hoover" .
+<https://www.upb.de/kbqa/resource/Herbert_Hoover> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Lyndon_B._Johnson> <https://www.upb.de/kbqa/ontology/fullName> "Lyndon B. Johnson" .
+<https://www.upb.de/kbqa/resource/Lyndon_B._Johnson> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/William_Henry_Harrison> <https://www.upb.de/kbqa/ontology/fullName> "William Henry Harrison" .
+<https://www.upb.de/kbqa/resource/William_Henry_Harrison> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/William_Howard_Taft> <https://www.upb.de/kbqa/ontology/fullName> "William Howard Taft" .
+<https://www.upb.de/kbqa/resource/William_Howard_Taft> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/William_McKinley> <https://www.upb.de/kbqa/ontology/fullName> "William McKinley" .
+<https://www.upb.de/kbqa/resource/William_McKinley> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Woodrow_Wilson> <https://www.upb.de/kbqa/ontology/fullName> "Woodrow Wilson" .
+<https://www.upb.de/kbqa/resource/Woodrow_Wilson> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Abraham_Lincoln> <https://www.upb.de/kbqa/ontology/fullName> "Abraham Lincoln" .
+<https://www.upb.de/kbqa/resource/Abraham_Lincoln> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Jimmy_Carter> <https://www.upb.de/kbqa/ontology/fullName> "Jimmy Carter" .
+<https://www.upb.de/kbqa/resource/Jimmy_Carter> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/John_Adams> <https://www.upb.de/kbqa/ontology/fullName> "John Adams" .
+<https://www.upb.de/kbqa/resource/John_Adams> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/John_F._Kennedy> <https://www.upb.de/kbqa/ontology/fullName> "John F. Kennedy" .
+<https://www.upb.de/kbqa/resource/John_F._Kennedy> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/John_Quincy_Adams> <https://www.upb.de/kbqa/ontology/fullName> "John Quincy Adams" .
+<https://www.upb.de/kbqa/resource/John_Quincy_Adams> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/John_Tyler> <https://www.upb.de/kbqa/ontology/fullName> "John Tyler" .
+<https://www.upb.de/kbqa/resource/John_Tyler> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Andrew_Jackson> <https://www.upb.de/kbqa/ontology/fullName> "Andrew Jackson" .
+<https://www.upb.de/kbqa/resource/Andrew_Jackson> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Andrew_Johnson> <https://www.upb.de/kbqa/ontology/fullName> "Andrew Johnson" .
+<https://www.upb.de/kbqa/resource/Andrew_Johnson> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/George_H._W._Bush> <https://www.upb.de/kbqa/ontology/fullName> "George H. W. Bush" .
+<https://www.upb.de/kbqa/resource/George_H._W._Bush> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/George_W._Bush> <https://www.upb.de/kbqa/ontology/fullName> "George W. Bush" .
+<https://www.upb.de/kbqa/resource/George_W._Bush> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/George_Washington> <https://www.upb.de/kbqa/ontology/fullName> "George Washington" .
+<https://www.upb.de/kbqa/resource/George_Washington> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Gerald_Ford> <https://www.upb.de/kbqa/ontology/fullName> "Gerald Ford" .
+<https://www.upb.de/kbqa/resource/Gerald_Ford> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/James_A._Garfield> <https://www.upb.de/kbqa/ontology/fullName> "James A. Garfield" .
+<https://www.upb.de/kbqa/resource/James_A._Garfield> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/James_K._Polk> <https://www.upb.de/kbqa/ontology/fullName> "James K. Polk" .
+<https://www.upb.de/kbqa/resource/James_K._Polk> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/James_Madison> <https://www.upb.de/kbqa/ontology/fullName> "James Madison" .
+<https://www.upb.de/kbqa/resource/James_Madison> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/James_Monroe> <https://www.upb.de/kbqa/ontology/fullName> "James Monroe" .
+<https://www.upb.de/kbqa/resource/James_Monroe> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Jefferson_Davis> <https://www.upb.de/kbqa/ontology/fullName> "Jefferson Davis" .
+<https://www.upb.de/kbqa/resource/Jefferson_Davis> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Ulysses_S._Grant> <https://www.upb.de/kbqa/ontology/fullName> "Ulysses S. Grant" .
+<https://www.upb.de/kbqa/resource/Ulysses_S._Grant> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Zachary_Taylor> <https://www.upb.de/kbqa/ontology/fullName> "Zachary Taylor" .
+<https://www.upb.de/kbqa/resource/Zachary_Taylor> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Millard_Fillmore> <https://www.upb.de/kbqa/ontology/fullName> "Millard Fillmore" .
+<https://www.upb.de/kbqa/resource/Millard_Fillmore> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Grover_Cleveland> <https://www.upb.de/kbqa/ontology/fullName> "Grover Cleveland" .
+<https://www.upb.de/kbqa/resource/Grover_Cleveland> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Franklin_D._Roosevelt> <https://www.upb.de/kbqa/ontology/fullName> "Franklin D. Roosevelt" .
+<https://www.upb.de/kbqa/resource/Franklin_D._Roosevelt> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Franklin_Pierce> <https://www.upb.de/kbqa/ontology/fullName> "Franklin Pierce" .
+<https://www.upb.de/kbqa/resource/Franklin_Pierce> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Richard_Nixon> <https://www.upb.de/kbqa/ontology/fullName> "Richard Nixon" .
+<https://www.upb.de/kbqa/resource/Richard_Nixon> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Theodore_Roosevelt> <https://www.upb.de/kbqa/ontology/fullName> "Theodore Roosevelt" .
+<https://www.upb.de/kbqa/resource/Theodore_Roosevelt> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Thomas_Jefferson> <https://www.upb.de/kbqa/ontology/fullName> "Thomas Jefferson" .
+<https://www.upb.de/kbqa/resource/Thomas_Jefferson> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Warren_G._Harding> <https://www.upb.de/kbqa/ontology/fullName> "Warren G. Harding" .
+<https://www.upb.de/kbqa/resource/Warren_G._Harding> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Chester_A._Arthur> <https://www.upb.de/kbqa/ontology/fullName> "Chester A. Arthur" .
+<https://www.upb.de/kbqa/resource/Chester_A._Arthur> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Dwight_D._Eisenhower> <https://www.upb.de/kbqa/ontology/fullName> "Dwight D. Eisenhower" .
+<https://www.upb.de/kbqa/resource/Dwight_D._Eisenhower> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Bill_Clinton> <https://www.upb.de/kbqa/ontology/fullName> "Bill Clinton" .
+<https://www.upb.de/kbqa/resource/Bill_Clinton> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Ronald_Reagan> <https://www.upb.de/kbqa/ontology/fullName> "Ronald Reagan" .
+<https://www.upb.de/kbqa/resource/Ronald_Reagan> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Rutherford_B._Hayes> <https://www.upb.de/kbqa/ontology/fullName> "Rutherford B. Hayes" .
+<https://www.upb.de/kbqa/resource/Rutherford_B._Hayes> <https://www.upb.de/kbqa/ontology/type> <https://www.upb.de/kbqa/ontology/class/president> .
+<https://www.upb.de/kbqa/resource/Michelle_Obama> <https://www.upb.de/kbqa/ontology/fullName> "Michelle Obama" .
+<https://www.upb.de/kbqa/resource/Michelle_Obama> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Michelle_Obama> .
+<https://www.upb.de/kbqa/resource/Caroline_Harrison> <https://www.upb.de/kbqa/ontology/fullName> "Caroline Harrison" .
+<https://www.upb.de/kbqa/resource/Caroline_Harrison> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Caroline_Harrison> .
+<https://www.upb.de/kbqa/resource/Anna_Harrison> <https://www.upb.de/kbqa/ontology/fullName> "Anna Harrison" .
+<https://www.upb.de/kbqa/resource/Anna_Harrison> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Anna_Harrison> .
+<https://www.upb.de/kbqa/resource/Helen_Herron_Taft> <https://www.upb.de/kbqa/ontology/fullName> "Helen Herron Taft" .
+<https://www.upb.de/kbqa/resource/Helen_Herron_Taft> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Helen_Herron_Taft> .
+<https://www.upb.de/kbqa/resource/Ida_Saxton_McKinley> <https://www.upb.de/kbqa/ontology/fullName> "Ida Saxton McKinley" .
+<https://www.upb.de/kbqa/resource/Ida_Saxton_McKinley> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Ida_Saxton_McKinley> .
+<https://www.upb.de/kbqa/resource/Ellen_Axson_Wilson> <https://www.upb.de/kbqa/ontology/fullName> "Ellen Axson Wilson" .
+<https://www.upb.de/kbqa/resource/Ellen_Axson_Wilson> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Ellen_Axson_Wilson> .
+<https://www.upb.de/kbqa/resource/Jacqueline_Kennedy_Onassis> <https://www.upb.de/kbqa/ontology/fullName> "Jacqueline Kennedy Onassis" .
+<https://www.upb.de/kbqa/resource/Jacqueline_Kennedy_Onassis> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Jacqueline_Kennedy_Onassis> .
+<https://www.upb.de/kbqa/resource/Martha_Washington> <https://www.upb.de/kbqa/ontology/fullName> "Martha Washington" .
+<https://www.upb.de/kbqa/resource/Martha_Washington> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Martha_Washington> .
+<https://www.upb.de/kbqa/resource/Betty_Ford> <https://www.upb.de/kbqa/ontology/fullName> "Betty Ford" .
+<https://www.upb.de/kbqa/resource/Betty_Ford> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Betty_Ford> .
+<https://www.upb.de/kbqa/resource/Sarah_Knox_Taylor> <https://www.upb.de/kbqa/ontology/fullName> "Sarah Knox Taylor" .
+<https://www.upb.de/kbqa/resource/Sarah_Knox_Taylor> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Sarah_Knox_Taylor> .
+<https://www.upb.de/kbqa/resource/Varina_Davis> <https://www.upb.de/kbqa/ontology/fullName> "Varina Davis" .
+<https://www.upb.de/kbqa/resource/Varina_Davis> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Varina_Davis> .
+<https://www.upb.de/kbqa/resource/Julia_Grant> <https://www.upb.de/kbqa/ontology/fullName> "Julia Grant" .
+<https://www.upb.de/kbqa/resource/Julia_Grant> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Julia_Grant> .
+<https://www.upb.de/kbqa/resource/Margaret_Taylor> <https://www.upb.de/kbqa/ontology/fullName> "Margaret Taylor" .
+<https://www.upb.de/kbqa/resource/Margaret_Taylor> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Margaret_Taylor> .
+<https://www.upb.de/kbqa/resource/Abigail_Fillmore> <https://www.upb.de/kbqa/ontology/fullName> "Abigail Fillmore" .
+<https://www.upb.de/kbqa/resource/Abigail_Fillmore> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Abigail_Fillmore> .
+<https://www.upb.de/kbqa/resource/Nancy_Reagan> <https://www.upb.de/kbqa/ontology/fullName> "Nancy Reagan" .
+<https://www.upb.de/kbqa/resource/Nancy_Reagan> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Nancy_Reagan> .
+<https://www.upb.de/kbqa/resource/Lucy_Webb_Hayes> <https://www.upb.de/kbqa/ontology/fullName> "Lucy Webb Hayes" .
+<https://www.upb.de/kbqa/resource/Lucy_Webb_Hayes> <http://www.w3.org/2002/07/owl#sameAs> <http://dbpedia.org/resource/Lucy_Webb_Hayes> .
