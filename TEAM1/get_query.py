@@ -2,56 +2,70 @@ import stanza
 import json
 import itertools
 
+
 class QA_query_generation:
     def __init__(self):
-        self._processors = 'tokenize,pos,lemma,depparse'
+        self._processors = 'tokenize,mwt,pos,lemma,depparse'
         stanza.download('en', processors=self._processors)
         self._nlp = stanza.Pipeline('en', processors=self._processors)
         self._dbpedia_resource_base = 'https://dbpedia.org/resource/'
         self._dbpedia_ontology_base = 'https://dbpedia.org/ontology/'
 
-    def get_query_v1(self, nl_question):
-        
+    def get_query(self, nl_question):
+        print(f'Question decomposition of question: {nl_question}')
+        print("\n")
+
         doc = self._nlp(nl_question)
-        for sentence in doc.sentences:
-            print(f'Question decomposition of question: {nl_question}')
-            pred = ''
-            obj = ''
-            for word in sentence.words:
-                print(f'{word.text}: {word.lemma}, {word.pos}, {word.head}, {word.deprel}')
-                if(word.deprel == 'nsubj'):
-                    pred = word.text
-                elif word.deprel == 'obj' or word.deprel == 'nmod':
-                    obj = word.text
+        # Consider only first sentence because we should only have one question.
+        sentence = doc.sentences[0]
 
-        print(f'Query for question: {nl_question}')
-        query = f'SELECT ?s WHERE {{?s {self._dbpedia_ontology_base + pred} {self._dbpedia_resource_base + obj} }}'
-        print(f'Query: {query}')
-        yield query
+        # Just some sentence informations.
+        print("doc of question:")
+        print(f'word\tlemma\tpos\thead_id\thead\tdeprel')
+        for word in sentence.words:
+            print(f'{word.text}\t{word.lemma}\t{word.pos}\t{word.head}\t' +
+                  f'{sentence.words[word.head - 1].text if word.head > 0 else "root"}\t{word.deprel}')
+        print("\n")
 
-    def get_query_v2(self, nl_question):
-        
-        doc = self._nlp(nl_question)
-        #Consider only first sentence
-        sentence = doc.sentences[0] 
-        considered_POS_tags = ['ADJ', 'ADV', 'AUX', 'CCONJ', 'NOUN', 'PRON', 'PROPN', 'VERB']
-
-        #Extract only words that have a considered POS tag
+        # Extract reasonable tokens only.
+        considered_POS_tags = ['NOUN', 'PROPN', 'VERB']
+        # Extract only words that have a considered POS tag
         considered_words = [word for word in sentence.words if word.pos in considered_POS_tags]
-        #Remove duplicates
+        # Remove duplicates
         considered_words = list(set(considered_words))
-        print(', '.join([w.lemma for w in considered_words]))
+        # Convert to lemmas list
+        considered_word_lemmas = []
+        for word in considered_words:
+            considered_word_lemmas.append(word.lemma)
+        # Concat MWEs (Multi Word Expressions)
+        for word in considered_words:
+            if word.deprel in ['flat', 'fixed', 'compound']:
+                is_leading_word = False
+                concatenated_word = word.lemma
+                current_word = word
+                while is_leading_word is False:
+                    current_word = sentence.words[current_word.head-1]
+                    concatenated_word = current_word.lemma + "_" + concatenated_word
+                    if current_word.deprel not in ['flat', 'fixed', 'compound']:
+                        is_leading_word = True
+                considered_word_lemmas.append(concatenated_word)
 
-        #Iterate through all 2 combinations
-        for word_permutations in itertools.permutations(considered_words, 2):
-            print(f'{word_permutations[0].lemma:15} | {word_permutations[1].lemma}')
-            word0 = word_permutations[0].lemma
-            word1 = word_permutations[1].lemma
+        print("The considered words are:")
+        print(', '.join([w for w in considered_word_lemmas]))
+        print("\n")
+
+        # Iterate through all 2 combinations
+        for word_permutations in itertools.permutations(considered_word_lemmas, 2):
+            word0 = word_permutations[0]
+            word1 = word_permutations[1]
             query_string = 'SELECT {} WHERE {{ {} {} {} }}'
-            subj_query = query_string.format('?s', '?s', self._dbpedia_ontology_base + word0, self._dbpedia_resource_base + word1)
+            subj_query = query_string.format('?s', '?s', '<' + self._dbpedia_ontology_base + word0 + '>',
+                                             '<' + self._dbpedia_resource_base + word1 + '>')
             yield subj_query
-            obj_query = query_string.format('?o', self._dbpedia_ontology_base + word0, self._dbpedia_resource_base + word1, '?o')
+            obj_query = query_string.format('?o', '<' + self._dbpedia_ontology_base + word0 + '>',
+                                            '<' + self._dbpedia_resource_base + word1 + '>', '?o')
             yield obj_query
+
 
 if __name__ == '__main__':
     qa = QA_query_generation()
@@ -62,12 +76,15 @@ if __name__ == '__main__':
     dataset_questions = []
     en_lang_index = 3
     for q in data['questions']:
+        print("\n")
         print(q['question'][en_lang_index]['string'])
         print(q['query']['sparql'])
         dataset_questions.append(q['question'][en_lang_index]['string'])
 
     for question in dataset_questions[:10]:
+        print("\n")
         print(question)
-        for query in qa.get_query_v2(question):
+        for query in qa.get_query(question):
             print(query)
+            print("\n")
 
