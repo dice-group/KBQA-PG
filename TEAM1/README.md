@@ -2,7 +2,7 @@
 
 # Implementation Notes
 
-All imported libraries which are not part of the standard python library have to be listed in 
+All libraries you import from and which are not part of the standard python library have to be listed in 
 `<path_to_github_repository>/TEAM1/requirements.txt`.
 
 # Installation
