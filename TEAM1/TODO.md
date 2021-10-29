@@ -1,7 +1,14 @@
+# TODO
+
+## this week
+
 - [ ] Factory
 - [ ] First release
-- [ ] Synonym
-- [ ] Compound
 - [ ] Gerbil
 - [ ] Display
-- [ ] website Userhandbook
+- [ ] simple website Userhandbook
+
+## future tasks
+
+- [ ] Synonym
+- [ ] Compound
