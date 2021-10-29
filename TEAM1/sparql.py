@@ -49,7 +49,13 @@ example_query2= """
     WHERE { <http://dbpedia.org/resource/Asturias> rdfs:label ?label }
 """
 
-print("example 1: ")
-select_query(example_query)
-print("example 2: ")
-select_query(example_query2)
+example_query3="""
+  SELECT ?s WHERE {?s https://dbpedia.org/ontology/languages https://dbpedia.org/resource/Philippines }
+"""
+
+# print("example 1: ")
+# select_query(example_query)
+# print("example 2: ")
+# select_query(example_query2)
+print("example 3: ")
+select_query(example_query3)
