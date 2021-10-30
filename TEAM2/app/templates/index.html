@@ -1,0 +1,20 @@
+<html>
+	<head>
+		<title>Knowledge Base Question Answering</title>
+		<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+	</head>
+	<body>
+		<div class="container">
+			<h1 class="centering">Knowledge Base Question Answering</h1>
+			<h2 class="centering">Team 2</h2>
+			<form action="{{ url_for('question') }}" class="centering">
+				<input type="submit" value="Ask a Question" class="start_button">
+			</form>
+			<!--<h1>Ask a Question</h1>
+			<form  method="POST">
+				<input type="text" placeholder="Type in your question" name="question">
+				<input type="submit" value="Ask question">
+			</form>-->
+		</div>
+	</body>
+</html>

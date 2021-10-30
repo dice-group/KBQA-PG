@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<title>Knowledge Base Question Answering</title>
+		<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+	</head>
+	<body>
+		<div class="container">
+			<h1 class="centering">Ask a Question</h1>
+			<form method="POST" class="centering">
+				<input type="text" placeholder="Type in your question" name="question" class="input" required>
+				<input type="submit" value="Ask question" class="ask_button">
+			</form>
+
+			<hr class="line">
+			{% if question %}
+				<p class="answers">Answer for the question "{{ question }}":</p>
+			{% endif %}
+
+			{% if answers %}
+				{% for answer in answers %}
+					<p class="answers">{{ answer }}</p>
+				{% endfor %}
+			{% endif %}
+			{% if answers is defined and answers|length == 0 %}
+				<p class="answers">No answer found</p>
+			{% endif %}
+		</div>
+	</body>
+</html>

@@ -1,0 +1,36 @@
+.container {
+	margin: 0 auto;
+	width: 50%;
+}
+
+.centering {
+	margin: 0 auto;
+	width: 80%;
+	text-align: center;
+	margin-top: 50px;
+}
+
+.start_button {
+	width: 50%;
+	height: 50px;
+	margin-top: 80;
+}
+
+.input {
+	width: 100%;
+	margin-top: 10px;
+}
+
+.ask_button {
+	width: 50%;
+	height: 50px;
+	margin-top: 40;
+}
+
+.answers {
+	font-size: 25;
+}
+
+.line {
+	margin-top: 30px;
+}
