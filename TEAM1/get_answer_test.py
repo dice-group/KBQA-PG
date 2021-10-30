@@ -27,6 +27,20 @@ example_query2= """
     WHERE { <http://dbpedia.org/resource/Asturias> rdfs:label ?label }
 """
 
+example_query3 = """
+SELECT ?c
+WHERE { ?c dbo:country <http://dbpedia.org/resource/http://dbpedia.org/resource/Germany> .
+               ?c dbp:party "CDU"@en .
+}
+"""
+
+example_query4="""
+SELECT ?c
+WHERE { ?c dbo:country dbr:Germany .
+               ?c dbp:party "CDU"@en .
+}
+"""
+
 
 # print("example 1: ")
 # get_answer(example_query)
@@ -34,9 +48,14 @@ example_query2= """
 # print("example 2: ")
 # get_answer(example_query2)
 
+get_answer(example_query3)
+get_answer(example_query4)
+
+
+
 question_query = [
     [example_question, example_query],
     [example_question2, example_query2]
 ]
-extract_json(question_query)
+# extract_json(question_query)
 
