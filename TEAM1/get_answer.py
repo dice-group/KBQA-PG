@@ -7,6 +7,8 @@ import ssl
 def get_answer(query:str) -> dict:
   # to avoid [SSL: CERTIFICATE_VERIFY_FAILED] error
   ssl._create_default_https_context = ssl._create_unverified_context
+  print("get query: ")
+  print(query)
   sparql = SPARQLWrapper("http://dbpedia.org/sparql")
   sparql.setQuery(query)
   sparql.setReturnFormat(JSON)
@@ -14,6 +16,7 @@ def get_answer(query:str) -> dict:
   # convert() converts response to dictionary 
   answers = sparql.query().convert()
   # print(answers)
+  print("results: ")
   print_result(answers)
   return answers
 
