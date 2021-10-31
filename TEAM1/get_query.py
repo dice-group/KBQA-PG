@@ -8,8 +8,8 @@ class QA_query_generation:
         self._processors = 'tokenize,mwt,pos,lemma,depparse'
         stanza.download('en', processors=self._processors)
         self._nlp = stanza.Pipeline('en', processors=self._processors)
-        self._dbpedia_resource_base = 'https://dbpedia.org/resource/'
-        self._dbpedia_ontology_base = 'https://dbpedia.org/ontology/'
+        self._dbpedia_resource_base = 'http://dbpedia.org/resource/'
+        self._dbpedia_ontology_base = 'http://dbpedia.org/ontology/'
 
     def get_query(self, nl_question):
         print(f'Question decomposition of question: {nl_question}')
@@ -59,32 +59,40 @@ class QA_query_generation:
             word0 = word_permutations[0]
             word1 = word_permutations[1]
             query_string = 'SELECT {} WHERE {{ {} {} {} }}'
-            subj_query = query_string.format('?s', '?s', '<' + self._dbpedia_ontology_base + word0 + '>',
-                                             '<' + self._dbpedia_resource_base + word1 + '>')
+            subj_query = query_string.format('?s', '?s', '<' + self._dbpedia_resource_base + word0 + '>',
+                                             '<' + self._dbpedia_ontology_base + word1 + '>')
             yield subj_query
-            obj_query = query_string.format('?o', '<' + self._dbpedia_ontology_base + word0 + '>',
-                                            '<' + self._dbpedia_resource_base + word1 + '>', '?o')
+            obj_query = query_string.format('?o', '<' + self._dbpedia_resource_base + word0 + '>',
+                                            '<' + self._dbpedia_ontology_base + word1 + '>', '?o')
             yield obj_query
 
 
 if __name__ == '__main__':
     qa = QA_query_generation()
 
-    with open('Data/qald-9-train-multilingual.json') as json_file:
-        data = json.load(json_file)
+    # Example 1.
+    # Examples from the data set.
+    # with open('Data/qald-9-train-multilingual.json') as json_file:
+    #     data = json.load(json_file)
+    #
+    # dataset_questions = []
+    # en_lang_index = 3
+    # for q in data['questions']:
+    #     print("\n")
+    #     print(q['question'][en_lang_index]['string'])
+    #     print(q['query']['sparql'])
+    #     dataset_questions.append(q['question'][en_lang_index]['string'])
+    #
+    # for question in dataset_questions[:10]:
+    #     print("\n")
+    #     print(question)
+    #     for query in qa.get_query(question):
+    #         print(query)
+    #         print("\n")
 
-    dataset_questions = []
-    en_lang_index = 3
-    for q in data['questions']:
-        print("\n")
-        print(q['question'][en_lang_index]['string'])
-        print(q['query']['sparql'])
-        dataset_questions.append(q['question'][en_lang_index]['string'])
+    # Example 2.
+    # Some working query.
+    # for query in qa.get_query("What is the anthem of Germany?"):
+    #     print(query)
 
-    for question in dataset_questions[:10]:
-        print("\n")
-        print(question)
-        for query in qa.get_query(question):
-            print(query)
-            print("\n")
 
