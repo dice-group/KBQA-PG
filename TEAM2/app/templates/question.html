@@ -17,9 +17,7 @@
 			{% endif %}
 
 			{% if answers %}
-				{% for answer in answers %}
 					<p class="answers">{{ answer }}</p>
-				{% endfor %}
 			{% endif %}
 			{% if answers is defined and answers|length == 0 %}
 				<p class="answers">No answer found</p>

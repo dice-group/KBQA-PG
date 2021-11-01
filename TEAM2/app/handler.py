@@ -1,102 +1,92 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-from pycorenlp import StanfordCoreNLP
 from app.query import generate_queries
+import spacy
+from spacy.symbols import nsubj, VERB
+nlp = spacy.load("en_core_web_sm")
+
+#converts geberated resouce name into db-pedia equivalent key_word
+def resource_generator(resource_name):
+    words = [word.lower() for word in resource_name.split()]
+    key = ' '.join([word.capitalize() for word in words ])
+    return key
+
+
+#converts geberated property name into db-pedia equivalent property_word
+def property_generator(property_name):
+    words = [word.lower() for word in property_name.split()]
+    prop_names = []
+    for word in words:
+        if word != words[0]:
+            word = word.capitalize()
+        prop_names.append(word)
+    prop = ''.join([word for word in prop_names ])
+    return prop
+
+
+#parse the question as nlp string and exteact name entity and property to be answered
+def parse_nlp(text):
+    doc = nlp(text)
+    recs_ent = doc.ents[0].text
+
+
+    prop_ents = []
+    for chunk in doc.noun_chunks:
+        if str(chunk) == recs_ent:
+            continue
+        prop_ents.append( " ".join(str(word)  for word in chunk if not word.is_stop))
+    prop_ents = [prop for prop in prop_ents if prop]
+   
+    prop_ent = prop_ents[0]
+
+    return recs_ent, prop_ent
+
+
+#ask questions to dbpedia using sparql
+def ask_DBpedia(subject, property):
+    sparql_query='''
+        SELECT *
+        WHERE
+        {
+          ?person   rdfs:label  ?label; 
+           '''+'''dbo:'''+property+'''?'''+property+'''.'''+'''
+                    
+         FILTER(?label="'''+subject+'''"@en)
+        }'''
+    sparql = SPARQLWrapper("https://dbpedia.org/sparql")
+    sparql.setQuery(sparql_query)
+    sparql.setReturnFormat(JSON)
+    queryresult = sparql.query().convert()
+    return queryresult
+
+
+
+#parse the response of dbpedia response
+def parse_answer(db_answer, prop_ans):
+    answer = db_answer['results']['bindings'][0][prop_ans]['value']
+    return answer
+
+
+
+
+
 
 
 # handle incoming questions and format the answers
 def process_question(question):
+	recs_ent, prop_ent = parse_nlp(question)
+	name = resource_generator(recs_ent)
+	prop = property_generator(prop_ent)
 
-	# ------------------------------------------------
-	# TODO add here the logic to process the question
-	# and return the result from dbpedia
-	# ------------------------------------------------
+	dbpedia_ans = ask_DBpedia(name, prop)
 
-	core_nlp_result = ask_core_nlp(question)
-	ent, tok = parse_core_nlp_result(core_nlp_result)
-	print('Entities:', ent)
+	answers = parse_answer(dbpedia_ans, prop)
 
-	queries = generate_queries(ent, tok)
-
-	dbpedia_results = list()
-
-	for query in queries:
-		print('Query:', query)
-		result = ask_dbpedia(query)
-
-		dbpedia_results.append(result)
-
-	print('DBpedia results:', dbpedia_results)
-
-	answers = parse_dbpedia_results(dbpedia_results)
+	
 
 	return answers
 
-	# -------------------------- BEGIN EXAMPLE ---------------------------------------
-	# example in order to check, whether the system works
-
-	example_question = 'Who is the chancellor of Germany?'
-	example_query = '''
-		SELECT ?name 
-		WHERE {
-			dbr:Germany dbp:leaderName ?name .
-			?name dbp:title dbr:Chancellor_of_Germany .
-		}
-	'''
-
-	if question == example_question:
-		dbpedia_result = ask_dbpedia(example_query)
-	else:
-		# case for unsupported question
-		dbpedia_result = ask_dbpedia('SELECT * WHERE { dbp:no dbp:answer dbp:expected }')
-
-	return dbpedia_result
-
-	# -------------------------- END EXAMPLE ---------------------------------------------
-
-def ask_core_nlp(question):
-	nlp = StanfordCoreNLP('http://localhost:9000')
-
-	output = nlp.annotate(question, properties={'annotators': 'ner', 'outputFormat': 'json'})
-
-	return output
-
-def parse_core_nlp_result(output):
-	entities = list()
-
-	for entity in output['sentences'][0]['entitymentions']:
-		ent = entity['text'].replace(' ', '_')
-		entities.append(ent)
-
-	tokens = list()
-
-	for token in output['sentences'][0]['tokens']:
-		tokens.append(token)
-
-	return entities, tokens
 
 
-def ask_dbpedia(query):
-    sparql = SPARQLWrapper("https://dbpedia.org/sparql")
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-
-    query_result = sparql.query().convert()
-
-    return query_result
 
 
-def parse_dbpedia_results(dbpedia_results):
-	answers = list()
-
-	for dbpedia_result in dbpedia_results:
-
-		variables = dbpedia_result['head']['vars']
-
-		for result in dbpedia_result['results']['bindings']:
-			for variable in variables:
-				answer = result.get(variable)['value']
-				answer = answer.split('/')[-1]
-
-				answers.append(answer)
-
-	return answers
+ 
