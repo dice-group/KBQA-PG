@@ -22,8 +22,11 @@ def enter_question():
         print("trying query: " + query)
         answer = get_answer(query)
         
-        if answer:        
+        print(answer)
+
+        if answer['results']['bindings'] != []:        
             return answer
+    return 'No answer found'
 
 
 if __name__ == "__main__":
