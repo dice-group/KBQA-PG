@@ -1,7 +1,7 @@
 from get_query import QA_query_generation
 from get_answer import get_answer
 
-question = "capital of germany?"
+question = "capital of China?"
 
 query_generator = QA_query_generation()
 
@@ -37,9 +37,4 @@ results:
 """
 the query which works for this question:
 SELECT ?o WHERE { <http://dbpedia.org/resource/Germany> dbo:capital ?o }
-"""
-
-"""
-I'm not sure about should we generate dbo/dbprop/rdfs/... in our query? 
-The queries with "https://dbpedia.org/ontology/" never work in my tests
 """
