@@ -26,3 +26,7 @@ I also tried `dbr:dbr:Germany`. It didn't work.
 ## Capitalization
 
 The first letter of a country or a name must be capitalized.
+
+## rdf
+
+Query generation doesn't work for other prefixes, e.g. rdf, geo, ...
