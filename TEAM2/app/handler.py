@@ -73,20 +73,15 @@ def parse_answer(db_answer, prop_ans):
 
 # handle incoming questions and format the answers
 def process_question(question):
-	recs_ent, prop_ent = parse_nlp(question)
-	name = resource_generator(recs_ent)
-	prop = property_generator(prop_ent)
+        recs_ent , prop_ent = parse_nlp(question)
 
-	dbpedia_ans = ask_DBpedia(name, prop)
+        name = resource_generator(recs_ent)
+        prop = property_generator(prop_ent)
 
-	answers = parse_answer(dbpedia_ans, prop)
+        dbpedia_ans = ask_DBpedia(name, prop)
 
-	
+        answers = parse_answer(dbpedia_ans, prop)
 
-	return answers
+        
 
-
-
-
-
- 
+        return answers
