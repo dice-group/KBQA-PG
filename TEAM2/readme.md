@@ -32,6 +32,10 @@ Windows Powershell:
 > python kbqa.py
 ```
 
+# Start Stanford CoreNLP server
+
+The Webservice uses [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) in the background for annotating questions and extract information. In order to use this service, you have to start a running instance of a server locally. This can be done by following [these](https://stanfordnlp.github.io/CoreNLP/corenlp-server.html) instructions.
+
 # Open the Website
 
-After starting the Webservice you can visit the website **http://127.0.0.1:5000/** or **http://localhost:5000/** in order to ask questions.
+After starting the Webservice and the Stanford CoreNLP you can visit the website **http://127.0.0.1:5000/** or **http://localhost:5000/** in order to ask questions.
