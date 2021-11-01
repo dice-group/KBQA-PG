@@ -10,6 +10,12 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) in order to instal
 pip install -r requirements.txt
 ```
 
+In addition to the python libraries you have to install **en_core_web_sm**. Simply run the following command:
+
+```bash
+python -m spacy download en_core_web_sm
+```
+
 # Start the WebService
 
 Depending on which system you are using, you first have to set the **FLASK_APP** variable:
@@ -32,9 +38,6 @@ Windows Powershell:
 > python kbqa.py
 ```
 
-# Start Stanford CoreNLP server
-
-The Webservice uses [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) in the background for annotating questions and extract information. In order to use this service, you have to start a running instance of a server locally. This can be done by following [these](https://stanfordnlp.github.io/CoreNLP/corenlp-server.html) instructions.
 
 # Open the Website
 
