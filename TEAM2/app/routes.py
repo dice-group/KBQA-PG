@@ -20,3 +20,7 @@ def question():
         return render_template('question.html', question=question, answers=answers)
     
     return render_template('question.html')
+
+@application.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'),500
