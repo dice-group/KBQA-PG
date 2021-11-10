@@ -1,0 +1,31 @@
+{
+    "id": "1",
+    "question": [
+        {
+            "language": "en",
+            "string": "What is the capital of Germany?"
+        }
+    ],
+    "query": {
+        "sparql": "SELECT ?o WHERE { <http://dbpedia.org/resource/Germany> <http://dbpedia.org/ontology/capital> ?o }"
+    },
+    "answers": [
+        {
+            "head": {
+                "vars": [
+                    "o"
+                ]
+            },
+            "results": {
+                "bindings": [
+                    {
+                        "o": {
+                            "type": "uri",
+                            "value": "http://dbpedia.org/resource/Berlin"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

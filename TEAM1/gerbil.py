@@ -29,19 +29,8 @@ def build_qald(id: int, q) -> dict:
     return q
     
 
-def extract_QALD(question_query:list()):
-    questions = {"questions": []}
-    id = 1
-    for q, query in question_query:
-      questions["questions"].append(build_question(id, q, query))
-      id += 1
+def extract_json(result):
+    questions = {"questions": [result]}
     with open('result.json', 'w') as fp:
         json.dump(questions, fp)
-    print("results are exported in "+filename)
-
-def transform_QALD(results):
-  with open(results, "w") as file:
-    data = json.load(file)
-    data.update(a_dictionary)
-    file.seek(0)
-    json.dump(data, file)
+    print("results are exported")

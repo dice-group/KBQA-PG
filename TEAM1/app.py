@@ -15,12 +15,15 @@ q["question"], q["language"] = get_query_lang(input)
 
 query_generator = QA_query_generation()
 
-for query in query_generator.get_query(q['question']):
+for query in query_generator.get_query(q["question"]):
     print("trying query: "+query)
     answer = get_answer(query)
-    if answer['results']['bindings']:
-        q['query'] = query
-        q['answer'] = answer
+    if answer["results"]["bindings"]:
+        q["query"] = query
+        answer['head'].pop('link', None)
+        answer['results'].pop('distinct', None)
+        answer['results'].pop('ordered', None)
+        q["answer"] = answer
 
 
-print(build_qald(1, q))
+extract_json(build_qald(1, q))
