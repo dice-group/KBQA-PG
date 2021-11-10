@@ -2,21 +2,21 @@ import json
 from get_answer import get_answer
 
 # returns a dict for a single question
-def build_question(id: int, question_text: str, query_text: str) -> dict:
+def build_qald(id: int, q) -> dict:
 
     question = [
   {
-    "language": "en",
-    "string": question_text
+    "language": q["language"],
+    "string": q["question"]
   }
 ]
 
     query = {
-  "sparql": query_text
+  "sparql": q["query"]
 }
 
     answers = [
-  get_answer(query_text)
+  q["answer"]
 ]
 
     q = {
@@ -29,7 +29,7 @@ def build_question(id: int, question_text: str, query_text: str) -> dict:
     return q
     
 
-def extract_json(question_query:list(), filename="result.json"):
+def extract_QALD(question_query:list()):
     questions = {"questions": []}
     id = 1
     for q, query in question_query:
@@ -38,3 +38,10 @@ def extract_json(question_query:list(), filename="result.json"):
     with open('result.json', 'w') as fp:
         json.dump(questions, fp)
     print("results are exported in "+filename)
+
+def transform_QALD(results):
+  with open(results, "w") as file:
+    data = json.load(file)
+    data.update(a_dictionary)
+    file.seek(0)
+    json.dump(data, file)

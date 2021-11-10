@@ -16,8 +16,8 @@ def get_answer(query:str) -> dict:
   # convert() converts response to dictionary 
   answers = sparql.query().convert()
   # print(answers)
-  print("results: ")
-  print_result(answers)
+  # print("results: ")
+  # print_result(answers)
   return answers
 
 # print results for query as:
