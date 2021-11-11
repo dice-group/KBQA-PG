@@ -2,28 +2,30 @@ from get_query import *
 from get_answer import *
 from gerbil import *
 
-input = "query=What is the capital of Germany?&lang=en"
-q = {}
+def load_questions(datafile):
+    with open(datafile,'r') as f:
+        data = json.load(f)
+    return data["questions"]
 
-def get_query_lang(input):
-    input = input.split('&')
-    question = input[0].split('=')[1]
-    language = input[1].split('=')[1]
-    return question, language
+datafile = 'TEAM1\Data\qald-8-test-multilingual.json'
 
-q["question"], q["language"] = get_query_lang(input)
+data = load_questions(datafile)
+for question in data:
+    question["query"]["sparql"] = ""
+    question["answers"][0]["head"]["vars"] = []
+    question["answers"][0]["results"]["bindings"] = []
 
 query_generator = QA_query_generation()
+for question in data[:2]:
+    for query in query_generator.get_query(question["question"][0]["string"]):
+        print("trying query: "+query)
+        question["query"]["sparql"] = query
+        answer = get_answer(query)
+        if answer["results"]["bindings"]:
+            answer['head'].pop('link', None)
+            answer['results'].pop('distinct', None)
+            answer['results'].pop('ordered', None)
+            question["answers"] = answer
+            break
 
-for query in query_generator.get_query(q["question"]):
-    print("trying query: "+query)
-    answer = get_answer(query)
-    if answer["results"]["bindings"]:
-        q["query"] = query
-        answer['head'].pop('link', None)
-        answer['results'].pop('distinct', None)
-        answer['results'].pop('ordered', None)
-        q["answer"] = answer
-
-
-extract_json(build_qald(1, q))
+extract_json(data)

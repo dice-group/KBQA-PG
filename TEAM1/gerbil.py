@@ -2,35 +2,28 @@ import json
 from get_answer import get_answer
 
 # returns a dict for a single question
-def build_qald(id: int, q) -> dict:
+def build_qald(questions) -> dict:
+    results = []
+    for q in questions:
+      question = [
+    {
+      "language": q["language"],
+      "string": q["question"]
+    }
+  ]
 
-    question = [
-  {
-    "language": q["language"],
-    "string": q["question"]
-  }
-]
+      quest = {
+      "id": q["id"],
+      "question": question,
+      "query": q["query"],
+      "answers": q["answer"]
+    }
+      results.append(quest)
 
-    query = {
-  "sparql": q["query"]
-}
-
-    answers = [
-  q["answer"]
-]
-
-    q = {
-    "id": str(id),
-    "question": question,
-    "query": query,
-    "answers": answers
-  }
-
-    return q
+    return {"questions":results}
     
 
 def extract_json(result):
-    questions = {"questions": [result]}
     with open('result.json', 'w') as fp:
-        json.dump(questions, fp)
+        json.dump({"questions":result}, fp)
     print("results are exported")
