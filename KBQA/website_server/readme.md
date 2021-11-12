@@ -1,6 +1,6 @@
 # Knowledge Base Question Answering
 
-Webservice for answering simple questions
+Website-Server
 
 # Installation
 
@@ -10,35 +10,29 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) in order to instal
 pip install -r requirements.txt
 ```
 
-In addition to the python libraries you have to install **en_core_web_sm**. Simply run the following command:
-
-```bash
-python -m spacy download en_core_web_sm
-```
-
 # Start the WebService
 
 Depending on which system you are using, you first have to set the **FLASK_APP** variable:
 
 (Linux, Mac)
 ```bash
-$ export FLASK_APP=kbqa
-$ python kbqa.py
+$ export FLASK_APP=website_server
+$ python website_server.py
 ```
 
 Windows CMD:
 ```bash
-> set FLASK_APP=kbqa
-> python kbqa.py
+> set FLASK_APP=website_server
+> python website_server.py
 ```
 
 Windows Powershell:
 ```bash
-> $env:FLASK_APP="kbqa"
-> python kbqa.py
+> $env:FLASK_APP="website_server"
+> python website_server.py
 ```
 
 
 # Open the Website
 
-After starting the Webservice and the Stanford CoreNLP you can visit the website **http://127.0.0.1:5000/** or **http://localhost:5000/** in order to ask questions.
+After starting the Webservice and the Stanford CoreNLP you can visit the website **http://127.0.0.1:24803/** or **http://localhost:24803/** in order to ask questions.

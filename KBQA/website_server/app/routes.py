@@ -1,5 +1,5 @@
 from app import application
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request
 from app.handler import process_question
 
 
@@ -8,16 +8,12 @@ def index():
     return render_template('question.html')
 
 
-@application.route('/WEB', methods=['POST'])
-def question():
-    asked_question = request.form['query']
+@application.route('/', methods=['POST'])
+def query_fun():
+    query = request.form['query']
     chosen_app = request.form['App']
-    print('Question', asked_question)
-
-    answers = process_question(asked_question, chosen_app)
-    print('Answers', answers)
-
-    return render_template('question.html', query=asked_question, answers=answers)
+    answers = process_question(query, chosen_app)
+    return render_template('question.html', query=query, answers=answers)
 
 
 @application.errorhandler(500)

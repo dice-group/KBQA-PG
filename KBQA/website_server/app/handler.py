@@ -1,4 +1,5 @@
 from rdflib import URIRef
+import requests
 
 
 def process_question(question, app):
@@ -6,67 +7,14 @@ def process_question(question, app):
     Handle an incoming question and format the answers
     """
 
-    # POST to nginx to get answer_QALD
-
-    # Example answers
+    # Ask the webserver for an answer the the query "question" using approach "app"
+    webserver_address = "http://localhost:24804{dir}"
     if app == 'A':
-        answer_QALD = {
-            "questions": [{
-                "id": "1",
-                "question": [{
-                    "language": "en",
-                    "string": "Which German cities have more than 250000 inhabitants?"
-                }],
-                "query": {
-                    "sparql": "SELECT DISTINCT ?uri WHERE { { ?uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City> . } UNION { ?uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Town> . }  ?uri <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Germany> .  ?uri <http://dbpedia.org/ontology/populationTotal> ?population .  FILTER ( ?population > 250000 ) } "
-                },
-                "answers": [{
-                    "head": {
-                        "vars": [
-                            "uri"
-                        ]
-                    },
-                    "results": {
-                        "bindings": [{
-                            "uri": {
-                                "type": "uri",
-                                "value": "http://dbpedia.org/resource/A"
-                            }
-                        }]
-                    }
-                }]
-            }]
-        }
-    if app == 'B':
-        answer_QALD = {
-            "questions": [{
-                "id": "1",
-                "question": [{
-                    "language": "en",
-                    "string": "Which German cities have more than 250000 inhabitants?"
-                }],
-                "query": {
-                    "sparql": "SELECT DISTINCT ?uri WHERE { { ?uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City> . } UNION { ?uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Town> . }  ?uri <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Germany> .  ?uri <http://dbpedia.org/ontology/populationTotal> ?population .  FILTER ( ?population > 250000 ) } "
-                },
-                "answers": [{
-                    "head": {
-                        "vars": [
-                            "uri"
-                        ]
-                    },
-                    "results": {
-                        "bindings": [{
-                            "uri": {
-                                "type": "uri",
-                                "value": "http://dbpedia.org/resource/B"
-                            }
-                        }]
-                    }
-                }]
-            }]
-        }
-
-    answer_parsed = parse_answer(answer_QALD['questions'][0]['answers'][0], 'uri')
+        r = requests.post(webserver_address.format(dir="/AppA"), data={'query': question})
+    else:
+        r = requests.post(webserver_address.format(dir="/AppB"), data={'query': question})
+    answer_QALD = r.json()
+    answer_parsed = parse_answer(answer_QALD['questions'][0]['answers'][0], 'string')
 
     return answer_parsed
 
