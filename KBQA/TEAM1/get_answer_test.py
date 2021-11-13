@@ -1,4 +1,4 @@
-from gerbil import extract_json
+# from gerbil import extract_json
 from get_answer import get_answer
 
 
@@ -48,8 +48,10 @@ WHERE { ?c dbo:country dbr:Germany .
 # print("example 2: ")
 # get_answer(example_query2)
 
-get_answer(example_query3)
-get_answer(example_query4)
+# get_answer(example_query3)
+# get_answer(example_query4)
+
+get_answer("SELECT DISTINCT ?uri WHERE { { ?uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City> . } UNION { ?uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Town> . }  ?uri <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Germany> .  ?uri <http://dbpedia.org/ontology/populationTotal> ?population .  FILTER ( ?population > 250000 ) }")
 
 
 
