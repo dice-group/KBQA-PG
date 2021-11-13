@@ -37,6 +37,7 @@ def questionA():
 
     return answers
 
+
 @application.route('/AppB', methods=['POST'])
 def questionB():
     asked_question = request.form['query']
