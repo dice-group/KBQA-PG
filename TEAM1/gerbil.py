@@ -23,7 +23,7 @@ def build_qald(questions) -> dict:
     return {"questions":results}
     
 
-def extract_json(result):
-    with open('result.json', 'w') as fp:
+def extract_json(result, filename="result.json"):
+    with open(filename, 'w') as fp:
         json.dump({"questions":result}, fp)
     print("results are exported")

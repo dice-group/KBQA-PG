@@ -14,7 +14,7 @@
                 }
             ],
             "query": {
-                "sparql": "SELECT ?o WHERE { <http://dbpedia.org/resource/mater_alma> <http://dbpedia.org/ontology/Germany_Merkel> ?o }"
+                "sparql": "SELECT ?o WHERE { <http://dbpedia.org/resource/Germany_Merkel> <http://dbpedia.org/ontology/Germany_Angela> ?o }"
             },
             "answers": [
                 {
@@ -68,7 +68,7 @@
                 }
             ],
             "query": {
-                "sparql": ""
+                "sparql": "SELECT ?o WHERE { <http://dbpedia.org/resource/interpretation> <http://dbpedia.org/ontology/author> ?o }"
             },
             "answers": [
                 {
@@ -95,7 +95,7 @@
                 }
             ],
             "query": {
-                "sparql": ""
+                "sparql": "SELECT ?o WHERE { <http://dbpedia.org/resource/name_birth> <http://dbpedia.org/ontology/Adele> ?o }"
             },
             "answers": [
                 {
@@ -122,7 +122,7 @@
                 }
             ],
             "query": {
-                "sparql": ""
+                "sparql": "SELECT ?o WHERE { <http://dbpedia.org/resource/brand_vehicle> <http://dbpedia.org/ontology/sell> ?o }"
             },
             "answers": [
                 {
