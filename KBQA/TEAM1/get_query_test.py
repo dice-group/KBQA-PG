@@ -1,12 +1,12 @@
-from get_query import QA_query_generation
 from get_answer import get_answer
+from get_query import QA_query_generation
 
 question = "capital of China?"
 
 query_generator = QA_query_generation()
 
 for query in query_generator.get_query(question):
-    print("trying query: "+query)
+    print("trying query: " + query)
     get_answer(query)
 
 """
@@ -27,11 +27,11 @@ results:
 trying query: SELECT ?s WHERE { ?s <https://dbpedia.org/ontology/germany> <https://dbpedia.org/resource/capital> }
 get query:
 SELECT ?s WHERE { ?s <https://dbpedia.org/ontology/germany> <https://dbpedia.org/resource/capital> }
-results: 
+results:
 trying query: SELECT ?o WHERE { <https://dbpedia.org/ontology/germany> <https://dbpedia.org/resource/capital> ?o }
 get query:
 SELECT ?o WHERE { <https://dbpedia.org/ontology/germany> <https://dbpedia.org/resource/capital> ?o }
-results: 
+results:
 """
 
 """

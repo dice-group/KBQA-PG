@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-{% load static %}
+  {% load static %}
 
-	<head>
-		<title>Knowledge Base Question Answering</title>
-		<link rel="stylesheet" media="all" type="text/css" href="{% static 'css/style.css' %}" />
-	</head>
-	<body>
-		<div style="margin:auto; max-width:50%">
-			
-			<h1 class="centering">Knowledge Base Question Answering</h1>
-			<h2 class="centering"> You have any Questions? Ask Here</h2>
+  <head>
+    <title>Knowledge Base Question Answering</title>
+    <link
+      rel="stylesheet"
+      media="all"
+      type="text/css"
+      href="{% static 'css/style.css' %}"
+    />
+  </head>
+  <body>
+    <div style="margin: auto; max-width: 50%">
+      <h1 class="centering">Knowledge Base Question Answering</h1>
+      <h2 class="centering">You have any Questions? Ask Here</h2>
 
-			<form  action = 'get_answer' method="POST" class="example">
-            {% csrf_token %}
-				<input type="text" placeholder="Type in your question" name="question"  required>
-				<button type="submit" value="Ask question">Ask?</button>
-			</form>
+      <form action="get_answer" method="POST" class="example">
+        {% csrf_token %}
+        <input
+          type="text"
+          placeholder="Type in your question"
+          name="question"
+          required
+        />
+        <button type="submit" value="Ask question">Ask?</button>
+      </form>
 
-			<hr class="line">
-			{% if question %}
-				<p class="answers">Answer for the question "{{ question }}":</p>
-			{% endif %}
-
-			{% if answers %}
-				<p class="answers">{{ answers }}</p>
-			{% endif %}
-			{% comment %} {% if answers is defined and answers|length == 0 %}
-				<p class="answers">No answer found</p>
-			{% endif %} {% endcomment %}
-		</div>
-	</body>
+      <hr class="line" />
+      {% if question %}
+      <p class="answers">Answer for the question "{{ question }}":</p>
+      {% endif %} {% if answers %}
+      <p class="answers">{{ answers }}</p>
+      {% endif %} {% comment %} {% if answers is defined and answers|length == 0
+      %}
+      <p class="answers">No answer found</p>
+      {% endif %} {% endcomment %}
+    </div>
+  </body>
 </html>

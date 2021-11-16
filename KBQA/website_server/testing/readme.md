@@ -15,18 +15,21 @@ pip install -r requirements.txt
 Depending on which system you are using, you first have to set the **FLASK_APP** variable:
 
 (Linux, Mac)
+
 ```bash
 $ export FLASK_APP=dummy_webserver
 $ python dummy_webserver.py
 ```
 
 Windows CMD:
+
 ```bash
 > set FLASK_APP=dummy_webserver
 > python dummy_webserver.py
 ```
 
 Windows Powershell:
+
 ```bash
 > $env:FLASK_APP="dummy_webserver"
 > python dummy_webserver.py

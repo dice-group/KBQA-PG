@@ -9,10 +9,10 @@ def process_query(query, app):
 
     # Ask the webserver for an answer the the query using approach "app"
     webserver_address = "http://localhost:24804{dir}"
-    if app == 'A':
-        r = requests.post(webserver_address.format(dir="/AppA"), data={'query': query})
+    if app == "A":
+        r = requests.post(webserver_address.format(dir="/AppA"), data={"query": query})
     else:
-        r = requests.post(webserver_address.format(dir="/AppB"), data={'query': query})
+        r = requests.post(webserver_address.format(dir="/AppB"), data={"query": query})
     response_QALD = r.json()
     answers = parse_response(response_QALD)
 
@@ -23,19 +23,20 @@ def parse_response(QALD):
     """
     Parse a QALD dictionary to get an appropriate answer string.
     """
-    bindings = QALD['questions'][0]['answers'][0]['results']['bindings']
+    bindings = QALD["questions"][0]["answers"][0]["results"]["bindings"]
     bindings_string_list = []
     for i in range(len(bindings)):
         key = list(bindings[i])[0]  # Get the key name
-        if bindings[i][key]['type'] == 'uri':
-            resource = URIRef(bindings[i][key]['value'])
+        if bindings[i][key]["type"] == "uri":
+            resource = URIRef(bindings[i][key]["value"])
             string_value = resource.n3()
             bindings_string.append(string_value)
         else:
-            bindings_string_list.append(bindings[i][key]['value'])
+            bindings_string_list.append(bindings[i][key]["value"])
     answers_string = ", ".join(str(x) for x in bindings_string_list)
 
     return answers_string
+
 
 # Example QALD dictionary
 # {

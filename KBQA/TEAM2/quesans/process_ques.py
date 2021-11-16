@@ -1,32 +1,33 @@
-#import required librarries
+# import required librarries
 
-import spacy
-from SPARQLWrapper import SPARQLWrapper, JSON
 from rdflib import URIRef
+import spacy
+from SPARQLWrapper import JSON
+from SPARQLWrapper import SPARQLWrapper
 
-#check and download languauge model 
+# check and download languauge model
 try:
     nlp = spacy.load("en_core_web_sm")
 except:
     spacy.cli.download("en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm") 
+    nlp = spacy.load("en_core_web_sm")
 
 
 def resource_generator(resource_name):
-    '''
+    """
     Convert the generated resource name into DBpedia equivalent key_word
-    '''
+    """
 
     words = [word.lower() for word in resource_name.split()]
-    key = ' '.join([word.capitalize() for word in words ])
+    key = " ".join([word.capitalize() for word in words])
 
     return key
 
 
 def property_generator(property_name):
-    '''
+    """
     Convert the generated property name into DBpedia equivalent property
-    '''
+    """
 
     words = [word.lower() for word in property_name.split()]
     prop_names = []
@@ -35,16 +36,16 @@ def property_generator(property_name):
         if word != words[0]:
             word = word.capitalize()
         prop_names.append(word)
-    
-    prop = ''.join([word for word in prop_names ])
+
+    prop = "".join([word for word in prop_names])
 
     return prop
 
 
 def parse_nlp(text):
-    '''
+    """
     Parse the question as NLP string and extract the name entity and property
-    '''
+    """
 
     doc = nlp(text)
     recs_ent = doc.ents[0].text
@@ -54,22 +55,22 @@ def parse_nlp(text):
     for chunk in doc.noun_chunks:
         if str(chunk) == recs_ent:
             continue
-        prop_ents.append( " ".join(str(word)  for word in chunk if not word.is_stop))
+        prop_ents.append(" ".join(str(word) for word in chunk if not word.is_stop))
 
     prop_ents = [prop for prop in prop_ents if prop]
-   
+
     prop_ent = prop_ents[0]
 
     return recs_ent, prop_ent
 
 
 def ask_DBpedia(subject, predicate):
-    '''
+    """
     Send a simple SPARQL query to DBpedia containing the parameters as subject and predicate
-    '''
+    """
 
-    subject = subject.replace(' ', '_')
-    sparql_query = 'SELECT ?o WHERE {{ dbr:{} dbp:{} ?o }}'.format(subject, predicate)
+    subject = subject.replace(" ", "_")
+    sparql_query = "SELECT ?o WHERE {{ dbr:{} dbp:{} ?o }}".format(subject, predicate)
 
     sparql = SPARQLWrapper("https://dbpedia.org/sparql")
     sparql.setQuery(sparql_query)
@@ -80,9 +81,9 @@ def ask_DBpedia(subject, predicate):
 
 
 def process_question(question):
-    '''
+    """
     Handle an incoming question and format the answers
-    '''
+    """
 
     recs_ent, prop_ent = parse_nlp(question)
     name = resource_generator(recs_ent)
@@ -90,7 +91,7 @@ def process_question(question):
 
     dbpedia_ans = ask_DBpedia(name, prop)
 
-    answers = parse_answer(dbpedia_ans, 'o')
+    answers = parse_answer(dbpedia_ans, "o")
 
     return answers
 
@@ -99,7 +100,7 @@ def process_question(question):
 
     # example_question = 'Who is the chancellor of Germany?'
     # example_query = '''
-    # 	SELECT ?name 
+    # 	SELECT ?name
     # 	WHERE {
     # 		dbr:Germany dbp:leaderName ?name .
     # 		?name dbp:title dbr:Chancellor_of_Germany .
@@ -118,21 +119,21 @@ def process_question(question):
 
 
 def parse_answer(db_answer, prop_ans):
-    '''
+    """
     Parse the result from DBpedia and extract the answer for the searched property
-    '''
+    """
 
     answers = []
-    answer = ''
-    
-    for i in range(len(db_answer['results']['bindings'])):
-        if db_answer['results']['bindings'][i][prop_ans]['type'] == 'uri':
-            resource = URIRef(db_answer['results']['bindings'][i][prop_ans]['value'])
-            string_value = resource.split('/')[-1].replace('_',' ')
+    answer = ""
+
+    for i in range(len(db_answer["results"]["bindings"])):
+        if db_answer["results"]["bindings"][i][prop_ans]["type"] == "uri":
+            resource = URIRef(db_answer["results"]["bindings"][i][prop_ans]["value"])
+            string_value = resource.split("/")[-1].replace("_", " ")
             answers.append(string_value)
         else:
-            answers.append(db_answer['results']['bindings'][i][prop_ans]['value'])
-    
+            answers.append(db_answer["results"]["bindings"][i][prop_ans]["value"])
+
     answer = ", ".join(str(x) for x in answers)
 
-    return answer 
+    return answer

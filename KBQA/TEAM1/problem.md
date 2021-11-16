@@ -6,17 +6,13 @@ I found a problem while trying building the query for "which German cities have 
 
 in some cities, the country is like:
 
-`
-dbo:country dbr:Germany
-`
+`dbo:country dbr:Germany`
 
 for example, in <https://dbpedia.org/page/Laer>
 
 but in other cities, the country is like:
 
-`
-dbo:country dbr:http://dbpedia.org/resource/Germany
-`
+`dbo:country dbr:http://dbpedia.org/resource/Germany`
 
 for example, in <https://dbpedia.org/page/Paderborn>
 

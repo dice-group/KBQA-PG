@@ -1,31 +1,40 @@
 <html>
-	<head>
-		<title>Knowledge Base Question Answering</title>
-		<link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
-	</head>
-	<body>
-		<div style="margin:auto; max-width:50%">
-			
-			<h1 class="centering">Knowledge Base Question Answering</h1>
-			<h2 class="centering"> You have any Questions? Ask Here</h2>
+  <head>
+    <title>Knowledge Base Question Answering</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename='css/style.css')}}"
+    />
+  </head>
+  <body>
+    <div style="margin: auto; max-width: 50%">
+      <h1 class="centering">Knowledge Base Question Answering</h1>
+      <h2 class="centering">You have any Questions? Ask Here</h2>
 
-			<form method="POST" class="example">
-				<input type="text" placeholder="Type in your question" name="query"  required>
-				<input type="text" placeholder="Decide between approach A or B" name="App"  required>
-				<button type="submit" value="Ask question">Ask?</button>
-			</form>
+      <form method="POST" class="example">
+        <input
+          type="text"
+          placeholder="Type in your question"
+          name="query"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Decide between approach A or B"
+          name="App"
+          required
+        />
+        <button type="submit" value="Ask question">Ask?</button>
+      </form>
 
-			<hr class="line">
-			{% if question %}
-				<p class="answers">Answer for the question "{{ question }}":</p>
-			{% endif %}
-
-			{% if answers %}
-				<p class="answers">{{ answers }}</p>
-			{% endif %}
-			{% if answers is defined and answers|length == 0 %}
-				<p class="answers">No answer found</p>
-			{% endif %}
-		</div>
-	</body>
+      <hr class="line" />
+      {% if question %}
+      <p class="answers">Answer for the question "{{ question }}":</p>
+      {% endif %} {% if answers %}
+      <p class="answers">{{ answers }}</p>
+      {% endif %} {% if answers is defined and answers|length == 0 %}
+      <p class="answers">No answer found</p>
+      {% endif %}
+    </div>
+  </body>
 </html>
