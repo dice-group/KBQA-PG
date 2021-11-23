@@ -78,9 +78,11 @@ for q in questions:
         if qq['language'] == 'en':
             question = qq['string']
             break
-    if 'SELECT' in q['query']['sparql']:
+    if 'SELECT' in q['query']['sparql'] and \
+    not 'SELECT COUNT' in  q['query']['sparql'] and \
+    not 'SELECT (COUNT' in  q['query']['sparql']:
         query = re.sub('(.*) WHERE','',q['query']['sparql'])
-        search_token = re.sub('(.*) SELECT (DISTINCT )?','',q['query']['sparql'])
+        search_token = re.sub('(.*)SELECT (DISTINCT )?','',q['query']['sparql'])
         search_token = search_token.split(' ')[0]
         triple_tokens, union_tokens, constraint_tokens = tokenize_query(query)
         triple_templates = construct_triples(triple_tokens)
@@ -100,8 +102,9 @@ for q in questions:
             for triple in triple_templates:
                 triple = triple.replace(search_token, answer)
                 if '?' in triple:
-                    print(triple)
-                triples.append(triple)
+                    print(search_token, triple)
+                else:
+                    triples.append(triple)
 
         qta_list.append({'question':question, 'triples':triples, 'answers':answers})
         
