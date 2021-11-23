@@ -1,6 +1,6 @@
 import json
 import re
-
+from get_answer import get_answer
 
 def tokenize_query(query):
     tokens = query.split(' ')
@@ -52,6 +52,10 @@ def construct_triples(triple_tokens):
             leading_token = None
         else:
             triples[-1] = triples[-1] + ' ' + token
+    triples = [re.sub('FILTER(.*)', '', triple) for triple in triples]
+    for triple in triples:
+        if len(triple.split(' ')) != 3:
+            print('Bad triple:', triple)
     return triples
 
 def construct_unions(union_tokens):
@@ -96,17 +100,19 @@ for q in questions:
         else:
             answers = [q['answers'][0]['boolean']]
 
-        
-        triples = []
-        for answer in answers:
-            for triple in triple_templates:
-                triple = triple.replace(search_token, answer)
-                if '?' in triple:
-                    print(search_token, triple)
-                else:
-                    triples.append(triple)
 
-        qta_list.append({'question':question, 'triples':triples, 'answers':answers})
+        
+        construct_pattern = '{ ' + '. '.join(triple_templates) + '} '
+        #print(construct_pattern)
+
+        construct_query = re.sub('SELECT ((DISTINCT )?)(\?[A-Za-z0-9]*) ', 'CONSTRUCT ' + construct_pattern, q['query']['sparql'])
+        #print(construct_query)
+        relevant_triples = list(get_answer(construct_query, return_format=None))
+        #for triple in relevant_triples:
+            #print(str(triple[0]),str(triple[1]),str(triple[2]))
+
+
+        qta_list.append({'question':question, 'triples':relevant_triples, 'answers':answers})
         
 
 

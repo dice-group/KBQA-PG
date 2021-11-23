@@ -1,24 +1,26 @@
 import ssl
 
 from SPARQLWrapper import JSON
+from SPARQLWrapper import CONSTRUCT
 from SPARQLWrapper import SPARQLWrapper
 
 
 # pass the query in the function
 # return results as dictionary
-def get_answer(query: str) -> dict:
+def get_answer(query: str, return_format=JSON) -> dict:
     # to avoid [SSL: CERTIFICATE_VERIFY_FAILED] error
     ssl._create_default_https_context = ssl._create_unverified_context
-    print("get query: ")
-    print(query)
+    #print("get query: ")
+    #print(query)
     sparql = SPARQLWrapper("http://dbpedia.org/sparql")
     sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    # sparql.query() returns HTML response
-    # convert() converts response to dictionary
+    if return_format:
+        sparql.setReturnFormat(return_format)
+        # sparql.query() returns HTML response
+        # convert() converts response to dictionary
     answers = sparql.query().convert()
-    print(answers)
-    print("results: ")
+    #print(answers)
+    #print("results: ")
     # print_result(answers)
     return answers
 
