@@ -16,6 +16,7 @@ repos:
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
+        additional_dependencies: [rdflib==6.0.2, requests==2.26.0]
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
     hooks:
@@ -24,6 +25,7 @@ repos:
     rev: v0.910-1
     hooks:
       - id: mypy
+        additional_dependencies: [types-requests]
   - repo: https://github.com/sqlalchemyorg/zimports
     rev: v0.4.1
     hooks:
