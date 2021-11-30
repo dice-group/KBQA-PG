@@ -24,6 +24,24 @@ def get_answer(query: str, return_format=JSON) -> dict:
     # print_result(answers)
     return answers
 
+def get_ask_result(query: str, return_format=JSON) -> dict:
+    # to avoid [SSL: CERTIFICATE_VERIFY_FAILED] error
+    ssl._create_default_https_context = ssl._create_unverified_context
+    #print("get query: ")
+    #print(query)
+    sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+    sparql.setQuery(query)
+    if return_format:
+        sparql.setReturnFormat(return_format)
+        # sparql.query() returns HTML response
+        # convert() converts response to dictionary
+    answers = sparql.query().convert()
+    #print(answers)
+    #print(answers)
+    #print("results: ")
+    # print_result(answers)
+    return answers
+
 
 # print results for query as:
 # var1: value, var2: value,...
