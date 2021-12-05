@@ -72,3 +72,7 @@ Now on every commit the linters defined in [pre-commit config](.pre-commit-confi
 
 If you are in a hurry, you can skip the linting with `git commit --no-verify`.
 But to merge into the develop branch the pipeline has to pass.
+
+### Exclude external code files
+The linters should not be applied to external code files (libraries), configs, and non-code folders as they do not have to met our coding conventions. Therefore theese files or folders have to be excluded from the linting process. This can be done in the [pre-commit config](.pre-commit-config.yaml) by adding the files or folders to the exclude option, which is a regular expression.
+Example: `exclude: ^documentation/`
