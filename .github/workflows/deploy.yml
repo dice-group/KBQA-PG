@@ -1,0 +1,21 @@
+name: Webservice CD
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: [self-hosted, kbqa-pg]
+    
+    timeout-minutes: 10080
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and deploy webservice
+      working-directory: kbqa
+      run: docker compose -p kbqa up
