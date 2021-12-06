@@ -1,0 +1,39 @@
+# This pylintrc is kept minimal in order to highlight where we deviate from the
+# defaults. An extensive listing of all the options can be found here:
+# https://github.com/PyCQA/pylint/blob/master/examples/pylintrc
+
+[MASTER]
+
+# A comma-separated list of package or module names from where C extensions may
+# be loaded. Extensions are loading into the active Python interpreter and may
+# run arbitrary code.
+extension-pkg-whitelist=
+    numpy,
+
+load-plugins=
+    pylint.extensions.docparams, # docstrings must mention all parameters
+
+# Ignore config files
+ignore=conf.py
+
+
+[MESSAGES CONTROL]
+
+# Checks to disable with reasons.
+disable=
+    len-as-condition, # `if len(seq) != 0` is more explicit than `if seq`
+    bad-continuation, # has false-positives, black disagrees
+    no-else-return, # I think a clear "else" is more readable in some cases
+    line-too-long, # handled by black (differently)
+    too-few-public-methods, # such classes can still be useful
+    unsubscriptable-object, # faulty in py39, https://github.com/PyCQA/pylint/issues/3882
+
+[SIMILARITIES]
+
+# Minimum lines number of a similarity.
+min-similarity-lines=6
+
+[DESIGN]
+
+max-args=9
+max-attributes=9
