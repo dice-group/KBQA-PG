@@ -1,6 +1,7 @@
 # Knowledge Base Question Answering
 
 ![action_deploy develop](https://github.com/dice-group/KBQA-PG/actions/workflows/deploy.yml/badge.svg?branch=develop)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/dice-group/KBQA-PG/develop.svg)](https://results.pre-commit.ci/latest/github/dice-group/KBQA-PG/develop)
 
 Explore our QA system: [kbqa-pg.cs.upb.de](http://kbqa-pg.cs.upb.de/)
 
