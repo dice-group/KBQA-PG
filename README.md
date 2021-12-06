@@ -7,7 +7,11 @@ Explore our QA system: [kbqa-pg.cs.upb.de](http://kbqa-pg.cs.upb.de/)
 ## Workflow
 
 We use the workflow as described by [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow).
+
 Follow the guidelines for [commit messages](https://gist.github.com/robertpainsi/b632364184e70900af4ab688decf6f53).
+
+A properly formed git commit subject line should always be able to complete the following sentence  
+> If applied, this commit will *\<your subject line here\>*
 
 ### Branches
 
