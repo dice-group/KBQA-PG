@@ -1,6 +1,8 @@
 name: Webservice CD
 
 on:
+  push:
+    branches: [ develop ]
   pull_request:
     branches: [develop]
 
@@ -18,4 +20,4 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build and deploy webservice
         working-directory: kbqa
-        run: docker compose -p kbqa up
+        run: docker-compose -p kbqa up
