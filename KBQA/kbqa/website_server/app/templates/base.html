@@ -1,19 +1,28 @@
 <html>
-	<head>
-		<title>Knowledge Base Question Answering</title>
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/question.css') }}">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/answer.css') }}">
-		<script src="https://code.jquery.com/jquery-latest.js"></script>
-		<script src="static/js/main.js"></script>
-		<script src="static/js/answers.js"></script>
-	</head>
+  <head>
+    <title>Knowledge Base Question Answering</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/question.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/answer.css') }}"
+    />
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <script src="static/js/main.js"></script>
+    <script src="static/js/answers.js"></script>
+  </head>
 
-	<body onload="initialize()">
-		<header>
-			<div class="title">Knowledge Base Question Answering</div>
-		</header>
-		
-		<main>{% block content %}{% endblock %}</main>
-	</body>
+  <body onload="initialize()">
+    <header>
+      <div class="title">Knowledge Base Question Answering</div>
+    </header>
+
+    <main>{% block content %}{% endblock %}</main>
+  </body>
 </html>
