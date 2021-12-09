@@ -1,0 +1,29 @@
+header {
+	background-color: #3563ff ;
+	height: 70px;
+	margin: 0;
+	display: flex;
+}
+
+.title {
+	color: white;
+	padding-left: 9%;
+	padding-top: 1%;
+	font-size: 38;
+	font-style: italic;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+}
+
+.center {
+	width: 50%;
+	margin-top: 2%;
+}
