@@ -1,8 +1,11 @@
-from app import application
 from app.handler import process_question
+from flask import Flask
 from flask import jsonify
 from flask import render_template
 from flask import request
+
+
+application = Flask(__name__)
 
 
 @application.route("/", methods=["GET"])
@@ -25,7 +28,6 @@ def query_fun():
     chosen_app = request.form["approach"]
     answers, query = process_question(question, chosen_app)
 
-    # return render_template('index.html', query=query, answers=answers)
     return jsonify({"question": question, "answers": answers, "query": query})
 
 
