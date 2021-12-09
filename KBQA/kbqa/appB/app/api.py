@@ -1,6 +1,9 @@
-from app import application
 from app.main import main
+from flask import Flask
 from flask import request
+
+
+application = Flask(__name__)
 
 
 @application.route("/appB/", methods=["GET", "POST"])
@@ -19,4 +22,5 @@ def endpoint():
 
         return answer
 
+    # TODO also allow GET-requests
     return "<h1>This is the endpoint of approach B. There is nothing to see here</h1>"
