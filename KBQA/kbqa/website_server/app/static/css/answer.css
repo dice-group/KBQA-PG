@@ -1,44 +1,43 @@
-
 .answer_area {
-	border: solid black;
-	border-width: thin;
-	border-radius: 5px;
-	margin-top: 80px;
-	margin-bottom: 25%;
-	display: none;
+  border: solid black;
+  border-width: thin;
+  border-radius: 5px;
+  margin-top: 80px;
+  margin-bottom: 25%;
+  display: none;
 }
 
 .question {
-	margin-left: 5%;
+  margin-left: 5%;
 }
 
 .answer_list {
-	margin-left: 5%;
+  margin-left: 5%;
 }
 
 .answer_element {
-	font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-	font-size: 24;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: 24;
 }
 
 .query_btn {
-	margin-left: 5%;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	background-color: #3563ff;
-	color: white;
-	font-size: 16;
-	border-radius: 5px;
+  margin-left: 5%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: #3563ff;
+  color: white;
+  font-size: 16;
+  border-radius: 5px;
 }
 
 .query {
-	display: none;
-	margin-left: 10%;
+  display: none;
+  margin-left: 10%;
 }
 
 code {
-	background-color: #f6f6f6;
-	padding: 10px;
-	border-radius: 5px;
-	font-size: 16;
+  background-color: #f6f6f6;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16;
 }

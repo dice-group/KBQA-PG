@@ -1,12 +1,13 @@
-import unittest
 import json
+import unittest
 
-from app.handler import extract_bindings_from_QALD, format_bindings
+from app.handler import extract_bindings_from_QALD
+from app.handler import format_bindings
 
 
 class TestHandler(unittest.TestCase):
 
-    qald_single_answer = '''{
+    qald_single_answer = """{
             "questions" : [ {
                 "id" : "1",
                 "answertype" : "resource",
@@ -36,9 +37,9 @@ class TestHandler(unittest.TestCase):
                 } ]
             } ]
         }
-    '''
+    """
 
-    qald_multiple_answers = '''{ 
+    qald_multiple_answers = """{
         "questions" : [ {
             "id" : "46",
             "answertype" : "resource",
@@ -93,9 +94,9 @@ class TestHandler(unittest.TestCase):
             } ]
         } ]
     }
-    '''
+    """
 
-    qald_empty_answer = '''{
+    qald_empty_answer = """{
             "questions" : [ {
                 "id" : "1",
                 "answertype" : "resource",
@@ -120,43 +121,52 @@ class TestHandler(unittest.TestCase):
                 } ]
             } ]
         }
-    '''
-
+    """
 
     def test_QALD_parsing_for_single_answer(self):
         json_format = json.loads(self.qald_single_answer)
         bindings = extract_bindings_from_QALD(json_format)
 
-        self.assertListEqual(bindings, [('uri', 'http://dbpedia.org/resource/Leipzig_University')])
+        self.assertListEqual(
+            bindings, [("uri", "http://dbpedia.org/resource/Leipzig_University")]
+        )
 
         formated_bindings = format_bindings(bindings)
 
         self.assertListEqual(formated_bindings, ["Leipzig University"])
 
-
     def test_QALD_parsing_for_multiple_answers(self):
         json_format = json.loads(self.qald_multiple_answers)
         bindings = extract_bindings_from_QALD(json_format)
 
-        self.assertListEqual(bindings, [
-            ('uri', 'http://dbpedia.org/resource/Will_Grayson,_Will_Grayson'), 
-            ('uri', 'http://dbpedia.org/resource/An_Abundance_of_Katherines'), 
-            ('uri', 'http://dbpedia.org/resource/Looking_for_Alaska'), 
-            ('uri', 'http://dbpedia.org/resource/The_Fault_in_Our_Stars'), 
-            ('uri', 'http://dbpedia.org/resource/Let_It_Snow:_Three_Holiday_Romances'), 
-            ('uri', 'http://dbpedia.org/resource/Paper_Towns')
-        ])
+        self.assertListEqual(
+            bindings,
+            [
+                ("uri", "http://dbpedia.org/resource/Will_Grayson,_Will_Grayson"),
+                ("uri", "http://dbpedia.org/resource/An_Abundance_of_Katherines"),
+                ("uri", "http://dbpedia.org/resource/Looking_for_Alaska"),
+                ("uri", "http://dbpedia.org/resource/The_Fault_in_Our_Stars"),
+                (
+                    "uri",
+                    "http://dbpedia.org/resource/Let_It_Snow:_Three_Holiday_Romances",
+                ),
+                ("uri", "http://dbpedia.org/resource/Paper_Towns"),
+            ],
+        )
 
         formated_bindings = format_bindings(bindings)
-        
-        self.assertListEqual(formated_bindings, [
-            "Will Grayson, Will Grayson", 
-            "An Abundance of Katherines", 
-            "Looking for Alaska", 
-            "The Fault in Our Stars", 
-            "Let It Snow: Three Holiday Romances", 
-            "Paper Towns"
-        ])
+
+        self.assertListEqual(
+            formated_bindings,
+            [
+                "Will Grayson, Will Grayson",
+                "An Abundance of Katherines",
+                "Looking for Alaska",
+                "The Fault in Our Stars",
+                "Let It Snow: Three Holiday Romances",
+                "Paper Towns",
+            ],
+        )
 
     def test_QALD_parsing_for_empty_answer(self):
         json_format = json.loads(self.qald_empty_answer)
@@ -166,7 +176,8 @@ class TestHandler(unittest.TestCase):
 
         formated_bindings = format_bindings(bindings)
 
-        self.assertListEqual(formated_bindings, ['No answer found'])
+        self.assertListEqual(formated_bindings, ["No answer found"])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

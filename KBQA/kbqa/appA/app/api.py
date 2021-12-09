@@ -1,17 +1,17 @@
-from flask import render_template, request
 from app import application
 from app.main import main
+from flask import request
 
 
-@application.route('/appA/', methods=['GET', 'POST'])
+@application.route("/appA/", methods=["GET", "POST"])
 def endpoint():
-    
-    if request.method == 'POST':
-        query = request.form['query']
+
+    if request.method == "POST":
+        query = request.form["query"]
 
         # check, whether the language parameter is set
-        if 'lang' in request.form.keys():
-            lang = request.form['lang']
+        if "lang" in request.form.keys():
+            lang = request.form["lang"]
 
             answer = main(query, lang)
         else:
@@ -19,4 +19,4 @@ def endpoint():
 
         return answer
 
-    return '<h1>This is the endpoint of approach A. There is nothing to see here</h1>'
+    return "<h1>This is the endpoint of approach A. There is nothing to see here</h1>"

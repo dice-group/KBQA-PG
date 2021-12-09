@@ -1,30 +1,32 @@
 from app import application
-from flask import render_template, request, jsonify
 from app.handler import process_question
+from flask import jsonify
+from flask import render_template
+from flask import request
 
 
-@application.route('/', methods=['GET'])
+@application.route("/", methods=["GET"])
 def index():
     """
     Home website.
     :return: HTML home website.
     """
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@application.route('/', methods=['POST'])
+@application.route("/", methods=["POST"])
 def query_fun():
     """
     Requesting an answer to some question.
     :return: HTML Website with answer.
     """
 
-    question = request.form['question']
-    chosen_app = request.form['approach']
+    question = request.form["question"]
+    chosen_app = request.form["approach"]
     answers, query = process_question(question, chosen_app)
-    
-    #return render_template('index.html', query=query, answers=answers)
-    return jsonify({ 'question' : question, 'answers' : answers, 'query' : query})
+
+    # return render_template('index.html', query=query, answers=answers)
+    return jsonify({"question": question, "answers": answers, "query": query})
 
 
 @application.errorhandler(500)
@@ -34,4 +36,4 @@ def internal_error(error):
     :param error: error object thrown by the actual exception.
     :return: HTML with error 500.
     """
-    return render_template('500.html'), 500
+    return render_template("500.html"), 500

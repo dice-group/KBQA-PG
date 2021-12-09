@@ -1,5 +1,6 @@
-import requests
 import json
+
+import requests
 
 
 def process_question(question, app):
@@ -10,10 +11,14 @@ def process_question(question, app):
     # Ask the webserver for an answer the the query using approach "app"
     webserver_address = "http://nginx{dir}"
 
-    if app == 'A':
-        r = requests.post(webserver_address.format(dir="/appA/"), data={'query': question})
+    if app == "A":
+        r = requests.post(
+            webserver_address.format(dir="/appA/"), data={"query": question}
+        )
     else:
-        r = requests.post(webserver_address.format(dir="/appB/"), data={'query': question})
+        r = requests.post(
+            webserver_address.format(dir="/appB/"), data={"query": question}
+        )
 
     response_json = json.loads(r.text)
     bindings, query = extract_bindings_from_QALD(response_json)
@@ -29,31 +34,31 @@ def extract_bindings_from_QALD(QALD):
 
     results = list()
 
-    questions = QALD['questions']
+    questions = QALD["questions"]
 
     for quest in questions:
-        question = quest['question']
-        query = quest['query']
-        answers = quest['answers']
+        question = quest["question"]
+        query = quest["query"]
+        answers = quest["answers"]
 
-        print('Question:', question)
-        print('Query:', query)
+        print("Question:", question)
+        print("Query:", query)
 
         for answer in answers:
-            variables = answer['head']['vars']
+            variables = answer["head"]["vars"]
 
-            bindings = answer['results']['bindings']
+            bindings = answer["results"]["bindings"]
 
             for var in variables:
                 for binding in bindings:
-                    result_type = binding[var]['type']
-                    result_value = binding[var]['value']
+                    result_type = binding[var]["type"]
+                    result_value = binding[var]["value"]
 
                     result = (result_type, result_value)
 
                     results.append(result)
 
-    return results, query['sparql']
+    return results, query["sparql"]
 
 
 def format_bindings(bindings):
@@ -61,12 +66,12 @@ def format_bindings(bindings):
 
     # no bindings, i.e. no answers found
     if len(bindings) == 0:
-        return ['No answer found']
+        return ["No answer found"]
 
     for binding in bindings:
-        if binding[0] == 'uri':
-            entity = binding[1].split('/')[-1]
-            formated_result = entity.replace('_', ' ')
+        if binding[0] == "uri":
+            entity = binding[1].split("/")[-1]
+            formated_result = entity.replace("_", " ")
 
             results.append(formated_result)
         else:
