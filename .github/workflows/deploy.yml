@@ -19,5 +19,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build and deploy webservice
-        working-directory: kbqa
+        working-directory: KBQA/kbqa
         run: docker-compose -p kbqa up
