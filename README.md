@@ -1,6 +1,6 @@
 # Knowledge Base Question Answering
 
-Explore our QA system: [kbqa-pg.cs.upb.de](http://kbqa-pg.cs.upb.de/)
+Explore our Question Answering (QA) system: [kbqa-pg.cs.upb.de](http://kbqa-pg.cs.upb.de/)
 
 # Contributing
 
@@ -15,7 +15,7 @@ A properly formed git commit subject line should always be able to complete the 
 
 ### Branches
 
-We have two main branches `master` and `develop`. These branches always contain working end-to-end code and will be deployed to our server. These branches are protected and only reviewed pull requests can be merged.
+We have two main branches `master` for releases and `develop` for development builds. These branches always contain completed changes and executable, formated code and will be deployed to our server. Therefore, these branches are protected and only reviewed pull requests (PR) can be merged. For every feature/topic a new branch based on develop has to be created. A PR should only contain one topic and can also be opened as a draft to get early feedback. When merging a PR, individual commits can be combined (rebased) if they describe a related change.
 
 <table>
   <thead>
@@ -48,6 +48,13 @@ We have two main branches `master` and `develop`. These branches always contain 
     </tr>
   </tbody>
 </table>
+
+### Folder structure
+
+The top directory contains only configuration files that refer to this repository. Everything else is in the [KBQA](/KBQA) folder:
+
+The end-to-end system that is automatically deployed on the VM is located in the folder [kbqa](/KBQA/kbqa).
+Other topics that are not (yet) included in the end-to-end system should have their own folder.
 
 ## Code Style
 
