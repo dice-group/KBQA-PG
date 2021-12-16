@@ -28,7 +28,7 @@ requests==2.25.1
 sacrebleu==1.5.0
 sacremoses==0.0.43
 six==1.15.0
-tokenizers==0.9.4
+tokenizers==0.10.3
 torch==1.7.1
 tqdm==4.56.0
 transformers==4.5.1
