@@ -27,6 +27,7 @@ disable=
     line-too-long, # handled by black (differently)
     too-few-public-methods, # such classes can still be useful
     unsubscriptable-object, # faulty in py39, https://github.com/PyCQA/pylint/issues/3882
+    protected-access, # protected-member access needed for ssl in get_answer.py
 
 [SIMILARITIES]
 
