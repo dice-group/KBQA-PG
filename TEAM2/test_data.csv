@@ -1,0 +1,202 @@
+﻿question,query
+Who discovered 39741 komm ?,SELECT DISTINCT var_uri where brack_open dbr_39741_Komm dbo_discoverer var_uri brack_close
+Who discovered 457 alleghenia ?,SELECT DISTINCT var_uri where brack_open dbr_457_Alleghenia dbo_discoverer var_uri brack_close
+Who discovered 341520 mors–somnus ?,SELECT DISTINCT var_uri where brack_open dbr_341520_Mors–Somnus dbo_discoverer var_uri brack_close
+Who discovered 1449 virtanen ?,SELECT DISTINCT var_uri where brack_open dbr_1449_Virtanen dbo_discoverer var_uri brack_close
+Who discovered 5806 archieroy ?,SELECT DISTINCT var_uri where brack_open dbr_5806_Archieroy dbo_discoverer var_uri brack_close
+Who discovered 2175 andrea doria ?,SELECT DISTINCT var_uri where brack_open dbr_2175_Andrea_Doria dbo_discoverer var_uri brack_close
+Who discovered 944 hidalgo ?,SELECT DISTINCT var_uri where brack_open dbr_944_Hidalgo dbo_discoverer var_uri brack_close
+Who discovered tarvos ?,SELECT DISTINCT var_uri where brack_open dbr_Tarvos_(moon) dbo_discoverer var_uri brack_close
+Who discovered 500 selinur ?,SELECT DISTINCT var_uri where brack_open dbr_500_Selinur dbo_discoverer var_uri brack_close
+Who discovered 1749 telamon ?,SELECT DISTINCT var_uri where brack_open dbr_1749_Telamon dbo_discoverer var_uri brack_close
+Who discovered 9916 kibirev ?,SELECT DISTINCT var_uri where brack_open dbr_9916_Kibirev dbo_discoverer var_uri brack_close
+Who discovered 1534 näsi ?,SELECT DISTINCT var_uri where brack_open dbr_1534_Näsi dbo_discoverer var_uri brack_close
+Who discovered 602 marianna ?,SELECT DISTINCT var_uri where brack_open dbr_602_Marianna dbo_discoverer var_uri brack_close
+Who discovered 152 atala ?,SELECT DISTINCT var_uri where brack_open dbr_152_Atala dbo_discoverer var_uri brack_close
+Who discovered 1411 brauna ?,SELECT DISTINCT var_uri where brack_open dbr_1411_Brauna dbo_discoverer var_uri brack_close
+Who discovered 7687 matthias ?,SELECT DISTINCT var_uri where brack_open dbr_7687_Matthias dbo_discoverer var_uri brack_close
+Who discovered 1139 atami ?,SELECT DISTINCT var_uri where brack_open dbr_1139_Atami dbo_discoverer var_uri brack_close
+Who discovered 7776 takeishi ?,SELECT DISTINCT var_uri where brack_open dbr_7776_Takeishi dbo_discoverer var_uri brack_close
+Who discovered 933 susi ?,SELECT DISTINCT var_uri where brack_open dbr_933_Susi dbo_discoverer var_uri brack_close
+Who discovered 5244 amphilochos ?,SELECT DISTINCT var_uri where brack_open dbr_5244_Amphilochos dbo_discoverer var_uri brack_close
+Who discovered 10415 mali lošinj ?,SELECT DISTINCT var_uri where brack_open dbr_10415_Mali_Lošinj dbo_discoverer var_uri brack_close
+Who discovered 3749 balam ?,SELECT DISTINCT var_uri where brack_open dbr_3749_Balam dbo_discoverer var_uri brack_close
+Who discovered kepler-1544 b ?,SELECT DISTINCT var_uri where brack_open dbr_Kepler-1544_b dbo_discoverer var_uri brack_close
+Who discovered gliese 581b ?,SELECT DISTINCT var_uri where brack_open dbr_Gliese_581b dbo_discoverer var_uri brack_close
+Who discovered 2478 tokai ?,SELECT DISTINCT var_uri where brack_open dbr_2478_Tokai dbo_discoverer var_uri brack_close
+Who discovered 91 aegina ?,SELECT DISTINCT var_uri where brack_open dbr_91_Aegina dbo_discoverer var_uri brack_close
+Who discovered 1818 brahms ?,SELECT DISTINCT var_uri where brack_open dbr_1818_Brahms dbo_discoverer var_uri brack_close
+Who discovered 953 painleva ?,SELECT DISTINCT var_uri where brack_open dbr_953_Painleva dbo_discoverer var_uri brack_close
+Who discovered hd 69830 c ?,SELECT DISTINCT var_uri where brack_open dbr_HD_69830_c dbo_discoverer var_uri brack_close
+Who discovered 2005 hencke ?,SELECT DISTINCT var_uri where brack_open dbr_2005_Hencke dbo_discoverer var_uri brack_close
+Who discovered 3671 dionysus ?,SELECT DISTINCT var_uri where brack_open dbr_3671_Dionysus dbo_discoverer var_uri brack_close
+Who discovered 14871 pyramus ?,SELECT DISTINCT var_uri where brack_open dbr_14871_Pyramus dbo_discoverer var_uri brack_close
+Who discovered 2020 oy4 ?,SELECT DISTINCT var_uri where brack_open dbr_2020_OY4 dbo_discoverer var_uri brack_close
+Who discovered 2156 kate ?,SELECT DISTINCT var_uri where brack_open dbr_2156_Kate dbo_discoverer var_uri brack_close
+Who discovered 1700 zvezdara ?,SELECT DISTINCT var_uri where brack_open dbr_1700_Zvezdara dbo_discoverer var_uri brack_close
+Who discovered 1204 renzia ?,SELECT DISTINCT var_uri where brack_open dbr_1204_Renzia dbo_discoverer var_uri brack_close
+Who discovered 1319 disa ?,SELECT DISTINCT var_uri where brack_open dbr_1319_Disa dbo_discoverer var_uri brack_close
+Who discovered 2009 wm1 ?,SELECT DISTINCT var_uri where brack_open dbr_(529366) _2009_WM1 dbo_discoverer var_uri brack_close
+Who discovered 382 dodona ?,SELECT DISTINCT var_uri where brack_open dbr_382_Dodona dbo_discoverer var_uri brack_close
+Who discovered 977 philippa ?,SELECT DISTINCT var_uri where brack_open dbr_977_Philippa dbo_discoverer var_uri brack_close
+Who discovered 1527 malmquista ?,SELECT DISTINCT var_uri where brack_open dbr_1527_Malmquista dbo_discoverer var_uri brack_close
+Who discovered 2002 aj129 ?,SELECT DISTINCT var_uri where brack_open dbr_(276033) _2002_AJ129 dbo_discoverer var_uri brack_close
+Who discovered 998 bodea ?,SELECT DISTINCT var_uri where brack_open dbr_998_Bodea dbo_discoverer var_uri brack_close
+Who discovered 13 egeria ?,SELECT DISTINCT var_uri where brack_open dbr_13_Egeria dbo_discoverer var_uri brack_close
+Who discovered 927 ratisbona ?,SELECT DISTINCT var_uri where brack_open dbr_927_Ratisbona dbo_discoverer var_uri brack_close
+Who discovered 70 virginis b ?,SELECT DISTINCT var_uri where brack_open dbr_70_Virginis_b dbo_discoverer var_uri brack_close
+Who discovered 959 arne ?,SELECT DISTINCT var_uri where brack_open dbr_959_Arne dbo_discoverer var_uri brack_close
+Who discovered 2004 bx159 ?,SELECT DISTINCT var_uri where brack_open dbr_2004_BX159 dbo_discoverer var_uri brack_close
+Who discovered 25000 astrometria ?,SELECT DISTINCT var_uri where brack_open dbr_25000_Astrometria dbo_discoverer var_uri brack_close
+Who discovered 1378 leonce ?,SELECT DISTINCT var_uri where brack_open dbr_1378_Leonce dbo_discoverer var_uri brack_close
+Who discovered 1040 klumpkea ?,SELECT DISTINCT var_uri where brack_open dbr_1040_Klumpkea dbo_discoverer var_uri brack_close
+Who discovered 1998 vg44 ?,SELECT DISTINCT var_uri where brack_open dbr_(33340) _1998_VG44 dbo_discoverer var_uri brack_close
+Who discovered cordelia ?,SELECT DISTINCT var_uri where brack_open dbr_Cordelia_(moon) dbo_discoverer var_uri brack_close
+Who discovered 957 camelia ?,SELECT DISTINCT var_uri where brack_open dbr_957_Camelia dbo_discoverer var_uri brack_close
+Who discovered 2017 xx61 ?,SELECT DISTINCT var_uri where brack_open dbr_2017_XX61 dbo_discoverer var_uri brack_close
+Who discovered 333 badenia ?,SELECT DISTINCT var_uri where brack_open dbr_333_Badenia dbo_discoverer var_uri brack_close
+Who discovered ngc 2423-3 b ?,SELECT DISTINCT var_uri where brack_open dbr_NGC_2423-3_b dbo_discoverer var_uri brack_close
+Who discovered pluto ?,SELECT DISTINCT var_uri where brack_open dbr_Pluto dbo_discoverer var_uri brack_close
+Who discovered 2015 ry245 ?,SELECT DISTINCT var_uri where brack_open dbr_2015_RY245 dbo_discoverer var_uri brack_close
+Who discovered 288 glauke ?,SELECT DISTINCT var_uri where brack_open dbr_288_Glauke dbo_discoverer var_uri brack_close
+Who discovered 1045 michela ?,SELECT DISTINCT var_uri where brack_open dbr_1045_Michela dbo_discoverer var_uri brack_close
+Who discovered 195 eurykleia ?,SELECT DISTINCT var_uri where brack_open dbr_195_Eurykleia dbo_discoverer var_uri brack_close
+Who discovered 1109 tata ?,SELECT DISTINCT var_uri where brack_open dbr_1109_Tata dbo_discoverer var_uri brack_close
+Who discovered 10121 arzamas ?,SELECT DISTINCT var_uri where brack_open dbr_10121_Arzamas dbo_discoverer var_uri brack_close
+Who discovered arche ?,SELECT DISTINCT var_uri where brack_open dbr_Arche_(moon) dbo_discoverer var_uri brack_close
+Who discovered 2004 ew95 ?,SELECT DISTINCT var_uri where brack_open dbr_(120216) _2004_EW95 dbo_discoverer var_uri brack_close
+Who discovered 1906 naef ?,SELECT DISTINCT var_uri where brack_open dbr_1906_Naef dbo_discoverer var_uri brack_close
+Who discovered 2008 qd4 ?,SELECT DISTINCT var_uri where brack_open dbr_(315898) _2008_QD4 dbo_discoverer var_uri brack_close
+Who discovered 1989 ml ?,SELECT DISTINCT var_uri where brack_open dbr_(10302) _1989_ML dbo_discoverer var_uri brack_close
+Who discovered 10249 harz ?,SELECT DISTINCT var_uri where brack_open dbr_10249_Harz dbo_discoverer var_uri brack_close
+Who discovered 1280 baillauda ?,SELECT DISTINCT var_uri where brack_open dbr_1280_Baillauda dbo_discoverer var_uri brack_close
+Who discovered 1989 to11 ?,SELECT DISTINCT var_uri where brack_open dbr_(5476) _1989_TO11 dbo_discoverer var_uri brack_close
+Who discovered 414 liriope ?,SELECT DISTINCT var_uri where brack_open dbr_414_Liriope dbo_discoverer var_uri brack_close
+Who discovered valetudo ?,SELECT DISTINCT var_uri where brack_open dbr_Valetudo_(moon) dbo_discoverer var_uri brack_close
+Who discovered 2349 kurchenko ?,SELECT DISTINCT var_uri where brack_open dbr_2349_Kurchenko dbo_discoverer var_uri brack_close
+Who discovered 297 caecilia ?,SELECT DISTINCT var_uri where brack_open dbr_297_Caecilia dbo_discoverer var_uri brack_close
+Who discovered 1049 gotho ?,SELECT DISTINCT var_uri where brack_open dbr_1049_Gotho dbo_discoverer var_uri brack_close
+Who discovered 1834 palach ?,SELECT DISTINCT var_uri where brack_open dbr_1834_Palach dbo_discoverer var_uri brack_close
+Who discovered 1460 haltia ?,SELECT DISTINCT var_uri where brack_open dbr_1460_Haltia dbo_discoverer var_uri brack_close
+Who discovered 1979 xb ?,SELECT DISTINCT var_uri where brack_open dbr_1979_XB dbo_discoverer var_uri brack_close
+Who discovered 3066 mcfadden ?,SELECT DISTINCT var_uri where brack_open dbr_3066_McFadden dbo_discoverer var_uri brack_close
+Who discovered wasp-3b ?,SELECT DISTINCT var_uri where brack_open dbr_WASP-3b dbo_discoverer var_uri brack_close
+Who discovered epsilon reticuli b ?,SELECT DISTINCT var_uri where brack_open dbr_Epsilon_Reticuli_b dbo_discoverer var_uri brack_close
+Who discovered 2015 xy261 ?,SELECT DISTINCT var_uri where brack_open dbr_2015_XY261 dbo_discoverer var_uri brack_close
+Who discovered 1113 katja ?,SELECT DISTINCT var_uri where brack_open dbr_1113_Katja dbo_discoverer var_uri brack_close
+Who discovered 30000 camenzind ?,SELECT DISTINCT var_uri where brack_open dbr_30000_Camenzind dbo_discoverer var_uri brack_close
+Who discovered 47171 lempo ?,SELECT DISTINCT var_uri where brack_open dbr_47171_Lempo dbo_discoverer var_uri brack_close
+Who discovered 36 atalante ?,SELECT DISTINCT var_uri where brack_open dbr_36_Atalante dbo_discoverer var_uri brack_close
+Who discovered 6296 cleveland ?,SELECT DISTINCT var_uri where brack_open dbr_6296_Cleveland dbo_discoverer var_uri brack_close
+Who discovered 321 florentina ?,SELECT DISTINCT var_uri where brack_open dbr_321_Florentina dbo_discoverer var_uri brack_close
+Who discovered 9912 donizetti ?,SELECT DISTINCT var_uri where brack_open dbr_9912_Donizetti dbo_discoverer var_uri brack_close
+Who discovered 24988 alainmilsztajn ?,SELECT DISTINCT var_uri where brack_open dbr_24988_Alainmilsztajn dbo_discoverer var_uri brack_close
+Who discovered thelxinoe ?,SELECT DISTINCT var_uri where brack_open dbr_Thelxinoe_(moon) dbo_discoverer var_uri brack_close
+Who discovered 1602 indiana ?,SELECT DISTINCT var_uri where brack_open dbr_1602_Indiana dbo_discoverer var_uri brack_close
+Who discovered 588 achilles ?,SELECT DISTINCT var_uri where brack_open dbr_588_Achilles dbo_discoverer var_uri brack_close
+Who discovered 1998 ml14 ?,SELECT DISTINCT var_uri where brack_open dbr_(52760) _1998_ML14 dbo_discoverer var_uri brack_close
+Who discovered 2017 xo2 ?,SELECT DISTINCT var_uri where brack_open dbr_2017_XO2 dbo_discoverer var_uri brack_close
+Who discovered 307 nike ?,SELECT DISTINCT var_uri where brack_open dbr_307_Nike dbo_discoverer var_uri brack_close
+Who discovered 2629 rudra ?,SELECT DISTINCT var_uri where brack_open dbr_2629_Rudra dbo_discoverer var_uri brack_close
+Who discovered 9905 tiziano ?,SELECT DISTINCT var_uri where brack_open dbr_9905_Tiziano dbo_discoverer var_uri brack_close
+Who discovered 1141 bohmia ?,SELECT DISTINCT var_uri where brack_open dbr_1141_Bohmia dbo_discoverer var_uri brack_close
+Who discovered 1535 päijänne ?,SELECT DISTINCT var_uri where brack_open dbr_1535_Päijänne dbo_discoverer var_uri brack_close
+Who discovered 3451 mentor ?,SELECT DISTINCT var_uri where brack_open dbr_3451_Mentor dbo_discoverer var_uri brack_close
+Who discovered 96 aegle ?,SELECT DISTINCT var_uri where brack_open dbr_96_Aegle dbo_discoverer var_uri brack_close
+Who discovered 2008 tc3 ?,SELECT DISTINCT var_uri where brack_open dbr_2008_TC3 dbo_discoverer var_uri brack_close
+Who discovered 178 belisana ?,SELECT DISTINCT var_uri where brack_open dbr_178_Belisana dbo_discoverer var_uri brack_close
+Who discovered hd 38529 b ?,SELECT DISTINCT var_uri where brack_open dbr_HD_38529_b dbo_discoverer var_uri brack_close
+Who discovered 1207 ostenia ?,SELECT DISTINCT var_uri where brack_open dbr_1207_Ostenia dbo_discoverer var_uri brack_close
+Who discovered deimos ?,SELECT DISTINCT var_uri where brack_open dbr_Deimos_(moon) dbo_discoverer var_uri brack_close
+Who discovered 1312 vassar ?,SELECT DISTINCT var_uri where brack_open dbr_1312_Vassar dbo_discoverer var_uri brack_close
+Who discovered 2675 tolkien ?,SELECT DISTINCT var_uri where brack_open dbr_2675_Tolkien dbo_discoverer var_uri brack_close
+Who discovered paaliaq ?,SELECT DISTINCT var_uri where brack_open dbr_Paaliaq dbo_discoverer var_uri brack_close
+Who discovered 385446 manwë ?,SELECT DISTINCT var_uri where brack_open dbr_385446_Manwë dbo_discoverer var_uri brack_close
+Who discovered 2201 oljato ?,SELECT DISTINCT var_uri where brack_open dbr_2201_Oljato dbo_discoverer var_uri brack_close
+Who discovered 1244 deira ?,SELECT DISTINCT var_uri where brack_open dbr_1244_Deira dbo_discoverer var_uri brack_close
+Who discovered s/2006 s 1 ?,SELECT DISTINCT var_uri where brack_open dbr_S/2006_S_1 dbo_discoverer var_uri brack_close
+Who discovered 422 berolina ?,SELECT DISTINCT var_uri where brack_open dbr_422_Berolina dbo_discoverer var_uri brack_close
+Who discovered 4118 sveta ?,SELECT DISTINCT var_uri where brack_open dbr_4118_Sveta dbo_discoverer var_uri brack_close
+Who discovered bergelmir ?,SELECT DISTINCT var_uri where brack_open dbr_Bergelmir_(moon) dbo_discoverer var_uri brack_close
+Who discovered 458 hercynia ?,SELECT DISTINCT var_uri where brack_open dbr_458_Hercynia dbo_discoverer var_uri brack_close
+Who discovered 16879 campai ?,SELECT DISTINCT var_uri where brack_open dbr_16879_Campai dbo_discoverer var_uri brack_close
+Who discovered praxidike ?,SELECT DISTINCT var_uri where brack_open dbr_Praxidike_(moon) dbo_discoverer var_uri brack_close
+Who discovered 2012 fc71 ?,SELECT DISTINCT var_uri where brack_open dbr_2012_FC71 dbo_discoverer var_uri brack_close
+Who discovered 2016 cp31 ?,SELECT DISTINCT var_uri where brack_open dbr_2016_CP31 dbo_discoverer var_uri brack_close
+Who discovered jupiter lxviii ?,SELECT DISTINCT var_uri where brack_open dbr_Jupiter_LXVIII dbo_discoverer var_uri brack_close
+Who discovered 1135 colchis ?,SELECT DISTINCT var_uri where brack_open dbr_1135_Colchis dbo_discoverer var_uri brack_close
+Who discovered 890 waltraut ?,SELECT DISTINCT var_uri where brack_open dbr_890_Waltraut dbo_discoverer var_uri brack_close
+Who discovered 993 moultona ?,SELECT DISTINCT var_uri where brack_open dbr_993_Moultona dbo_discoverer var_uri brack_close
+Who discovered 2005 rm43 ?,SELECT DISTINCT var_uri where brack_open dbr_(145451) _2005_RM43 dbo_discoverer var_uri brack_close
+Who discovered 2067 aksnes ?,SELECT DISTINCT var_uri where brack_open dbr_2067_Aksnes dbo_discoverer var_uri brack_close
+Who discovered 2903 zhuhai ?,SELECT DISTINCT var_uri where brack_open dbr_2903_Zhuhai dbo_discoverer var_uri brack_close
+Who discovered 485 genua ?,SELECT DISTINCT var_uri where brack_open dbr_485_Genua dbo_discoverer var_uri brack_close
+Who discovered 366 vincentina ?,SELECT DISTINCT var_uri where brack_open dbr_366_Vincentina dbo_discoverer var_uri brack_close
+Who discovered 212 medea ?,SELECT DISTINCT var_uri where brack_open dbr_212_Medea dbo_discoverer var_uri brack_close
+Who discovered 2127 tanya ?,SELECT DISTINCT var_uri where brack_open dbr_2127_Tanya dbo_discoverer var_uri brack_close
+Who discovered 9936 al-biruni ?,SELECT DISTINCT var_uri where brack_open dbr_9936_Al-Biruni dbo_discoverer var_uri brack_close
+Who discovered 4388 jürgenstock ?,SELECT DISTINCT var_uri where brack_open dbr_4388_Jürgenstock dbo_discoverer var_uri brack_close
+Who discovered 138 tolosa ?,SELECT DISTINCT var_uri where brack_open dbr_138_Tolosa dbo_discoverer var_uri brack_close
+Who discovered 471 papagena ?,SELECT DISTINCT var_uri where brack_open dbr_471_Papagena dbo_discoverer var_uri brack_close
+Who discovered 1567 alikoski ?,SELECT DISTINCT var_uri where brack_open dbr_1567_Alikoski dbo_discoverer var_uri brack_close
+Who discovered desdemona ?,SELECT DISTINCT var_uri where brack_open dbr_Desdemona_(moon) dbo_discoverer var_uri brack_close
+Who discovered 16560 daitor ?,SELECT DISTINCT var_uri where brack_open dbr_16560_Daitor dbo_discoverer var_uri brack_close
+Who discovered 235 carolina ?,SELECT DISTINCT var_uri where brack_open dbr_235_Carolina dbo_discoverer var_uri brack_close
+Who discovered 1089 tama ?,SELECT DISTINCT var_uri where brack_open dbr_1089_Tama dbo_discoverer var_uri brack_close
+Who discovered 3199 nefertiti ?,SELECT DISTINCT var_uri where brack_open dbr_3199_Nefertiti dbo_discoverer var_uri brack_close
+Who discovered 873 mechthild ?,SELECT DISTINCT var_uri where brack_open dbr_873_Mechthild dbo_discoverer var_uri brack_close
+Who discovered 6980 kyusakamoto ?,SELECT DISTINCT var_uri where brack_open dbr_6980_Kyusakamoto dbo_discoverer var_uri brack_close
+Who discovered 2008 af4 ?,SELECT DISTINCT var_uri where brack_open dbr_(332446) _2008_AF4 dbo_discoverer var_uri brack_close
+Who discovered 1216 askania ?,SELECT DISTINCT var_uri where brack_open dbr_1216_Askania dbo_discoverer var_uri brack_close
+Who discovered hd 73256 b ?,SELECT DISTINCT var_uri where brack_open dbr_HD_73256_b dbo_discoverer var_uri brack_close
+Who discovered 16525 shumarinaiko ?,SELECT DISTINCT var_uri where brack_open dbr_16525_Shumarinaiko dbo_discoverer var_uri brack_close
+Who discovered 3070 aitken ?,SELECT DISTINCT var_uri where brack_open dbr_3070_Aitken dbo_discoverer var_uri brack_close
+Who discovered 874 rotraut ?,SELECT DISTINCT var_uri where brack_open dbr_874_Rotraut dbo_discoverer var_uri brack_close
+Who discovered 2296 kugultinov ?,SELECT DISTINCT var_uri where brack_open dbr_2296_Kugultinov dbo_discoverer var_uri brack_close
+Who discovered hd 40307 f ?,SELECT DISTINCT var_uri where brack_open dbr_HD_40307_f dbo_discoverer var_uri brack_close
+Who discovered 2017 vl2 ?,SELECT DISTINCT var_uri where brack_open dbr_2017_VL2 dbo_discoverer var_uri brack_close
+Who discovered 613 ginevra ?,SELECT DISTINCT var_uri where brack_open dbr_613_Ginevra dbo_discoverer var_uri brack_close
+Who discovered 378 holmia ?,SELECT DISTINCT var_uri where brack_open dbr_378_Holmia dbo_discoverer var_uri brack_close
+Who discovered 539 pamina ?,SELECT DISTINCT var_uri where brack_open dbr_539_Pamina dbo_discoverer var_uri brack_close
+Who discovered 925 alphonsina ?,SELECT DISTINCT var_uri where brack_open dbr_925_Alphonsina dbo_discoverer var_uri brack_close
+Who discovered 1900 katyusha ?,SELECT DISTINCT var_uri where brack_open dbr_1900_Katyusha dbo_discoverer var_uri brack_close
+Who discovered 3 juno ?,SELECT DISTINCT var_uri where brack_open dbr_3_Juno dbo_discoverer var_uri brack_close
+Who discovered 19 fortuna ?,SELECT DISTINCT var_uri where brack_open dbr_19_Fortuna dbo_discoverer var_uri brack_close
+Who discovered 575 renate ?,SELECT DISTINCT var_uri where brack_open dbr_575_Renate dbo_discoverer var_uri brack_close
+Who discovered 2017 wesson ?,SELECT DISTINCT var_uri where brack_open dbr_2017_Wesson dbo_discoverer var_uri brack_close
+Who discovered 120 lachesis ?,SELECT DISTINCT var_uri where brack_open dbr_120_Lachesis dbo_discoverer var_uri brack_close
+Who discovered 11277 ballard ?,SELECT DISTINCT var_uri where brack_open dbr_11277_Ballard dbo_discoverer var_uri brack_close
+Who discovered 1853 mcelroy ?,SELECT DISTINCT var_uri where brack_open dbr_1853_McElroy dbo_discoverer var_uri brack_close
+Who discovered 2212 hephaistos ?,SELECT DISTINCT var_uri where brack_open dbr_2212_Hephaistos dbo_discoverer var_uri brack_close
+Who discovered 1206 numerowia ?,SELECT DISTINCT var_uri where brack_open dbr_1206_Numerowia dbo_discoverer var_uri brack_close
+Who discovered 11573 helmholtz ?,SELECT DISTINCT var_uri where brack_open dbr_11573_Helmholtz dbo_discoverer var_uri brack_close
+Who discovered 2013 ut15 ?,SELECT DISTINCT var_uri where brack_open dbr_(505478) _2013_UT15 dbo_discoverer var_uri brack_close
+Who discovered 2019 aq3 ?,SELECT DISTINCT var_uri where brack_open dbr_2019_AQ3 dbo_discoverer var_uri brack_close
+Who discovered 3669 vertinskij ?,SELECT DISTINCT var_uri where brack_open dbr_3669_Vertinskij dbo_discoverer var_uri brack_close
+Who discovered 2020 sl1 ?,SELECT DISTINCT var_uri where brack_open dbr_2020_SL1 dbo_discoverer var_uri brack_close
+Who discovered neptune ?,SELECT DISTINCT var_uri where brack_open dbr_Neptune dbo_discoverer var_uri brack_close
+Who discovered 776 berbericia ?,SELECT DISTINCT var_uri where brack_open dbr_776_Berbericia dbo_discoverer var_uri brack_close
+Who discovered 2014 fz71 ?,SELECT DISTINCT var_uri where brack_open dbr_2014_FZ71 dbo_discoverer var_uri brack_close
+Who discovered 1991 aq ?,SELECT DISTINCT var_uri where brack_open dbr_(85182) _1991_AQ dbo_discoverer var_uri brack_close
+Who discovered 3893 delaeter ?,SELECT DISTINCT var_uri where brack_open dbr_3893_DeLaeter dbo_discoverer var_uri brack_close
+Who discovered 183 istria ?,SELECT DISTINCT var_uri where brack_open dbr_183_Istria dbo_discoverer var_uri brack_close
+Who discovered 1202 marina ?,SELECT DISTINCT var_uri where brack_open dbr_1202_Marina dbo_discoverer var_uri brack_close
+Who discovered hd 17156 b ?,SELECT DISTINCT var_uri where brack_open dbr_HD_17156_b dbo_discoverer var_uri brack_close
+Who discovered 95 arethusa ?,SELECT DISTINCT var_uri where brack_open dbr_95_Arethusa dbo_discoverer var_uri brack_close
+Who discovered 4833 meges ?,SELECT DISTINCT var_uri where brack_open dbr_4833_Meges dbo_discoverer var_uri brack_close
+Who discovered 3709 polypoites ?,SELECT DISTINCT var_uri where brack_open dbr_3709_Polypoites dbo_discoverer var_uri brack_close
+Who discovered 1011 laodamia ?,SELECT DISTINCT var_uri where brack_open dbr_1011_Laodamia dbo_discoverer var_uri brack_close
+Who discovered 5026 martes ?,SELECT DISTINCT var_uri where brack_open dbr_5026_Martes dbo_discoverer var_uri brack_close
+Who discovered 14335 alexosipov ?,SELECT DISTINCT var_uri where brack_open dbr_14335_Alexosipov dbo_discoverer var_uri brack_close
+Who discovered 945 barcelona ?,SELECT DISTINCT var_uri where brack_open dbr_945_Barcelona dbo_discoverer var_uri brack_close
+Who discovered 1864 daedalus ?,SELECT DISTINCT var_uri where brack_open dbr_1864_Daedalus dbo_discoverer var_uri brack_close
+Who discovered 5012 eurymedon ?,SELECT DISTINCT var_uri where brack_open dbr_5012_Eurymedon dbo_discoverer var_uri brack_close
+Who discovered 596 scheila ?,SELECT DISTINCT var_uri where brack_open dbr_596_Scheila dbo_discoverer var_uri brack_close
+Who discovered 205 martha ?,SELECT DISTINCT var_uri where brack_open dbr_205_Martha dbo_discoverer var_uri brack_close
+Who discovered 2019 be5 ?,SELECT DISTINCT var_uri where brack_open dbr_2019_BE5 dbo_discoverer var_uri brack_close
+Who discovered 868 lova ?,SELECT DISTINCT var_uri where brack_open dbr_868_Lova dbo_discoverer var_uri brack_close
+Who discovered 1835 gajdariya ?,SELECT DISTINCT var_uri where brack_open dbr_1835_Gajdariya dbo_discoverer var_uri brack_close
+Who discovered 148 gallia ?,SELECT DISTINCT var_uri where brack_open dbr_148_Gallia dbo_discoverer var_uri brack_close
+Who discovered 2019 van albada ?,SELECT DISTINCT var_uri where brack_open dbr_2019_van_Albada dbo_discoverer var_uri brack_close
+Who discovered 158 koronis ?,SELECT DISTINCT var_uri where brack_open dbr_158_Koronis dbo_discoverer var_uri brack_close
+Who discovered 4789 sprattia ?,SELECT DISTINCT var_uri where brack_open dbr_4789_Sprattia dbo_discoverer var_uri brack_close
