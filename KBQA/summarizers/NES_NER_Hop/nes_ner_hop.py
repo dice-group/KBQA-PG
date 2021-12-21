@@ -82,7 +82,10 @@ def hop_dbpedia_subgraph(entities: List[URIRef], *, limit: int = -1) -> Graph:
     for entity in entities:
         # This is only querying the service endpoint and not subgraph.
         subgraph_entity = subgraph.query(query, initBindings={"s": entity})
+        subgraph_entity_inverse = subgraph.query(query, initBindings={"o": entity})
         for triple in subgraph_entity:
+            subgraph.add(triple)
+        for triple in subgraph_entity_inverse:
             subgraph.add(triple)
     return subgraph
 

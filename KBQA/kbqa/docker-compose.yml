@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  website_server:
+    build: ./website_server
+    container_name: website_server
+    restart: always
+    expose:
+      - 24803
+
+  approach_a:
+    build: ./appA
+    container_name: approach_a
+    restart: always
+    expose:
+      - 24801
+
+  approach_b:
+    build: ./appB
+    container_name: approach_b
+    restart: always
+    expose:
+      - 24802
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
