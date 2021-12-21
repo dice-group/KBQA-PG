@@ -22,6 +22,13 @@ services:
     expose:
       - 24802
 
+  gerbil:
+    build: ./gerbil
+    container_name: gerbil
+    restart: always
+    expose:
+      - 24804
+
   nginx:
     build: ./nginx
     container_name: nginx

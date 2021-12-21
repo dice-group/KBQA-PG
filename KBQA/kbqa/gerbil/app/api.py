@@ -1,6 +1,5 @@
-from app.main import main
 from flask import Flask
-from flask import request
+from werkzeug.utils import send_from_directory
 
 
 application = Flask(__name__)
@@ -8,19 +7,9 @@ application = Flask(__name__)
 
 @application.route("/gerbil/", methods=["GET", "POST"])
 def endpoint():
+    """Endpoint to serve GERBIL results
 
-    if request.method == "POST":
-        query = request.form["query"]
-
-        # check, whether the language parameter is set
-        if "lang" in request.form.keys():
-            lang = request.form["lang"]
-
-            answer = main(query, lang)
-        else:
-            answer = main(query)
-
-        return answer
-
-    # TODO also allow GET-requests
-    return "<h1>This is the endpoint of approach A. There is nothing to see here</h1>"
+    :return: GERBIL results
+    :rtype: Response
+    """
+    return send_from_directory("experiments", "latest.html")

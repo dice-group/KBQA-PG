@@ -1,5 +1,6 @@
 flask
 requests
+uwsgi
 
 lxml
 html5lib
