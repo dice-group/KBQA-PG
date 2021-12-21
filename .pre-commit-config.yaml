@@ -16,7 +16,8 @@ repos:
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
-        additional_dependencies: [rdflib==6.0.2, requests==2.26.0]
+        additional_dependencies:
+          [rdflib==6.0.2, requests==2.26.0, flask==2.0.2, numpy==1.21.3]
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
     hooks:
