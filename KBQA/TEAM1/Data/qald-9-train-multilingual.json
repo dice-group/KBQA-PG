@@ -193,7 +193,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?uri WHERE { res:Skype dbo:developer ?uri. }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?uri WHERE { res:Skype dbo:author ?uri. }"
       },
       "answers": [
         {
@@ -205,13 +205,13 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Microsoft"
+                  "value": "http://dbpedia.org/resource/Priit_Kasesalu"
                 }
               },
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Skype_Technologies"
+                  "value": "http://dbpedia.org/resource/Jaan_Tallinn"
                 }
               }
             ]
@@ -283,7 +283,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX yago: <http://dbpedia.org/class/yago/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX onto: <http://dbpedia.org/ontology/> SELECT DISTINCT ?uri WHERE { ?uri rdf:type onto:Person ; onto:birthPlace <http://dbpedia.org/resource/Heraklion>. }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?uri WHERE {  ?uri dbo:birthPlace  <http://dbpedia.org/resource/Heraklion>. }"
       },
       "answers": [
         {
@@ -943,7 +943,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?uri WHERE { res:Area_51 dbo:location ?uri . ?uri dbo:country res:United_States. }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX class: <http://dbpedia.org/resource/classes#> SELECT DISTINCT ?uri WHERE { res:Area_51 dbp:nearestTown ?uri . } LIMIT 1"
       },
       "answers": [
         {
@@ -956,12 +956,6 @@
                 "uri": {
                   "type": "uri",
                   "value": "http://dbpedia.org/resource/Nevada"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Lincoln_County,_Nevada"
                 }
               }
             ]
@@ -1033,7 +1027,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:New_York_City dbo:leaderName ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX class: <http://dbpedia.org/resource/classes#> SELECT DISTINCT ?uri WHERE { res:New_York_City dbp:leaderName ?uri }"
       },
       "answers": [
         {
@@ -1723,7 +1717,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Philippines dbo:officialLanguage ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Languages_of_the_Philippines dbp:official ?uri }"
       },
       "answers": [
         {
@@ -1734,14 +1728,8 @@
             "bindings": [
               {
                 "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Philippine_English"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Filipino_language"
+                  "type": "literal",
+                  "value": "Filipino, English"
                 }
               }
             ]
@@ -2779,19 +2767,19 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri rdf:type dbo:Weapon ; dbp:designer ?x . res:Uzi dbp:designer ?x FILTER ( ?uri != res:Uzi ) }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?weapon WHERE {res:Uzi dbp:designer ?x .?x dbp:knownFor ?weapon}"
       },
       "answers": [
         {
           "head": {
-            "vars": ["uri"]
+            "vars": ["string"]
           },
           "results": {
             "bindings": [
               {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Minebea_PM-9"
+                "string": {
+                  "type": "string",
+                  "value": "Designing the Uzi submachine gun"
                 }
               }
             ]
@@ -2863,7 +2851,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Universal_Studios dbo:owner ?uri }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Universal_Pictures dbo:parentCompany ?uri }"
       },
       "answers": [
         {
@@ -2875,7 +2863,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Comcast"
+                  "value": "http://dbpedia.org/resource/NBCUniversal"
                 }
               }
             ]
@@ -2947,7 +2935,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX yago: <http://dbpedia.org/class/yago/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri rdf:type yago:WikicatStatesOfTheUnitedStates ; dbp:densityrank ?rank } ORDER BY ASC(?rank) LIMIT 1"
+        "sparql": "PREFIX yago: <http://dbpedia.org/class/yago/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri rdf:type yago:WikicatStatesOfTheUnitedStates ; dbp:populationDensityRank ?rank } ORDER BY ASC(?rank) LIMIT 1"
       },
       "answers": [
         {
@@ -6907,7 +6895,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX yago: <http://dbpedia.org/class/yago/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?uri WHERE { ?uri dbp:densityrank ?density } ORDER BY ASC(?density) LIMIT 1"
+        "sparql": "PREFIX yago: <http://dbpedia.org/class/yago/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri rdf:type yago:WikicatStatesOfTheUnitedStates ; dbp:populationDensityRank ?rank } ORDER BY ASC(?rank) LIMIT 1"
       },
       "answers": [
         {
@@ -7945,7 +7933,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Ingrid_Bergman dbo:child ?child . ?child <http://dbpedia.org/property/spouse> ?uri }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE  { res:Ingrid_Bergman dbo:child ?child . ?child <http://dbpedia.org/property/spouse> ?uri  FILTER(lang(?uri)='en')}"
       },
       "answers": [
         {
@@ -9040,7 +9028,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri <http://dbpedia.org/ontology/team> <http://dbpedia.org/resource/Atlanta_Falcons> ; <http://dbpedia.org/ontology/height> ?h } ORDER BY DESC(?h) OFFSET 0 LIMIT 1"
+        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri <http://dbpedia.org/ontology/team> <http://dbpedia.org/resource/Atlanta_Falcons> ; <http://dbpedia.org/property/heightFt> ?h } ORDER BY DESC(?h) OFFSET 0 LIMIT 1"
       },
       "answers": [
         {
@@ -9052,7 +9040,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Matt_Schaub"
+                  "value": "http://dbpedia.org/resource/Ben_Bennett"
                 }
               }
             ]
@@ -39080,7 +39068,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Myocardial_infarction"
+                  "value": "http://dbpedia.org/resource/Suicide"
                 }
               }
             ]
@@ -39149,25 +39137,25 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Frank_Jackson_(basketball)"
+                  "value": "http://dbpedia.org/resource/Chris_Livingston"
                 }
               },
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Džanan_Musa"
+                  "value": "http://dbpedia.org/resource/Nikola_Jovi\u0107"
                 }
               },
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Markelle_Fultz"
+                  "value": "http://dbpedia.org/resource/Jeremy_Sochan"
                 }
               },
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Boriša_Simanić"
+                  "value": "http://dbpedia.org/resource/Roko_Prka\u010Din"
                 }
               }
             ]
@@ -40151,7 +40139,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Himalayas> <http://dbpedia.org/ontology/country> ?country . ?country <http://dbpedia.org/ontology/capital> ?uri }"
+        "sparql": "SELECT DISTINCT ?uri  WHERE {   <http://dbpedia.org/resource/Himalayas> <http://dbpedia.org/ontology/wikiPageWikiLink> ?v  .<http://dbpedia.org/resource/Great_Himalaya_Trail>  <http://dbpedia.org/property/location> ?v.  ?v <http://dbpedia.org/ontology/capital> ?uri}"
       },
       "answers": [
         {
@@ -40163,7 +40151,25 @@
               {
                 "uri": {
                   "type": "uri",
+                  "value": "http://dbpedia.org/resource/Kathmandu"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
                   "value": "http://dbpedia.org/resource/Thimphu"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/New_Delhi"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Islamabad"
                 }
               }
             ]
@@ -41309,7 +41315,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?num WHERE { <http://dbpedia.org/resource/Maribor> <http://dbpedia.org/ontology/populationTotal> ?num }"
+        "sparql": "SELECT DISTINCT ?num WHERE { <http://dbpedia.org/resource/Maribor> <http://dbpedia.org/property/populationUrban> ?num }"
       },
       "answers": [
         {
@@ -41321,7 +41327,7 @@
               {
                 "c": {
                   "type": "literal",
-                  "value": "95881"
+                  "value": "96211"
                 }
               }
             ]
@@ -48262,139 +48268,19 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Museum> ; <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/Paris> }"
+        "sparql": "SELECT DISTINCT (count(?uri) as ?count) WHERE { ?uri a <http://dbpedia.org/ontology/Museum> ; <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/Paris> }"
       },
       "answers": [
         {
           "head": {
-            "vars": ["uri"]
+            "vars": ["literal"]
           },
           "results": {
             "bindings": [
               {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_de_l'Homme"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Mémorial_de_la_Shoah"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_national_Gustave_Moreau"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Cent_Quatre"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Grand_Palais"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Free_Art_and_Technology_Lab"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Jardin_des_Plantes"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_d'Art_Moderne_de_la_Ville_de_Paris"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_d’histoire_de_la_médecine"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Bridgeman_Art_Library"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_des_Arts_Forains"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Carnavalet_Museum"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_Marmottan_Monet"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/National_Museum_of_Natural_History_(France)"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Galerie_de_paléontologie_et_d'anatomie_comparée"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_du_Luxembourg"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_du_Vin"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Musée_Rodin"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Paris_Sewer_Museum"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Cité_de_l'économie_et_de_la_monnaie"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Carpenters_Workshop_Gallery"
+                "literal": {
+                  "type": "literal",
+                  "value": "30"
                 }
               }
             ]
@@ -48556,7 +48442,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Person> { ?uri <http://dbpedia.org/ontology/office> \"Chancellor of Germany\" } UNION { ?uri <http://dbpedia.org/property/office> <http://dbpedia.org/resource/Chancellor_of_Germany> } }"
+        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Person> ; <http://dbpedia.org/property/office> <http://dbpedia.org/resource/Chancellor_of_Germany> }"
       },
       "answers": [
         {
@@ -48781,7 +48667,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri <http://dbpedia.org/property/type> <http://dbpedia.org/resource/Beer> ; <http://dbpedia.org/ontology/origin> <http://dbpedia.org/resource/Beer_in_Ireland> }"
+        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri  <http://dbpedia.org/ontology/origin> <http://dbpedia.org/resource/Republic_of_Ireland> }"
       },
       "answers": [
         {
@@ -48790,6 +48676,54 @@
           },
           "results": {
             "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Guinness"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Galway_Hooker_(brewery)"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Caffrey's_Irish_Ale"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Tanora"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Sheridan's"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Kerrygold_Irish_Cream_Liqueur"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Guinness"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Guinness"
+                }
+              },
               {
                 "uri": {
                   "type": "uri",
@@ -48865,7 +48799,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Himalayas> <http://dbpedia.org/ontology/country> ?uri }"
+        "sparql": "SELECT DISTINCT ?uri WHERE {   <http://dbpedia.org/resource/Himalayas> <http://dbpedia.org/ontology/wikiPageWikiLink> ?uri  .<http://dbpedia.org/resource/Great_Himalaya_Trail>  <http://dbpedia.org/property/location> ?uri }"
       },
       "answers": [
         {
@@ -48878,6 +48812,30 @@
                 "uri": {
                   "type": "uri",
                   "value": "http://dbpedia.org/resource/Bhutan"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/India"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Pakistan"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Tibet"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Nepal"
                 }
               }
             ]
@@ -49356,57 +49314,57 @@
       "question": [
         {
           "language": "de",
-          "string": "Wieviele Angestellte hat Google?",
+          "string": "Wie viele Mitarbeiter von Google sind bei DBpedia?",
           "keywords": "Google, Angestellte"
         },
         {
           "language": "ru",
-          "string": "Как многие сотрудников делает Google иметь? ",
+          "string": "Сколько сотрудников Google на DBpedia?",
           "keywords": "Google ,  сотрудников "
         },
         {
           "language": "pt",
-          "string": "Como muitos funcionários faz Google ter? ",
+          "string": "Quantos funcionários do google estão na DBpedia? ",
           "keywords": "Google ,  funcionários "
         },
         {
           "language": "en",
-          "string": "How many employees does Google have?",
+          "string": "How many employees of google are on DBpedia?",
           "keywords": "Google, employees"
         },
         {
           "language": "hi_IN",
-          "string": " गूगल के कितने कर्मचारी हैं?",
+          "string": " डीबीपीडिया पर गूगल के कितने कर्मचारी हैं?",
           "keywords": "गूगल ,  कर्मचारियों "
         },
         {
           "language": "fa",
-          "string": "گوگل چه تعداد کارمند دارد؟",
+          "string": "چند کارمند گوگل در DBpedia هستند؟",
           "keywords": "گوگل، کارمند"
         },
         {
           "language": "it",
-          "string": "Quanti dipendenti ha Google?",
+          "string": "Quanti dipendenti di google ci sono su DBpedia?",
           "keywords": "Google, dipendenti"
         },
         {
           "language": "fr",
-          "string": "Combien d'employés a Google?",
+          "string": "Combien d'employés de google sont sur DBpedia ?",
           "keywords": "Nombre d'employés, Google"
         },
         {
           "language": "ro",
-          "string": "Câți angajați are Google?",
+          "string": "Câți angajați ai Google sunt pe DBpedia?",
           "keywords": "Google, angajați"
         },
         {
           "language": "es",
-          "string": "¿Cuántos empleados tiene Google?",
+          "string": "¿Cuántas empleadas de google hay en DBpedia?",
           "keywords": "Google, empleados"
         },
         {
           "language": "nl",
-          "string": "Hoeveel werknemers heeft Google?",
+          "string": "Hoeveel medewerkers van google zijn er op DBpedia?",
           "keywords": "werknemers, Google"
         }
       ],
@@ -50395,19 +50353,19 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Juliana_of_the_Netherlands> <http://dbpedia.org/property/burialPlace> ?uri . ?uri a <http://dbpedia.org/ontology/Settlement> }"
+        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Juliana_of_the_Netherlands> <http://dbpedia.org/property/burialPlace> ?uri  . }"
       },
       "answers": [
         {
           "head": {
-            "vars": ["uri"]
+            "vars": ["literal"]
           },
           "results": {
             "bindings": [
               {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Delft"
+                "literal": {
+                  "type": "literal",
+                  "value": "Nieuwe Kerk, Delft, Netherlands"
                 }
               }
             ]
@@ -50605,7 +50563,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT (COUNT(DISTINCT ?uri) AS ?c) WHERE { ?uri a <http://dbpedia.org/ontology/Company> { ?uri <http://dbpedia.org/ontology/industry> <http://dbpedia.org/resource/Advertising> } UNION { ?uri <http://dbpedia.org/ontology/industry> ?industry FILTER regex(?industry, \"advertising\", \"i\") } }"
+        "sparql": "SELECT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Company> { ?uri <http://dbpedia.org/ontology/industry> <http://dbpedia.org/resource/Advertising> } UNION { ?uri <http://dbpedia.org/ontology/industry> ?industry FILTER regex(?industry, \"advertising\", \"i\") } }"
       },
       "answers": [
         {
@@ -50617,7 +50575,7 @@
               {
                 "c": {
                   "type": "literal",
-                  "value": "307"
+                  "value": "538"
                 }
               }
             ]
@@ -50773,7 +50731,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Person> ; <http://dbpedia.org/property/conviction> <http://dbpedia.org/resource/Death_of_John_Lennon> }"
+        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri  <http://dbpedia.org/property/conviction> <http://dbpedia.org/resource/Murder_of_John_Lennon> }"
       },
       "answers": [
         {
@@ -51211,7 +51169,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Country> { ?uri <http://dbpedia.org/ontology/currency> <http://dbpedia.org/resource/Euro> } UNION { ?uri <http://dbpedia.org/property/currencyCode> \"EUR\"@en } }"
+        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Country> ; <http://dbpedia.org/ontology/currency> <http://dbpedia.org/resource/Euro> }"
       },
       "answers": [
         {
@@ -52257,7 +52215,7 @@
         }
       ],
       "query": {
-        "sparql": "ASK WHERE { <http://dbpedia.org/resource/Margaret_Thatcher> <http://dbpedia.org/ontology/profession> <http://dbpedia.org/resource/Chemist> }"
+        "sparql": "ASK WHERE { <http://dbpedia.org/resource/Margaret_Thatcher> <http://dbpedia.org/ontology/occupation> <http://dbpedia.org/resource/Chemist> }"
       },
       "answers": [
         {
@@ -55457,7 +55415,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Software> . ?company a <http://dbpedia.org/ontology/Company> . ?uri <http://dbpedia.org/ontology/developer> ?company . ?company <http://dbpedia.org/ontology/foundationPlace> <http://dbpedia.org/resource/California> }"
+        "sparql": " SELECT DISTINCT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Software> . ?company a <http://dbpedia.org/ontology/Company> .  ?company <http://dbpedia.org/ontology/foundationPlace> <http://dbpedia.org/resource/California> }"
       },
       "answers": [
         {
@@ -56843,18 +56801,6 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Baldwin_Piano_Company"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Gibson_ES-335"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
                   "value": "http://dbpedia.org/resource/Mandolin"
                 }
               },
@@ -56862,42 +56808,6 @@
                 "uri": {
                   "type": "uri",
                   "value": "http://dbpedia.org/resource/Mellotron"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Epiphone_Casino"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Fender_Telecaster"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Gibson_Everly_Brothers_Flattop"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Rhodes_piano"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Gibson_J-200"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Ovation_Guitar_Company"
                 }
               }
             ]
@@ -57053,7 +56963,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX foaf:<http://xmlns.com/foaf/0.1/> SELECT DISTINCT ?uri WHERE { ?uri foaf:surname 'Baldwin'@en . { ?uri <http://dbpedia.org/ontology/occupation> <http://dbpedia.org/resource/Actor> . } UNION { ?uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Actor> . } }"
+        "sparql": "SELECT DISTINCT ?uri WHERE {  ?uri  <http://dbpedia.org/ontology/occupation> <http://dbpedia.org/resource/Actor> FILTER regex(?uri, \"Baldwin\") }"
       },
       "answers": [
         {
@@ -57077,19 +56987,13 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Talon_(actor)"
+                  "value": "http://dbpedia.org/resource/A._Michael_Baldwin"
                 }
               },
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Greg_Baldwin"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Robert_Baldwin_(actor)"
+                  "value": "http://dbpedia.org/resource/Lise_Baldwin"
                 }
               }
             ]
@@ -57345,7 +57249,7 @@
         {
           "head": {},
           "results": {},
-          "boolean": false
+          "boolean": true
         }
       ]
     },
@@ -58259,7 +58163,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?date WHERE { <http://dbpedia.org/resource/Latvia> <http://dbpedia.org/property/accessioneudate> ?date }"
+        "sparql": "SELECT DISTINCT ?date WHERE { <http://dbpedia.org/resource/Latvia> <http://dbpedia.org/property/establishedDate> ?date } ORDER BY DESC(?date) LIMIT 1"
       },
       "answers": [
         {
@@ -59381,19 +59285,55 @@
         }
       ],
       "query": {
-        "sparql": "SELECT (COUNT(DISTINCT ?uri) AS ?c) WHERE { ?uri a <http://dbpedia.org/ontology/Organisation> { ?uri <http://dbpedia.org/ontology/industry> <http://dbpedia.org/resource/Telecommunication> } UNION { ?uri <http://dbpedia.org/property/industry> ?industry FILTER regex(?industry, \"Telecommunications\") } { ?uri <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/Belgium> } UNION { ?uri <http://dbpedia.org/property/locationCountry> \"Belgium\"@en } }"
+        "sparql": "SELECT ?uri WHERE { ?uri a <http://dbpedia.org/ontology/Organisation> { ?uri <http://dbpedia.org/ontology/industry> <http://dbpedia.org/resource/Telecommunication> } UNION { ?uri <http://dbpedia.org/property/industry> ?industry FILTER regex(?industry, \"Telecommunications\") } { ?uri <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/Belgium> } UNION { ?uri <http://dbpedia.org/property/locationCountry> \"Belgium\"@en } }"
       },
       "answers": [
         {
           "head": {
-            "vars": ["c"]
+            "vars": ["uri"]
           },
           "results": {
             "bindings": [
               {
-                "c": {
-                  "type": "literal",
-                  "value": "7"
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Broadnet_Holdings_BV"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Telenet_(Belgium)"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Base_(mobile_telephony_provider)"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Orange_Belgium"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Option_N.V."
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Scarlet_(company)"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Proximus_Group"
                 }
               }
             ]
@@ -59843,7 +59783,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Real_Madrid_C.F.> <http://dbpedia.org/ontology/manager> ?uri }"
+        "sparql": "SELECT DISTINCT ?uri WHERE {  ?uri  <http://dbpedia.org/property/currentclub> <http://dbpedia.org/resource/Real_Madrid_CF> ; <http://dbpedia.org/ontology/managerClub> <http://dbpedia.org/resource/Real_Madrid_CF>} LIMIT 1"
       },
       "answers": [
         {
@@ -59855,7 +59795,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Zinedine_Zidane"
+                  "value": "http://dbpedia.org/resource/Carlo_Ancelotti"
                 }
               }
             ]
@@ -75920,7 +75860,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Lisbon> <http://dbpedia.org/property/leaderParty> ?uri }"
+        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Lisbon> <http://dbpedia.org/ontology/politicalLeader> ?uri }"
       },
       "answers": [
         {
@@ -75932,7 +75872,13 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Socialist_Party_(Portugal)"
+                  "value": "http://dbpedia.org/resource/Lisbon__PoliticalFunction__1"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Lisbon__PoliticalFunction__2"
                 }
               }
             ]
@@ -76172,7 +76118,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { ?uri dbo:series res:The_Sopranos ; dbo:seasonNumber 1 }"
+        "sparql": "SELECT  ?uri WHERE { ?uri <https://dbpedia.org/resource/The_Sopranos_(season_1)>   <http://dbpedia.org/ontology/numberOfEpisodes>  }"
       },
       "answers": [
         {
@@ -81539,43 +81485,19 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Facebook> <http://dbpedia.org/ontology/foundedBy> ?uri }"
+        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Facebook,_Inc.> <http://dbpedia.org/property/owner> ?uri }"
       },
       "answers": [
         {
           "head": {
-            "vars": ["uri"]
+            "vars": ["literal"]
           },
           "results": {
             "bindings": [
               {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Eduardo_Saverin"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Mark_Zuckerberg"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Dustin_Moskovitz"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Andrew_McCollum"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Chris_Hughes"
+                "literal": {
+                  "type": "literal",
+                  "value": "Mark Zuckerberg"
                 }
               }
             ]
@@ -82216,7 +82138,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?string WHERE { ?x <http://dbpedia.org/ontology/musicalArtist> <http://dbpedia.org/resource/Ramones> ; <http://dbpedia.org/ontology/bSide> ?string }"
+        "sparql": "SELECT DISTINCT ?x WHERE { ?x <http://dbpedia.org/ontology/associatedMusicalArtist> <http://dbpedia.org/resource/Ramones>}"
       },
       "answers": [
         {
@@ -88437,7 +88359,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?uri WHERE { ?uri rdf:type dbo:Pope . res:Vatican_Television_Center dbo:foundedBy ?uri }"
+        "sparql": " PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?uri WHERE { ?uri rdf:type dbo:Pope . res:Vatican_Media dbo:foundedBy ?uri }"
       },
       "answers": [
         {
@@ -88605,7 +88527,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { res:Netherlands dbo:leader ?uri . ?uri rdf:type dbo:Royalty }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Netherlands dbp:leaderName ?uri  } LIMIT 1"
       },
       "answers": [
         {
@@ -89737,7 +89659,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Nile dbo:sourceCountry ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Nile dbp:source1Location ?uri }"
       },
       "answers": [
         {
@@ -89748,14 +89670,8 @@
             "bindings": [
               {
                 "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Rwanda"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Ethiopia"
+                  "type": "literal",
+                  "value": "Burundi or Rwanda"
                 }
               }
             ]
@@ -90079,7 +89995,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?area WHERE { dbr:United_Kingdom dbo:areaTotal ?area }"
+        "sparql": " PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?c WHERE { dbr:United_Kingdom dbo:area ?c}"
       },
       "answers": [
         {
@@ -91002,7 +90918,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?ff WHERE { dbr:French_Fifth_Republic dbo:foundingDate ?ff }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?date WHERE { dbr:French_Fifth_Republic dbp:establishedDate ?date }"
       },
       "answers": [
         {
@@ -92335,7 +92251,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { OPTIONAL { res:Frank_Herbert dbo:deathDate ?date } FILTER ( ! bound(?date) ) }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Frank_Herbert dbo:deathDate ?date FILTER ( ! bound(?date) )} "
       },
       "answers": [
         {
@@ -93155,7 +93071,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Weser dbo:city ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Weser dbp:subdivisionName ?uri }"
       },
       "answers": [
         {
@@ -93964,19 +93880,25 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?species WHERE { dbr:Elephant dbp:species ?species }"
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbo: <http://dbpedia.org/ontology/> SELECT ?uri WHERE { ?uri dbo:species  dbr:Elephant }"
       },
       "answers": [
         {
           "head": {
-            "vars": ["string"]
+            "vars": ["uri"]
           },
           "results": {
             "bindings": [
               {
-                "string": {
-                  "type": "literal",
-                  "value": "Proboscidea"
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Horton_the_Elephant"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Tantor"
                 }
               }
             ]
@@ -94584,7 +94506,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri rdf:type dbo:Company ; dbo:industry res:Electronics ; dbo:foundationPlace res:Beijing }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri rdf:type dbo:Company ; dbo:industry res:Electronics ; dbp:foundation res:Beijing }"
       },
       "answers": [
         {
@@ -94668,7 +94590,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:John_F._Kennedy dbo:successor ?uri }"
+        "sparql": "PREFIX dbr: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:John_F._Kennedy dbr:successor ?uri }"
       },
       "answers": [
         {
@@ -95139,7 +95061,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:John_F._Kennedy dbo:vicePresident ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:John_F._Kennedy dbp:vicePresident ?uri }"
       },
       "answers": [
         {
@@ -95223,7 +95145,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Miffy dbo:creator ?x . ?x dbo:nationality ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Miffy dbo:creator ?x . ?x dbp:nationality ?uri }"
       },
       "answers": [
         {
@@ -95234,8 +95156,8 @@
             "bindings": [
               {
                 "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Netherlands"
+                  "type": "literal",
+                  "value": "Dutch"
                 }
               }
             ]
@@ -95307,7 +95229,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Heineken dbo:manufacturer ?x . ?x dbo:locationCity ?uri }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Heineken dbo:manufacturer ?x . ?x dbp:locationCity ?uri }"
       },
       "answers": [
         {
@@ -95926,7 +95848,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Date WHERE { dbr:2018_FIFA_World_Cup dbp:date ?Date } ORDER BY DESC(?Date) LIMIT 1"
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Date WHERE { dbr:2018_FIFA_World_Cup dbp:dates ?Date } OFFSET 1 limit 1"
       },
       "answers": [
         {
@@ -95938,7 +95860,7 @@
               {
                 "date": {
                   "type": "literal",
-                  "value": "2018-07-15"
+                  "value": "--06-14"
                 }
               }
             ]
@@ -96184,7 +96106,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?pIraq WHERE { dbr:Iraq dbo:populationTotal ?pIraq }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?pIraq WHERE { dbr:Iraq dbo:populationDensity ?pIraq }"
       },
       "answers": [
         {
@@ -96196,7 +96118,13 @@
               {
                 "c": {
                   "type": "literal",
-                  "value": "37056169"
+                  "value": "71.0042"
+                }
+              },
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "82.7"
                 }
               }
             ]
@@ -96352,7 +96280,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:French_Polynesia dbo:capital ?x . ?x dbo:mayor ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:French_Polynesia dbp:capital ?x . ?x dbo:mayor ?uri }"
       },
       "answers": [
         {
@@ -97744,7 +97672,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?writers WHERE { dbr:The_Wall dbp:writer ?writers }"
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?writers WHERE { dbr:The_Wall dbp:producer ?writers}"
       },
       "answers": [
         {
@@ -97756,31 +97684,7 @@
               {
                 "string": {
                   "type": "literal",
-                  "value": "Gilmour,"
-                }
-              },
-              {
-                "string": {
-                  "type": "literal",
-                  "value": "Gilmour"
-                }
-              },
-              {
-                "string": {
-                  "type": "literal",
-                  "value": "Waters,"
-                }
-              },
-              {
-                "string": {
-                  "type": "literal",
-                  "value": "Waters, Ezrin"
-                }
-              },
-              {
-                "string": {
-                  "type": "literal",
-                  "value": "Waters"
+                  "value": "* Bob Ezrin\n* David Gilmour\n* James Guthrie\n* Roger Waters"
                 }
               }
             ]
@@ -97852,7 +97756,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Rotterdam dbo:leaderName ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Rotterdam dbp:leaderName ?uri } LIMIT 1"
       },
       "answers": [
         {
@@ -111391,7 +111295,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Che_Guevara dbo:child ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Che_Guevara dbp:children ?uri }"
       },
       "answers": [
         {
@@ -111471,7 +111375,7 @@
         {
           "head": {},
           "results": {},
-          "boolean": false
+          "boolean": true
         }
       ]
     },
@@ -111707,7 +111611,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Sitecore dbo:foundationPlace ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Sitecore dbp:locationCountry ?uri }"
       },
       "answers": [
         {
@@ -111718,8 +111622,8 @@
             "bindings": [
               {
                 "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Denmark"
+                  "type": "literal",
+                  "value": "United States"
                 }
               }
             ]
@@ -113201,7 +113105,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Andrew_Jackson dbo:battle ?battle }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Andrew_Jackson dbp:battles ?battle }"
       },
       "answers": [
         {
@@ -113275,7 +113179,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?date WHERE { res:RMS_Titanic dbo:completionDate ?date }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?date WHERE { res:Titanic dbo:completionDate ?date }"
       },
       "answers": [
         {
@@ -113429,19 +113333,19 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT (COUNT(?uri) AS ?count) WHERE { ?uri dbo:type dbr:States_of_Mexico }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT (COUNT(?uri) AS ?count) WHERE { ?uri dbo:type dbr:List_of_states_of_Mexico }"
       },
       "answers": [
         {
           "head": {
-            "vars": ["c"]
+            "vars": ["count"]
           },
           "results": {
             "bindings": [
               {
-                "c": {
+                "count": {
                   "type": "literal",
-                  "value": "31"
+                  "value": "32"
                 }
               }
             ]
@@ -113513,7 +113417,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri dbo:knownFor res:Manhattan_Project ; rdf:type dbo:Scientist ; dbo:knownFor res:Nobel_Peace_Prize }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri dbo:knownFor res:Manhattan_Project ; rdf:type dbo:Scientist ; dbo:award res:Nobel_Peace_Prize }"
       },
       "answers": [
         {
@@ -113765,7 +113669,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { ?uri dbo:series res:The_Sopranos ; dbo:seasonNumber 1 }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/property/> PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { ?uri dbp:series res:The_Sopranos}"
       },
       "answers": [
         {
@@ -114247,7 +114151,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { <http://dbpedia.org/resource/Prince_William,_Duke_of_Cambridge> dbo:parent ?x . res:Prince_Harry dbo:parent ?x }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> ASK WHERE { <http://dbpedia.org/resource/Prince_William,_Duke_of_Cambridge> dbo:parent ?x . <http://dbpedia.org/resource/Prince_Harry,_Duke_of_Sussex> dbo:parent ?x }"
       },
       "answers": [
         {
@@ -114405,7 +114309,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Breaking_Bad dbo:numberOfEpisodes ?x . res:Game_of_Thrones dbo:numberOfEpisodes ?y FILTER ( ?y > ?x ) }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Breaking_Bad dbo:numberOfEpisodes ?x . res:Game_of_Thrones dbo:numberOfEpisodes ?y FILTER ( ?y < ?x ) }"
       },
       "answers": [
         {
@@ -114479,7 +114383,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { ?uri dbo:influenced res:Vincent_van_Gogh }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { dbr:Vincent_van_Gogh dbo:movement ?uri}"
       },
       "answers": [
         {
@@ -114491,7 +114395,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Anton_Mauve"
+                  "value": "http://dbpedia.org/resource/Post-Impressionism"
                 }
               }
             ]
@@ -114559,7 +114463,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { res:Burj_Khalifa dbo:floorCount ?burj . ?uri rdf:type dbo:Building ; dbo:floorCount ?proj FILTER ( ?proj < ?burj ) } ORDER BY DESC(?proj) LIMIT 1"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/property/> PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { res:Burj_Khalifa dbp:floorCount ?burj . ?uri rdf:type dbo:Building ; dbo:floorCount ?proj FILTER ( ?proj < ?burj ) } ORDER BY DESC(?proj) LIMIT 1"
       },
       "answers": [
         {
@@ -114571,7 +114475,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/102_Incheon_Tower"
+                  "value": "http://dbpedia.org/resource/Marina_Bay_Financial_Centre"
                 }
               }
             ]
@@ -116119,7 +116023,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?uri WHERE { ?uri dbo:restingPlace dbr:Great_Pyramid_of_Giza }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?uri WHERE {?uri dbp:monuments dbr:Great_Pyramid_of_Giza}"
       },
       "answers": [
         {
@@ -116131,13 +116035,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Hetepheres_II"
-                }
-              },
-              {
-                "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Hetepheres_I"
+                  "value": "http://dbpedia.org/resource/Khufu"
                 }
               }
             ]
@@ -116857,7 +116755,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?date WHERE { res:Ming_dynasty dbo:dissolutionDate ?date }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?date WHERE { res:Ming_dynasty dbp:yearEnd ?date }"
       },
       "answers": [
         {
@@ -116869,7 +116767,7 @@
               {
                 "date": {
                   "type": "literal",
-                  "value": "1644-04-25"
+                  "value": "1644"
                 }
               }
             ]
@@ -117277,7 +117175,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Bruce_Carver dbo:deathCause ?uri }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Bruce_Carver dbo:wikiPageWikiLink ?uri } OFFSET 2 LIMIT 1"
       },
       "answers": [
         {
@@ -117361,7 +117259,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Lufthansa dbo:subsidiary ?uri . ?uri dbo:targetAirport res:Dortmund_Airport ; dbo:targetAirport res:Berlin_Tegel_Airport }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/>SELECT DISTINCT ?uri WHERE{  dbr:Lufthansa dbo:subsidiary ?uri.?uri dbo:wikiPageWikiLink dbr:Berlin.?uri dbo:wikiPageWikiLink  dbr:Dortmund_Airport.}"
       },
       "answers": [
         {
@@ -117373,7 +117271,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Germanwings"
+                  "value": "http://dbpedia.org/resource/SunExpress"
                 }
               }
             ]
@@ -117519,7 +117417,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Elvis_Presley dbo:child ?uri }"
+        "sparql": " PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Elvis_Presley dbo:child ?uri }"
       },
       "answers": [
         {
@@ -117667,7 +117565,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?uri WHERE { ?uri rdf:type dbo:City . res:Sylvester_Stallone dbo:residence ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/>  SELECT DISTINCT ?uri WHERE { res:Sylvester_Stallone dbp:birthPlace ?uri}"
       },
       "answers": [
         {
@@ -117678,8 +117576,8 @@
             "bindings": [
               {
                 "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/Beverly_Hills,_California"
+                  "type": "literal",
+                  "value": "New York City, U.S."
                 }
               }
             ]
@@ -118027,7 +117925,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Tel_Aviv dbo:leaderName ?uri }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Tel_Aviv dbp:leaderName ?uri }"
       },
       "answers": [
         {
@@ -118387,7 +118285,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT (COUNT(DISTINCT ?uri) AS ?c) WHERE { ?uri rdf:type dbo:Language . res:Colombia dbo:language ?uri }"
+        "sparql": "SELECT ?uri WHERE { <http://dbpedia.org/resource/Colombia> <http://dbpedia.org/property/recognizedRegionalLanguages> ?uri  }  "
       },
       "answers": [
         {
@@ -118399,7 +118297,7 @@
               {
                 "c": {
                   "type": "literal",
-                  "value": "2"
+                  "value": "68"
                 }
               }
             ]
@@ -118981,7 +118879,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?height WHERE { res:Amazon_Eve dbo:height ?height }"
+        "sparql": " PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?height WHERE { res:Amazon_Eve dbo:abstract ?height FILTER(lang(?height)='en')  } "
       },
       "answers": [
         {
@@ -118993,7 +118891,7 @@
               {
                 "c": {
                   "type": "literal",
-                  "value": "2.02"
+                  "value": "Erika Ervin (born February 23, 1979), known professionally as Amazon Eve, is an American model, fitness trainer, and actress. She has appeared on the cover of Australian magazine Zoo Weekly and played a regular character on American Horror Story: Freak Show and in a small role in American Horror Story: Apocalypse. She stands at 6 feet 8 inches (2.03 m) tall."
                 }
               }
             ]
@@ -119065,7 +118963,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> SELECT DISTINCT ?uri WHERE { ?uri dbo:governmentType <http://dbpedia.org/resource/Borough_(New_York_City)> }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> SELECT DISTINCT ?uri WHERE {  ?uri  dbp:governmentType  <http://dbpedia.org/resource/Boroughs_of_New_York_City> }"
       },
       "answers": [
         {
@@ -119257,7 +119155,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Ganges dbo:sourceCountry ?uri }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Ganges dbp:source ?uri }"
       },
       "answers": [
         {
@@ -119268,8 +119166,8 @@
             "bindings": [
               {
                 "uri": {
-                  "type": "uri",
-                  "value": "http://dbpedia.org/resource/India"
+                  "type": "literal",
+                  "value": "Confluence at Devprayag, Uttarakhand of the Alaknanda river  and the Bhagirathi river .  The headwaters of the river include: Mandakini, Nandakini, Pindar and the Dhauliganga, all tributaries of the Alaknanda."
                 }
               }
             ]
@@ -119509,7 +119407,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Eritrea dbo:leader ?uri ; dbo:leaderTitle \"President\"@en }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { res:Eritrea dbp:leaderName ?uri }"
       },
       "answers": [
         {
@@ -119875,63 +119773,48 @@
       "hybrid": false,
       "question": [
         {
-          "language": "de",
-          "string": "Gib mir alle in Schweden geborenen Ozeanographen.",
-          "keywords": "Schweden, geborene, Ozeanographen"
-        },
-        {
-          "language": "ru",
-          "string": "Дайте меня все шведский океанографы. ",
-          "keywords": "шведский ,  океанограф "
-        },
-        {
-          "language": "pt",
-          "string": "Dar mim todos sueco oceanógrafos. ",
-          "keywords": "sueco ,  oceanógrafo "
-        },
-        {
           "language": "en",
-          "string": "Give me all Swedish oceanographers.",
-          "keywords": "Swedish, oceanographer"
+          "string": "Give me all British oceanographers.",
+          "keywords": "British, oceanographer"
         },
         {
-          "language": "hi_IN",
-          "string": "मुझे सभी स्वीडिश महासागरीय वैज्ञानिकों की सूचि बतायें।",
-          "keywords": "स्वीडिश, महासागरीय वैज्ञानिक"
-        },
-        {
-          "language": "fa",
-          "string": "  اقیانوس شناسان  سوئدی  همه  من  دادن",
-          "keywords": "  سوئدی,    اقیانوس شناس"
-        },
-        {
-          "language": "it",
-          "string": "Dammi tutti gli oceanografi svedesi.",
-          "keywords": "svedesi, oceanografi"
-        },
-        {
-          "language": "fr",
-          "string": "Donne-moi tous les océanographes suédois.",
-          "keywords": "Océanographes, suédois"
-        },
-        {
-          "language": "ro",
-          "string": "Dă-mi toți oceanografii suedezi.",
-          "keywords": "oceanograf, suedez"
+          "language": "de",
+          "string": "Geben Sie mir alle britischen Ozeanographen.",
+          "keywords": "britischen, Ozeanographen"
         },
         {
           "language": "es",
-          "string": "Dame todos los oceanógrafos suecos.",
-          "keywords": "oceanógrafos suecos"
+          "string": "Andke mulle kõik Briti okeanograafid.",
+          "keywords": "Briti okeanograafid"
+        },
+        {
+          "language": "it",
+          "string": "Datemi tutti gli oceanografi britannici.",
+          "keywords": "britannici, oceanografi"
+        },
+        {
+          "language": "fr",
+          "string": "Donnez-moi tous les océanographes britanniques.",
+          "keywords": "Océanographes, britanniques"
         },
         {
           "language": "nl",
-          "string": "Toon alle Zweedse oceanograafen.",
-          "keywords": "Zweedse, oceanograafen"
+          "string": "Toon alle Britse oceanografen.",
+          "keywords": "Britse, oceanograafen"
+        },
+        {
+          "language": "hi_IN",
+          "string": "मुझे सभी ब्रिटिश समुद्र विज्ञानी दे दो।",
+          "keywords": "ब्रिटिश, समुद्र विज्ञानी"
+        },
+        {
+          "language": "ro",
+          "string": "Dă-mi toți oceanografii britanici.",
+          "keywords": "oceanograf, britanici"
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { ?uri dbo:field res:Oceanography ; dbo:birthPlace res:Sweden }"
+        "sparql": "PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> SELECT DISTINCT ?uri WHERE { ?uri dbp:field res:Oceanography ; dbo:birthPlace res:United_Kingdom }"
       },
       "answers": [
         {
@@ -119943,7 +119826,7 @@
               {
                 "uri": {
                   "type": "uri",
-                  "value": "http://dbpedia.org/resource/Vagn_Walfrid_Ekman"
+                  "value": "http://dbpedia.org/resource/Peter_Clift"
                 }
               }
             ]
@@ -120099,7 +119982,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE { res:Tom_Hanks dbo:spouse res:Rita_Wilson }"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> ASK WHERE {res:Rita_Wilson  dbo:spouse  res:Tom_Hanks }"
       },
       "answers": [
         {
