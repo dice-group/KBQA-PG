@@ -1,3 +1,3 @@
 """Constant path to embedding files."""
 
-ROOT_PATH = "/media/jmenzel/INTENSO/Embeddings/dbp21-03_complex"
+ROOT_PATH = "/home/kbqa_mngr/embedding_query"
