@@ -8,6 +8,9 @@ QALD/
 VQUANDA/
 LCQUAD_8/
 
+# misc
+.run/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
