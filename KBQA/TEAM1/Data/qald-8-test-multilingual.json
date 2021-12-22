@@ -1435,7 +1435,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?book ?date WHERE { ?book dbo:author dbr:Dan_Brown . ?book dbp:releaseDate|dbo:publicationDate ?date } ORDER BY DESC(?date)"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?book ?date WHERE { ?book dbo:author dbr:Dan_Brown . { ?book dbp:releaseDate ?date } UNION { ?book dbo:publicationDate ?date } } ORDER BY DESC(?date)"
       },
       "answers": [
         {
