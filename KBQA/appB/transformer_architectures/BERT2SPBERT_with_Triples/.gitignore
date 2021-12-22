@@ -8,8 +8,11 @@ QALD/
 VQUANDA/
 LCQUAD_8/
 
-# misc
+# PyCharm
 .run/
+
+# Module Specific
+output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

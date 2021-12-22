@@ -165,11 +165,11 @@ def main():
                         help="Path to pre-trained model: e.g. roberta-base")
     parser.add_argument("--decoder_model_name_or_path", default=None, type=str, required=True,
                         help="Path to pre-trained model: e.g. roberta-base")
-    parser.add_argument("--output_dir", default=None, type=str, required=True,
-                        help="The output directory where the model predictions and checkpoints will be written.")
-    parser.add_argument("--load_model_path", default=None, type=str,
-                        help="Path to trained model: Should contain the .bin files")
     ## Other parameters
+    parser.add_argument("--output_dir", default="./output/", type=str,
+                        help="The output directory where the model predictions and checkpoints will be written.")
+    parser.add_argument("--load_model_path", default="./output/checkpoint-best-bleu/pytorch_model.bin", type=str,
+                        help="Path to trained model: Should contain the .bin files")
     parser.add_argument("--train_filename", default=None, type=str,
                         help="The train filename. Should contain the .jsonl files for this task.")
     parser.add_argument("--dev_filename", default=None, type=str,
@@ -269,7 +269,7 @@ def main():
         decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
         model = Seq2Seq(encoder=encoder, decoder=decoder, config=config,
                         beam_size=args.beam_size, max_length=args.max_target_length,
-                        sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id)
+                        sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id, device=device)
     elif args.model_architecture == 'bert2bert':
         decoder_config = config_class.from_pretrained(args.config_name if args.config_name else args.decoder_model_name_or_path)
         decoder_config.is_decoder = True
@@ -277,7 +277,7 @@ def main():
         decoder = model_class.from_pretrained(args.decoder_model_name_or_path, config=decoder_config)
         model = BertSeq2Seq(encoder=encoder, decoder=decoder, config=config,
                             beam_size=args.beam_size, max_length=args.max_target_length,
-                            sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id)
+                            sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id, device=device)
     else:
         raise Exception("Model architecture is not valid.")
 
@@ -339,7 +339,7 @@ def main():
 
         model.train()
         dev_dataset = {}
-        nb_tr_examples, nb_tr_steps, tr_loss, global_step, best_bleu, best_loss = 0, 0, 0, 0, 0, 1e6
+        nb_tr_examples, nb_tr_steps, tr_loss, global_step, best_bleu, best_loss = 0, 0, 0, 0, -1, 1e6
         for epoch in range(args.num_train_epochs):
             bar = tqdm(train_dataloader, total=len(train_dataloader))
             for batch in bar:
