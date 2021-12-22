@@ -22,8 +22,15 @@ def endpoint() -> Response:
     """
     if request.method == "POST":
         content = request.json
-
-        embedding_dict = main(application.embedding_hashtable, content["uris"])
-
-        return jsonify(embedding_dict)
+        if (
+            content
+            and "uris" in content
+            and isinstance(content["uris"], list)
+            and all(isinstance(uri, str) for uri in content["uris"])
+        ):
+            embedding_dict = main(application.embedding_hashtable, content["uris"])
+            return jsonify(embedding_dict)
+        else:
+            error_dict = {"BAD_FORMAT": ":("}
+            return jsonify(error_dict)
     return "GET not supported, use POST"

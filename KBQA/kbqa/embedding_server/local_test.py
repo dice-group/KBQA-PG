@@ -17,7 +17,7 @@ if __name__ == "__main__":
     embedding_dict = {"uris": uris}
     print(f"#uris: {len(uris)}")
     # print(embedding_dict)
-    r = requests.post("http://localhost:24804/embedding_query/", json=embedding_dict)
+    r = requests.post("http://localhost:24805/embedding_query/", json=embedding_dict)
     results = r.json()
     valid_embeddings = sum(1 for embedding in results["embeddings"] if embedding != "")
     failed_embeddings = [
@@ -27,5 +27,19 @@ if __name__ == "__main__":
     ]
     print(f"#valid: {valid_embeddings} ({valid_embeddings/len(uris) * 100.0:.1f}%)")
     print("Failed for")
-    print(failed_embeddings)
-    # print(r.json(), "\n")
+    print("\n".join(failed_embeddings))
+
+    print("Testing post without json")
+    r = requests.post("http://localhost:24805/embedding_query/")
+    print(r.json())
+    print("Testing bad json 1")
+    r = requests.post("http://localhost:24805/embedding_query/", json={"uri": ["uri"]})
+    print(r.json())
+    print("Testing bad json 2")
+    r = requests.post("http://localhost:24805/embedding_query/", json={"uri": 1})
+    print(r.json())
+    print("Testing bad json 3")
+    r = requests.post(
+        "http://localhost:24805/embedding_query/", json={"uri": ["uri", 4]}
+    )
+    print(r.json())

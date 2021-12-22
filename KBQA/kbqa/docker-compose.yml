@@ -6,7 +6,7 @@ services:
     container_name: embedding_server
     restart: always
     expose:
-      - 24804
+      - 24805
 
   website_server:
     build: ./website_server
