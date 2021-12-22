@@ -61,7 +61,7 @@ class Example(object):
         self.target = target
 
 
-def read_examples(query_file, question_file):
+def read_examples(question_file, query_file):
     """Read examples from filename."""
     examples = []
     with open(query_file, encoding="utf-8") as query_f:
