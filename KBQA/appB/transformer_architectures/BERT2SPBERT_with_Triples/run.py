@@ -48,54 +48,59 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message
 logger = logging.getLogger(__name__)
 
 
-class Example(object):
+class Example:
     """A single training/test example."""
 
     def __init__(self,
                  idx,
                  source,
-                 target,
-                 ):
+                 triples,
+                 target):
         self.idx = idx
         self.source = source
+        self.triples = triples
         self.target = target
 
 
-def read_examples(question_file, query_file):
+def read_examples(source_file, triples_file, target_file):
     """Read examples from filename."""
     examples = []
-    with open(query_file, encoding="utf-8") as query_f:
-        with open(question_file, encoding='utf-8') as question_f:
-            for idx, (query, question) in enumerate(zip(query_f, question_f)):
-                examples.append(
-                    Example(
-                        idx=idx,
-                        source=question.strip(),
-                        target=query.strip(),
+    with open(source_file, encoding="utf-8") as source_f:
+        with open(triples_file, encoding="utf-8") as triples_f:
+            with open(target_file, encoding='utf-8') as target_f:
+                for idx, (source, triples, target) in enumerate(zip(source_f, triples_f, target_f)):
+                    examples.append(
+                        Example(
+                            idx=idx,
+                            source=source.strip(),
+                            triples=triples.strip(),
+                            target=target.strip(),
+                        )
                     )
-                )
     return examples
 
 
-class InputFeatures(object):
+class InputFeatures:
     """A single training/test features for a example."""
 
     def __init__(self,
                  example_id,
                  source_ids,
+                 triples_ids,
                  target_ids,
                  source_mask,
-                 target_mask,
-
-                 ):
+                 triples_mask,
+                 target_mask):
         self.example_id = example_id
         self.source_ids = source_ids
+        self.triples_ids = triples_ids
         self.target_ids = target_ids
         self.source_mask = source_mask
+        self.triples_mask = triples_mask
         self.target_mask = target_mask
 
 
-def convert_examples_to_features(examples, tokenizer, args, stage=None):
+def convert_examples_to_features(examples, tokenizer, args, device, stage=None):
     features = []
     for example_index, example in enumerate(examples):
         # source
@@ -106,6 +111,23 @@ def convert_examples_to_features(examples, tokenizer, args, stage=None):
         padding_length = args.max_source_length - len(source_ids)
         source_ids += [tokenizer.pad_token_id] * padding_length
         source_mask += [0] * padding_length
+
+        # triples
+        padding_id = 0
+        triples_ids = torch.full(size=(args.max_num_triples, 3, args.num_triple_features),
+                                 fill_value=padding_id,
+                                 dtype=torch.int64,
+                                 device=device)
+        triples_txt = example.triples.split(' ')
+        num_triples = len(triples_txt)
+        for triple_num, triple_txt in enumerate(triples_txt):
+            resources_txt = triple_txt.strip("()").split(';')
+            for resource_num, resource_txt in enumerate(resources_txt):
+                features_txt = resource_txt.split(',')
+                for feature_num, feature_txt in enumerate(features_txt):
+                    triples_ids[triple_num, resource_num, feature_num] = int(feature_txt)
+        triples_mask = torch.zeros(args.max_num_triples, dtype=torch.bool, device=device)
+        triples_mask[0:num_triples] = 1
 
         # target
         if stage == "test":
@@ -136,8 +158,10 @@ def convert_examples_to_features(examples, tokenizer, args, stage=None):
             InputFeatures(
                 example_index,
                 source_ids,
+                triples_ids,
                 target_ids,
                 source_mask,
+                triples_mask,
                 target_mask,
             )
         )
@@ -165,6 +189,9 @@ def main():
                         help="Path to pre-trained model: e.g. roberta-base")
     parser.add_argument("--decoder_model_name_or_path", default=None, type=str, required=True,
                         help="Path to pre-trained model: e.g. roberta-base")
+    parser.add_argument("--num_triple_features", default=None, type=int, required=True,
+                        help="The number of features per triple element.")
+
     ## Other parameters
     parser.add_argument("--output_dir", default="./output/", type=str,
                         help="The output directory where the model predictions and checkpoints will be written.")
@@ -187,6 +214,9 @@ def main():
                         help="Pretrained tokenizer name or path if not the same as model_name")
     parser.add_argument("--max_source_length", default=64, type=int,
                         help="The maximum total source sequence length after tokenization. Sequences longer "
+                             "than this will be truncated, sequences shorter will be padded.")
+    parser.add_argument("--max_num_triples", default=64, type=int,
+                        help="The maximum number of triples per example. Sequences longer "
                              "than this will be truncated, sequences shorter will be padded.")
     parser.add_argument("--max_target_length", default=32, type=int,
                         help="The maximum total target sequence length after tokenization. Sequences longer "
@@ -301,8 +331,10 @@ def main():
 
     if args.do_train:
         # Prepare training data loader
-        train_examples = read_examples(args.train_filename + "." + args.source, args.train_filename + "." + args.target)
-        train_features = convert_examples_to_features(train_examples, tokenizer, args, stage='train')
+        train_examples = read_examples(args.train_filename + "." + args.source,
+                                       args.train_filename + ".triples",
+                                       args.train_filename + "." + args.target)
+        train_features = convert_examples_to_features(train_examples, tokenizer, args, device, stage='train')
         all_source_ids = torch.tensor([f.source_ids for f in train_features], dtype=torch.long)
         all_source_mask = torch.tensor([f.source_mask for f in train_features], dtype=torch.long)
         all_target_ids = torch.tensor([f.target_ids for f in train_features], dtype=torch.long)
@@ -376,9 +408,11 @@ def main():
                 if 'dev_bleu' in dev_dataset:
                     eval_examples, eval_data = dev_dataset['dev_bleu']
                 else:
-                    eval_examples = read_examples(args.dev_filename  + "." + args.source, args.dev_filename + "." + args.target)
+                    eval_examples = read_examples(args.dev_filename + "." + args.source,
+                                                  args.dev_filename + ".triples",
+                                                  args.dev_filename + "." + args.target)
                     eval_examples = random.sample(eval_examples, min(1000, len(eval_examples)))
-                    eval_features = convert_examples_to_features(eval_examples, tokenizer, args, stage='test')
+                    eval_features = convert_examples_to_features(eval_examples, tokenizer, args, device, stage='test')
                     all_source_ids = torch.tensor([f.source_ids for f in eval_features], dtype=torch.long)
                     all_source_mask = torch.tensor([f.source_mask for f in eval_features], dtype=torch.long)
                     eval_data = TensorDataset(all_source_ids, all_source_mask)
@@ -444,8 +478,10 @@ def main():
             files.append(args.test_filename)
         for idx, file in enumerate(files):
             logger.info("Test file: {}".format(file))
-            eval_examples = read_examples(file + "." + args.source, file + "." + args.target)
-            eval_features = convert_examples_to_features(eval_examples, tokenizer, args, stage='test')
+            eval_examples = read_examples(file + "." + args.source,
+                                          file + ".triples",
+                                          file + "." + args.target)
+            eval_features = convert_examples_to_features(eval_examples, tokenizer, args, device, stage='test')
             all_source_ids = torch.tensor([f.source_ids for f in eval_features], dtype=torch.long)
             all_source_mask = torch.tensor([f.source_mask for f in eval_features], dtype=torch.long)
             eval_data = TensorDataset(all_source_ids, all_source_mask)
