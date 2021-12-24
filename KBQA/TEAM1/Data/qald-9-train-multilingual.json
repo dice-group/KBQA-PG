@@ -2767,7 +2767,7 @@
         }
       ],
       "query": {
-        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?weapon WHERE {res:Uzi dbp:designer ?x .?x dbp:knownFor ?weapon}"
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX res: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?weapon WHERE {res:Uzi dbp:designer ?x . ?x dbp:knownFor ?weapon}"
       },
       "answers": [
         {
@@ -40139,7 +40139,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri  WHERE {   <http://dbpedia.org/resource/Himalayas> <http://dbpedia.org/ontology/wikiPageWikiLink> ?v  .<http://dbpedia.org/resource/Great_Himalaya_Trail>  <http://dbpedia.org/property/location> ?v.  ?v <http://dbpedia.org/ontology/capital> ?uri}"
+        "sparql": "SELECT DISTINCT ?uri  WHERE { <http://dbpedia.org/resource/Himalayas> <http://dbpedia.org/ontology/wikiPageWikiLink> ?v . <http://dbpedia.org/resource/Great_Himalaya_Trail>  <http://dbpedia.org/property/location> ?v . ?v <http://dbpedia.org/ontology/capital> ?uri }"
       },
       "answers": [
         {
@@ -48799,7 +48799,7 @@
         }
       ],
       "query": {
-        "sparql": "SELECT DISTINCT ?uri WHERE {   <http://dbpedia.org/resource/Himalayas> <http://dbpedia.org/ontology/wikiPageWikiLink> ?uri  .<http://dbpedia.org/resource/Great_Himalaya_Trail>  <http://dbpedia.org/property/location> ?uri }"
+        "sparql": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Himalayas> <http://dbpedia.org/ontology/wikiPageWikiLink> ?uri . <http://dbpedia.org/resource/Great_Himalaya_Trail>  <http://dbpedia.org/property/location> ?uri }"
       },
       "answers": [
         {
