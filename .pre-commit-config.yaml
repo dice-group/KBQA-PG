@@ -14,6 +14,11 @@ repos:
     hooks:
       - id: black
         name: Black - format python code
+  - repo: https://github.com/sqlalchemyorg/zimports
+    rev: v0.4.1
+    hooks:
+      - id: zimports
+        name: zimports - reformat python imports
   - repo: https://github.com/PyCQA/pylint
     rev: v2.11.1
     hooks:
@@ -31,15 +36,14 @@ repos:
       - id: mypy
         name: Mypy - check python static types
         additional_dependencies: [types-requests]
-  - repo: https://github.com/sqlalchemyorg/zimports
-    rev: v0.4.1
-    hooks:
-      - id: zimports
-        name: zimports - reformat python imports
   - repo: https://github.com/PyCQA/pydocstyle
     rev: 6.1.1
     hooks:
       - id: pydocstyle
+        name: pydocstyle - check compliance with python docstring conventions
+
+exclude: ^$
 
 ci:
     autoupdate_branch: 'develop'
+    skip: [pylint, flake8, mypy, pydocstyle]
