@@ -64,9 +64,9 @@ We use the standard style guides.
 
 For python, this is the [PEP 8](https://www.python.org/dev/peps/pep-0008/).
 
-Type hints ([PEP 484](https://www.python.org/dev/peps/pep-0484/)) should be used whenever possible. With this static analysis can ensure that variables and functions are used correctly.
+Type hints ([PEP 484](https://www.python.org/dev/peps/pep-0484/)) should be used whenever possible. Static analysis can then ensure that variables and functions are used correctly.
 
-For documenting the code we use docstrings ([PEP 257](https://www.python.org/dev/peps/pep-0257/)). Every method and class has a docstring describing its function and arguments. With the help of this, we automatically create a documentation website.
+For documenting the code we use docstrings ([PEP 257](https://www.python.org/dev/peps/pep-0257/)). Every method and class has a docstring describing its function and arguments. We follow the [numpy docstring format](https://numpydoc.readthedocs.io/en/latest/format.html). Using consistent docstrings in the project, we automatically create a code documentation website.
 
 ## Setup
 
@@ -85,5 +85,9 @@ If you are in a hurry, you can skip the linting with `git commit --no-verify`.
 But to merge into the develop branch the pipeline has to pass.
 
 ### Exclude external code files
-The linters should not be applied to external code files (libraries), configs, and non-code folders as they do not have to met our coding conventions. Therefore theese files or folders have to be excluded from the linting process. This can be done in the [pre-commit config](.pre-commit-config.yaml) by adding the files or folders to the exclude option, which is a regular expression.
+The linters should not be applied to external code files (libraries), configs, and non-code folders as they do not have to meet our coding conventions. Therefore, these files or folders have to be excluded from the linting process. This can be done in the [pre-commit config](.pre-commit-config.yaml) by adding the files or folders to the exclude option, which is a regular expression.
 Example: `exclude: ^documentation/`
+
+### Recommended VS Code Extensions
+#### Python Docstring Generator
+Quickly generate docstrings for python functions in the right format by typing triple quotes.
