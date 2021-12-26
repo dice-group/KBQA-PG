@@ -11,13 +11,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: [self-hosted, kbqa-pg]
 
     timeout-minutes: 10080
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Build and deploy webservice
+      - name: Stop running webservice
+        working-directory: KBQA/kbqa
+        run: docker-compose -p kbqa down --remove-orphan
+      - name: Get new version
+        uses: actions/checkout@v2
+      - name: Build and start webservice
         working-directory: KBQA/kbqa
         run: docker-compose -p kbqa up
