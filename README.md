@@ -10,8 +10,9 @@ We use the workflow as described by [GitHub flow](https://docs.github.com/en/get
 
 Follow the guidelines for [commit messages](https://gist.github.com/robertpainsi/b632364184e70900af4ab688decf6f53).
 
-A properly formed git commit subject line should always be able to complete the following sentence  
-> If applied, this commit will *\<your subject line here\>*
+A properly formed git commit subject line should always be able to complete the following sentence
+
+> If applied, this commit will _\<your subject line here\>_
 
 ### Branches
 
@@ -85,9 +86,12 @@ If you are in a hurry, you can skip the linting with `git commit --no-verify`.
 But to merge into the develop branch the pipeline has to pass.
 
 ### Exclude external code files
+
 The linters should not be applied to external code files (libraries), configs, and non-code folders as they do not have to meet our coding conventions. Therefore, these files or folders have to be excluded from the linting process. This can be done in the [pre-commit config](.pre-commit-config.yaml) by adding the files or folders to the exclude option, which is a regular expression.
 Example: `exclude: ^documentation/`
 
 ### Recommended VS Code Extensions
+
 #### Python Docstring Generator
+
 Quickly generate docstrings for python functions in the right format by typing triple quotes.
