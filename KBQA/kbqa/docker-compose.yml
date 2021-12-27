@@ -1,6 +1,13 @@
 version: "3.7"
 
 services:
+  embedding_server:
+    build: ./embedding_server
+    container_name: embedding_server
+    restart: always
+    expose:
+      - 24805
+
   website_server:
     build: ./website_server
     container_name: website_server
