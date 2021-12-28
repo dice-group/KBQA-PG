@@ -126,24 +126,12 @@ def convert_examples_to_features(examples, tokenizer, args, stage=None):
         source_mask += [0] * padding_length
 
         # triples
-        padding_id = 0
-        triples_ids = torch.full(
-            size=(args.max_num_triples, 3, args.num_triple_features),
-            fill_value=padding_id,
-            dtype=torch.int64,
-        )
-        triples_txt = example.triples.split(" ")
-        num_triples = len(triples_txt)
-        for triple_num, triple_txt in enumerate(triples_txt):
-            resources_txt = triple_txt.strip("()").split(";")
-            for resource_num, resource_txt in enumerate(resources_txt):
-                features_txt = resource_txt.split(",")
-                for feature_num, feature_txt in enumerate(features_txt):
-                    triples_ids[triple_num, resource_num, feature_num] = int(
-                        feature_txt
-                    )
-        triples_mask = torch.zeros(args.max_num_triples, dtype=torch.bool)
-        triples_mask[0:num_triples] = 1
+        triples_tokens = tokenizer.tokenize(example.triples)[: args.max_triples_length]
+        triples_ids = tokenizer.convert_tokens_to_ids(triples_tokens)
+        triples_mask = [1] * (len(triples_tokens))
+        padding_length = args.max_triples_length - len(triples_ids)
+        triples_ids += [tokenizer.pad_token_id] * padding_length
+        triples_mask += [0] * padding_length
 
         # target
         if stage == "test":
@@ -235,13 +223,6 @@ def main():
         required=True,
         help="Path to pre-trained model: e.g. roberta-base",
     )
-    parser.add_argument(
-        "--num_triple_features",
-        default=None,
-        type=int,
-        required=True,
-        help="The number of features per triple element.",
-    )
 
     ## Other parameters
     parser.add_argument(
@@ -307,11 +288,11 @@ def main():
         "than this will be truncated, sequences shorter will be padded.",
     )
     parser.add_argument(
-        "--max_num_triples",
-        default=64,
+        "--max_triples_length",
+        default=128,
         type=int,
-        help="The maximum number of triples per example. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
+        help="The maximum total triples sequence length after tokenization. Sequences longer "
+             "than this will be truncated, sequences shorter will be padded.",
     )
     parser.add_argument(
         "--max_target_length",
@@ -518,26 +499,13 @@ def main():
         all_source_mask = torch.tensor(
             [f.source_mask for f in train_features], dtype=torch.long
         )
-        all_triples_ids = torch.stack([f.triples_ids for f in train_features], dim=0)
-        # Reshape such that each triple element is one token.
-        all_triples_ids = all_triples_ids.view(
-            (
-                all_triples_ids.size(dim=0),
-                all_triples_ids.size(dim=1) * all_triples_ids.size(dim=2),
-                all_triples_ids.size(dim=3),
-            )
-        )
-        all_triples_mask = torch.stack([f.triples_mask for f in train_features], dim=0)
-        # TODO: Repeat mask.
-        print(all_triples_mask)
-        print(all_triples_mask.size())
-        assert False
         all_target_ids = torch.tensor(
             [f.target_ids for f in train_features], dtype=torch.long
         )
         all_target_mask = torch.tensor(
             [f.target_mask for f in train_features], dtype=torch.long
         )
+
         train_data = TensorDataset(
             all_source_ids, all_source_mask, all_target_ids, all_target_mask
         )
