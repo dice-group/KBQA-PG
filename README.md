@@ -10,11 +10,16 @@ Explore our QA system: [kbqa-pg.cs.upb.de](http://kbqa-pg.cs.upb.de/)
 ## Workflow
 
 We use the workflow as described by [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow).
+
 Follow the guidelines for [commit messages](https://gist.github.com/robertpainsi/b632364184e70900af4ab688decf6f53).
+
+A properly formed git commit subject line should always be able to complete the following sentence
+
+> If applied, this commit will _\<your subject line here\>_
 
 ### Branches
 
-We have two main branches `master` and `develop`. These branches always contain working end-to-end code and will be deployed to our server. These branches are protected and only reviewed pull requests can be merged.
+We have two main branches `master` for releases and `develop` for development builds. These branches always contain completed changes and executable, formated code and will be deployed to our server. Therefore, these branches are protected and only reviewed pull requests (PR) can be merged. For every feature/topic a new branch based on develop has to be created. A PR should only contain one topic and can also be opened as a draft to get early feedback. When merging a PR, individual commits can be combined (rebased) if they describe a related change.
 
 <table>
   <thead>
@@ -48,6 +53,13 @@ We have two main branches `master` and `develop`. These branches always contain 
   </tbody>
 </table>
 
+### Folder structure
+
+The top directory contains only configuration files that refer to this repository. Everything else is in the [KBQA](/KBQA) folder:
+
+The end-to-end system that is automatically deployed on the VM is located in the folder [kbqa](/KBQA/kbqa).
+Other topics that are not (yet) included in the end-to-end system should have their own folder.
+
 ## Code Style
 
 We use the standard style guides.
@@ -56,9 +68,9 @@ We use the standard style guides.
 
 For python, this is the [PEP 8](https://www.python.org/dev/peps/pep-0008/).
 
-Type hints ([PEP 484](https://www.python.org/dev/peps/pep-0484/)) should be used whenever possible. With this static analysis can ensure that variables and functions are used correctly.
+Type hints ([PEP 484](https://www.python.org/dev/peps/pep-0484/)) should be used whenever possible. Static analysis can then ensure that variables and functions are used correctly.
 
-For documenting the code we use docstrings ([PEP 257](https://www.python.org/dev/peps/pep-0257/)). Every method and class has a docstring describing its function and arguments. With the help of this, we automatically create a documentation website.
+For documenting the code we use docstrings ([PEP 257](https://www.python.org/dev/peps/pep-0257/)). Every method and class has a docstring describing its function and arguments. We follow the [numpy docstring format](https://numpydoc.readthedocs.io/en/latest/format.html). Using consistent docstrings in the project, we automatically create a code documentation website.
 
 ## Setup
 
@@ -75,3 +87,14 @@ Now on every commit the linters defined in [pre-commit config](.pre-commit-confi
 
 If you are in a hurry, you can skip the linting with `git commit --no-verify`.
 But to merge into the develop branch the pipeline has to pass.
+
+### Exclude external code files
+
+The linters should not be applied to external code files (libraries), configs, and non-code folders as they do not have to meet our coding conventions. Therefore, these files or folders have to be excluded from the linting process. This can be done in the [pre-commit config](.pre-commit-config.yaml) by adding the files or folders to the exclude option, which is a regular expression.
+Example: `exclude: ^documentation/`
+
+### Recommended VS Code Extensions
+
+#### Python Docstring Generator
+
+Quickly generate docstrings for python functions in the right format by typing triple quotes.
