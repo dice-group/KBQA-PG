@@ -232,6 +232,13 @@ def main():
         help="The output directory where the model predictions and checkpoints will be written.",
     )
     parser.add_argument(
+        "--load_local_model_weights",
+        default='Yes',
+        type=str,
+        choices=['Yes', 'No'],
+        help="Should the model weights at load_model_path be loaded.",
+    )
+    parser.add_argument(
         "--load_model_path",
         default="./output/checkpoint-best-bleu/pytorch_model.bin",
         type=str,
@@ -415,18 +422,28 @@ def main():
         os.makedirs(args.output_dir)
 
     config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
-    config = config_class.from_pretrained(
-        args.config_name if args.config_name else args.encoder_model_name_or_path
-    )
     tokenizer = tokenizer_class.from_pretrained(
         args.tokenizer_name if args.tokenizer_name else args.encoder_model_name_or_path,
         do_lower_case=args.do_lower_case,
     )
 
-    # build model
+    # Build encoder.
+    config = config_class.from_pretrained(
+        args.config_name if args.config_name else args.encoder_model_name_or_path
+    )
     encoder = model_class.from_pretrained(
         args.encoder_model_name_or_path, config=config
     )
+
+    # Build triple_encoder.
+    triple_encoder_config = config_class.from_pretrained(
+        args.encoder_model_name_or_path
+    )
+    triple_encoder = model_class.from_pretrained(
+        args.decoder_model_name_or_path, config=triple_encoder_config
+    )
+
+    # Build decoder and model.
     if args.model_architecture == "bert2rnd":
         decoder_layer = nn.TransformerDecoderLayer(
             d_model=config.hidden_size, nhead=config.num_attention_heads
@@ -453,18 +470,19 @@ def main():
         )
         model = BertSeq2Seq(
             encoder=encoder,
+            triple_encoder=triple_encoder,
             decoder=decoder,
             config=config,
             beam_size=args.beam_size,
             max_length=args.max_target_length,
             sos_id=tokenizer.cls_token_id,
             eos_id=tokenizer.sep_token_id,
-            device=device,
+            device=device
         )
     else:
         raise Exception("Model architecture is not valid.")
 
-    if args.load_model_path is not None:
+    if args.load_local_model_weights == 'Yes':
         logger.info("reload model from {}".format(args.load_model_path))
         model.load_state_dict(torch.load(args.load_model_path))
 
@@ -499,6 +517,12 @@ def main():
         all_source_mask = torch.tensor(
             [f.source_mask for f in train_features], dtype=torch.long
         )
+        all_triples_ids = torch.tensor(
+            [f.triples_ids for f in train_features], dtype=torch.long
+        )
+        all_triples_mask = torch.tensor(
+            [f.triples_mask for f in train_features], dtype=torch.long
+        )
         all_target_ids = torch.tensor(
             [f.target_ids for f in train_features], dtype=torch.long
         )
@@ -507,7 +531,7 @@ def main():
         )
 
         train_data = TensorDataset(
-            all_source_ids, all_source_mask, all_target_ids, all_target_mask
+            all_source_ids, all_source_mask, all_triples_ids, all_triples_mask, all_target_ids, all_target_mask
         )
 
         if args.local_rank == -1:
@@ -574,10 +598,12 @@ def main():
             bar = tqdm(train_dataloader, total=len(train_dataloader))
             for batch in bar:
                 batch = tuple(t.to(device) for t in batch)
-                source_ids, source_mask, target_ids, target_mask = batch
+                source_ids, source_mask, triples_ids, triples_mask, target_ids, target_mask = batch
                 loss, _, _ = model(
                     source_ids=source_ids,
                     source_mask=source_mask,
+                    triples_ids=triples_ids,
+                    triples_mask=triples_mask,
                     target_ids=target_ids,
                     target_mask=target_mask,
                 )
@@ -629,7 +655,13 @@ def main():
                     all_source_mask = torch.tensor(
                         [f.source_mask for f in eval_features], dtype=torch.long
                     )
-                    eval_data = TensorDataset(all_source_ids, all_source_mask)
+                    all_triples_ids = torch.tensor(
+                        [f.triples_ids for f in eval_features], dtype=torch.long
+                    )
+                    all_triples_mask = torch.tensor(
+                        [f.triples_mask for f in eval_features], dtype=torch.long
+                    )
+                    eval_data = TensorDataset(all_source_ids, all_source_mask, all_triples_ids, all_triples_mask)
                     dev_dataset["dev_bleu"] = eval_examples, eval_data
 
                 eval_sampler = SequentialSampler(eval_data)
@@ -641,9 +673,10 @@ def main():
                 p = []
                 for batch in eval_dataloader:
                     batch = tuple(t.to(device) for t in batch)
-                    source_ids, source_mask = batch
+                    source_ids, source_mask, triples_ids, triples_mask = batch
                     with torch.no_grad():
-                        preds = model(source_ids=source_ids, source_mask=source_mask)
+                        preds = model(source_ids=source_ids, source_mask=source_mask, triples_ids=triples_ids,
+                                      triples_mask=triples_mask)
                         for pred in preds:
                             t = pred[0].cpu().numpy()
                             t = list(t)

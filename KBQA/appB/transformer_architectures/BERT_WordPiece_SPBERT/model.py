@@ -41,16 +41,18 @@ class BertSeq2Seq(nn.Module):
     def __init__(
         self,
         encoder,
+        triple_encoder,
         decoder,
         config,
         beam_size=None,
         max_length=None,
         sos_id=None,
         eos_id=None,
-        device=None,
+        device=None
     ):
         super(BertSeq2Seq, self).__init__()
         self.encoder = encoder
+        self.triple_encoder = triple_encoder
         self.decoder = decoder
         self.config = config
         self.device = device
@@ -84,18 +86,24 @@ class BertSeq2Seq(nn.Module):
         self,
         source_ids=None,
         source_mask=None,
+        triples_ids=None,
+        triples_mask=None,
         target_ids=None,
-        target_mask=None,
-        args=None,
+        target_mask=None
     ):
         outputs = self.encoder(source_ids, attention_mask=source_mask)
-        encoder_output = outputs[0]
+        question_encoder_output = outputs[0]
+        outputs = self.triple_encoder(triples_ids, attention_mask=triples_mask)
+        triple_encoder_output = outputs[0]
+        encoder_output = torch.cat([question_encoder_output, triple_encoder_output], dim=1)
+        encoder_attention_mask = torch.cat([source_mask, triples_mask], dim=1)
+
         if target_ids is not None:
             out = self.decoder(
                 input_ids=target_ids,
                 attention_mask=target_mask,
                 encoder_hidden_states=encoder_output,
-                encoder_attention_mask=source_mask,
+                encoder_attention_mask=encoder_attention_mask,
             )
             hidden_states = torch.tanh(self.dense(out[0]))
             lm_logits = self.lm_head(hidden_states)
@@ -117,9 +125,9 @@ class BertSeq2Seq(nn.Module):
             # Predict
             preds = []
             zero = torch.tensor(1, dtype=torch.long, device=self.device).fill_(0)
-            for i in range(source_ids.shape[0]):
-                context = encoder_output[i : i + 1, :]
-                context_mask = source_mask[i : i + 1, :]
+            for i in range(encoder_output.shape[0]):
+                context = encoder_output[i: i + 1, :]
+                context_mask = encoder_attention_mask[i: i + 1, :]
                 beam = Beam(
                     self.beam_size, self.sos_id, self.eos_id, device=self.device
                 )
