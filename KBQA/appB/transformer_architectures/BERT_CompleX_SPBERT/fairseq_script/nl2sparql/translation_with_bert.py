@@ -5,12 +5,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+from dictionary_with_bert import DictionaryWithBert
 from fairseq.tasks import register_task
 from fairseq.tasks.translation import TranslationTask
-from dictionary_with_bert import DictionaryWithBert
 
 
-@register_task('translation_with_bert')
+@register_task("translation_with_bert")
 class TranslationWithBertTask(TranslationTask):
     """
     Translation task using pretrained BERT encoders.
@@ -42,9 +42,9 @@ class TranslationWithBertTask(TranslationTask):
 
     def __init__(self, args, src_dict, tgt_dict):
         super().__init__(args, src_dict, tgt_dict)
-        if hasattr(args, 'model_overrides'):
+        if hasattr(args, "model_overrides"):
             model_overrides = eval(args.model_overrides)
-            model_overrides['bert_model'] = args.bert_model
+            model_overrides["bert_model"] = args.bert_model
             args.model_overrides = "{}".format(model_overrides)
 
     @classmethod

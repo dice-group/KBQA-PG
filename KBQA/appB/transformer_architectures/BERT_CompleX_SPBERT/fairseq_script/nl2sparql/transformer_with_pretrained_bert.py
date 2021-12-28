@@ -5,22 +5,17 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+from fairseq.models import FairseqEncoder
+from fairseq.models import register_model
+from fairseq.models import register_model_architecture
+from fairseq.models.transformer import base_architecture
+from fairseq.models.transformer import EncoderOut
+from fairseq.models.transformer import TransformerModel
 import torch
 from transformers import BertModel
 
-from fairseq.models import (
-    register_model,
-    register_model_architecture,
-    FairseqEncoder,
-)
-from fairseq.models.transformer import (
-    TransformerModel,
-    EncoderOut,
-    base_architecture,
-)
 
-
-@register_model('transformer_with_pretrained_bert')
+@register_model("transformer_with_pretrained_bert")
 class TransformerWithBertModel(TransformerModel):
     """
     Transformer model with the pretrained BERT encoder.
@@ -38,7 +33,7 @@ class TransformerWithBertModel(TransformerModel):
         :prog:
     """
 
-    #def __init__(self, args, encoder, decoder):
+    # def __init__(self, args, encoder, decoder):
     #    super().__init__(args, encoder, decoder)
 
     @staticmethod
@@ -58,7 +53,6 @@ class TransformerWithBertModel(TransformerModel):
     @classmethod
     def build_encoder(cls, args, src_dict, embed_tokens):
         return TransformerWithBertEncoder(args, src_dict, embed_tokens)
-
 
     def train(self, mode=True):
         if self.fine_tuning:
@@ -84,16 +78,24 @@ class TransformerWithBertEncoder(FairseqEncoder):
 
     def __init__(self, args, dictionary, embed_tokens):
         super().__init__(dictionary)
-        self.register_buffer('version', torch.Tensor([3]))
+        self.register_buffer("version", torch.Tensor([3]))
 
         self.padding_idx = embed_tokens.padding_idx
-        self.layer_wise_attention = getattr(args, 'layer_wise_attention', False)
+        self.layer_wise_attention = getattr(args, "layer_wise_attention", False)
 
         self.fine_tuning = args.fine_tuning
-        self.bert_model = BertModel.from_pretrained(args.bert_model,
-                                                    output_hidden_states=True, return_dict=False)
+        self.bert_model = BertModel.from_pretrained(
+            args.bert_model, output_hidden_states=True, return_dict=False
+        )
 
-    def forward(self, src_tokens, src_lengths, cls_input=None, return_all_hiddens=False, **unused):
+    def forward(
+        self,
+        src_tokens,
+        src_lengths,
+        cls_input=None,
+        return_all_hiddens=False,
+        **unused
+    ):
         """
         Args:
             src_tokens (LongTensor): tokens in the source language of shape
@@ -122,26 +124,32 @@ class TransformerWithBertEncoder(FairseqEncoder):
             with torch.no_grad():
                 encoder_padding_mask = src_tokens.eq(self.padding_idx)
                 attention_mask = src_tokens.ne(self.padding_idx).long()
-                x, _, layer_outputs = self.bert_model(input_ids=src_tokens,
-                                                      attention_mask=attention_mask)
+                x, _, layer_outputs = self.bert_model(
+                    input_ids=src_tokens, attention_mask=attention_mask
+                )
                 x = x.transpose(0, 1).detach()
                 encoder_embedding = layer_outputs[0].detach()
                 encoder_states = None
                 if return_all_hiddens:
-                    encoder_states = [layer_outputs[i].transpose(0, 1).detach()
-                                      for i in range(1, len(layer_outputs))]
+                    encoder_states = [
+                        layer_outputs[i].transpose(0, 1).detach()
+                        for i in range(1, len(layer_outputs))
+                    ]
 
         else:
             encoder_padding_mask = src_tokens.eq(self.padding_idx)
             attention_mask = src_tokens.ne(self.padding_idx).long()
-            x, _, layer_outputs = self.bert_model(src_tokens,
-                                                  attention_mask=attention_mask)
+            x, _, layer_outputs = self.bert_model(
+                src_tokens, attention_mask=attention_mask
+            )
             x = x.transpose(0, 1)
             encoder_embedding = layer_outputs[0]
             encoder_states = None
             if return_all_hiddens:
-                encoder_states = [layer_outputs[i].transpose(0, 1)
-                                  for i in range(1, len(layer_outputs))]
+                encoder_states = [
+                    layer_outputs[i].transpose(0, 1)
+                    for i in range(1, len(layer_outputs))
+                ]
 
         return EncoderOut(
             encoder_out=x,  # T x B x C
@@ -202,22 +210,23 @@ class TransformerWithBertEncoder(FairseqEncoder):
         )
 
 
-
-@register_model_architecture('transformer_with_pretrained_bert',
-                             'transformer_with_pretrained_bert')
+@register_model_architecture(
+    "transformer_with_pretrained_bert", "transformer_with_pretrained_bert"
+)
 def transformer_with_pretrained_bert(args):
-    args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 768)
-    args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 768)
-    args.decoder_ffn_embed_dim = getattr(args, 'decoder_ffn_embed_dim', 3072)
-    args.decoder_attention_heads = getattr(args, 'decoder_attention_heads', 12)
+    args.encoder_embed_dim = getattr(args, "encoder_embed_dim", 768)
+    args.decoder_embed_dim = getattr(args, "decoder_embed_dim", 768)
+    args.decoder_ffn_embed_dim = getattr(args, "decoder_ffn_embed_dim", 3072)
+    args.decoder_attention_heads = getattr(args, "decoder_attention_heads", 12)
     base_architecture(args)
 
 
-@register_model_architecture('transformer_with_pretrained_bert',
-                             'transformer_with_pretrained_bert_large')
+@register_model_architecture(
+    "transformer_with_pretrained_bert", "transformer_with_pretrained_bert_large"
+)
 def transformer_with_pretrained_bert_large(args):
-    args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 1024)
-    args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', 1024)
-    args.decoder_ffn_embed_dim = getattr(args, 'decoder_ffn_embed_dim', 4096)
-    args.decoder_attention_heads = getattr(args, 'decoder_attention_heads', 16)
+    args.encoder_embed_dim = getattr(args, "encoder_embed_dim", 1024)
+    args.decoder_embed_dim = getattr(args, "decoder_embed_dim", 1024)
+    args.decoder_ffn_embed_dim = getattr(args, "decoder_ffn_embed_dim", 4096)
+    args.decoder_attention_heads = getattr(args, "decoder_attention_heads", 16)
     base_architecture(args)
