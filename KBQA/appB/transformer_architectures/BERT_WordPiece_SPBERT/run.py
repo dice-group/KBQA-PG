@@ -414,27 +414,31 @@ def main():
         device = torch.device("cuda", args.local_rank)
         torch.distributed.init_process_group(backend="nccl")
         args.n_gpu = 1
+    args.device = device
+
     logger.warning(
         "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s",
         args.local_rank,
-        device,
+        args.device,
         args.n_gpu,
         bool(args.local_rank != -1),
     )
-    args.device = device
+
     # Set seed
     set_seed(args.seed)
+
     # make dir if output_dir not exist
     if os.path.exists(args.output_dir) is False:
         os.makedirs(args.output_dir)
 
+    # Load models.
     config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
     tokenizer = tokenizer_class.from_pretrained(
         args.tokenizer_name if args.tokenizer_name else args.encoder_model_name_or_path,
         do_lower_case=args.do_lower_case,
     )
 
-    # Build encoder.
+    # Build question encoder.
     config = config_class.from_pretrained(
         args.config_name if args.config_name else args.encoder_model_name_or_path
     )
@@ -442,11 +446,11 @@ def main():
         args.encoder_model_name_or_path, config=config
     )
 
-    # Build triple_encoder.
-    triple_encoder_config = config_class.from_pretrained(
-        args.encoder_model_name_or_path
+    # Build triple encoder.
+    triple_encoder_config = BertConfig.from_pretrained(
+        args.decoder_model_name_or_path
     )
-    triple_encoder = model_class.from_pretrained(
+    triple_encoder = BertModel.from_pretrained(
         args.decoder_model_name_or_path, config=triple_encoder_config
     )
 
@@ -468,12 +472,12 @@ def main():
         #     device=device,
         # )
     elif args.model_architecture == "bert2bert":
-        decoder_config = config_class.from_pretrained(
+        decoder_config = BertConfig.from_pretrained(
             args.config_name if args.config_name else args.decoder_model_name_or_path
         )
         decoder_config.is_decoder = True
         decoder_config.add_cross_attention = True
-        decoder = model_class.from_pretrained(
+        decoder = BertModel.from_pretrained(
             args.decoder_model_name_or_path, config=decoder_config
         )
         model = BertSeq2Seq(
