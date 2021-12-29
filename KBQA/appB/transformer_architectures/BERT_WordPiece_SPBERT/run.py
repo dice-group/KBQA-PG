@@ -161,6 +161,14 @@ def convert_examples_to_features(examples, tokenizer, args, stage=None):
                 logger.info("source_mask: {}".format(" ".join(map(str, source_mask))))
 
                 logger.info(
+                    "triples_tokens: {}".format(
+                        [x.replace("\u0120", "_") for x in triples_tokens]
+                    )
+                )
+                logger.info("triples_ids: {}".format(" ".join(map(str, triples_ids))))
+                logger.info("triples_mask: {}".format(" ".join(map(str, triples_mask))))
+
+                logger.info(
                     "target_tokens: {}".format(
                         [x.replace("\u0120", "_") for x in target_tokens]
                     )
@@ -191,24 +199,11 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True
 
 
+# noinspection SpellCheckingInspection
 def main():
     parser = argparse.ArgumentParser()
 
     ## Required parameters
-    parser.add_argument(
-        "--model_type",
-        default=None,
-        type=str,
-        required=True,
-        help="Model type: e.g. roberta",
-    )
-    parser.add_argument(
-        "--model_architecture",
-        default=None,
-        type=str,
-        required=True,
-        help="Model architecture: e.g. bert2bert, bert2rnd",
-    )
     parser.add_argument(
         "--encoder_model_name_or_path",
         default=None,
@@ -226,23 +221,36 @@ def main():
 
     ## Other parameters
     parser.add_argument(
-        "--output_dir",
-        default="./output/",
-        type=str,
-        help="The output directory where the model predictions and checkpoints will be written.",
-    )
-    parser.add_argument(
-        "--load_local_model_weights",
-        default='Yes',
+        "--load_model_checkpoint",
+        default='Dynamic',
         type=str,
         choices=['Yes', 'No'],
-        help="Should the model weights at load_model_path be loaded.",
+        help="Should the model weights at load_model_path be loaded. Defaults to \"No\" in training and \"Yes\" in "
+             "testing",
     )
     parser.add_argument(
         "--load_model_path",
         default="./output/checkpoint-best-bleu/pytorch_model.bin",
         type=str,
         help="Path to trained model: Should contain the .bin files",
+    )
+    parser.add_argument(
+        "--model_type",
+        default="bert",
+        type=str,
+        help="Model type: e.g. roberta",
+    )
+    parser.add_argument(
+        "--model_architecture",
+        default='bert2bert',
+        type=str,
+        help="Model architecture: e.g. bert2bert, bert2rnd",
+    )
+    parser.add_argument(
+        "--output_dir",
+        default="./output/",
+        type=str,
+        help="The output directory where the model predictions and checkpoints will be written.",
     )
     parser.add_argument(
         "--train_filename",
@@ -264,17 +272,16 @@ def main():
     )
     parser.add_argument(
         "--source",
-        default="sparql",
+        default="en",
         type=str,
         help="The source language (for file extension)",
     )
     parser.add_argument(
         "--target",
-        default="en",
+        default="sparql",
         type=str,
         help="The target language (for file extension)",
     )
-
     parser.add_argument(
         "--config_name",
         default="",
@@ -445,20 +452,21 @@ def main():
 
     # Build decoder and model.
     if args.model_architecture == "bert2rnd":
-        decoder_layer = nn.TransformerDecoderLayer(
-            d_model=config.hidden_size, nhead=config.num_attention_heads
-        )
-        decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
-        model = Seq2Seq(
-            encoder=encoder,
-            decoder=decoder,
-            config=config,
-            beam_size=args.beam_size,
-            max_length=args.max_target_length,
-            sos_id=tokenizer.cls_token_id,
-            eos_id=tokenizer.sep_token_id,
-            device=device,
-        )
+        assert False, "Not implemented yet."
+        # decoder_layer = nn.TransformerDecoderLayer(
+        #     d_model=config.hidden_size, nhead=config.num_attention_heads
+        # )
+        # decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
+        # model = Seq2Seq(
+        #     encoder=encoder,
+        #     decoder=decoder,
+        #     config=config,
+        #     beam_size=args.beam_size,
+        #     max_length=args.max_target_length,
+        #     sos_id=tokenizer.cls_token_id,
+        #     eos_id=tokenizer.sep_token_id,
+        #     device=device,
+        # )
     elif args.model_architecture == "bert2bert":
         decoder_config = config_class.from_pretrained(
             args.config_name if args.config_name else args.decoder_model_name_or_path
@@ -482,7 +490,8 @@ def main():
     else:
         raise Exception("Model architecture is not valid.")
 
-    if args.load_local_model_weights == 'Yes':
+    # Load model checkpoint.
+    if args.load_model_checkpoint == 'Yes' or (args.load_model_checkpoint == 'Dynamic' and args.do_test):
         logger.info("reload model from {}".format(args.load_model_path))
         model.load_state_dict(torch.load(args.load_model_path))
 
@@ -750,7 +759,13 @@ def main():
             all_source_mask = torch.tensor(
                 [f.source_mask for f in eval_features], dtype=torch.long
             )
-            eval_data = TensorDataset(all_source_ids, all_source_mask)
+            all_triples_ids = torch.tensor(
+                [f.triples_ids for f in eval_features], dtype=torch.long
+            )
+            all_triples_mask = torch.tensor(
+                [f.triples_mask for f in eval_features], dtype=torch.long
+            )
+            eval_data = TensorDataset(all_source_ids, all_source_mask, all_triples_ids, all_triples_mask)
 
             # Calculate bleu
             eval_sampler = SequentialSampler(eval_data)
@@ -762,9 +777,10 @@ def main():
             p = []
             for batch in tqdm(eval_dataloader, total=len(eval_dataloader)):
                 batch = tuple(t.to(device) for t in batch)
-                source_ids, source_mask = batch
+                source_ids, source_mask, triples_ids, triples_mask = batch
                 with torch.no_grad():
-                    preds = model(source_ids=source_ids, source_mask=source_mask)
+                    preds = model(source_ids=source_ids, source_mask=source_mask, triples_ids=triples_ids,
+                                  triples_mask=triples_mask)
                     for pred in preds:
                         t = pred[0].cpu().numpy()
                         t = list(t)
