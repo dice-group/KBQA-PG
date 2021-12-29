@@ -50,7 +50,11 @@ repos:
       - id: pydocstyle
         name: pydocstyle - check compliance with python docstring conventions
 
-exclude: ^$
+exclude: |
+  (?x)^(
+    KBQA/appB/transformer_architectures/BERT_CompleX_SPBERT/. |
+    KBQA/appB/transformer_architectures/BERT_WordPiece_SPBERT/.
+  )
 
 ci:
   autoupdate_branch: "develop"
