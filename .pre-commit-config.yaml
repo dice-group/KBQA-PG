@@ -28,8 +28,27 @@ repos:
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
+        files: ^(?!.*\/kbqa\/).*
         additional_dependencies:
           [rdflib==6.0.2, requests==2.26.0, flask==2.0.2, numpy==1.21.3]
+      - id: pylint
+        name: Pylint (appA)
+        files: ^KBQA/kbqa/appA/
+        additional_dependencies:
+          [flask==2.0.2, requests==2.26.0, SPARQLWrapper==1.8.5]
+      - id: pylint
+        name: Pylint (appB)
+        files: ^KBQA/kbqa/appB/
+        additional_dependencies:
+          [flask==2.0.2, requests==2.26.0, SPARQLWrapper==1.8.5]
+      - id: pylint
+        name: Pylint (website_server)
+        files: ^KBQA/kbqa/website_server/
+        additional_dependencies: [flask==2.0.2, requests==2.26.0]
+      - id: pylint
+        name: Pylint (embedding_server)
+        files: ^KBQA/kbqa/embedding_server/
+        additional_dependencies: [flask==2.0.2, numpy==1.21.3]
 
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
@@ -42,6 +61,23 @@ repos:
     hooks:
       - id: mypy
         name: Mypy - check python static types
+        files: ^(?!.*\/kbqa\/).*
+        additional_dependencies: [types-requests]
+      - id: mypy
+        name: mypy (appA)
+        files: ^KBQA/kbqa/appA/
+        additional_dependencies: [types-requests]
+      - id: mypy
+        name: mypy (appB)
+        files: ^KBQA/kbqa/appB/
+        additional_dependencies: [types-requests]
+      - id: mypy
+        name: mypy (website_server)
+        files: ^KBQA/kbqa/website_server/
+        additional_dependencies: [types-requests]
+      - id: mypy
+        name: mypy (embedding_server)
+        files: ^KBQA/kbqa/embedding_server/
         additional_dependencies: [types-requests]
 
   - repo: https://github.com/PyCQA/pydocstyle
@@ -53,7 +89,8 @@ repos:
 exclude: |
   (?x)^(
     KBQA/appB/transformer_architectures/BERT_CompleX_SPBERT/. |
-    KBQA/appB/transformer_architectures/BERT_WordPiece_SPBERT/.
+    KBQA/appB/transformer_architectures/BERT_WordPiece_SPBERT/. |
+    KBQA/kbqa/webservice/appA/app/nspm/
   )
 
 ci:
