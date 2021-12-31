@@ -30,6 +30,7 @@ def main(query: str, lang: str = "en") -> str:
 
     # -------------------- Example ----------------------
     # Example in order to check, whether the connection works
+    print("Question:", query)
 
     answer_qald = example(query, lang)
 
@@ -54,6 +55,8 @@ def example(question: str, lang: str) -> str:
     # QALD-test-8, id 46
     # What other books have been written by the author of The Fault in Our Stars?
     sparql_query = "PREFIX dbo: <http://dbpedia.org/ontology/> SELECT ?books WHERE { ?books dbo:author <http://dbpedia.org/resource/John_Green_(author)> }"
+
+    print("SPARQL-Query:", sparql_query)
 
     sparql = SPARQLWrapper("http://dbpedia.org/sparql/")
     sparql.setReturnFormat(JSON)

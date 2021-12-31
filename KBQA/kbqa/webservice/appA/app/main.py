@@ -60,6 +60,7 @@ def interprete(question: str) -> Tuple[Dict, str]:
         sparql_query = process_question(question)
     except TypeError as type_error:
         print("Type Error", type_error)
+
         return {}, ""
 
     print("Predicted SPARQL-Query:", sparql_query)
@@ -72,6 +73,7 @@ def interprete(question: str) -> Tuple[Dict, str]:
     except SPARQLWrapperException as exception:
         # Unfortunately, the NSPM does not always return a valid SPARQL query.
         print("SPARQLWrapperException", exception)
+
         return {}, ""
 
     return answer, sparql_query
