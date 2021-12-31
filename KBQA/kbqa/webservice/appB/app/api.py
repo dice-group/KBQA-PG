@@ -8,7 +8,7 @@ application = Flask(__name__)
 
 
 @application.route("/appB/", methods=["POST"])
-def endpoint() -> None:
+def endpoint() -> str:
     """Endpoint for approach B.
 
     This endpoint only accepts POST requests, which sets a
