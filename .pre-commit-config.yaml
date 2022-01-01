@@ -28,26 +28,26 @@ repos:
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
-        files: ^(?!.*\/kbqa\/).*
+        exclude: ^KBQA/kbqa/
         additional_dependencies:
           [rdflib==6.0.2, requests==2.26.0, flask==2.0.2, numpy==1.21.3]
       - id: pylint
         name: Pylint (appA)
-        entry: bash -c 'cd KBQA/kbqa/webservice/appA/'
+        files: ^KBQA/kbqa/webservice/appA/
         additional_dependencies:
           [flask==2.0.2, requests==2.26.0, SPARQLWrapper==1.8.5]
       - id: pylint
         name: Pylint (appB)
-        entry: bash -c 'cd KBQA/kbqa/webservice/appB/'
+        files: ^KBQA/kbqa/webservice/appB/
         additional_dependencies:
           [flask==2.0.2, requests==2.26.0, SPARQLWrapper==1.8.5]
       - id: pylint
         name: Pylint (website_server)
-        entry: bash -c 'cd KBQA/kbqa/webservice/website_server/'
+        files: ^KBQA/kbqa/webservice/website_server/
         additional_dependencies: [flask==2.0.2, requests==2.26.0]
       - id: pylint
         name: Pylint (embedding_server)
-        entry: bash -c 'cd KBQA/kbqa/webservice/embedding_server/'
+        files: ^KBQA/kbqa/webservice/emdedding_server/
         additional_dependencies: [flask==2.0.2, requests==2.26.0, numpy==1.21.3]
 
   - repo: https://github.com/PyCQA/flake8
@@ -61,7 +61,7 @@ repos:
     hooks:
       - id: mypy
         name: Mypy - check python static types
-        files: ^(?!.*\/kbqa\/).*
+        exclude: ^KBQA/kbqa/
         additional_dependencies: [types-requests]
       - id: mypy
         name: mypy (appA)
