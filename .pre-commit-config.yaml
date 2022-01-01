@@ -47,7 +47,7 @@ repos:
         additional_dependencies: [flask==2.0.2, requests==2.26.0]
       - id: pylint
         name: Pylint (embedding_server)
-        files: ^KBQA/kbqa/webservice/emdedding_server/
+        files: ^KBQA/kbqa/webservice/embedding_server/
         additional_dependencies: [flask==2.0.2, requests==2.26.0, numpy==1.21.3]
 
   - repo: https://github.com/PyCQA/flake8
