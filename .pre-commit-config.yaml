@@ -30,7 +30,13 @@ repos:
         name: Pylint - check for errors in Python code
         exclude: ^KBQA/kbqa/
         additional_dependencies:
-          [rdflib==6.0.2, requests==2.26.0, flask==2.0.2, numpy==1.21.3]
+          [
+            rdflib==6.0.2,
+            requests==2.26.0,
+            flask==2.0.2,
+            numpy==1.21.3,
+            SPARQLWrapper==1.8.5,
+          ]
       - id: pylint
         name: Pylint (appA)
         files: ^KBQA/kbqa/webservice/appA/
