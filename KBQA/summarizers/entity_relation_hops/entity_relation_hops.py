@@ -339,8 +339,6 @@ def get_query_for_two_hops(entity: str, p_1: str, p_2: str, limit: int) -> str:
 
     Get the CONSTRUCT-query, which constructs triples of the form
         <entity> <p_1> ?e1 and ?e1 <p_2> ?e2
-    Note that the second triple is optional, i.e. there might be also triples
-    with one hop.
 
     Parameters
     ----------
@@ -364,8 +362,8 @@ def get_query_for_two_hops(entity: str, p_1: str, p_2: str, limit: int) -> str:
         limit_str = f"LIMIT {limit}"
 
     query = f"""CONSTRUCT WHERE {{
-        {entity} {p_1} ?e2
-        OPTIONAL {{ ?e2 {p_2} ?e3 }}
+        {entity} {p_1} ?e2 .
+        ?e2 {p_2} ?e3 .
         FILTER(STRSTARTS(STR({p_1}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_1}), "http://dbpedia.org/property/"))
         FILTER(STRSTARTS(STR({p_2}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_2}), "http://dbpedia.org/property/"))
     }} {limit_str}"""
@@ -377,9 +375,7 @@ def get_query_for_two_hops_inverse(entity: str, p_1: str, p_2: str, limit: int) 
     """Get the query for extracting a subgraph with two hops in inverse direction.
 
     Get the CONSTRUCT-query, which constructs triples of the form
-        ?e1 <p_2> ?e2 and ?e2 <p_1> <entity>
-    Note that the first triple is optional, i.e. there might be also triples
-    with one hop.
+        ?e2 <p_2> ?e1 and ?e1 <p_1> <entity>
 
     Parameters
     ----------
@@ -403,8 +399,8 @@ def get_query_for_two_hops_inverse(entity: str, p_1: str, p_2: str, limit: int) 
         limit_str = f"LIMIT {limit}"
 
     query = f"""CONSTRUCT WHERE {{
-        ?e1 {p_1} {entity}
-        OPTIONAL {{ ?e2 {p_2} ?e1 }}
+        ?e1 {p_1} {entity} .
+        ?e2 {p_2} ?e1 .
         FILTER(STRSTARTS(STR({p_1}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_1}), "http://dbpedia.org/property/"))
         FILTER(STRSTARTS(STR({p_2}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_2}), "http://dbpedia.org/property/"))
     }} {limit_str}"""
@@ -462,4 +458,5 @@ if __name__ == "__main__":
     for s, p, o in subgraphs[0][1]:
         print(s, p, o)
 
+    print("Found triples:", len(subgraphs[0][1]))
     print("-" * 30)
