@@ -35,6 +35,8 @@ services:
     restart: always
     expose:
       - 24804
+    volumes:
+      - evaluation:/evaluation
 
   nginx:
     build: ./nginx
@@ -42,3 +44,6 @@ services:
     restart: always
     ports:
       - "80:80"
+
+volumes:
+  evaluation: null

@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import time
 
@@ -72,9 +73,6 @@ def get_test_result(id: int) -> DataFrame:
         time.sleep(60)
         return get_test_result(id)
     else:
-        Path("experiments").mkdir(parents=True, exist_ok=True)
-        df.to_csv("experiments/latest.csv")
-        df.to_html("experiments/latest.html")
         return df
 
 
@@ -83,7 +81,14 @@ def main():
     qa_name = "NIFWS_KBQA-PG-AppA"
     qa_uri = "http://kbqa-pg.cs.upb.de/appA/"
 
+    commit = os.environ.get("GITHUB_SHA")
+    print(commit)
+
     id = start_experiment(qa_name, qa_uri)
     print(id)
     df = get_test_result(id)
     print(df)
+
+    Path("/evaluation").mkdir(parents=True, exist_ok=True)
+    df.to_csv("/evaluation/{}-{}.csv".format(id, commit))
+    df.to_html("/evaluation/{}-{}.html".format(id, commit))
