@@ -1,15 +1,17 @@
 """A module to get ranking of triples from summarized subgraph."""
 from contextlib import suppress
 import json
+import pickle
+from typing import Dict
 from typing import List
 from typing import Tuple
 
+from nes_ner_hop import nes_ner_hop_regular_and_inverse_subgraph
 from rdflib.graph import Graph
 from rdflib.plugins.sparql import algebra
 from rdflib.plugins.sparql import parser
 from rdflib.plugins.sparql.sparql import Query
-
-# from nes_ner_hop import nes_ner_hop_regular_and_inverse_subgraph
+from rdflib.term import URIRef
 
 
 def load_sparql_from_json(jsonfile: str) -> List[str]:
@@ -44,7 +46,7 @@ def load_sparql_from_json_lcqald(jsonfile: str) -> List[str]:
     return sparql_strings
 
 
-def extract_triples_rec(query: Query) -> List:
+def extract_triples_rec(query: Query) -> List[URIRef]:
     """
     Given a spaql.Query object(query), set of triples from sparql object are returned.
 
@@ -74,7 +76,7 @@ def extract_triples_rec(query: Query) -> List:
     return triples
 
 
-def extract_triples(sparql: str) -> List:
+def extract_triples(sparql: str) -> List[URIRef]:
     """
     Given a spaql string, set of triples from sparql string are returned.
 
@@ -89,7 +91,7 @@ def extract_triples(sparql: str) -> List:
     return triples
 
 
-def inverse_relations(tripleslist: list) -> List:
+def inverse_relations(tripleslist: list) -> List[URIRef]:
     """
     Given a list of triples, set of triples for inverse relations are returned.
 
@@ -104,7 +106,7 @@ def inverse_relations(tripleslist: list) -> List:
     return inverse_triples_list
 
 
-def relations(tripleslist: list) -> List:
+def relations(tripleslist: list) -> List[URIRef]:
     """
     Given a list of triples, set of triples for regular relations are returned.
 
@@ -119,7 +121,7 @@ def relations(tripleslist: list) -> List:
     return regular_triples_list
 
 
-def predicate_count_relations(regular_triples_list: list) -> dict:
+def predicate_count_relations(regular_triples_list: list) -> Dict[str, int]:
     """
     Given a list of triples for regular relation, dictionary of predicate - rank (occurrence of predicate) are returned.
 
@@ -136,7 +138,7 @@ def predicate_count_relations(regular_triples_list: list) -> dict:
     return regular_table
 
 
-def predicate_count_inverse_relations(inverse_triples_list: list) -> dict:
+def predicate_count_inverse_relations(inverse_triples_list: list) -> Dict[str, int]:
     """
     Given a list of triples for inverse relation, dictionary of predicate - rank (occurrence of predicate) are returned.
 
@@ -197,6 +199,33 @@ def rank_list(rank_table: dict, subgraph: Graph) -> dict:
     return subgraph_triples_ranked
 
 
+def filter_table_until_last_rank(
+    subgraph_triples_ranked: dict, limit: int
+) -> Tuple[Dict, int]:
+    """
+    Given table with all triples of subgraph and rank for all of them. First "limit" + all triples with the last rank are returned.
+
+    This procedure returns "limit" triples. If there are triples with the same rank in the table, they will be returned additionally.
+    :param subgraph_triples_ranked: dictionary triples from subgraph-rank.
+    :param limit: how many triples from subgraph are needed.
+    :return: First "limit" triples from subgraph with highest rank + all triples with last rank, last_rank.
+    """
+    ranked_triples: dict = {}
+    for triple_item, rank in sorted(
+        subgraph_triples_ranked.items(), key=lambda x: x[1], reverse=True
+    ):
+
+        if len(ranked_triples) < limit:
+            ranked_triples[triple_item] = rank
+            last_rank = rank
+        else:
+            if subgraph_triples_ranked[triple_item] == last_rank:
+                ranked_triples[triple_item] = rank
+            else:
+                break
+    return ranked_triples, last_rank
+
+
 def filter_table(subgraph_triples_ranked: dict, limit: int) -> dict:
     """
     Given table with all triples of subgraph and rank for all of them. Given limit (how many triples from subgraphare needed). First "limit" triples with highest rank are returned.
@@ -215,20 +244,104 @@ def filter_table(subgraph_triples_ranked: dict, limit: int) -> dict:
     return ranked_triples
 
 
+def ranked_triples_for_regular_subgraph(
+    regular_subgraph: Graph, limit: int
+) -> Dict[Tuple, int]:
+    """
+    Given Graph with triples for regular relation and number of necessary triples. Dictionary triple, rank are returned.
+
+    This procedure returns "limit" triples. First triples are ranked according QALD dataset,
+    in case number of triples with the smallest set makes result set larger than limit this triples will be ranked
+    with LC_QALD dataset. Dictionary with "limit" triples are returned.
+
+    :param regular_subgraph: Graph with triples for regular relation.
+    :param limit: how many triples from subgraph are needed.
+    :return: First "limit" triples from subgraph with highest rank.
+    """
+    with open("regular_table.pickle", "rb") as file:
+        regular_table = pickle.load(file)
+    subgraph_triples_ranked = rank_list(regular_table, regular_subgraph)
+    subgraph_triples_ranked, last_rank = filter_table_until_last_rank(
+        subgraph_triples_ranked, limit
+    )
+    if len(subgraph_triples_ranked) == limit:
+        return subgraph_triples_ranked
+    else:
+        triples_with_last_rank = Graph()
+        regular_subgraph_triples_ranked = {}
+        for triple_item, rank in subgraph_triples_ranked.items():
+            if rank == last_rank:
+                triples_with_last_rank.add(triple_item)
+            else:
+                regular_subgraph_triples_ranked[triple_item] = rank
+        with open("regular_table_lcqald.pickle", "rb") as file:
+            regular_table = pickle.load(file)
+        subgraph_triples_ranked = rank_list(regular_table, triples_with_last_rank)
+        limit = limit - len(regular_subgraph_triples_ranked)
+        subgraph_triples_ranked = filter_table(subgraph_triples_ranked, limit)
+        regular_subgraph_triples_ranked = {
+            **regular_subgraph_triples_ranked,
+            **subgraph_triples_ranked,
+        }
+        return regular_subgraph_triples_ranked
+
+
+def ranked_triples_for_inverse_subgraph(
+    inverse_subgraph: Graph, limit: int
+) -> Dict[Tuple, int]:
+    """
+    Given Graph with triples for inverse relation and number of necessary triples. Dictionary triple, rank are returned.
+
+    This procedure returns "limit" triples. First triples are ranked according QALD dataset,
+    in case number of triples with the smallest set makes result set larger than limit this triples will be ranked
+    with LC_QALD dataset. Dictionary with "limit" triples are returned.
+
+    :param inverse_subgraph: Graph with triples for inverse relation.
+    :param limit: how many triples from subgraph are needed.
+    :return: First "limit" triples from subgraph with highest rank.
+    """
+    with open("inverse_table.pickle", "rb") as file:
+        inverse_table = pickle.load(file)
+    subgraph_triples_ranked = rank_list(inverse_table, inverse_subgraph)
+    subgraph_triples_ranked, last_rank = filter_table_until_last_rank(
+        subgraph_triples_ranked, limit
+    )
+    if len(subgraph_triples_ranked) == limit:
+        return subgraph_triples_ranked
+    else:
+        triples_with_last_rank = Graph()
+        inverse_subgraph_triples_ranked = {}
+        for triple_item, rank in subgraph_triples_ranked.items():
+            if rank == last_rank:
+                triples_with_last_rank.add(triple_item)
+            else:
+                inverse_subgraph_triples_ranked[triple_item] = rank
+        with open("inverse_table_lcqald.pickle", "rb") as file:
+            inverse_table = pickle.load(file)
+        subgraph_triples_ranked = rank_list(inverse_table, triples_with_last_rank)
+        limit = limit - len(inverse_subgraph_triples_ranked)
+        subgraph_triples_ranked = filter_table(subgraph_triples_ranked, limit)
+        inverse_subgraph_triples_ranked = {
+            **inverse_subgraph_triples_ranked,
+            **subgraph_triples_ranked,
+        }
+        return inverse_subgraph_triples_ranked
+
+
 def main() -> None:
-    """Call occurencecount.get_ranking_tables(qaldfile) to get two dictionary with predicate rank for regular and invers relation."""
-    # qaldfile = "C:/Users/User/Downloads/QALD8-train.json"
-    # (regular_subgraph, inverse_subgraph,) = nes_ner_hop_regular_and_inverse_subgraph(
-    #    question="Who is the president of Russia?"
-    # )
-    # regular_table, inverse_table = get_ranking_tables(qaldfile)
-    # ranked_regular_triples = rank_list(regular_table, regular_subgraph)
-    # ranked_inverse_triples = rank_list(inverse_table, inverse_subgraph)
-    # ranked_regular_triples = filter_table(ranked_regular_triples, 10)
-    # ranked_inverse_triples = filter_table(ranked_inverse_triples, 10)
-    # for triple_item in ranked_regular_triples.items():
-    #    print(triple_item)
-    #    print("\n")
+    """Call ranked_triples_for_regular_subgraph to get ranking of regular triples."""
+    (
+        regular_subgraph,
+        inverse_subgraph,
+    ) = nes_ner_hop_regular_and_inverse_subgraph(question="Who is Angela Merkel?")
+    ranked_regular_triples = ranked_triples_for_regular_subgraph(regular_subgraph, 10)
+    ranked_inverse_triples = ranked_triples_for_inverse_subgraph(inverse_subgraph, 20)
+    for triple_item in ranked_inverse_triples.items():
+        print(triple_item)
+        print("\n")
+    for triple_item in ranked_regular_triples.items():
+        print(triple_item)
+        print("\n")
 
 
 # Call from shell as main.
