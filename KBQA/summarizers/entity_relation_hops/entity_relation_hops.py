@@ -106,11 +106,11 @@ def get_subgraph(
     relation_pos: int,
     limit: int,
     ignore: bool,
-) -> List[Tuple[str, Graph]]:
+) -> List[Tuple[URIRef, Graph]]:
     """Extract a subgraph for all entities using the relations.
 
     Given a list of entities and relations, extract a subgraph for each entity.
-    Depending on the chosen parameters the relations can also be taken into consideration.
+    Depending on the chosen parameters the relations can also be excluded from the subgraph.
 
     Parameters
     ----------
@@ -138,54 +138,124 @@ def get_subgraph(
     ValueError
         If a parameter is not supported.
     """
-    sub_graphs = []
-
     if hops not in [1, 2]:
         raise ValueError("Only hops of size 1 and 2 are supported.")
 
     if relation_pos not in [1, 2]:
         raise ValueError("Relation can be only at position 1 or 2.")
 
-    if hops == 1:
-        if relation_pos == 1 and len(relations) > 0 and not ignore:
-            # use the relations as predicate
-            for entity in entities:
-                for relation in relations:
-                    subgraph = get_subgraph_for_one_hop(
-                        entity.n3(), relation.n3(), limit
-                    )
+    if hops == 1 and relation_pos == 2:
+        raise ValueError("Relation cannot be at position 2, if there is only one hop.")
 
-                sub_graphs.append((entity, subgraph))
+    sub_graphs = []
+
+    for entity in entities:
+        if len(relations) > 0 and not ignore:
+            subgraph = get_subgraph_for_entity_with_relations(
+                entity, relations, hops, relation_pos, limit
+            )
+
+            sub_graphs.append((entity, subgraph))
         else:
-            # ignore relations
-            for entity in entities:
-                subgraph = get_subgraph_for_one_hop(entity.n3(), "?p", limit)
+            subgraph = get_subgraph_for_entity_without_relations(entity, hops, limit)
 
-                sub_graphs.append((entity, subgraph))
-    elif hops == 2:
-        if relation_pos in [1, 2] and len(relations) > 0 and not ignore:
-            for entity in entities:
-                for relation in relations:
-                    if relation_pos == 1:
-                        # use the relation in the first hop
-                        subgraph = get_subgraph_for_two_hops(
-                            entity.n3(), relation.n3(), "?p2", limit
-                        )
-                    elif relation_pos == 2:
-                        # use the relation in the second hop
-                        subgraph = get_subgraph_for_two_hops(
-                            entity.n3(), "?p1", relation.n3(), limit
-                        )
-
-                sub_graphs.append((entity, subgraph))
-        else:
-            # ignore the relations
-            for entity in entities:
-                subgraph = get_subgraph_for_two_hops(entity.n3(), "?p1", "?p2", limit)
-
-                sub_graphs.append((entity, subgraph))
+            sub_graphs.append((entity, subgraph))
 
     return sub_graphs
+
+
+def get_subgraph_for_entity_with_relations(
+    entity: URIRef, relations: List[URIRef], hops: int, relation_pos: int, limit: int
+) -> Graph:
+    """Extract a subgraph, which takes all relations into consideration.
+
+    Given an entity as the center node, extract a subgraph, which contains
+    the given relations as edges at the defined positions.
+
+    Parameters
+    ----------
+    entity : URIRef
+        The entity, which is the center node of the subgraph.
+    relations : list
+        List of DBpedia-properties describing the relations.
+    hops : int
+        Number of hops.
+    relation_pos : int
+        Position of the relations. Setting this parameter to 1 puts the relations
+        in the first hop and setting this parameter to 2 puts the relations in the
+        second hop.
+    limit : int
+        Limit the number of triples in the subgraphs. Use -1 to not use any limit.
+
+    Returns
+    -------
+    subgraph : Graph
+        The resulting subgraph.
+
+    Raises
+    ------
+    ValueError
+        If a parameter is not valid.
+    """
+    subgraph = Graph()
+
+    for relation in relations:
+        if hops == 1:
+            subgraph += get_subgraph_for_one_hop(entity.n3(), relation.n3(), limit)
+        elif hops == 2:
+            if relation_pos == 1:
+                subgraph += get_subgraph_for_two_hops(
+                    entity.n3(), relation.n3(), "?p2", limit
+                )
+            elif relation_pos == 2:
+                subgraph += get_subgraph_for_two_hops(
+                    entity.n3(), "?p1", relation.n3(), limit
+                )
+            else:
+                raise ValueError("Relation can be only at position 1 or 2.")
+        else:
+            raise ValueError("Number of hops should be in [1, 2]")
+
+    return subgraph
+
+
+def get_subgraph_for_entity_without_relations(
+    entity: URIRef, hops: int, limit: int
+) -> Graph:
+    """Extract a subgraph only based on an entity.
+
+    Given an entity as the center node, extract a subgraph with all outgoing and
+    ingoing edges on one or two hops.
+
+    Parameters
+    ----------
+    entity : URIRef
+        The entity, which is the center node of the subgraph.
+    hops : int
+        Number of hops.
+    limit : int
+        Limit the number of triples in the subgraphs. Use -1 to not use any limit.
+
+    Returns
+    -------
+    subgraph : Graph
+        The resulting subgraph.
+
+    Raises
+    ------
+    ValueError
+        If a parameter is not valid.
+    """
+    subgraph = Graph()
+
+    if hops == 1:
+        subgraph += get_subgraph_for_one_hop(entity.n3(), "?p", limit)
+    elif hops == 2:
+        subgraph += get_subgraph_for_two_hops(entity.n3(), "?p1", "?p2", limit)
+    else:
+        raise ValueError("Number of hops should be in [1, 2]")
+
+    return subgraph
 
 
 def ask_dbpedia(query: str) -> Graph:
