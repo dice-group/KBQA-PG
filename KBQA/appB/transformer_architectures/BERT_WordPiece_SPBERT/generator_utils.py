@@ -192,6 +192,7 @@ SPARQL_KEYWORDS = {
     "TAN",
     "VAR",
     "VARP",
+    "HAVING",
 }
 
 REPLACEMENTS = [
