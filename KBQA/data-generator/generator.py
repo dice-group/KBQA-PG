@@ -1,42 +1,26 @@
-# QALD Dataset: Question, SPARQL, Answer
-
-# summarizer(QALD Dataset):
-#   --> [KB Triples]
-
-
-# generator(QALD Dataset, summarizer):
-#  --> ^
-
-
-# Dataset
-#     readData(file)
-
-# SummarizerABC
-#     summarize(question)
-
-#     summarize(questions[])
-
-# Generator
-#     generate(Dataset, Summarizer)
-
-import os
-
+"""Generator to generate a (question, sparql, triples) dataset using summarizers."""
 from dataset import Dataset
 from nes import NES
 from summarizer import Summarizer
 
 
-def generateTriples(dataset: Dataset, summarizer: Summarizer):
-    triples = []
+def generate_triples(dataset: Dataset, summarizer: Summarizer) -> None:
+    """Generate triples for the dataset using the given summarizer.
 
-    for quesiton in dataset.questions:
-        t = summarizer.summarize(question.text)
-        question.triples.append(t)
+    Parameters
+    ----------
+    dataset : Dataset
+        Dataset with questions
+    summarizer : Summarizer
+        Used summarizer for triple generation
+    """
+    for question in dataset.questions:
+        triple = summarizer.summarize(question.text)
+        question.triples.extend(triple)
 
-cwd = os.getcwd()
-print(cwd)
 
-dataset = Dataset()
-dataset.load_dataset("KBQA/data-generator/qald-9-train-multilingual.json")
-summarizer = NES()
-generateTriples(dataset, summarizer)
+qald = Dataset()
+qald.load_qald_dataset("KBQA/data-generator/qald-9-train-multilingual.json")
+nes = NES()
+generate_triples(qald, nes)
+qald.save_qtq_dataset("KBQA/data-generator/qtq-9-train-multilingual.json")
