@@ -1,13 +1,14 @@
 """Generic summarizer."""
 from abc import ABC
 from abc import abstractmethod
+from typing import List
 
 
 class Summarizer(ABC):
     """Abstract summarizer."""
 
     @abstractmethod
-    def summarize(self, question: str) -> list[str]:
+    def summarize(self, question: str) -> List[str]:
         """Summarize a natural question and return relevant triples.
 
         Parameters
