@@ -361,25 +361,63 @@ http://dbpedia.org/ontology/Lake;;;what does the <A> flow into?;SELECT DISTINCT 
 
 
 # http://dbpedia.org/ontology/Game
+dbo:Game;;;How many players can play this <A>?;SELECT DISTINCT ?uri where {<A> dbp:players ?uri};select distinct ?a where {?a dbp:players ?uri};
+dbo:Game;;;Who invented <A>?;SELECT DISTINCT ?uri where {<A> dbp:inventor ?uri};select distinct ?a where {?a dbp:inventor ?uri};
+dbo:Game;;;Who is the manufacturer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:manufacturer ?uri};select distinct ?a where {?a dbp:manufacturer ?uri};
+dbo:Game;;;What are the skills needed to play <A>?:SELECT DISTINCT ?uri where {<A> dbp:skills ?uri};select distinct ?a where {?a dbp:skills ?uri};
+
 # http://dbpedia.org/ontology/Airline
 # http://dbpedia.org/ontology/Bank
 # http://dbpedia.org/ontology/BasketballLeague
+
 # http://dbpedia.org/ontology/Hotel
+dbo:Hotel;;;Where is <A> located;SELECT DISTINCT ?uri where {<A> dbp:location ?uri};select distinct ?a where {?a dbp:location ?uri};
+dbo:Hotel;;;Who is the owner of <A>;SELECT DISTINCT ?uri where {<A> dbp:owner ?uri};select distinct ?a where {?a dbp:owner ?uri};
+dbo:Hotel;;;How many rooms are available in <A>;SELECT DISTINCT ?uri where {<A> dbo:numberOfRooms ?uri};select distinct ?a where {?a dbo:numberOfRooms ?uri};
+dbo:Hotel;;;How many floors are present in <A>;SELECT DISTINCT ?uri where {<A> dbo:floorCount ?uri};select distinct ?a where {?a dbo:floorCount ?uri};
+
 # http://dbpedia.org/ontology/TennisTournament
+
 # http://dbpedia.org/ontology/Song
+dbo:Song;;;Who is the singer of the song <A>?;SELECT DISTINCT ?uri where {<A> dbo:artist ?uri};select distinct ?a where {?a dbo:artist ?uri};
+dbo:Song;;;When did the song <A> got released?;SELECT DISTINCT ?uri where {<A> dbo:releaseDate ?uri};select distinct ?a where {?a dbo:releaseDate ?uri};
+dbo:Song;;;Who is the writer for the song <A>?;SELECT DISTINCT ?uri where {<A> dbo:writer ?uri};select distinct ?a where {?a dbo:writer ?uri};
+
+
 # http://dbpedia.org/ontology/Manga
+dbo:Manga;;;Who is the author of <A>;SELECT DISTINCT ?uri where {<A> dbo:author ?uri};select distinct ?a where {?a dbo:author ?uri};
+dbo:Manga;;;Who is the publisher of  <A>?;SELECT DISTINCT ?uri where {<A> dbo:publisher ?uri};select distinct ?a where {?a dbo:publisher ?uri};
+dbo:Manga;;;When did <A> publsihed for the first time?;SELECT DISTINCT ?uri where {<A> dbo:firstPublicationDate ?uri};select distinct ?a where {?a dbo:firstPublicationDate ?uri};
+dbo:Manga;;;What is the genre of <A>;SELECT DISTINCT ?uri where {<A> dbp:genre ?uri};select distinct ?a where {?a dbp:genre ?uri};
+
+  
 # http://dbpedia.org/ontology/BasketballTeam
 # http://dbpedia.org/ontology/Band
+  
 # http://dbpedia.org/ontology/Artist
+  
+http://dbpedia.org/ontology/WrittenWork;http://dbpedia.org/ontology/Artist;;Did <B> do the cover of <A>?;ASK where { <A> dbo:coverArtist <B> };select distinct ?a, ?b where { ?a dbo:coverArtist ?b };f3e6a145912e4850b3f93dbc9342c2b0
+http://dbpedia.org/ontology/TelevisionShow|http://dbpedia.org/ontology/Artwork;http://dbpedia.org/ontology/Artist;;What artist of <A> influenced <B> in her career?;SELECT DISTINCT ?uri where { <A> dbp:artist ?uri . <B> dbp:influencedBy ?uri };select distinct ?a, ?b where { ?a dbp:artist ?uri . ?b dbp:influencedBy ?uri };acd23184141840d2a1677901fd42bbd9
+http://dbpedia.org/ontology/Artist;;;Which artist married to <A>?;SELECT DISTINCT ?uri where { ?uri dbp:spouse <A> . ?uri a dbo:Artist };select distinct ?a where { ?uri dbp:spouse ?a . ?uri a dbo:Artist };dc3403a37b77457aafadb0b90e8ed62a
+http://dbpedia.org/ontology/Artist;http://dbpedia.org/ontology/WrittenWork;;Is <A> the illustration by of <B>?;ASK where { <B> dbp:illustrator <A> };select distinct ?a, ?b where { ?b dbp:illustrator ?a };a9898ec7205044eeb0890978e7e8c771
+http://dbpedia.org/ontology/WrittenWork;http://dbpedia.org/ontology/Artist;;Was <A> covered by <B>?;ASK where { <A> dbp:coverArtist <B> };select distinct ?a, ?b where { ?a dbp:coverArtist ?b };e6f3d395b66f485cb8901bfbcb1c4c0c
+
 # http://dbpedia.org/ontology/Aircraft
 # http://dbpedia.org/ontology/Airport
 # http://dbpedia.org/ontology/Album
 # http://dbpedia.org/ontology/AmericanFootballPlayer
 # http://dbpedia.org/ontology/MusicalArtist
 # http://dbpedia.org/ontology/Writer
+
 # http://dbpedia.org/ontology/Animal
+dbo:Animal;;;What is the genus of <A>;SELECT DISTINCT ?uri where {<A> dbo:genus ?uri};select distinct ?a where {?a dbo:genus ?uri};
+dbo:Animal;;;What is the type of the <A>?;SELECT DISTINCT ?uri where {<A> dbo:class ?uri};select distinct ?a where {?a dbo:class ?uri};
+dbo:Animal;;;<A> belongs to which family?;SELECT DISTINCT ?uri where {<A> dbo:family ?uri};select distinct ?a where {?a dbo:family ?uri};
+  
+  
 # http://dbpedia.org/ontology/Browser
 # http://dbpedia.org/ontology/Camera
+No entities
 # http://dbpedia.org/ontology/Arena
 
 
