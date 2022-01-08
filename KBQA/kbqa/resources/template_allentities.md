@@ -297,15 +297,60 @@ dbo:University;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbp
 # http://dbpedia.org/ontology/Airline
 # http://dbpedia.org/ontology/Bank
 # http://dbpedia.org/ontology/BasketballLeague
+  
 # http://dbpedia.org/ontology/Anime
+  
+dbo:Anime;;;Who is the director of <A>?;SELECT DISTINCT ?uri where {<A> dbp:director ?uri};select distinct ?a where {?a dbp:director ?uri};
+dbo:Anime;;;<A> is directed by?;SELECT DISTINCT ?uri where {<A> dbp:director ?uri};select distinct ?a where {?a dbp:director ?uri};
+dbo:Anime;;;<A> is produced by?;SELECT DISTINCT ?uri where {<A> dbp:producer ?uri};select distinct ?a where {?a dbp:producer ?uri};
+dbo:Anime;;;Who is the producer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:producer ?uri};select distinct ?a where {?a dbp:producer ?uri};
+dbo:Anime;;;Who composed music for <A>?;SELECT DISTINCT ?uri where {<A> dbo:musicComposer ?uri};select distinct ?a where {?a dbo:musicComposer ?uri};
+dbo:Anime;;;Who composed music for <A>?;SELECT DISTINCT ?uri where {<A> dbo:music ?uri};select distinct ?a where {?a dbo:music ?uri};
+dbo:Anime;;;How many episodes does <A> have?;SELECT DISTINCT ?uri where {<A> dbp:episodes ?uri};select distinct ?a where {?a dbp:episodes ?uri};
+  
+ 
 # http://dbpedia.org/ontology/City
+
 # http://dbpedia.org/ontology/Planet
+  
+dbo:Planet;;;What is the average speed of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbp:averageSpeed ?uri};select distinct ?a where {?a dbp:averageSpeed ?uri};id
+dbo:Planet;;;What is the density of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbo:density ?uri};select distinct ?a where {?a dbo:density ?uri};id
+dbo:Planet;;;What is the mass of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbo:mass ?uri};select distinct ?a where {?a dbo:mass ?uri};id
+dbo:Planet;;;how many satellites does <A> have?;SELECT DISTINCT ?uri where {<A> dbp:satellites ?uri};select distinct ?a where {?a dbp:satellites ?uri};id
+dbo:Planet;;;What is the maximum temperature of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbp:maxTemp ?uri};select distinct ?a where {?a dbp:maxTemp ?uri};id
+
+  
 # http://dbpedia.org/ontology/CricketTeam
+dbo:CricketTeam;;;Who is the captian of <A>?;SELECT DISTINCT ?uri where {<A> dbp:captain ?uri};select distinct ?a where {?a dbp:captain ?uri};id
+dbo:CricketTeam;;;Who is the coach of <A>?;SELECT DISTINCT ?uri where {<A> dbp:coach ?uri};select distinct ?a where {?a dbp:coach ?uri};id
+dbo:CricketTeam;;;Who is the ODI captian of <A>?;SELECT DISTINCT ?uri where {<A> dbp:odcaptain ?uri};select distinct ?a where {?a dbp:odcaptain ?uri};id
+dbo:CricketTeam;;;Who is the t20 captian of <A>?;SELECT DISTINCT ?uri where {<A> dbp:t20icaptain ?uri};select distinct ?a where {?a dbp:t20icaptain ?uri};id
+dbo:CricketTeam;;;Who is the test captian of <A>?;SELECT DISTINCT ?uri where {<A> dbp:testcaptain ?uri};select distinct ?a where {?a dbp:testcaptain ?uri};id
+
 # http://dbpedia.org/ontology/Film
 # http://dbpedia.org/ontology/Game
+  
 # http://dbpedia.org/ontology/Mountain
+
+http://dbpedia.org/ontology/MountainRange;http://dbpedia.org/ontology/Volcano;;Name the mountain whose range is <A> and parent mountain peak is <B>?;SELECT DISTINCT ?uri where { ?uri dbo:mountainRange <A> . ?uri dbo:parentMountainPeak <B> . ?uri a dbo:Mountain };select distinct ?a, ?b where { ?uri dbo:mountainRange ?a . ?uri dbo:parentMountainPeak ?b . ?uri a dbo:Mountain };838eaa04147b4081beae5daad514fb0c
+http://dbpedia.org/ontology/MountainRange;;;In which country is <A>?;SELECT DISTINCT ?uri where { <A> dbo:country ?uri };select distinct ?a where { ?a dbo:country ?uri };aaa9856758804b05ae5363e65a3bd2a7
+http://dbpedia.org/ontology/Mountain;;;In which mountain range does the <A> lie?;SELECT DISTINCT ?uri where { ?x dbo:parentMountainPeak <A> . ?x dbo:mountainRange ?uri };select distinct ?a where { ?x dbo:parentMountainPeak ?a . ?x dbo:mountainRange ?uri };f717accc0ab04b15bed31ee97a11045f
+http://dbpedia.org/ontology/MountainRange;;;List of people who were the first one to ascend a mountain in the <A>?;SELECT DISTINCT ?uri where { ?x dbo:mountainRange <A> . ?x dbo:firstAscentPerson ?uri . ?x a dbo:Mountain };select distinct ?a where { ?x dbo:mountainRange ?a . ?x dbo:firstAscentPerson ?uri . ?x a dbo:Mountain };19799ac99ae44c6ea599ce69e0ef0bc8
+http://dbpedia.org/ontology/MountainRange;http://dbpedia.org/ontology/Region;;List the mountains of the range <A> located in  <B>?;SELECT DISTINCT ?uri where { ?uri dbo:mountainRange <A> . ?uri dbo:locatedInArea <B> . ?uri a dbo:Mountain };select distinct ?a, ?b where { ?uri dbo:mountainRange ?a . ?uri dbo:locatedInArea ?b . ?uri a dbo:Mountain };b6b8067555af4063906d88b2e32e1a03
+http://dbpedia.org/ontology/Mountain;;;Name the mountain range in which the mountain peak of <A> belongs?;SELECT DISTINCT ?uri where { <A> dbo:parentMountainPeak ?x . ?x dbo:mountainRange ?uri };select distinct ?a where { ?a dbo:parentMountainPeak ?x . ?x dbo:mountainRange ?uri };75fe6c8cbf564ad5b696120959659daf
+http://dbpedia.org/ontology/Mountain;;;name the mountain range of <A> ?;SELECT DISTINCT ?uri where { <A> dbo:mountainRange ?uri };select distinct ?a where { ?a dbo:mountainRange ?uri };1a7add8911774e34a9753b1970a42b0f
+http://dbpedia.org/ontology/MountainRange;http://dbpedia.org/ontology/ProtectedArea;;Name the mountain which belongs to <A> range and is located in <B>?;SELECT DISTINCT ?uri where { ?uri dbo:mountainRange <A> . ?uri dbo:locatedInArea <B> . ?uri a dbo:Mountain };select distinct ?a, ?b where { ?uri dbo:mountainRange ?a . ?uri dbo:locatedInArea ?b . ?uri a dbo:Mountain };cf34994e9bb545c3beff7e8a04d58823
+
+
 # http://dbpedia.org/ontology/Museum
+  
 # http://dbpedia.org/ontology/Olympics
+dbo:Olympics;;;When did the <A> happen?;SELECT DISTINCT ?uri where {<A> dbo:games ?uri};select distinct ?a where {?a dbo:games ?uri};id
+dbo:Olympics;;;Where did the <A> organised?;SELECT DISTINCT ?uri where {<A> dbp:venue ?uri};select distinct ?a where {?a dbp:venue ?uri};id
+dbo:Olympics;;;Who won the gold medal in <A>?;SELECT DISTINCT ?uri where {<A> dbo:goldMedalist ?uri};select distinct ?a where {?a dbo:goldMedalist ?uri};id
+dbo:Olympics;;;Who won the silver medal in <A>?;SELECT DISTINCT ?uri where {<A> dbo:silverMedalist ?uri};select distinct ?a where {?a dbo:silverMedalist ?uri};id
+dbo:Olympics;;;Who won the bronze medal in <A>?;SELECT DISTINCT ?uri where {<A> dbp:bronze ?uri};select distinct ?a where {?a dbp:bronze ?uri};id
+
 # http://dbpedia.org/ontology/Hotel
 # http://dbpedia.org/ontology/TennisTournament
 # http://dbpedia.org/ontology/Song
