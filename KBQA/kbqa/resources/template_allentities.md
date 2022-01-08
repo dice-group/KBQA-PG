@@ -856,7 +856,6 @@ dbo:University;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbp
 # http://dbpedia.org/ontology/Decoration
 # http://dbpedia.org/ontology/Deity
 # http://dbpedia.org/ontology/Demographics
-# http://dbpedia.org/ontology/Depth
 # http://dbpedia.org/ontology/Deputy
 # http://dbpedia.org/ontology/Desert
 # http://dbpedia.org/ontology/DigitalCamera
