@@ -321,11 +321,11 @@ dbo:Planet;;;What is the maximum temperature of the planet <A>?;SELECT DISTINCT 
 
   
 # http://dbpedia.org/ontology/CricketTeam
-dbo:CricketTeam;;;Who is the captian of <A>?;SELECT DISTINCT ?uri where {<A> dbp:captain ?uri};select distinct ?a where {?a dbp:captain ?uri};id
+dbo:CricketTeam;;;Who is the captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:captain ?uri};select distinct ?a where {?a dbp:captain ?uri};id
 dbo:CricketTeam;;;Who is the coach of <A>?;SELECT DISTINCT ?uri where {<A> dbp:coach ?uri};select distinct ?a where {?a dbp:coach ?uri};id
-dbo:CricketTeam;;;Who is the ODI captian of <A>?;SELECT DISTINCT ?uri where {<A> dbp:odcaptain ?uri};select distinct ?a where {?a dbp:odcaptain ?uri};id
-dbo:CricketTeam;;;Who is the t20 captian of <A>?;SELECT DISTINCT ?uri where {<A> dbp:t20icaptain ?uri};select distinct ?a where {?a dbp:t20icaptain ?uri};id
-dbo:CricketTeam;;;Who is the test captian of <A>?;SELECT DISTINCT ?uri where {<A> dbp:testcaptain ?uri};select distinct ?a where {?a dbp:testcaptain ?uri};id
+dbo:CricketTeam;;;Who is the ODI captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:odcaptain ?uri};select distinct ?a where {?a dbp:odcaptain ?uri};id
+dbo:CricketTeam;;;Who is the t20 captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:t20icaptain ?uri};select distinct ?a where {?a dbp:t20icaptain ?uri};id
+dbo:CricketTeam;;;Who is the test captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:testcaptain ?uri};select distinct ?a where {?a dbp:testcaptain ?uri};id
 
 # http://dbpedia.org/ontology/Film
 # http://dbpedia.org/ontology/Game
