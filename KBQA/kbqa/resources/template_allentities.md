@@ -325,6 +325,12 @@ http://dbpedia.org/ontology/City;;;How many buildings are located in <A> ?;SELEC
 # http://dbpedia.org/ontology/Album
 # http://dbpedia.org/ontology/AmericanFootballPlayer
 # http://dbpedia.org/ontology/Lake
+http://dbpedia.org/ontology/Lake;;;How many cities are close to <A>?;SELECT DISTINCT COUNT(?uri) where { <A> dbo:nearestCity ?uri };select distinct ?a where { ?a dbo:nearestCity ?uri };209c460e684848fe9572d27a98ecbfea
+http://dbpedia.org/ontology/Lake;;;In how many countries do the rivers start which end at the <A>?;SELECT DISTINCT COUNT(?uri) where { ?x dbo:riverMouth <A> . ?x dbo:sourceCountry ?uri . ?uri a dbo:Country };select distinct ?a where { ?x dbo:riverMouth ?a . ?x dbo:sourceCountry ?uri . ?uri a dbo:Country };c5e369b698d4499a92beac8371b73491
+http://dbpedia.org/ontology/Lake;;;Name the nearest city to  <A>?;SELECT DISTINCT ?uri where { <A> dbo:nearestCity ?uri };select distinct ?a where { ?a dbo:nearestCity ?uri };a622cb449bde410c8c3e8c5c11a18ebb
+http://dbpedia.org/ontology/Lake;http://dbpedia.org/ontology/City;;Name the river with source as <A> and its mouth is located in <B>?;SELECT DISTINCT ?uri where { ?uri dbo:source <A> . ?uri dbp:mouthLocation <B> . ?uri a dbo:River };select distinct ?a, ?b where { ?uri dbo:source ?a . ?uri dbp:mouthLocation ?b . ?uri a dbo:River };a08bb500ab2240118a0e3c00ed317f0b
+http://dbpedia.org/ontology/Lake;;;what does the <A> flow into?;SELECT DISTINCT ?uri where { <A> dbp:inflow ?uri };select distinct ?a where { ?a dbp:inflow ?uri };84d8ee90740d450784488c785a892205
+
 # http://dbpedia.org/ontology/MusicalArtist
 # http://dbpedia.org/ontology/Writer
 # http://dbpedia.org/ontology/Animal
