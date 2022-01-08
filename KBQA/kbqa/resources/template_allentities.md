@@ -299,6 +299,13 @@ dbo:University;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbp
 # http://dbpedia.org/ontology/BasketballLeague
 # http://dbpedia.org/ontology/Anime
 # http://dbpedia.org/ontology/City
+http://dbpedia.org/ontology/City;;;What products are made by <A> based companies?;SELECT DISTINCT ?uri where { ?x dbp:location <A> . ?x dbo:product ?uri . ?x a dbo:Company };select distinct ?a where { ?x dbp:location ?a . ?x dbo:product ?uri . ?x a dbo:Company };0ad9954f309c496ab4dfbd8056a58187
+http://dbpedia.org/ontology/City;;;Where can i find companies which were started in <A>?;SELECT DISTINCT ?uri where { ?x dbo:foundationPlace <A> . ?x dbp:locations ?uri . ?x a dbo:Company };select distinct ?a where { ?x dbo:foundationPlace ?a . ?x dbp:locations ?uri . ?x a dbo:Company };72d5cb491ec94f14b8d9683a64782b9c
+http://dbpedia.org/ontology/City;;;Which companies makes cars assembled in <A>, Pakistan?;SELECT DISTINCT ?uri where { ?x dbp:assembly <A> . ?x dbp:parentCompany ?uri . ?x a dbo:Automobile };select distinct ?a where { ?x dbp:assembly ?a . ?x dbp:parentCompany ?uri . ?x a dbo:Automobile };4790db09b5954a87831e282bd16265df
+http://dbpedia.org/ontology/City;;;Which sports are played at institues in <A>?;SELECT DISTINCT ?uri where { ?x dbo:city <A> . ?x dbo:sport ?uri . ?x a dbo:EducationalInstitution };select distinct ?a where { ?x dbo:city ?a . ?x dbo:sport ?uri . ?x a dbo:EducationalInstitution };38c688a1da544a7fb79c1a239732903f
+http://dbpedia.org/ontology/City;;;Count the cities whihch are on the same sea as that of <A> ?;SELECT DISTINCT COUNT(?uri) where { ?x dbp:cities <A> . ?x dbp:cities ?uri };select distinct ?a where { ?x dbp:cities ?a . ?x dbp:cities ?uri };e2916bd3eb4a49159537f5a32218b829
+http://dbpedia.org/ontology/City;;;How many buildings are located in <A> ?;SELECT DISTINCT COUNT(?uri) where { ?uri dbp:location <A> . ?uri a dbo:Building };select distinct ?a where { ?uri dbp:location ?a . ?uri a dbo:Building };6a6a9694fbb44140ada81d7a8c89aa0f
+
 # http://dbpedia.org/ontology/Planet
 # http://dbpedia.org/ontology/CricketTeam
 # http://dbpedia.org/ontology/Film
