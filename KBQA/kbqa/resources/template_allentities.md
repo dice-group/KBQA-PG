@@ -312,6 +312,12 @@ http://dbpedia.org/ontology/City;;;How many buildings are located in <A> ?;SELEC
 # http://dbpedia.org/ontology/Game
 # http://dbpedia.org/ontology/Mountain
 # http://dbpedia.org/ontology/Museum
+dbo:Museum;;;List awards <A> got.;SELECT DISTINCT ?uri where {?uri dbo:award <A>};select distinct ?a where {?uri dbo:award ?a};43
+dbo:Museum;;;List all art works in <A>.SELECT DISTINCT ?uri where {?uri dbo:museum <A>};select distinct ?a where {?uri dbo:museum ?a};44
+dbo:Museum;;;When is <A> established?;SELECT DISTINCT ?uri where {<A> dbp:established ?uri};select distinct ?a where {?a dbp:established ?uri};45
+dbo:Museum;;;How many visitors does <A> have in a year?;SELECT DISTINCT ?uri where {<A> dbp:visitors ?uri};select distinct ?a where {?a dbo:numberOfVisitors ?uri};46
+dbo:Museum;;;Where is <A>?;SELECT DISTINCT ?uri where {<A> dbo:location ?uri};select distinct ?a where {?a dbo:location ?uri};47
+
 # http://dbpedia.org/ontology/Olympics
 # http://dbpedia.org/ontology/Hotel
 # http://dbpedia.org/ontology/TennisTournament
