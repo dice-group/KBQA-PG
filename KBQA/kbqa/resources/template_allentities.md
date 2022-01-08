@@ -14,10 +14,9 @@ dbo:Company;;;List all products from <A>.;SELECT DISTINCT ?uri where { <A> dbo:p
 dbo:Company;;;What is <A>'s annual revenue?;SELECT DISTINCT ?uri where { <A> dbo:revenue ?uri};generator query;8
 
 # http://dbpedia.org/ontology/Activity
-
-dbo:Activity;;;What ball is used in <A>?;SELECT DISTINCT ?uri where { <A> dbp:ball ?uri};generator query;9
-dbo:Activity;;;How large is the team size in <A>?;SELECT DISTINCT ?uri where {<A> dbo:teamSize ?uri};generator query;10
-dbo:Activity;;;How long is the playing time of <A>?;SELECT DISTINCT ?uri where {<A> dbp:playingTime ?uri};generator query;11
+dbo:Activity;;;What ball is used in <A>?;SELECT DISTINCT ?uri where {<A> dbp:ball ?uri};select distinct ?a where{ ?a dbp:ball ?uri};9
+dbo:Activity;;;How large is the team size in <A>?;SELECT DISTINCT ?uri where {<A> dbo:teamSize ?uri};select distinct ?a where {?a dbo:teamSize ?uri};10 
+dbo:Activity;;;How long is the playing time of <A>?;SELECT DISTINCT ?uri where {<A> dbp:playingTime ?uri};select distinct ?a where {?a dbp:playingTime ?uri};11
 
 # http://dbpedia.org/ontology/Person
 dbo:Person;;;<A> has how many relatives?;SELECT DISTINCT COUNT(?uri) where { <A> dbp:relatives ?uri };select distinct ?a where { ?a dbp:relatives ?uri };0823c2c40ec44ed38548274caa96984d
@@ -240,37 +239,38 @@ dbr:Actor;;;What is the production Company of <A>?;SELECT DISTINCT ?uri where {?
 
 # http://dbpedia.org/ontology/Film
 
-dbo:Film;;;Who are producers of <A>?;SELECT DISTINCT ?uri where {<A> dbo:producer ?uri};generator query;16
-dbo:Film;;;How much was the budget of <A>?;SELECT DISTINCT ?uri where {<A> dbo:budget ?uri};generator query;17
-dbo:Film;;;Who is the director of <A>?;SELECT DISTINCT ?uri where {dbr:Mission:_Impossible_III dbo:director ?uri};generator - query;18
-dbo:Film;;;Who are the stars in <A>?;SELECT DISTINCT ?uri where {<A> dbo:starring ?uri};generator query;19
-dbo:Film;;;How long is <A>?;SELECT DISTINCT ?uri where {<A> dbo:runtime ?uri};generator query;20
-dbo:Film;;;When was <A> released?;SELECT DISTINCT ?uri where {<A> dbp:released ?uri};generator query;21
+dbo:Film;;;Who are producers of <A>?;SELECT DISTINCT ?uri where {<A> dbo:producer ?uri};select distinct ?a where {?a dbo:producer ?uri};16
+dbo:Film;;;How much was the budget of <A>?;SELECT DISTINCT ?uri where {<A> dbo:budget ?uri};select distinct ?a where {?a dbo:budget ?uri};17
+dbo:Film;;;Who is the director of <A>?;SELECT DISTINCT ?uri where {dbr:Mission:_Impossible_III dbo:director ?uri};select distinct ?a where {?a dbr:Mission:_Impossible_III dbo:director ?uri};18
+dbo:Film;;;Who are the stars in <A>?;SELECT DISTINCT ?uri where {<A> dbo:starring ?uri};select distinct ?a where {?a dbo:starring ?uri};19
+dbo:Film;;;How long is <A>?;SELECT DISTINCT ?uri where {<A> dbo:runtime ?uri};select distinct ?a where {?a dbo:runtime ?uri};20
+dbo:Film;;;When was <A> released?;SELECT DISTINCT ?uri where {<A> dbp:released ?uri};select distinct ?a where {?a dbp:released ?uri};21
 
 
 # http://dbpedia.org/ontology/Place
 
-dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where {<A> dbo:country ?uri};generator query;22
-dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where {<A> dbp:country ?uri};generator query;23
-dbo:Place;;;How many people live in <A>?;SELECT DISTINCT ?uri where {<A> dbp:populationTotal ?uri};generator query;24
-dbo:Place;;;What is the population of <A>?;SELECT DISTINCT ?uri where {<A> dbp:populationTotal ?uri};generator query;25
-dbo:Place;;;When was <A> established;SELECT DISTINCT ?uri where {<A> dbp:establishedDate ?uri};generator query;26
+dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where {<A> dbo:country ?uri};select distinct ?a where {?a dbo:country ?uri};22
+dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where {<A> dbp:country ?uri};select distinct ?a where {?a dbp:country ?uri};23
+dbo:Place;;;How many people live in <A>?;SELECT DISTINCT ?uri where {<A> dbp:populationTotal ?uri};select distinct ?a where {?a dbp:populationTotal ?uri};24
+dbo:Place;;;What is the population of <A>?;SELECT DISTINCT ?uri where {<A> dbp:populationTotal ?uri};select distinct ?awhere {?a dbp:populationTotal ?uri};25
+dbo:Place;;;When was <A> established;SELECT DISTINCT ?uri where {<A> dbp:establishedDate ?uri};select distinct ?a where {?a dbp:establishedDate ?uri};26
 
 # http://dbpedia.org/ontology/Publisher
 # http://dbpedia.org/ontology/Genre
+  
 # http://dbpedia.org/ontology/Language
 
-dbo:Language;;;In which region do people speak <A>?;SELECT DISTINCT ?uri where {<A> dbp:region ?uri};generator query;27
-dbo:Language;;;Which language family does <A> belong to?;SELECT DISTINCT ?uri where {<A> dbo:languageFamily ?uri};generator query;28
+dbo:Language;;;In which region do people speak <A>?;SELECT DISTINCT ?uri where {<A> dbp:region ?uri};select distinct ?a where {?a dbp:region ?uri};27
+dbo:Language;;;Which language family does <A> belong to?;SELECT DISTINCT ?uri where {<A> dbo:languageFamily ?uri};select distinct ?a where {?a dbo:languageFamily ?uri}:28
 
 
 # http://dbpedia.org/ontology/Department
 # http://dbpedia.org/ontology/Software
 
-dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where {<A> dbp:developer ?uri};generator query;29
-dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where {<A> dbo:releaseDate ?uri};generator query;30
-dbo:Software;;;What operating system can <A> run on?;SELECT DISTINCT ?uri where {<A> dbo:operatingSystem ?uri};generator query;31
-dbo:Software;;;Who is the designer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:designer ?uri};generator query;32
+dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where {<A> dbp:developer ?uri};select distinct ?a where {?a dbp:developer ?uri};29
+dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where {<A> dbo:releaseDate ?uri};elect distinct ?a where {?a dbo:releaseDate ?uri};30
+dbo:Software;;;What operating system can <A> run on?;SELECT DISTINCT ?uri where {<A> dbo:operatingSystem ?uri};select distinct ?a where {?a dbo:operatingSystem ?uri};31
+dbo:Software;;;Who is the designer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:designer ?uri};select distinct ?a where {?a dbp:designer ?uri;32
 
 # http://dbpedia.org/ontology/School
 dbo:School;;;When is <A> founded?;SELECT DISTINCT ?uri where { <A> dbo:founded ?uri};select distinct ?a where {?a rdf:type dbo:School. ?a dbp:founded ?uri};33
