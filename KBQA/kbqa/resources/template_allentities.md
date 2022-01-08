@@ -4,14 +4,14 @@ class_a; class_b; class_c; question; generator query;id
 
 # http://dbpedia.org/ontology/Company
 
-dbo:Company;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri};generator query;1
-dbo:Company;;;Who founded <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri};generator query;2
-dbo:Company;;;When was <A> founded?;SELECT DISTINCT ?uri where {<A> dbo:foundingYear ?uri};generator query;3
-dbo:Company;;;In which city is <A>'s headquarters?;SELECT DISTINCT ?uri where {<A> dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri};generator query;4
-dbo:Company;;;In which industry is <A>?;SELECT DISTINCT ?uri where {<A> dbo:industry ?uri};generator query;5
-dbo:Company;dbo:Company;;Is <A> a subsidiary of <B>?;ASK where { <A> dbo:parentCompany <B>};generator query;6
-dbo:Company;;;List all products from <A>.;SELECT DISTINCT ?uri where { <A> dbo:products ?uri};generator query;7
-dbo:Company;;;What is <A>'s annual revenue?;SELECT DISTINCT ?uri where { <A> dbo:revenue ?uri};generator query;8
+dbo:Company;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri};select distinct ?a where { ?a dbo:foundedBy ?uri};1
+dbo:Company;;;Who founded <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri};select distinct ?a where { ?a dbo:foundedBy ?uri};2
+dbo:Company;;;When was <A> founded?;SELECT DISTINCT ?uri where {<A> dbo:foundingYear ?uri};select distinct ?a where { ?a dbo:foundedYear ?uri};3
+dbo:Company;;;In which city is <A>'s headquarters?;SELECT DISTINCT ?uri where {<A> dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri};select distinct ?a where {?a dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri};4
+dbo:Company;;;In which industry is <A>?;SELECT DISTINCT ?uri where {<A> dbo:industry ?uri};select distinct ?a where {?a dbo:industry ?uri};5
+dbo:Company;dbo:Company;;Is <A> a subsidiary of <B>?;ASK where { <A> dbo:parentCompany <B>};select distinct ?a, ?b {?a dbo:parentCompany ?b};6
+dbo:Company;;;List all products from <A>.;SELECT DISTINCT ?uri where { <A> dbo:products ?uri};select distinct ?a where {?a dbo:products ?uri};7
+dbo:Company;;;What is <A>'s annual revenue?;SELECT DISTINCT ?uri where { <A> dbo:revenue ?uri};select distinct ?a where {?a dbo:revenue ?uri};8
 
 # http://dbpedia.org/ontology/Activity
 dbo:Activity;;;What ball is used in <A>?;SELECT DISTINCT ?uri where {<A> dbp:ball ?uri};select distinct ?a where{ ?a dbp:ball ?uri};9
@@ -232,10 +232,10 @@ dbo:Person;dbo:Person;;Why did <A> and <B> die?;SELECT DISTINCT ?uri where { <A>
 
 SELECT DISTINCT ?a where {?a gold:hypernym dbr:Actor}
 
-dbr:Actor;;;When did <A> start acting?;SELECT DISTINCT ?uri where {<A> dbo:activeYearsStartYear ?uri};generator query;12
-dbr:Actor;;;What movies did <A> star in?;SELECT DISTINCT ?uri where {?uri dbo:starring <A>};generator query;13
-dbr:Actor;dbo:Film;;Did <A> star in <B>?;ASK where {<B> dbo:starring <A>};generator query;14
-dbr:Actor;;;What is the production Company of <A>?;SELECT DISTINCT ?uri where {?uri dbo:productionCompany <A>};15
+dbr:Actor;;;When did <A> start acting?;SELECT DISTINCT ?uri where {<A> dbo:activeYearsStartYear ?uri};select distinct ?a where {?a dbo:activeYearsStartYear ?uri};12
+dbr:Actor;;;What movies did <A> star in?;SELECT DISTINCT ?uri where {?uri dbo:starring <A>};select distinct ?a where {?uri dbo:starring ?a};13
+dbr:Actor;dbo:Film;;Did <A> star in <B>?;ASK where {<B> dbo:starring <A>};select distinct ?a,?b where {?b dbo:starring ?a};14
+dbr:Actor;;;What is the production Company of <A>?;SELECT DISTINCT ?uri where {?uri dbo:productionCompany <A>};select distinct ?a where {?uri dbo:productionCompany ?a};15
 
 # http://dbpedia.org/ontology/Film
 
@@ -261,7 +261,7 @@ dbo:Place;;;When was <A> established;SELECT DISTINCT ?uri where {<A> dbp:establi
 # http://dbpedia.org/ontology/Language
 
 dbo:Language;;;In which region do people speak <A>?;SELECT DISTINCT ?uri where {<A> dbp:region ?uri};select distinct ?a where {?a dbp:region ?uri};27
-dbo:Language;;;Which language family does <A> belong to?;SELECT DISTINCT ?uri where {<A> dbo:languageFamily ?uri};select distinct ?a where {?a dbo:languageFamily ?uri}:28
+dbo:Language;;;Which language family does <A> belong to?;SELECT DISTINCT ?uri where {<A> dbo:languageFamily ?uri};select distinct ?a where {?a dbo:languageFamily ?uri};28
 
 
 # http://dbpedia.org/ontology/Department
