@@ -293,10 +293,6 @@ dbo:University;;;When is <A> founded?;SELECT DISTINCT ?uri where { <A> dbp:estab
 dbo:University;;;How many students study in <A>?;SELECT DISTINCT ?uri where { <A> dbo:numberOfStudents ?uri};select distinct ?a where {?a rdf:type dbo:University. ?a dbo:numberOfStudents ?uri };40
 dbo:Software;dbo:University;;Is <A> developed by <B>?;ASK where { <A> dbp:developer <B>};select distinct ?a, ?b where { ?a dbp:developer ?b. ?b rdf:type dbo:University};41
 dbo:University;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbp:founder ?uri};select distinct ?a where {?a rdf:type dbo:University. ?a dbo:founder ?uri };42
-
-# http://dbpedia.org/ontology/Airline
-# http://dbpedia.org/ontology/Bank
-# http://dbpedia.org/ontology/BasketballLeague
   
 # http://dbpedia.org/ontology/Anime
   
@@ -307,7 +303,6 @@ dbo:Anime;;;Who is the producer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:prod
 dbo:Anime;;;Who composed music for <A>?;SELECT DISTINCT ?uri where {<A> dbo:musicComposer ?uri};select distinct ?a where {?a dbo:musicComposer ?uri};
 dbo:Anime;;;Who composed music for <A>?;SELECT DISTINCT ?uri where {<A> dbo:music ?uri};select distinct ?a where {?a dbo:music ?uri};
 dbo:Anime;;;How many episodes does <A> have?;SELECT DISTINCT ?uri where {<A> dbp:episodes ?uri};select distinct ?a where {?a dbp:episodes ?uri};
-  
  
 # http://dbpedia.org/ontology/City
 http://dbpedia.org/ontology/City;;;What products are made by <A> based companies?;SELECT DISTINCT ?uri where { ?x dbp:location <A> . ?x dbo:product ?uri . ?x a dbo:Company };select distinct ?a where { ?x dbp:location ?a . ?x dbo:product ?uri . ?x a dbo:Company };0ad9954f309c496ab4dfbd8056a58187
@@ -324,7 +319,6 @@ dbo:Planet;;;What is the density of the planet <A>?;SELECT DISTINCT ?uri where {
 dbo:Planet;;;What is the mass of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbo:mass ?uri};select distinct ?a where {?a dbo:mass ?uri};id
 dbo:Planet;;;how many satellites does <A> have?;SELECT DISTINCT ?uri where {<A> dbp:satellites ?uri};select distinct ?a where {?a dbp:satellites ?uri};id
 dbo:Planet;;;What is the maximum temperature of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbp:maxTemp ?uri};select distinct ?a where {?a dbp:maxTemp ?uri};id
-
   
 # http://dbpedia.org/ontology/CricketTeam
 dbo:CricketTeam;;;Who is the captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:captain ?uri};select distinct ?a where {?a dbp:captain ?uri};id
@@ -333,9 +327,6 @@ dbo:CricketTeam;;;Who is the ODI captain of <A>?;SELECT DISTINCT ?uri where {<A>
 dbo:CricketTeam;;;Who is the t20 captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:t20icaptain ?uri};select distinct ?a where {?a dbp:t20icaptain ?uri};id
 dbo:CricketTeam;;;Who is the test captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:testcaptain ?uri};select distinct ?a where {?a dbp:testcaptain ?uri};id
 
-# http://dbpedia.org/ontology/Film
-# http://dbpedia.org/ontology/Game
-  
 # http://dbpedia.org/ontology/Mountain
 
 http://dbpedia.org/ontology/MountainRange;http://dbpedia.org/ontology/Volcano;;Name the mountain whose range is <A> and parent mountain peak is <B>?;SELECT DISTINCT ?uri where { ?uri dbo:mountainRange <A> . ?uri dbo:parentMountainPeak <B> . ?uri a dbo:Mountain };select distinct ?a, ?b where { ?uri dbo:mountainRange ?a . ?uri dbo:parentMountainPeak ?b . ?uri a dbo:Mountain };838eaa04147b4081beae5daad514fb0c
@@ -346,7 +337,6 @@ http://dbpedia.org/ontology/MountainRange;http://dbpedia.org/ontology/Region;;Li
 http://dbpedia.org/ontology/Mountain;;;Name the mountain range in which the mountain peak of <A> belongs?;SELECT DISTINCT ?uri where { <A> dbo:parentMountainPeak ?x . ?x dbo:mountainRange ?uri };select distinct ?a where { ?a dbo:parentMountainPeak ?x . ?x dbo:mountainRange ?uri };75fe6c8cbf564ad5b696120959659daf
 http://dbpedia.org/ontology/Mountain;;;name the mountain range of <A> ?;SELECT DISTINCT ?uri where { <A> dbo:mountainRange ?uri };select distinct ?a where { ?a dbo:mountainRange ?uri };1a7add8911774e34a9753b1970a42b0f
 http://dbpedia.org/ontology/MountainRange;http://dbpedia.org/ontology/ProtectedArea;;Name the mountain which belongs to <A> range and is located in <B>?;SELECT DISTINCT ?uri where { ?uri dbo:mountainRange <A> . ?uri dbo:locatedInArea <B> . ?uri a dbo:Mountain };select distinct ?a, ?b where { ?uri dbo:mountainRange ?a . ?uri dbo:locatedInArea ?b . ?uri a dbo:Mountain };cf34994e9bb545c3beff7e8a04d58823
-
 
 # http://dbpedia.org/ontology/Museum
 dbo:Museum;;;List awards <A> got.;SELECT DISTINCT ?uri where {?uri dbo:award <A>};select distinct ?a where {?uri dbo:award ?a};43
@@ -362,6 +352,18 @@ dbo:Olympics;;;Who won the gold medal in <A>?;SELECT DISTINCT ?uri where {<A> db
 dbo:Olympics;;;Who won the silver medal in <A>?;SELECT DISTINCT ?uri where {<A> dbo:silverMedalist ?uri};select distinct ?a where {?a dbo:silverMedalist ?uri};id
 dbo:Olympics;;;Who won the bronze medal in <A>?;SELECT DISTINCT ?uri where {<A> dbp:bronze ?uri};select distinct ?a where {?a dbp:bronze ?uri};id
 
+# http://dbpedia.org/ontology/Lake
+http://dbpedia.org/ontology/Lake;;;How many cities are close to <A>?;SELECT DISTINCT COUNT(?uri) where { <A> dbo:nearestCity ?uri };select distinct ?a where { ?a dbo:nearestCity ?uri };209c460e684848fe9572d27a98ecbfea
+http://dbpedia.org/ontology/Lake;;;In how many countries do the rivers start which end at the <A>?;SELECT DISTINCT COUNT(?uri) where { ?x dbo:riverMouth <A> . ?x dbo:sourceCountry ?uri . ?uri a dbo:Country };select distinct ?a where { ?x dbo:riverMouth ?a . ?x dbo:sourceCountry ?uri . ?uri a dbo:Country };c5e369b698d4499a92beac8371b73491
+http://dbpedia.org/ontology/Lake;;;Name the nearest city to  <A>?;SELECT DISTINCT ?uri where { <A> dbo:nearestCity ?uri };select distinct ?a where { ?a dbo:nearestCity ?uri };a622cb449bde410c8c3e8c5c11a18ebb
+http://dbpedia.org/ontology/Lake;http://dbpedia.org/ontology/City;;Name the river with source as <A> and its mouth is located in <B>?;SELECT DISTINCT ?uri where { ?uri dbo:source <A> . ?uri dbp:mouthLocation <B> . ?uri a dbo:River };select distinct ?a, ?b where { ?uri dbo:source ?a . ?uri dbp:mouthLocation ?b . ?uri a dbo:River };a08bb500ab2240118a0e3c00ed317f0b
+http://dbpedia.org/ontology/Lake;;;what does the <A> flow into?;SELECT DISTINCT ?uri where { <A> dbp:inflow ?uri };select distinct ?a where { ?a dbp:inflow ?uri };84d8ee90740d450784488c785a892205
+
+
+# http://dbpedia.org/ontology/Game
+# http://dbpedia.org/ontology/Airline
+# http://dbpedia.org/ontology/Bank
+# http://dbpedia.org/ontology/BasketballLeague
 # http://dbpedia.org/ontology/Hotel
 # http://dbpedia.org/ontology/TennisTournament
 # http://dbpedia.org/ontology/Song
@@ -373,13 +375,6 @@ dbo:Olympics;;;Who won the bronze medal in <A>?;SELECT DISTINCT ?uri where {<A> 
 # http://dbpedia.org/ontology/Airport
 # http://dbpedia.org/ontology/Album
 # http://dbpedia.org/ontology/AmericanFootballPlayer
-# http://dbpedia.org/ontology/Lake
-http://dbpedia.org/ontology/Lake;;;How many cities are close to <A>?;SELECT DISTINCT COUNT(?uri) where { <A> dbo:nearestCity ?uri };select distinct ?a where { ?a dbo:nearestCity ?uri };209c460e684848fe9572d27a98ecbfea
-http://dbpedia.org/ontology/Lake;;;In how many countries do the rivers start which end at the <A>?;SELECT DISTINCT COUNT(?uri) where { ?x dbo:riverMouth <A> . ?x dbo:sourceCountry ?uri . ?uri a dbo:Country };select distinct ?a where { ?x dbo:riverMouth ?a . ?x dbo:sourceCountry ?uri . ?uri a dbo:Country };c5e369b698d4499a92beac8371b73491
-http://dbpedia.org/ontology/Lake;;;Name the nearest city to  <A>?;SELECT DISTINCT ?uri where { <A> dbo:nearestCity ?uri };select distinct ?a where { ?a dbo:nearestCity ?uri };a622cb449bde410c8c3e8c5c11a18ebb
-http://dbpedia.org/ontology/Lake;http://dbpedia.org/ontology/City;;Name the river with source as <A> and its mouth is located in <B>?;SELECT DISTINCT ?uri where { ?uri dbo:source <A> . ?uri dbp:mouthLocation <B> . ?uri a dbo:River };select distinct ?a, ?b where { ?uri dbo:source ?a . ?uri dbp:mouthLocation ?b . ?uri a dbo:River };a08bb500ab2240118a0e3c00ed317f0b
-http://dbpedia.org/ontology/Lake;;;what does the <A> flow into?;SELECT DISTINCT ?uri where { <A> dbp:inflow ?uri };select distinct ?a where { ?a dbp:inflow ?uri };84d8ee90740d450784488c785a892205
-
 # http://dbpedia.org/ontology/MusicalArtist
 # http://dbpedia.org/ontology/Writer
 # http://dbpedia.org/ontology/Animal
