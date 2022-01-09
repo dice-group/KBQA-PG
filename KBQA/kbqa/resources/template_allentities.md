@@ -435,7 +435,13 @@ dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?ur
 # http://dbpedia.org/ontology/Band
 # http://dbpedia.org/ontology/Browser
 # http://dbpedia.org/ontology/Arena
+
 # http://dbpedia.org/ontology/Beverage
+dbo:Beverage;;;Where did <A> originated;SELECT DISTINCT ?uri where { <A> dbo:origin ?uri };select distinct ?a where { ?a dbo:origin ?uri };
+dbo:Beverage;;;What are the ingredients used to prepare <A>?;SELECT DISTINCT ?uri where { <A> dbp:ingredients ?uri };select distinct ?a where { ?a dbp:ingredients ?uri };
+dbo:Beverage;;;<A> is of which type?;SELECT DISTINCT ?uri where { <A> dbp:type ?uri };select distinct ?a where { ?a dbp:type ?uri };
+
+  
 # http://dbpedia.org/ontology/President
 
 
@@ -446,7 +452,11 @@ dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?ur
 # http://dbpedia.org/ontology/MilitaryPerson
 # http://dbpedia.org/ontology/VolleyballLeague
 # http://dbpedia.org/ontology/Ambassador
+
 # http://dbpedia.org/ontology/Amphibian
+dbo:Amphibian;;;To which family does <A> belongs to?;SELECT DISTINCT ?uri where { <A> dbo:family ?uri };select distinct ?a where { ?a dbo:family ?uri };
+dbo:Amphibian;;;What is the genus of <A>?;SELECT DISTINCT ?uri where { <A> dbp:genus ?uri };select distinct ?a where { ?a dbp:genus ?uri };
+
 # http://dbpedia.org/ontology/Archaea
 # http://dbpedia.org/ontology/BeachVolleyballPlayer
 # http://dbpedia.org/ontology/Bone
@@ -456,13 +466,27 @@ dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?ur
 # http://dbpedia.org/ontology/Castle
 # http://dbpedia.org/ontology/Cave
 # http://dbpedia.org/ontology/ChristianPatriarch
+
 # http://dbpedia.org/ontology/College
+dbo:College;;;Where is <A> located?;SELECT DISTINCT ?uri where { <A> dbp:location ?uri };select distinct ?a where { ?a dbp:location ?uri };
+dbo:College;;;Who is the president of <A>?;SELECT DISTINCT ?uri where { <A> dbo:president ?uri };select distinct ?a where { ?a dbo:president ?uri };
+dbo:College;;;When is the <A> got established?;SELECT DISTINCT ?uri where { <A> dbp:established ?uri };select distinct ?a where { ?a dbp:established ?uri };
+dbo:College;;;How many students are graduated from <A>;SELECT DISTINCT ?uri where { <A> dbp:graduates ?uri };select distinct ?a where { ?a dbp:graduates ?uri };
+
 # http://dbpedia.org/ontology/Colour
 # http://dbpedia.org/ontology/ComedyGroup
 # http://dbpedia.org/ontology/ComicStrip
 # http://dbpedia.org/ontology/ConcentrationCamp
 # http://dbpedia.org/ontology/Conifer
+  
 # http://dbpedia.org/ontology/Continent
+  
+http://dbpedia.org/ontology/Continent;;;Is the <B> assembled in <A>?;ASK where { <B> dbp:assembly <A> };select distinct ?a, ?b where { ?b dbp:assembly ?a };44579153ae3b44e89b30a9b9990e1c09
+http://dbpedia.org/ontology/Continent;;;Is the <B> assembled in <A>?;ASK where { <B> dbp:assembly <A> };select distinct ?a, ?b where { ?b dbp:assembly ?a };d8f88e1d32024fa5bfff232c9286e30a
+http://dbpedia.org/ontology/Continent;;Does <A> fly to the <B>n continent?;ASK where { <A> dbo:destination <B> };select distinct ?a, ?b where { ?a dbo:destination ?b };7ab5eba0fa5e4d2db3867b842e966443
+http://dbpedia.org/ontology/Continent;;;How many destinations are covered by the airlines which also serves <A> ?;SELECT DISTINCT COUNT(?uri) where { ?x dbp:destinations <A> . ?x dbp:destinations ?uri };select distinct ?a where { ?x dbp:destinations ?a . ?x dbp:destinations ?uri };2110869943d4431c80ed60a4598d5f4a
+http://dbpedia.org/ontology/Continent;;;Is <A> one of the destinations of <B>?;ASK where { <B> dbo:destination <A> };select distinct ?a, ?b where { ?b dbo:destination ?a };7c56af394fc64b84a9f5e244bb068831
+
 # http://dbpedia.org/ontology/Crustacean
 # http://dbpedia.org/ontology/Entomologist
 # http://dbpedia.org/ontology/Fashion
@@ -481,7 +505,15 @@ dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?ur
 # http://dbpedia.org/ontology/NationalCollegiateAthleticAssociationAthlete
 # http://dbpedia.org/ontology/Racecourse
 # http://dbpedia.org/ontology/Rower
+
 # http://dbpedia.org/ontology/Sea
+  
+http://dbpedia.org/ontology/Sea;;;List the destinations of the airlines which also serves <A> ?;SELECT DISTINCT ?uri where { ?x dbp:destinations <A> . ?x dbp:destinations ?uri . ?x a dbo:Airline };select distinct ?a where { ?x dbp:destinations ?a . ?x dbp:destinations ?uri . ?x a dbo:Airline };f0517726b79e40179b9458dd79aa9218
+http://dbpedia.org/ontology/Sea;;;What are some other destinations covered by the airlines whose flights go to the <A>?;SELECT DISTINCT ?uri where { ?x dbp:destinations <A> . ?x dbo:destination ?uri . ?x a dbo:Airline };select distinct ?a where { ?x dbp:destinations ?a . ?x dbo:destination ?uri . ?x a dbo:Airline };53bb18b2b179439ea955d4300cf133ea
+http://dbpedia.org/ontology/Sea;;;Count the water bodies that flow into the <A>?;SELECT DISTINCT COUNT(?uri) where { <A> dbp:inflow ?uri };select distinct ?a where { ?a dbp:inflow ?uri };daf410687a35451bbcf9909871db61f3
+http://dbpedia.org/ontology/Sea;;;How many cities are around the sea in which the <A> flows?;SELECT DISTINCT COUNT(?uri) where { <A> dbo:outflow ?x . ?x dbp:cities ?uri . ?x a dbo:Sea };select distinct ?a where { ?a dbo:outflow ?x . ?x dbp:cities ?uri . ?x a dbo:Sea };7a21a6d6f21d47d0b60283006ff13a51
+http://dbpedia.org/ontology/Sea;;;How many cities are around the sea into which the <A> flows?;SELECT DISTINCT COUNT(?uri) where { <A> dbo:outflow ?x . ?x dbp:cities ?uri . ?x a dbo:Sea };select distinct ?a where { ?a dbo:outflow ?x . ?x dbp:cities ?uri . ?x a dbo:Sea };891f155dd9e14cdcac38afc45e4a869e
+
 # http://dbpedia.org/ontology/Senator
 # http://dbpedia.org/ontology/SumoWrestler
 # http://dbpedia.org/ontology/Vein
@@ -513,7 +545,13 @@ dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?ur
 # http://dbpedia.org/ontology/ArtistDiscography
 # http://dbpedia.org/ontology/Artwork
 # http://dbpedia.org/ontology/Asteroid
+
 # http://dbpedia.org/ontology/Athlete
+http://dbpedia.org/ontology/Athlete;;;In which province was <A> born?;SELECT DISTINCT ?uri where { <A> dbp:birthDate ?uri };select distinct ?a where { ?a dbp:birthDate ?uri };d90413f58c7e4ec4926d84d822483e59
+;http://dbpedia.org/ontology/Athlete;;What is the birthplace of <B> and the place where <A> is located?;SELECT DISTINCT ?uri where { <A> dbo:country ?uri . <B> dbp:birthPlace ?uri };select distinct ?a, ?b where { ?a dbo:country ?uri . ?b dbp:birthPlace ?uri };3fab7450096d4585bd162a32f10f08f9
+http://dbpedia.org/ontology/Athlete;http://dbpedia.org/ontology/SportsLeague;;What is the official residence of the <A> which is also the  state of the <B>;SELECT DISTINCT ?uri where { <A> dbp:residence ?uri . <B> dbo:country ?uri };select distinct ?a, ?b where { ?a dbp:residence ?uri . ?b dbo:country ?uri };e1d32c8ac1044f5b815f5bd8b971b736
+http://dbpedia.org/ontology/Athlete;;;What is the state of origin of <A> ?;SELECT DISTINCT ?uri where { <A> dbo:stateOfOrigin ?uri };select distinct ?a where { ?a dbo:stateOfOrigin ?uri };524ba88720054e1081b4086303afd9db
+
 # http://dbpedia.org/ontology/Automobile
 # http://dbpedia.org/ontology/AutomobileEngine
 # http://dbpedia.org/ontology/Award
@@ -522,13 +560,22 @@ dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?ur
 # http://dbpedia.org/ontology/Book
 # http://dbpedia.org/ontology/Bridge
 # http://dbpedia.org/ontology/BroadcastNetwork
+
 # http://dbpedia.org/ontology/Building
+dbo:Building;;;how high is the <A>?;select distinct ?num where { <A> dbo:height ?num . };select distinct ?a where {  ?a dbo:height ?num .  };
+dbo:Building;;;in which city are <A>?;select distinct ?uri where { <A> dbo:location ?uri . ?uri a dbo:City . };select distinct ?a where {  ?a dbo:location ?uri . ?uri a dbo:City .  };
+
 # http://dbpedia.org/ontology/BusCompany
 # http://dbpedia.org/ontology/ChemicalCompound
 # http://dbpedia.org/ontology/CityDistrict
 # http://dbpedia.org/ontology/ClassicalMusicComposition
 # http://dbpedia.org/ontology/Cleric
+
 # http://dbpedia.org/ontology/Comic
+dbo:Comic;;;Who published <A>?;SELECT DISTINCT ?uri where { <A> dbo:publisher ?uri };select distinct ?a where { ?a dbo:publisher ?uri };
+dbo:Comic;;;Who is the writer for <A>?;SELECT DISTINCT ?uri where { <A> dbo:writer ?uri };select distinct ?a where { ?a dbo:writer ?uri };
+dbo:Comic;;;When did the <A> got published?;SELECT DISTINCT ?uri where { <A> dbp:date ?uri };select distinct ?a where { ?a dbp:date ?uri };
+
 # http://dbpedia.org/ontology/ComicsCharacter
 # http://dbpedia.org/ontology/Convention
 # http://dbpedia.org/ontology/Criminal
