@@ -367,6 +367,10 @@ dbo:Game;;;Who is the manufacturer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:m
 dbo:Game;;;What are the skills needed to play <A>?:SELECT DISTINCT ?uri where {<A> dbp:skills ?uri};select distinct ?a where {?a dbp:skills ?uri};
 
 # http://dbpedia.org/ontology/Airline
+dbo:Airline;;;How many airports can I fly to with <A>?;SELECT DISTINCT ?uri where {<A> dbp:destinations ?uri};select distinct ?a where {?a dbp:destinations ?uri};
+dbo:Airline;;;What is the airline code of <A>?;SELECT DISTINCT ?uri where {<A> dbo:iataAirlineCode ?uri};select distinct ?a where {?a dbo:iataAirlineCode ?uri};
+dbo:Airline;;;How big is the fleet of <A>?;SELECT DISTINCT ?uri where {<A> dbp:fleetSize ?uri};select distinct ?a where {?a dbp:fleetSize ?uri};
+
 # http://dbpedia.org/ontology/Bank
 # http://dbpedia.org/ontology/BasketballLeague
 
