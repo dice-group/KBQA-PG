@@ -380,7 +380,6 @@ dbo:BasketballLeague;;;List the teams playing in <A>.;SELECT DISTINCT ?uri where
 dbo:BasketballLeague;;;Who is the commissioner of <A>?;SELECT DISTINCT ?uri where { <A> dbp:commissioner ?uri };select distinct ?a where { ?a dbp:commissioner ?uri};
 dbo:BasketballLeague;;;Who is the commissioner of <A>?;SELECT DISTINCT ?uri where { <A> dbp:commissioner ?uri };select distinct ?a where { ?a dbp:commissioner ?uri};
 
-
 # http://dbpedia.org/ontology/Hotel
 dbo:Hotel;;;Where is <A> located;SELECT DISTINCT ?uri where { <A> dbp:location ?uri };select distinct ?a where {?a dbp:location ?uri};
 dbo:Hotel;;;Who is the owner of <A>;SELECT DISTINCT ?uri where { <A> dbp:owner ?uri };select distinct ?a where {?a dbp:owner ?uri};
@@ -401,8 +400,13 @@ dbo:Manga;;;Who is the publisher of  <A>?;SELECT DISTINCT ?uri where { <A> dbo:p
 dbo:Manga;;;When did <A> publsihed for the first time?;SELECT DISTINCT ?uri where { <A> dbo:firstPublicationDate ?uri };select distinct ?a where {?a dbo:firstPublicationDate ?uri};
 dbo:Manga;;;What is the genre of <A>;SELECT DISTINCT ?uri where { <A> dbp:genre ?uri };select distinct ?a where {?a dbp:genre ?uri};
 
-  
 # http://dbpedia.org/ontology/BasketballTeam
+dbo:BasketballTeam;;;How many champions has <A> won?;SELECT DISTINCT ?uri where { <A> dbp:confChamps ?uri };select distinct ?a where {?a dbp:confChamps ?uri};
+dbo:BasketballTeam;;;How many division titles have <A> won?;SELECT DISTINCT ?uri where { <A> dbp:divChamps ?uri };select distinct ?a where {?a dbp:divChamps ?uri};
+dbo:BasketballTeam;;;Who is the president of <A>;SELECT DISTINCT ?uri where { <A> dbp:president ?uri };select distinct ?a where {?a dbp:president ?uri};
+dbo:BasketballTeam;;;Which company sponsors <A>?;SELECT DISTINCT ?uri where { <A> dbp:sponsor ?uri };select distinct ?a where {?a dbp:sponsor ?uri};
+
+
 # http://dbpedia.org/ontology/Band
   
 # http://dbpedia.org/ontology/Artist
