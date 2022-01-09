@@ -4,19 +4,19 @@ class_a; class_b; class_c; question; generator query;id
 
 # http://dbpedia.org/ontology/Company
 
-dbo:Company;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri};select distinct ?a where { ?a dbo:foundedBy ?uri};1
-dbo:Company;;;Who founded <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri};select distinct ?a where { ?a dbo:foundedBy ?uri};2
-dbo:Company;;;When was <A> founded?;SELECT DISTINCT ?uri where {<A> dbo:foundingYear ?uri};select distinct ?a where { ?a dbo:foundedYear ?uri};3
-dbo:Company;;;In which city is <A>'s headquarters?;SELECT DISTINCT ?uri where {<A> dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri};select distinct ?a where {?a dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri};4
-dbo:Company;;;In which industry is <A>?;SELECT DISTINCT ?uri where {<A> dbo:industry ?uri};select distinct ?a where {?a dbo:industry ?uri};5
-dbo:Company;dbo:Company;;Is <A> a subsidiary of <B>?;ASK where { <A> dbo:parentCompany <B>};select distinct ?a, ?b {?a dbo:parentCompany ?b};6
-dbo:Company;;;List all products from <A>.;SELECT DISTINCT ?uri where { <A> dbo:products ?uri};select distinct ?a where {?a dbo:products ?uri};7
-dbo:Company;;;What is <A>'s annual revenue?;SELECT DISTINCT ?uri where { <A> dbo:revenue ?uri};select distinct ?a where {?a dbo:revenue ?uri};8
+dbo:Company;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri };select distinct ?a where { ?a dbo:foundedBy ?uri};1
+dbo:Company;;;Who founded <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri };select distinct ?a where { ?a dbo:foundedBy ?uri};2
+dbo:Company;;;When was <A> founded?;SELECT DISTINCT ?uri where { <A> dbo:foundingYear ?uri };select distinct ?a where { ?a dbo:foundedYear ?uri};3
+dbo:Company;;;In which city is <A>'s headquarters?;SELECT DISTINCT ?uri where { <A> dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri };select distinct ?a where {?a dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri};4
+dbo:Company;;;In which industry is <A>?;SELECT DISTINCT ?uri where { <A> dbo:industry ?uri };select distinct ?a where {?a dbo:industry ?uri};5
+dbo:Company;dbo:Company;;Is <A> a subsidiary of <B>?;ASK where { <A> dbo:parentCompany <B> };select distinct ?a, ?b {?a dbo:parentCompany ?b};6
+dbo:Company;;;List all products from <A>.;SELECT DISTINCT ?uri where { <A> dbo:products ?uri };select distinct ?a where {?a dbo:products ?uri};7
+dbo:Company;;;What is <A>'s annual revenue?;SELECT DISTINCT ?uri where { <A> dbo:revenue ?uri };select distinct ?a where {?a dbo:revenue ?uri};8
 
 # http://dbpedia.org/ontology/Activity
-dbo:Activity;;;What ball is used in <A>?;SELECT DISTINCT ?uri where {<A> dbp:ball ?uri};select distinct ?a where{ ?a dbp:ball ?uri};9
-dbo:Activity;;;How large is the team size in <A>?;SELECT DISTINCT ?uri where {<A> dbo:teamSize ?uri};select distinct ?a where {?a dbo:teamSize ?uri};10 
-dbo:Activity;;;How long is the playing time of <A>?;SELECT DISTINCT ?uri where {<A> dbp:playingTime ?uri};select distinct ?a where {?a dbp:playingTime ?uri};11
+dbo:Activity;;;What ball is used in <A>?;SELECT DISTINCT ?uri where { <A> dbp:ball ?uri };select distinct ?a where{ ?a dbp:ball ?uri};9
+dbo:Activity;;;How large is the team size in <A>?;SELECT DISTINCT ?uri where { <A> dbo:teamSize ?uri };select distinct ?a where {?a dbo:teamSize ?uri};10 
+dbo:Activity;;;How long is the playing time of <A>?;SELECT DISTINCT ?uri where { <A> dbp:playingTime ?uri };select distinct ?a where {?a dbp:playingTime ?uri};11
 
 # http://dbpedia.org/ontology/Person
 dbo:Person;;;<A> has how many relatives?;SELECT DISTINCT COUNT(?uri) where { <A> dbp:relatives ?uri };select distinct ?a where { ?a dbp:relatives ?uri };0823c2c40ec44ed38548274caa96984d
@@ -232,77 +232,77 @@ dbo:Person;dbo:Person;;Why did <A> and <B> die?;SELECT DISTINCT ?uri where { <A>
 
 SELECT DISTINCT ?a where {?a gold:hypernym dbr:Actor}
 
-dbr:Actor;;;When did <A> start acting?;SELECT DISTINCT ?uri where {<A> dbo:activeYearsStartYear ?uri};select distinct ?a where {?a dbo:activeYearsStartYear ?uri};12
-dbr:Actor;;;What movies did <A> star in?;SELECT DISTINCT ?uri where {?uri dbo:starring <A>};select distinct ?a where {?uri dbo:starring ?a};13
-dbr:Actor;dbo:Film;;Did <A> star in <B>?;ASK where {<B> dbo:starring <A>};select distinct ?a,?b where {?b dbo:starring ?a};14
-dbr:Actor;;;What is the production Company of <A>?;SELECT DISTINCT ?uri where {?uri dbo:productionCompany <A>};select distinct ?a where {?uri dbo:productionCompany ?a};15
+dbr:Actor;;;When did <A> start acting?;SELECT DISTINCT ?uri where { <A> dbo:activeYearsStartYear ?uri };select distinct ?a where {?a dbo:activeYearsStartYear ?uri};12
+dbr:Actor;;;What movies did <A> star in?;SELECT DISTINCT ?uri where { ?uri dbo:starring <A> };select distinct ?a where {?uri dbo:starring ?a};13
+dbr:Actor;dbo:Film;;Did <A> star in <B>?;ASK where { <B> dbo:starring <A> };select distinct ?a,?b where {?b dbo:starring ?a};14
+dbr:Actor;;;What is the production Company of <A>?;SELECT DISTINCT ?uri where { ?uri dbo:productionCompany <A> };select distinct ?a where {?uri dbo:productionCompany ?a};15
 
 # http://dbpedia.org/ontology/Film
 
-dbo:Film;;;Who are producers of <A>?;SELECT DISTINCT ?uri where {<A> dbo:producer ?uri};select distinct ?a where {?a dbo:producer ?uri};16
-dbo:Film;;;How much was the budget of <A>?;SELECT DISTINCT ?uri where {<A> dbo:budget ?uri};select distinct ?a where {?a dbo:budget ?uri};17
-dbo:Film;;;Who is the director of <A>?;SELECT DISTINCT ?uri where {dbr:Mission:_Impossible_III dbo:director ?uri};select distinct ?a where {?a dbr:Mission:_Impossible_III dbo:director ?uri};18
-dbo:Film;;;Who are the stars in <A>?;SELECT DISTINCT ?uri where {<A> dbo:starring ?uri};select distinct ?a where {?a dbo:starring ?uri};19
-dbo:Film;;;How long is <A>?;SELECT DISTINCT ?uri where {<A> dbo:runtime ?uri};select distinct ?a where {?a dbo:runtime ?uri};20
-dbo:Film;;;When was <A> released?;SELECT DISTINCT ?uri where {<A> dbp:released ?uri};select distinct ?a where {?a dbp:released ?uri};21
+dbo:Film;;;Who are producers of <A>?;SELECT DISTINCT ?uri where { <A> dbo:producer ?uri };select distinct ?a where {?a dbo:producer ?uri};16
+dbo:Film;;;How much was the budget of <A>?;SELECT DISTINCT ?uri where { <A> dbo:budget ?uri };select distinct ?a where {?a dbo:budget ?uri};17
+dbo:Film;;;Who is the director of <A>?;SELECT DISTINCT ?uri where { <A> dbo:director ?uri };select distinct ?a where {?a dbr:Mission:_Impossible_III dbo:director ?uri};18
+dbo:Film;;;Who are the stars in <A>?;SELECT DISTINCT ?uri where { <A> dbo:starring ?uri };select distinct ?a where {?a dbo:starring ?uri};19
+dbo:Film;;;How long is <A>?;SELECT DISTINCT ?uri where { <A> dbo:runtime ?uri };select distinct ?a where {?a dbo:runtime ?uri};20
+dbo:Film;;;When was <A> released?;SELECT DISTINCT ?uri where { <A> dbp:released ?uri };select distinct ?a where {?a dbp:released ?uri};21
 
 
 # http://dbpedia.org/ontology/Place
 
-dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where {<A> dbo:country ?uri};select distinct ?a where {?a dbo:country ?uri};22
-dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where {<A> dbp:country ?uri};select distinct ?a where {?a dbp:country ?uri};23
-dbo:Place;;;How many people live in <A>?;SELECT DISTINCT ?uri where {<A> dbp:populationTotal ?uri};select distinct ?a where {?a dbp:populationTotal ?uri};24
-dbo:Place;;;What is the population of <A>?;SELECT DISTINCT ?uri where {<A> dbp:populationTotal ?uri};select distinct ?awhere {?a dbp:populationTotal ?uri};25
-dbo:Place;;;When was <A> established;SELECT DISTINCT ?uri where {<A> dbp:establishedDate ?uri};select distinct ?a where {?a dbp:establishedDate ?uri};26
+dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where { <A> dbo:country ?uri };select distinct ?a where {?a dbo:country ?uri};22
+dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where { <A> dbp:country ?uri };select distinct ?a where {?a dbp:country ?uri};23
+dbo:Place;;;How many people live in <A>?;SELECT DISTINCT ?uri where { <A> dbp:populationTotal ?uri };select distinct ?a where {?a dbp:populationTotal ?uri};24
+dbo:Place;;;What is the population of <A>?;SELECT DISTINCT ?uri where { <A> dbp:populationTotal ?uri };select distinct ?awhere {?a dbp:populationTotal ?uri};25
+dbo:Place;;;When was <A> established;SELECT DISTINCT ?uri where { <A> dbp:establishedDate ?uri };select distinct ?a where {?a dbp:establishedDate ?uri};26
 
 # http://dbpedia.org/ontology/Publisher
 # http://dbpedia.org/ontology/Genre
   
 # http://dbpedia.org/ontology/Language
 
-dbo:Language;;;In which region do people speak <A>?;SELECT DISTINCT ?uri where {<A> dbp:region ?uri};select distinct ?a where {?a dbp:region ?uri};27
-dbo:Language;;;Which language family does <A> belong to?;SELECT DISTINCT ?uri where {<A> dbo:languageFamily ?uri};select distinct ?a where {?a dbo:languageFamily ?uri};28
+dbo:Language;;;In which region do people speak <A>?;SELECT DISTINCT ?uri where { <A> dbp:region ?uri };select distinct ?a where {?a dbp:region ?uri};27
+dbo:Language;;;Which language family does <A> belong to?;SELECT DISTINCT ?uri where { <A> dbo:languageFamily ?uri };select distinct ?a where {?a dbo:languageFamily ?uri};28
 
 
 # http://dbpedia.org/ontology/Department
 # http://dbpedia.org/ontology/Software
 
-dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where {<A> dbp:developer ?uri};select distinct ?a where {?a dbp:developer ?uri};29
-dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where {<A> dbo:releaseDate ?uri};elect distinct ?a where {?a dbo:releaseDate ?uri};30
-dbo:Software;;;What operating system can <A> run on?;SELECT DISTINCT ?uri where {<A> dbo:operatingSystem ?uri};select distinct ?a where {?a dbo:operatingSystem ?uri};31
-dbo:Software;;;Who is the designer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:designer ?uri};select distinct ?a where {?a dbp:designer ?uri;32
+dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where { <A> dbp:developer ?uri };select distinct ?a where {?a dbp:developer ?uri};29
+dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where { <A> dbo:releaseDate ?uri };elect distinct ?a where {?a dbo:releaseDate ?uri};30
+dbo:Software;;;What operating system can <A> run on?;SELECT DISTINCT ?uri where { <A> dbo:operatingSystem ?uri };select distinct ?a where {?a dbo:operatingSystem ?uri};31
+dbo:Software;;;Who is the designer of <A>?;SELECT DISTINCT ?uri where { <A> dbp:designer ?uri };select distinct ?a where {?a dbp:designer ?uri;32
 
 # http://dbpedia.org/ontology/School
-dbo:School;;;When is <A> founded?;SELECT DISTINCT ?uri where { <A> dbo:founded ?uri};select distinct ?a where {?a rdf:type dbo:School. ?a dbp:founded ?uri};33
-dbo:School;;;Who is the chairman of <A>?;SELECT DISTINCT ?uri where { <A> dbp:chairman ?uri};select distinct ?a where {?a rdf:type dbo:School. ?a dbp:chairman ?uri};34
-dbo:School;;;How many students study in <A>?;SELECT DISTINCT ?uri where { <A> dbp:enrollment ?uri};select distinct ?a where {?a rdf:type dbo:School. ?a dbp:enrollment ?uri};35
-dbo:School;;;How many staffs works in <A>?;SELECT DISTINCT ?uri where { <A> dbp:staff ?uri};select distinct ?a where {?a rdf:type dbo:School. ?a dbp:staff ?uri };36
-dbo:School;;;Does <A> have a sport team?;ASK where { <A> dbp:teamName ?uri};select distinct ?a where {?a rdf:type dbo:School};37
+dbo:School;;;When is <A> founded?;SELECT DISTINCT ?uri where { <A> dbo:founded ?uri };select distinct ?a where {?a rdf:type dbo:School. ?a dbp:founded ?uri};33
+dbo:School;;;Who is the chairman of <A>?;SELECT DISTINCT ?uri where { <A> dbp:chairman ?uri };select distinct ?a where {?a rdf:type dbo:School. ?a dbp:chairman ?uri};34
+dbo:School;;;How many students study in <A>?;SELECT DISTINCT ?uri where { <A> dbp:enrollment ?uri };select distinct ?a where {?a rdf:type dbo:School. ?a dbp:enrollment ?uri};35
+dbo:School;;;How many staffs works in <A>?;SELECT DISTINCT ?uri where { <A> dbp:staff ?uri };select distinct ?a where {?a rdf:type dbo:School. ?a dbp:staff ?uri };36
+dbo:School;;;Does <A> have a sport team?;ASK where { <A> dbp:teamName ?uri };select distinct ?a where {?a rdf:type dbo:School};37
 
 # http://dbpedia.org/ontology/Cinema
 
-dbo:Cinema;;;How many seats are there in <A>?;SELECT DISTINCT ?uri where { <A> dbo:seatingCapacity ?uri};select distinct ?a where {?a rdf:type dbo:Cinema. ?a dbo:seatingCapacity ?uri };37
-dbo:Cinema;;;Which cinema is in the same city of <A>?;SELECT DISTINCT ?uri where { <A> dbo:location ?l. ?uri dbo:location ?l. ?uri rdf:type dbo:Cinema};select distinct ?a where {?a rdf:type dbo:Cinema. ?a dbo:location ?uri};38
-dbo:Cinema;;;When is <A> opened?;SELECT DISTINCT ?uri where { <A> dbp:opened ?l};select distinct ?a where {?a rdf:type dbo:Cinema. ?a dbo:opened ?uri};39
-dbo:Cinema;;;How many screens does <A> have?;SELECT DISTINCT ?uri where { <A> dbp:screens ?l};select distinct ?a where {?a rdf:type dbo:Cinema. ?a dbp:screen ?uri};40
+dbo:Cinema;;;How many seats are there in <A>?;SELECT DISTINCT ?uri where { <A> dbo:seatingCapacity ?uri };select distinct ?a where {?a rdf:type dbo:Cinema. ?a dbo:seatingCapacity ?uri };37
+dbo:Cinema;;;Which cinema is in the same city of <A>?;SELECT DISTINCT ?uri where { <A> dbo:location ?l. ?uri dbo:location ?l. ?uri rdf:type dbo:Cinema };select distinct ?a where {?a rdf:type dbo:Cinema. ?a dbo:location ?uri};38
+dbo:Cinema;;;When is <A> opened?;SELECT DISTINCT ?uri where { <A> dbp:opened ?uri };select distinct ?a where {?a rdf:type dbo:Cinema. ?a dbo:opened ?uri};39
+dbo:Cinema;;;How many screens does <A> have?;SELECT DISTINCT ?uri where { <A> dbp:screens ?uri };select distinct ?a where {?a rdf:type dbo:Cinema. ?a dbp:screen ?uri};40
 
 # http://dbpedia.org/ontology/University
 
-dbo:University;;;Where is <A>?;SELECT DISTINCT ?uri where { <A> dbo:city ?uri};select distinct ?a where {?a rdf:type dbo:University. ?a dbo:city ?uri };38
-dbo:University;;;When is <A> founded?;SELECT DISTINCT ?uri where { <A> dbp:established ?uri};select distinct ?a where {?a rdf:type dbo:University. ?a dbp:established ?uri };39
-dbo:University;;;How many students study in <A>?;SELECT DISTINCT ?uri where { <A> dbo:numberOfStudents ?uri};select distinct ?a where {?a rdf:type dbo:University. ?a dbo:numberOfStudents ?uri };40
-dbo:Software;dbo:University;;Is <A> developed by <B>?;ASK where { <A> dbp:developer <B>};select distinct ?a, ?b where { ?a dbp:developer ?b. ?b rdf:type dbo:University};41
-dbo:University;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbp:founder ?uri};select distinct ?a where {?a rdf:type dbo:University. ?a dbo:founder ?uri };42
+dbo:University;;;Where is <A>?;SELECT DISTINCT ?uri where { <A> dbo:city ?uri };select distinct ?a where {?a rdf:type dbo:University. ?a dbo:city ?uri };38
+dbo:University;;;When is <A> founded?;SELECT DISTINCT ?uri where { <A> dbp:established ?uri };select distinct ?a where {?a rdf:type dbo:University. ?a dbp:established ?uri };39
+dbo:University;;;How many students study in <A>?;SELECT DISTINCT ?uri where { <A> dbo:numberOfStudents ?uri };select distinct ?a where {?a rdf:type dbo:University. ?a dbo:numberOfStudents ?uri };40
+dbo:Software;dbo:University;;Is <A> developed by <B>?;ASK where { <A> dbp:developer <B> };select distinct ?a, ?b where { ?a dbp:developer ?b. ?b rdf:type dbo:University};41
+dbo:University;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbp:founder ?uri };select distinct ?a where {?a rdf:type dbo:University. ?a dbo:founder ?uri };42
   
 # http://dbpedia.org/ontology/Anime
   
-dbo:Anime;;;Who is the director of <A>?;SELECT DISTINCT ?uri where {<A> dbp:director ?uri};select distinct ?a where {?a dbp:director ?uri};
-dbo:Anime;;;<A> is directed by?;SELECT DISTINCT ?uri where {<A> dbp:director ?uri};select distinct ?a where {?a dbp:director ?uri};
-dbo:Anime;;;<A> is produced by?;SELECT DISTINCT ?uri where {<A> dbp:producer ?uri};select distinct ?a where {?a dbp:producer ?uri};
-dbo:Anime;;;Who is the producer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:producer ?uri};select distinct ?a where {?a dbp:producer ?uri};
-dbo:Anime;;;Who composed music for <A>?;SELECT DISTINCT ?uri where {<A> dbo:musicComposer ?uri};select distinct ?a where {?a dbo:musicComposer ?uri};
-dbo:Anime;;;Who composed music for <A>?;SELECT DISTINCT ?uri where {<A> dbo:music ?uri};select distinct ?a where {?a dbo:music ?uri};
-dbo:Anime;;;How many episodes does <A> have?;SELECT DISTINCT ?uri where {<A> dbp:episodes ?uri};select distinct ?a where {?a dbp:episodes ?uri};
+dbo:Anime;;;Who is the director of <A>?;SELECT DISTINCT ?uri where { <A> dbp:director ?uri };select distinct ?a where {?a dbp:director ?uri};
+dbo:Anime;;;<A> is directed by?;SELECT DISTINCT ?uri where { <A> dbp:director ?uri };select distinct ?a where {?a dbp:director ?uri};
+dbo:Anime;;;<A> is produced by?;SELECT DISTINCT ?uri where { <A> dbp:producer ?uri };select distinct ?a where {?a dbp:producer ?uri};
+dbo:Anime;;;Who is the producer of <A>?;SELECT DISTINCT ?uri where { <A> dbp:producer ?uri };select distinct ?a where {?a dbp:producer ?uri};
+dbo:Anime;;;Who composed music for <A>?;SELECT DISTINCT ?uri where { <A> dbo:musicComposer ?uri };select distinct ?a where {?a dbo:musicComposer ?uri};
+dbo:Anime;;;Who composed music for <A>?;SELECT DISTINCT ?uri where { <A> dbo:music ?uri };select distinct ?a where {?a dbo:music ?uri};
+dbo:Anime;;;How many episodes does <A> have?;SELECT DISTINCT ?uri where { <A> dbp:episodes ?uri };select distinct ?a where {?a dbp:episodes ?uri};
  
 # http://dbpedia.org/ontology/City
 http://dbpedia.org/ontology/City;;;What products are made by <A> based companies?;SELECT DISTINCT ?uri where { ?x dbp:location <A> . ?x dbo:product ?uri . ?x a dbo:Company };select distinct ?a where { ?x dbp:location ?a . ?x dbo:product ?uri . ?x a dbo:Company };0ad9954f309c496ab4dfbd8056a58187
@@ -314,18 +314,18 @@ http://dbpedia.org/ontology/City;;;How many buildings are located in <A> ?;SELEC
 
 # http://dbpedia.org/ontology/Planet
   
-dbo:Planet;;;What is the average speed of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbp:averageSpeed ?uri};select distinct ?a where {?a dbp:averageSpeed ?uri};id
-dbo:Planet;;;What is the density of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbo:density ?uri};select distinct ?a where {?a dbo:density ?uri};id
-dbo:Planet;;;What is the mass of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbo:mass ?uri};select distinct ?a where {?a dbo:mass ?uri};id
-dbo:Planet;;;how many satellites does <A> have?;SELECT DISTINCT ?uri where {<A> dbp:satellites ?uri};select distinct ?a where {?a dbp:satellites ?uri};id
-dbo:Planet;;;What is the maximum temperature of the planet <A>?;SELECT DISTINCT ?uri where {<A> dbp:maxTemp ?uri};select distinct ?a where {?a dbp:maxTemp ?uri};id
+dbo:Planet;;;What is the average speed of the planet <A>?;SELECT DISTINCT ?uri where { <A> dbp:averageSpeed ?uri };select distinct ?a where {?a dbp:averageSpeed ?uri};id
+dbo:Planet;;;What is the density of the planet <A>?;SELECT DISTINCT ?uri where { <A> dbo:density ?uri };select distinct ?a where {?a dbo:density ?uri};id
+dbo:Planet;;;What is the mass of the planet <A>?;SELECT DISTINCT ?uri where { <A> dbo:mass ?uri };select distinct ?a where {?a dbo:mass ?uri};id
+dbo:Planet;;;how many satellites does <A> have?;SELECT DISTINCT ?uri where { <A> dbp:satellites ?uri };select distinct ?a where {?a dbp:satellites ?uri};id
+dbo:Planet;;;What is the maximum temperature of the planet <A>?;SELECT DISTINCT ?uri where { <A> dbp:maxTemp ?uri };select distinct ?a where {?a dbp:maxTemp ?uri};id
   
 # http://dbpedia.org/ontology/CricketTeam
-dbo:CricketTeam;;;Who is the captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:captain ?uri};select distinct ?a where {?a dbp:captain ?uri};id
-dbo:CricketTeam;;;Who is the coach of <A>?;SELECT DISTINCT ?uri where {<A> dbp:coach ?uri};select distinct ?a where {?a dbp:coach ?uri};id
-dbo:CricketTeam;;;Who is the ODI captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:odcaptain ?uri};select distinct ?a where {?a dbp:odcaptain ?uri};id
-dbo:CricketTeam;;;Who is the t20 captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:t20icaptain ?uri};select distinct ?a where {?a dbp:t20icaptain ?uri};id
-dbo:CricketTeam;;;Who is the test captain of <A>?;SELECT DISTINCT ?uri where {<A> dbp:testcaptain ?uri};select distinct ?a where {?a dbp:testcaptain ?uri};id
+dbo:CricketTeam;;;Who is the captain of <A>?;SELECT DISTINCT ?uri where { <A> dbp:captain ?uri };select distinct ?a where {?a dbp:captain ?uri};id
+dbo:CricketTeam;;;Who is the coach of <A>?;SELECT DISTINCT ?uri where { <A> dbp:coach ?uri };select distinct ?a where {?a dbp:coach ?uri};id
+dbo:CricketTeam;;;Who is the ODI captain of <A>?;SELECT DISTINCT ?uri where { <A> dbp:odcaptain ?uri };select distinct ?a where {?a dbp:odcaptain ?uri};id
+dbo:CricketTeam;;;Who is the t20 captain of <A>?;SELECT DISTINCT ?uri where { <A> dbp:t20icaptain ?uri };select distinct ?a where {?a dbp:t20icaptain ?uri};id
+dbo:CricketTeam;;;Who is the test captain of <A>?;SELECT DISTINCT ?uri where { <A> dbp:testcaptain ?uri };select distinct ?a where {?a dbp:testcaptain ?uri};id
 
 # http://dbpedia.org/ontology/Mountain
 
@@ -339,18 +339,18 @@ http://dbpedia.org/ontology/Mountain;;;name the mountain range of <A> ?;SELECT D
 http://dbpedia.org/ontology/MountainRange;http://dbpedia.org/ontology/ProtectedArea;;Name the mountain which belongs to <A> range and is located in <B>?;SELECT DISTINCT ?uri where { ?uri dbo:mountainRange <A> . ?uri dbo:locatedInArea <B> . ?uri a dbo:Mountain };select distinct ?a, ?b where { ?uri dbo:mountainRange ?a . ?uri dbo:locatedInArea ?b . ?uri a dbo:Mountain };cf34994e9bb545c3beff7e8a04d58823
 
 # http://dbpedia.org/ontology/Museum
-dbo:Museum;;;List awards <A> got.;SELECT DISTINCT ?uri where {?uri dbo:award <A>};select distinct ?a where {?uri dbo:award ?a};43
-dbo:Museum;;;List all art works in <A>.SELECT DISTINCT ?uri where {?uri dbo:museum <A>};select distinct ?a where {?uri dbo:museum ?a};44
-dbo:Museum;;;When is <A> established?;SELECT DISTINCT ?uri where {<A> dbp:established ?uri};select distinct ?a where {?a dbp:established ?uri};45
-dbo:Museum;;;How many visitors does <A> have in a year?;SELECT DISTINCT ?uri where {<A> dbp:visitors ?uri};select distinct ?a where {?a dbo:numberOfVisitors ?uri};46
-dbo:Museum;;;Where is <A>?;SELECT DISTINCT ?uri where {<A> dbo:location ?uri};select distinct ?a where {?a dbo:location ?uri};47
+dbo:Museum;;;List awards <A> got.;SELECT DISTINCT ?uri where { ?uri dbo:award <A> };select distinct ?a where {?uri dbo:award ?a};43
+dbo:Museum;;;List all art works in <A>.SELECT DISTINCT ?uri where { ?uri dbo:museum <A> };select distinct ?a where {?uri dbo:museum ?a};44
+dbo:Museum;;;When is <A> established?;SELECT DISTINCT ?uri where { <A> dbp:established ?uri };select distinct ?a where {?a dbp:established ?uri};45
+dbo:Museum;;;How many visitors does <A> have in a year?;SELECT DISTINCT ?uri where { <A> dbp:visitors ?uri };select distinct ?a where {?a dbo:numberOfVisitors ?uri};46
+dbo:Museum;;;Where is <A>?;SELECT DISTINCT ?uri where { <A> dbo:location ?uri };select distinct ?a where {?a dbo:location ?uri};47
 
 # http://dbpedia.org/ontology/Olympics
-dbo:Olympics;;;When did the <A> happen?;SELECT DISTINCT ?uri where {<A> dbo:games ?uri};select distinct ?a where {?a dbo:games ?uri};id
-dbo:Olympics;;;Where did the <A> organised?;SELECT DISTINCT ?uri where {<A> dbp:venue ?uri};select distinct ?a where {?a dbp:venue ?uri};id
-dbo:Olympics;;;Who won the gold medal in <A>?;SELECT DISTINCT ?uri where {<A> dbo:goldMedalist ?uri};select distinct ?a where {?a dbo:goldMedalist ?uri};id
-dbo:Olympics;;;Who won the silver medal in <A>?;SELECT DISTINCT ?uri where {<A> dbo:silverMedalist ?uri};select distinct ?a where {?a dbo:silverMedalist ?uri};id
-dbo:Olympics;;;Who won the bronze medal in <A>?;SELECT DISTINCT ?uri where {<A> dbp:bronze ?uri};select distinct ?a where {?a dbp:bronze ?uri};id
+dbo:Olympics;;;When did the <A> happen?;SELECT DISTINCT ?uri where { <A> dbo:games ?uri };select distinct ?a where {?a dbo:games ?uri};id
+dbo:Olympics;;;Where did the <A> organised?;SELECT DISTINCT ?uri where { <A> dbp:venue ?uri };select distinct ?a where {?a dbp:venue ?uri};id
+dbo:Olympics;;;Who won the gold medal in <A>?;SELECT DISTINCT ?uri where { <A> dbo:goldMedalist ?uri };select distinct ?a where {?a dbo:goldMedalist ?uri};id
+dbo:Olympics;;;Who won the silver medal in <A>?;SELECT DISTINCT ?uri where { <A> dbo:silverMedalist ?uri };select distinct ?a where {?a dbo:silverMedalist ?uri};id
+dbo:Olympics;;;Who won the bronze medal in <A>?;SELECT DISTINCT ?uri where { <A> dbp:bronze ?uri };select distinct ?a where {?a dbp:bronze ?uri};id
 
 # http://dbpedia.org/ontology/Lake
 http://dbpedia.org/ontology/Lake;;;How many cities are close to <A>?;SELECT DISTINCT COUNT(?uri) where { <A> dbo:nearestCity ?uri };select distinct ?a where { ?a dbo:nearestCity ?uri };209c460e684848fe9572d27a98ecbfea
@@ -359,40 +359,47 @@ http://dbpedia.org/ontology/Lake;;;Name the nearest city to  <A>?;SELECT DISTINC
 http://dbpedia.org/ontology/Lake;http://dbpedia.org/ontology/City;;Name the river with source as <A> and its mouth is located in <B>?;SELECT DISTINCT ?uri where { ?uri dbo:source <A> . ?uri dbp:mouthLocation <B> . ?uri a dbo:River };select distinct ?a, ?b where { ?uri dbo:source ?a . ?uri dbp:mouthLocation ?b . ?uri a dbo:River };a08bb500ab2240118a0e3c00ed317f0b
 http://dbpedia.org/ontology/Lake;;;what does the <A> flow into?;SELECT DISTINCT ?uri where { <A> dbp:inflow ?uri };select distinct ?a where { ?a dbp:inflow ?uri };84d8ee90740d450784488c785a892205
 
-
 # http://dbpedia.org/ontology/Game
-dbo:Game;;;How many players can play this <A>?;SELECT DISTINCT ?uri where {<A> dbp:players ?uri};select distinct ?a where {?a dbp:players ?uri};
-dbo:Game;;;Who invented <A>?;SELECT DISTINCT ?uri where {<A> dbp:inventor ?uri};select distinct ?a where {?a dbp:inventor ?uri};
-dbo:Game;;;Who is the manufacturer of <A>?;SELECT DISTINCT ?uri where {<A> dbp:manufacturer ?uri};select distinct ?a where {?a dbp:manufacturer ?uri};
-dbo:Game;;;What are the skills needed to play <A>?:SELECT DISTINCT ?uri where {<A> dbp:skills ?uri};select distinct ?a where {?a dbp:skills ?uri};
+dbo:Game;;;How many players can play this <A>?;SELECT DISTINCT ?uri where { <A> dbp:players ?uri };select distinct ?a where {?a dbp:players ?uri};
+dbo:Game;;;Who invented <A>?;SELECT DISTINCT ?uri where { <A> dbp:inventor ?uri };select distinct ?a where {?a dbp:inventor ?uri};
+dbo:Game;;;Who is the manufacturer of <A>?;SELECT DISTINCT ?uri where { <A> dbp:manufacturer ?uri };select distinct ?a where {?a dbp:manufacturer ?uri};
+dbo:Game;;;What are the skills needed to play <A>?:SELECT DISTINCT ?uri where { <A> dbp:skills ?uri };select distinct ?a where {?a dbp:skills ?uri};
 
 # http://dbpedia.org/ontology/Airline
-dbo:Airline;;;How many airports can I fly to with <A>?;SELECT DISTINCT ?uri where {<A> dbp:destinations ?uri};select distinct ?a where {?a dbp:destinations ?uri};
-dbo:Airline;;;What is the airline code of <A>?;SELECT DISTINCT ?uri where {<A> dbo:iataAirlineCode ?uri};select distinct ?a where {?a dbo:iataAirlineCode ?uri};
-dbo:Airline;;;How big is the fleet of <A>?;SELECT DISTINCT ?uri where {<A> dbp:fleetSize ?uri};select distinct ?a where {?a dbp:fleetSize ?uri};
+dbo:Airline;;;How many airports can I fly to with <A>?;SELECT DISTINCT ?uri where { <A> dbp:destinations ?uri };select distinct ?a where {?a dbp:destinations ?uri};
+dbo:Airline;;;What is the airline code of <A>?;SELECT DISTINCT ?uri where { <A> dbo:iataAirlineCode ?uri };select distinct ?a where {?a dbo:iataAirlineCode ?uri};
+dbo:Airline;;;How big is the fleet of <A>?;SELECT DISTINCT ?uri where { <A> dbp:fleetSize ?uri };select distinct ?a where {?a dbp:fleetSize ?uri};
 
 # http://dbpedia.org/ontology/Bank
+dbo:Bank;;;What are the assets of <A>?;SELECT DISTINCT ?uri where { <A> dbo:assets ?uri };select distinct ?a where {?a dbo:assets ?uri};
+
 # http://dbpedia.org/ontology/BasketballLeague
+dbo:BasketballLeague;;;When is <A> founded?;SELECT DISTINCT ?uri where { <A> dbo:foundingYear ?uri };select distinct ?a where { ?a dbo:foundingYear ?uri };
+dbo:BasketballLeague;;;Which team is the champion of <A> last year?;SELECT DISTINCT ?uri where { <A> dbp:champion ?uri };select distinct ?a where { ?a dbo:champion ?uri };
+dbo:BasketballLeague;;;List the teams playing in <A>.;SELECT DISTINCT ?uri where { ?uri dbp:league <A> };select distinct ?a where { ?uri dbp:league ?a };
+dbo:BasketballLeague;;;Who is the commissioner of <A>?;SELECT DISTINCT ?uri where { <A> dbp:commissioner ?uri };select distinct ?a where { ?a dbp:commissioner ?uri};
+dbo:BasketballLeague;;;Who is the commissioner of <A>?;SELECT DISTINCT ?uri where { <A> dbp:commissioner ?uri };select distinct ?a where { ?a dbp:commissioner ?uri};
+
 
 # http://dbpedia.org/ontology/Hotel
-dbo:Hotel;;;Where is <A> located;SELECT DISTINCT ?uri where {<A> dbp:location ?uri};select distinct ?a where {?a dbp:location ?uri};
-dbo:Hotel;;;Who is the owner of <A>;SELECT DISTINCT ?uri where {<A> dbp:owner ?uri};select distinct ?a where {?a dbp:owner ?uri};
-dbo:Hotel;;;How many rooms are available in <A>;SELECT DISTINCT ?uri where {<A> dbo:numberOfRooms ?uri};select distinct ?a where {?a dbo:numberOfRooms ?uri};
-dbo:Hotel;;;How many floors are present in <A>;SELECT DISTINCT ?uri where {<A> dbo:floorCount ?uri};select distinct ?a where {?a dbo:floorCount ?uri};
+dbo:Hotel;;;Where is <A> located;SELECT DISTINCT ?uri where { <A> dbp:location ?uri };select distinct ?a where {?a dbp:location ?uri};
+dbo:Hotel;;;Who is the owner of <A>;SELECT DISTINCT ?uri where { <A> dbp:owner ?uri };select distinct ?a where {?a dbp:owner ?uri};
+dbo:Hotel;;;How many rooms are available in <A>;SELECT DISTINCT ?uri where { <A> dbo:numberOfRooms ?uri };select distinct ?a where {?a dbo:numberOfRooms ?uri};
+dbo:Hotel;;;How many floors are present in <A>;SELECT DISTINCT ?uri where { <A> dbo:floorCount ?uri };select distinct ?a where {?a dbo:floorCount ?uri};
 
 # http://dbpedia.org/ontology/TennisTournament
 
 # http://dbpedia.org/ontology/Song
-dbo:Song;;;Who is the singer of the song <A>?;SELECT DISTINCT ?uri where {<A> dbo:artist ?uri};select distinct ?a where {?a dbo:artist ?uri};
-dbo:Song;;;When did the song <A> got released?;SELECT DISTINCT ?uri where {<A> dbo:releaseDate ?uri};select distinct ?a where {?a dbo:releaseDate ?uri};
-dbo:Song;;;Who is the writer for the song <A>?;SELECT DISTINCT ?uri where {<A> dbo:writer ?uri};select distinct ?a where {?a dbo:writer ?uri};
+dbo:Song;;;Who is the singer of the song <A>?;SELECT DISTINCT ?uri where { <A> dbo:artist ?uri };select distinct ?a where {?a dbo:artist ?uri};
+dbo:Song;;;When did the song <A> got released?;SELECT DISTINCT ?uri where { <A> dbo:releaseDate ?uri };select distinct ?a where {?a dbo:releaseDate ?uri};
+dbo:Song;;;Who is the writer for the song <A>?;SELECT DISTINCT ?uri where { <A> dbo:writer ?uri };select distinct ?a where {?a dbo:writer ?uri};
 
 
 # http://dbpedia.org/ontology/Manga
-dbo:Manga;;;Who is the author of <A>;SELECT DISTINCT ?uri where {<A> dbo:author ?uri};select distinct ?a where {?a dbo:author ?uri};
-dbo:Manga;;;Who is the publisher of  <A>?;SELECT DISTINCT ?uri where {<A> dbo:publisher ?uri};select distinct ?a where {?a dbo:publisher ?uri};
-dbo:Manga;;;When did <A> publsihed for the first time?;SELECT DISTINCT ?uri where {<A> dbo:firstPublicationDate ?uri};select distinct ?a where {?a dbo:firstPublicationDate ?uri};
-dbo:Manga;;;What is the genre of <A>;SELECT DISTINCT ?uri where {<A> dbp:genre ?uri};select distinct ?a where {?a dbp:genre ?uri};
+dbo:Manga;;;Who is the author of <A>;SELECT DISTINCT ?uri where { <A> dbo:author ?uri };select distinct ?a where {?a dbo:author ?uri};
+dbo:Manga;;;Who is the publisher of  <A>?;SELECT DISTINCT ?uri where { <A> dbo:publisher ?uri };select distinct ?a where {?a dbo:publisher ?uri};
+dbo:Manga;;;When did <A> publsihed for the first time?;SELECT DISTINCT ?uri where { <A> dbo:firstPublicationDate ?uri };select distinct ?a where {?a dbo:firstPublicationDate ?uri};
+dbo:Manga;;;What is the genre of <A>;SELECT DISTINCT ?uri where { <A> dbp:genre ?uri };select distinct ?a where {?a dbp:genre ?uri};
 
   
 # http://dbpedia.org/ontology/BasketballTeam
@@ -414,9 +421,9 @@ http://dbpedia.org/ontology/WrittenWork;http://dbpedia.org/ontology/Artist;;Was 
 # http://dbpedia.org/ontology/Writer
 
 # http://dbpedia.org/ontology/Animal
-dbo:Animal;;;What is the genus of <A>;SELECT DISTINCT ?uri where {<A> dbo:genus ?uri};select distinct ?a where {?a dbo:genus ?uri};
-dbo:Animal;;;What is the type of the <A>?;SELECT DISTINCT ?uri where {<A> dbo:class ?uri};select distinct ?a where {?a dbo:class ?uri};
-dbo:Animal;;;<A> belongs to which family?;SELECT DISTINCT ?uri where {<A> dbo:family ?uri};select distinct ?a where {?a dbo:family ?uri};
+dbo:Animal;;;What is the genus of <A>;SELECT DISTINCT ?uri where { <A> dbo:genus ?uri };select distinct ?a where {?a dbo:genus ?uri};
+dbo:Animal;;;What is the type of the <A>?;SELECT DISTINCT ?uri where { <A> dbo:class ?uri };select distinct ?a where {?a dbo:class ?uri};
+dbo:Animal;;;<A> belongs to which family?;SELECT DISTINCT ?uri where { <A> dbo:family ?uri };select distinct ?a where {?a dbo:family ?uri};
   
   
 # http://dbpedia.org/ontology/Browser
