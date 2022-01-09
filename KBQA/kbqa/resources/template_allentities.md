@@ -420,7 +420,13 @@ dbo:Animal;;;What is the type of the <A>?;SELECT DISTINCT ?uri where { <A> dbo:c
 dbo:Animal;;;<A> belongs to which family?;SELECT DISTINCT ?uri where { <A> dbo:family ?uri };select distinct ?a where {?a dbo:family ?uri};
 
 # http://dbpedia.org/ontology/Aircraft
+
 # http://dbpedia.org/ontology/Airport
+dbo:Airport;;;Where is <A> located?;SELECT DISTINCT ?uri where { <A> dbp:location ?uri };select distinct ?a where { ?a dbp:location ?uri };
+dbo:Airport;;;Who is operating the <A>?;SELECT DISTINCT ?uri where { <A> dbp:operator ?uri };select distinct ?a where { ?a dbp:operator ?uri };
+dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?uri };select distinct ?a where { ?a dbp:type ?uri };
+
+  
 # http://dbpedia.org/ontology/Album
 # http://dbpedia.org/ontology/AmericanFootballPlayer
 # http://dbpedia.org/ontology/MusicalArtist
