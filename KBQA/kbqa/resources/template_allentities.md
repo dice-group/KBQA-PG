@@ -230,8 +230,6 @@ dbo:Person;dbo:Person;;Why did <A> and <B> die?;SELECT DISTINCT ?uri where { <A>
 
 # http://dbpedia.org/ontology/Actor
 
-SELECT DISTINCT ?a where {?a gold:hypernym dbr:Actor}
-
 dbr:Actor;;;When did <A> start acting?;SELECT DISTINCT ?uri where { <A> dbo:activeYearsStartYear ?uri };select distinct ?a where {?a dbo:activeYearsStartYear ?uri};12
 dbr:Actor;;;What movies did <A> star in?;SELECT DISTINCT ?uri where { ?uri dbo:starring <A> };select distinct ?a where {?uri dbo:starring ?a};13
 dbr:Actor;dbo:Film;;Did <A> star in <B>?;ASK where { <B> dbo:starring <A> };select distinct ?a,?b where {?b dbo:starring ?a};14
@@ -254,17 +252,12 @@ dbo:Place;;;Where is <A>?;SELECT DISTINCT ?uri where { <A> dbp:country ?uri };se
 dbo:Place;;;How many people live in <A>?;SELECT DISTINCT ?uri where { <A> dbp:populationTotal ?uri };select distinct ?a where {?a dbp:populationTotal ?uri};24
 dbo:Place;;;What is the population of <A>?;SELECT DISTINCT ?uri where { <A> dbp:populationTotal ?uri };select distinct ?awhere {?a dbp:populationTotal ?uri};25
 dbo:Place;;;When was <A> established;SELECT DISTINCT ?uri where { <A> dbp:establishedDate ?uri };select distinct ?a where {?a dbp:establishedDate ?uri};26
-
-# http://dbpedia.org/ontology/Publisher
-# http://dbpedia.org/ontology/Genre
   
 # http://dbpedia.org/ontology/Language
 
 dbo:Language;;;In which region do people speak <A>?;SELECT DISTINCT ?uri where { <A> dbp:region ?uri };select distinct ?a where {?a dbp:region ?uri};27
 dbo:Language;;;Which language family does <A> belong to?;SELECT DISTINCT ?uri where { <A> dbo:languageFamily ?uri };select distinct ?a where {?a dbo:languageFamily ?uri};28
 
-
-# http://dbpedia.org/ontology/Department
 # http://dbpedia.org/ontology/Software
 
 dbo:Software;;;Who developed <A>?;SELECT DISTINCT ?uri where { <A> dbp:developer ?uri };select distinct ?a where {?a dbp:developer ?uri};29
@@ -398,7 +391,6 @@ dbo:Song;;;Who is the singer of the song <A>?;SELECT DISTINCT ?uri where { <A> d
 dbo:Song;;;When did the song <A> got released?;SELECT DISTINCT ?uri where { <A> dbo:releaseDate ?uri };select distinct ?a where {?a dbo:releaseDate ?uri};
 dbo:Song;;;Who is the writer for the song <A>?;SELECT DISTINCT ?uri where { <A> dbo:writer ?uri };select distinct ?a where {?a dbo:writer ?uri};
 
-
 # http://dbpedia.org/ontology/Manga
 dbo:Manga;;;Who is the author of <A>;SELECT DISTINCT ?uri where { <A> dbo:author ?uri };select distinct ?a where {?a dbo:author ?uri};
 dbo:Manga;;;Who is the publisher of  <A>?;SELECT DISTINCT ?uri where { <A> dbo:publisher ?uri };select distinct ?a where {?a dbo:publisher ?uri};
@@ -414,8 +406,6 @@ dbo:BasketballPlayer;dbo:BasketballTeam;;;Was <A> drafted by <B>?;ASK where { <A
 dbo:BasketballPlayer;dbo:BasketballTeam;;;Has <A> played in <B>?;ASK where { <A> dbo:team <B> };select distinct ?a, ?b where {?a dbo:team ?b};
 dbo:BasketballTeam;;;Where is the home of the Los Angeles Lakers;SELECT DISTINCT ?uri where { <A> dbo:stadium ?uri };select distinct ?a where {?a dbo:stadium ?uri};
 
-# http://dbpedia.org/ontology/Band
-  
 # http://dbpedia.org/ontology/Artist
   
 http://dbpedia.org/ontology/WrittenWork;http://dbpedia.org/ontology/Artist;;Did <B> do the cover of <A>?;ASK where { <A> dbo:coverArtist <B> };select distinct ?a, ?b where { ?a dbo:coverArtist ?b };f3e6a145912e4850b3f93dbc9342c2b0
@@ -424,29 +414,28 @@ http://dbpedia.org/ontology/Artist;;;Which artist married to <A>?;SELECT DISTINC
 http://dbpedia.org/ontology/Artist;http://dbpedia.org/ontology/WrittenWork;;Is <A> the illustration by of <B>?;ASK where { <B> dbp:illustrator <A> };select distinct ?a, ?b where { ?b dbp:illustrator ?a };a9898ec7205044eeb0890978e7e8c771
 http://dbpedia.org/ontology/WrittenWork;http://dbpedia.org/ontology/Artist;;Was <A> covered by <B>?;ASK where { <A> dbp:coverArtist <B> };select distinct ?a, ?b where { ?a dbp:coverArtist ?b };e6f3d395b66f485cb8901bfbcb1c4c0c
 
+# http://dbpedia.org/ontology/Animal
+dbo:Animal;;;What is the genus of <A>;SELECT DISTINCT ?uri where { <A> dbo:genus ?uri };select distinct ?a where {?a dbo:genus ?uri};
+dbo:Animal;;;What is the type of the <A>?;SELECT DISTINCT ?uri where { <A> dbo:class ?uri };select distinct ?a where {?a dbo:class ?uri};
+dbo:Animal;;;<A> belongs to which family?;SELECT DISTINCT ?uri where { <A> dbo:family ?uri };select distinct ?a where {?a dbo:family ?uri};
+
 # http://dbpedia.org/ontology/Aircraft
 # http://dbpedia.org/ontology/Airport
 # http://dbpedia.org/ontology/Album
 # http://dbpedia.org/ontology/AmericanFootballPlayer
 # http://dbpedia.org/ontology/MusicalArtist
 # http://dbpedia.org/ontology/Writer
-
-# http://dbpedia.org/ontology/Animal
-dbo:Animal;;;What is the genus of <A>;SELECT DISTINCT ?uri where { <A> dbo:genus ?uri };select distinct ?a where {?a dbo:genus ?uri};
-dbo:Animal;;;What is the type of the <A>?;SELECT DISTINCT ?uri where { <A> dbo:class ?uri };select distinct ?a where {?a dbo:class ?uri};
-dbo:Animal;;;<A> belongs to which family?;SELECT DISTINCT ?uri where { <A> dbo:family ?uri };select distinct ?a where {?a dbo:family ?uri};
-  
-  
+# http://dbpedia.org/ontology/Genre
+# http://dbpedia.org/ontology/Band
 # http://dbpedia.org/ontology/Browser
-# http://dbpedia.org/ontology/Camera
-No entities
 # http://dbpedia.org/ontology/Arena
-
+# http://dbpedia.org/ontology/Beverage
+# http://dbpedia.org/ontology/President
 
 
 # http://dbpedia.org/ontology/ClubMoss
 # http://dbpedia.org/ontology/AustralianFootballTeam
-
+# http://dbpedia.org/ontology/Publisher
 # http://dbpedia.org/ontology/FieldHockeyLeague
 # http://dbpedia.org/ontology/MilitaryPerson
 # http://dbpedia.org/ontology/VolleyballLeague
@@ -494,8 +483,6 @@ No entities
 # http://dbpedia.org/ontology/Volcano
 # http://dbpedia.org/ontology/AnimangaCharacter
 # http://dbpedia.org/ontology/WaterwayTunnel
-# http://dbpedia.org/ontology/Image
-
 # http://dbpedia.org/ontology/HandballLeague
 # http://dbpedia.org/ontology/IceHockeyLeague
 # http://dbpedia.org/ontology/Locomotive
@@ -505,7 +492,6 @@ No entities
 # http://dbpedia.org/ontology/Saint
 # http://dbpedia.org/ontology/Single
 # http://dbpedia.org/ontology/SpaceShuttle
-
 # http://dbpedia.org/ontology/AmericanFootballLeague
 # http://dbpedia.org/ontology/MusicFestival
 # http://dbpedia.org/ontology/SpeedwayTeam
@@ -517,10 +503,7 @@ No entities
 # http://dbpedia.org/ontology/BritishRoyalty
 # http://dbpedia.org/ontology/AcademicJournal
 # http://dbpedia.org/ontology/AdministrativeRegion
-
 # http://dbpedia.org/ontology/AmusementParkAttraction
-
-
 # http://dbpedia.org/ontology/ArtistDiscography
 # http://dbpedia.org/ontology/Artwork
 # http://dbpedia.org/ontology/Asteroid
@@ -528,10 +511,7 @@ No entities
 # http://dbpedia.org/ontology/Automobile
 # http://dbpedia.org/ontology/AutomobileEngine
 # http://dbpedia.org/ontology/Award
-
 # http://dbpedia.org/ontology/BaseballSeason
-
-# http://dbpedia.org/ontology/Beverage
 # http://dbpedia.org/ontology/BodyOfWater
 # http://dbpedia.org/ontology/Book
 # http://dbpedia.org/ontology/Bridge
@@ -539,7 +519,6 @@ No entities
 # http://dbpedia.org/ontology/Building
 # http://dbpedia.org/ontology/BusCompany
 # http://dbpedia.org/ontology/ChemicalCompound
-
 # http://dbpedia.org/ontology/CityDistrict
 # http://dbpedia.org/ontology/ClassicalMusicComposition
 # http://dbpedia.org/ontology/Cleric
@@ -560,12 +539,10 @@ No entities
 # http://dbpedia.org/ontology/EthnicGroup
 # http://dbpedia.org/ontology/EurovisionSongContestEntry
 # http://dbpedia.org/ontology/Event
-
 # http://dbpedia.org/ontology/FilmFestival
 # http://dbpedia.org/ontology/Food
 # http://dbpedia.org/ontology/FootballLeagueSeason
 # http://dbpedia.org/ontology/FootballMatch
-
 # http://dbpedia.org/ontology/GolfTournament
 # http://dbpedia.org/ontology/GovernmentAgency
 # http://dbpedia.org/ontology/GrandPrix
@@ -576,27 +553,21 @@ No entities
 # http://dbpedia.org/ontology/HollywoodCartoon
 # http://dbpedia.org/ontology/HorseRace
 # http://dbpedia.org/ontology/Hospital
-
 # http://dbpedia.org/ontology/HumanGene
 # http://dbpedia.org/ontology/InformationAppliance
-
 # http://dbpedia.org/ontology/Legislature
 # http://dbpedia.org/ontology/Library
 # http://dbpedia.org/ontology/Magazine
-
 # http://dbpedia.org/ontology/MilitaryConflict
 # http://dbpedia.org/ontology/MilitaryStructure
 # http://dbpedia.org/ontology/MilitaryUnit
 # http://dbpedia.org/ontology/MixedMartialArtsEvent
 # http://dbpedia.org/ontology/Monument
 # http://dbpedia.org/ontology/MotorsportSeason
-
 # http://dbpedia.org/ontology/Musical
-
 # http://dbpedia.org/ontology/NCAATeamSeason
 # http://dbpedia.org/ontology/NationalFootballLeagueSeason
 # http://dbpedia.org/ontology/Newspaper
-
 # http://dbpedia.org/ontology/Organisation
 # http://dbpedia.org/ontology/Outbreak
 # http://dbpedia.org/ontology/Pandemic
@@ -652,7 +623,6 @@ No entities
 # http://dbpedia.org/ontology/TelevisionSeason
 # http://dbpedia.org/ontology/TelevisionShow
 # http://dbpedia.org/ontology/TelevisionStation
-
 # http://dbpedia.org/ontology/Tenure
 # http://dbpedia.org/ontology/Theatre
 # http://dbpedia.org/ontology/TopLevelDomain
@@ -666,7 +636,6 @@ No entities
 # http://dbpedia.org/ontology/Website
 # http://dbpedia.org/ontology/WomensTennisAssociationTournament
 # http://dbpedia.org/ontology/WrestlingEvent
-
 # http://dbpedia.org/ontology/WrittenWork
 # http://dbpedia.org/ontology/Year
 # http://dbpedia.org/ontology/YearInSpaceflight
@@ -680,7 +649,6 @@ No entities
 # http://dbpedia.org/ontology/BowlingLeague
 # http://dbpedia.org/ontology/CurlingLeague
 # http://dbpedia.org/ontology/Agent
-
 # http://dbpedia.org/ontology/ArchitecturalStructure
 # http://dbpedia.org/ontology/Biomolecule
 # http://dbpedia.org/ontology/Broadcaster
@@ -818,7 +786,6 @@ No entities
 # http://dbpedia.org/ontology/Poet
 # http://dbpedia.org/ontology/PokerPlayer
 # http://dbpedia.org/ontology/PoloLeague
-# http://dbpedia.org/ontology/President
 # http://dbpedia.org/ontology/Priest
 # http://dbpedia.org/ontology/PrimeMinister
 # http://dbpedia.org/ontology/Prison
@@ -915,7 +882,6 @@ No entities
 # http://dbpedia.org/ontology/ArcherPlayer
 # http://dbpedia.org/ontology/Archipelago
 # http://dbpedia.org/ontology/Area
-
 # http://dbpedia.org/ontology/Aristocrat
 # http://dbpedia.org/ontology/Arrondissement
 # http://dbpedia.org/ontology/Article
@@ -933,9 +899,7 @@ No entities
 # http://dbpedia.org/ontology/BoardGame
 # http://dbpedia.org/ontology/BobsleighAthlete
 # http://dbpedia.org/ontology/BrownDwarf
-
 # http://dbpedia.org/ontology/BullFighter
-
 # http://dbpedia.org/ontology/CanadianFootballPlayer
 # http://dbpedia.org/ontology/CanadianFootballTeam
 # http://dbpedia.org/ontology/Canton
