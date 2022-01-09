@@ -387,6 +387,11 @@ dbo:Hotel;;;How many rooms are available in <A>;SELECT DISTINCT ?uri where { <A>
 dbo:Hotel;;;How many floors are present in <A>;SELECT DISTINCT ?uri where { <A> dbo:floorCount ?uri };select distinct ?a where {?a dbo:floorCount ?uri};
 
 # http://dbpedia.org/ontology/TennisTournament
+dbo:TennisTournament;;;Who is the men's singles champion at <A>;SELECT DISTINCT ?uri where { <A> dbo:championInSingleMale ?uri};select distinct ?a where { ?a dbo:championInSingleMale ?uri };
+dbo:TennisTournament;;;Who is the women's singles champion of <A>;SELECT DISTINCT ?uri where { <A> dbo:championInSingleFemale ?uri};select distinct ?a where { ?a dbo:championInSingleFemale ?uri };
+dbo:TennisPlayer;dbo:TennisTournament;;Has <A> won the men's singles champion at <B>?;ASK where { <B> dbo:championInSingleMale <A> };select distinct ?a,?b where { ?b dbo:championInSingleMale ?a };
+dbo:TennisTournament;;;Where is the venue of <A>?;SELECT DISTINCT ?uri where { <A> dbp:venue ?uri };select distinct ?a where { ?a dbp:venue ?uri };
+dbo:TennisTournament;;;What type of venue is the French Open?;SELECT DISTINCT ?uri where { <A> dbp:surface ?uri };select distinct ?a where { ?a dbp:surface ?uri };
 
 # http://dbpedia.org/ontology/Song
 dbo:Song;;;Who is the singer of the song <A>?;SELECT DISTINCT ?uri where { <A> dbo:artist ?uri };select distinct ?a where {?a dbo:artist ?uri};
@@ -405,7 +410,9 @@ dbo:BasketballTeam;;;How many champions has <A> won?;SELECT DISTINCT ?uri where 
 dbo:BasketballTeam;;;How many division titles have <A> won?;SELECT DISTINCT ?uri where { <A> dbp:divChamps ?uri };select distinct ?a where {?a dbp:divChamps ?uri};
 dbo:BasketballTeam;;;Who is the president of <A>;SELECT DISTINCT ?uri where { <A> dbp:president ?uri };select distinct ?a where {?a dbp:president ?uri};
 dbo:BasketballTeam;;;Which company sponsors <A>?;SELECT DISTINCT ?uri where { <A> dbp:sponsor ?uri };select distinct ?a where {?a dbp:sponsor ?uri};
-
+dbo:BasketballPlayer;dbo:BasketballTeam;;;Was <A> drafted by <B>?;ASK where { <A> dbo:draftTeam <B> };select distinct ?a, ?b where {?a dbo:draftTeam ?b};
+dbo:BasketballPlayer;dbo:BasketballTeam;;;Has <A> played in <B>?;ASK where { <A> dbo:team <B> };select distinct ?a, ?b where {?a dbo:team ?b};
+dbo:BasketballTeam;;;Where is the home of the Los Angeles Lakers;SELECT DISTINCT ?uri where { <A> dbo:stadium ?uri };select distinct ?a where {?a dbo:stadium ?uri};
 
 # http://dbpedia.org/ontology/Band
   
