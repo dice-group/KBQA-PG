@@ -89,6 +89,16 @@ def query_embeddings(uris: list) -> pd.DataFrame:
                     cnt += 1
             batch_uris.clear()
             print(i)
+    uri_dict = {"uris": batch_uris}
+    resp = requests.post("http://kbqa-pg.cs.upb.de/embedding_query/", json=uri_dict)
+    embeddings = resp.json()["embeddings"]
+    for embedding in embeddings:
+        if embedding != "":
+            embedding = embedding.replace("\n", "")
+            embedding_split = embedding.split("\t")
+            embedding_df.loc[cnt] = embedding_split
+            cnt += 1
+    print(embedding_df)
     return embedding_df
 
 
@@ -101,7 +111,7 @@ def main(dataset_path: str) -> None:
     qtq_dataset = load_qtq_dataset(dataset_path)
 
     unique_uris = gather_uris_from_dataset(qtq_dataset)
-    embedding_df = query_embeddings(unique_uris)
+    embedding_df = query_embeddings(unique_uris[:200])
 
     with open("df.out", "w", encoding="UTF-8") as outfile:
         embedding_df.to_csv(outfile, sep="\t")
