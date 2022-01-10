@@ -451,6 +451,10 @@ dbo:MusicalArtist;;;List artists who have worked with <A>.;SELECT DISTINCT ?uri 
 dbo:Song;dbo:MusicalArtist;;Did <B> sing <A>?;ASK where { <A> dbp:artist <B> };select distinct ?a, ?b where { ?a dbp:artist ?b };
 
 # http://dbpedia.org/ontology/Writer
+dbo:Writer;;;List all books from <A>.;SELECT DISTINCT ?uri where { ?uri dbo:author <A> };select distinct ?a where { ?uri dbo:author ?a. ?uri rdf:type dbo:Book };
+dbo:Book;dbo:Writer;;Was <A> written by <B>?;ASK where { <A> dbo:author <B> };select distinct ?a,?b where { ?a dbo:author ?b };
+dbo:Book;;;List all books by the author who wrote <A>.;SELECT DISTINCT ?uri where { <A> dbo:author ?writer. ?uri dbo:author ?writer };select distinct ?a where { ?a dbo:author ?uri };
+
 # http://dbpedia.org/ontology/Genre
 dbo:Genre;;;List all <A> albums.;SELECT DISTINCT ?uri where { ?uri dbo:genre <A>. ?uri rdf:type dbo:Album };select distinct ?a where { ?uri dbo:genre ?a. ?uri rdf:type dbo:Album };
 dbo:Genre;;;List all <A> bands.;SELECT DISTINCT ?uri where { ?uri dbo:genre <A>. ?uri rdf:type dbo:Band };select distinct ?a where { ?uri dbo:genre ?a. ?uri rdf:type dbo:Band };
