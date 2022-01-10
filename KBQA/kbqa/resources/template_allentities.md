@@ -470,6 +470,10 @@ dbo:President;;;Who is the successor of <A>?;SELECT DISTINCT ?uri where { <A> db
 dbo:President;;;Which party does <A> belong to;SELECT DISTINCT ?uri where { <A> dbo:party ?uri };select distinct ?a where { ?a dbo:party ?uri };
 
 # http://dbpedia.org/ontology/Pandemic
+dbo:Pandemic;;;When did <A> start?;SELECT DISTINCT ?uri where { <A> dbp:arrivalDate ?uri };select distinct ?a where { ?a dbp:arrivalDate ?uri };
+dbo:Pandemic;;;How many people are infected in <A>?;SELECT DISTINCT ?uri where { <A> dbp:confirmedCases ?uri };select distinct ?a where { ?a dbp:confirmedCases ?uri };
+dbo:Pandemic;;;How many people have died in <A>?;SELECT DISTINCT ?uri where { <A> dbp:deaths ?uri };select distinct ?a where { ?a dbp:deaths ?uri };
+
 
 # http://dbpedia.org/ontology/Beverage
 dbo:Beverage;;;Where did <A> originated;SELECT DISTINCT ?uri where { <A> dbo:origin ?uri };select distinct ?a where { ?a dbo:origin ?uri };
