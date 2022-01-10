@@ -433,37 +433,42 @@ dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?ur
 # http://dbpedia.org/ontology/Album
 dbo:Album;;;List all titles from <A>;SELECT DISTINCT ?uri where { <A> dbp:title ?uri };select distinct ?a where { ?a dbp:title ?uri };
 dbo:Song;dbo:Album;;Is <A> from <B>?;ASK where { <B> dbp:title <A> };select distinct ?a, ?b where { ?b dbp:title ?a };
-dbo:Song;;;List all songs on the album <A> is in.;SELECT DISTINCT ?uri where { <A> dbo:album ?album. ?album dbp:title ?uri };select distinct ?a where { ?a dbo:album ?album. ?album dbp:title ?uri};
+dbo:Song;;;List all songs on the album <A> is in.;SELECT DISTINCT ?uri where { <A> dbo:album ?album . ?album dbp:title ?uri };select distinct ?a where { ?a dbo:album ?album . ?album dbp:title ?uri};
 dbo:Album;;;What genre of music is <A>?;SELECT DISTINCT ?uri where { <A> dbp:genre ?uri };select distinct ?a where { ?a dbp:genre ?uri };
 dbo:Album;;;When was <A> released?;SELECT DISTINCT ?uri where { <A> dbp:released ?uri };select distinct ?a where { ?a dbp:released ?uri };
 dbo:Album;;;Who is the artist of <A>?;SELECT DISTINCT ?uri where { <A> dbp:artist ?uri };select distinct ?a where { ?a dbp:artist ?uri };
-dbo:Album;;;List other albums by the artist of <A>?;SELECT DISTINCT ?uri where { <A> dbp:artist ?artist. ?uri dbp:artist ?artist. ?uri rdf:type dbo:Album };select distinct ?a where { ?a dbp:artist ?artist. ?uri dbp:artist ?artist. ?uri rdf:type dbo:Album };
+dbo:Album;;;List other albums by the artist of <A>?;SELECT DISTINCT ?uri where { <A> dbp:artist ?artist. ?uri dbp:artist ?artist . ?uri rdf:type dbo:Album };select distinct ?a where { ?a dbp:artist ?artist . ?uri dbp:artist ?artist . ?uri rdf:type dbo:Album };
 dbo:Album;;;Who is the producer of <A>?;SELECT DISTINCT ?uri where { <A> dbp:producer ?uri };select distinct ?a where { ?a dbp:producer ?uri };
 
 # http://dbpedia.org/ontology/AmericanFootballPlayer
-
+dbo:AmericanFootballPlayer;;;What year did <A> enter the draft?;SELECT DISTINCT ?uri where { <A> dbo:draftYear ?uri };select distinct ?a where { ?a dbo:draftYear ?uri };
+dbo:AmericanFootballPlayer;;;In which position does <A> play?;SELECT DISTINCT ?uri where { <A> dbo:position ?uri };select distinct ?a where { ?a dbo:position ?uri };
+dbo:AmericanFootballPlayer;;;How many mvp has <A> won?;SELECT DISTINCT count(?uri) where { ?uri dbp:mvp <A> };select distinct ?a where { ?uri dbo:mvp ?a };
+dbo:AmericanFootballPlayer;dbo:AmericanFootballTeam;;Did <A> ever play for <B>?;ASK where { <A> dbo:formerTeam <B> };select distinct ?a,?b where { ?a dbo:formerTeam ?b };
+dbo:AmericanFootballPlayer;dbo:AmericanFootballTeam;;Does <A> play for <A> now?;ASK where { <A> dbp:currentTeam <B> };select distinct ?a,?b where { ?a dbp:currentTeam ?b };
+dbo:AmericanFootballPlayer;;;List all teammates of <A>.;SELECT DISTINCT ?uri where { <A> dbo:team ?team . ?uri dbo:team ?team };select distinct ?a where { ?a dbo:team ?uri };
 
 # http://dbpedia.org/ontology/MusicalArtist
 dbo:Song;dbo:MusicalArtist;;Is <A> written by <B>?;ASK where { <A> dbp:writer <B> };select distinct ?a, ?b where { ?a dbp:writer ?b };
 dbo:MusicalArtist;;;List all songs written by <A>.;SELECT DISTINCT ?uri where { ?uri dbp:writer <A>. ?uri rdf:type dbo:Song };select distinct ?a where { ?uri dbp:writer ?a. ?uri rdf:type dbo:Song };
-dbo:MusicalArtist;;;List all albums by <A>.;SELECT DISTINCT ?uri where { ?uri dbp:artist <A>. ?uri rdf:type dbo:Album };select distinct ?a where { ?uri dbp:artist ?a. ?uri rdf:type dbo:Album };
+dbo:MusicalArtist;;;List all albums by <A>.;SELECT DISTINCT ?uri where { ?uri dbp:artist <A> . ?uri rdf:type dbo:Album };select distinct ?a where { ?uri dbp:artist ?a. ?uri rdf:type dbo:Album };
 dbo:MusicalArtist;;;List artists who have worked with <A>.;SELECT DISTINCT ?uri where { ?uri dbo:associatedMusicalArtist <A> };select distinct ?a where { ?uri dbo:associatedMusicalArtist ?a };
 dbo:Song;dbo:MusicalArtist;;Did <B> sing <A>?;ASK where { <A> dbp:artist <B> };select distinct ?a, ?b where { ?a dbp:artist ?b };
 
 # http://dbpedia.org/ontology/Writer
 dbo:Writer;;;List all books from <A>.;SELECT DISTINCT ?uri where { ?uri dbo:author <A> };select distinct ?a where { ?uri dbo:author ?a. ?uri rdf:type dbo:Book };
 dbo:Book;dbo:Writer;;Was <A> written by <B>?;ASK where { <A> dbo:author <B> };select distinct ?a,?b where { ?a dbo:author ?b };
-dbo:Book;;;List all books by the author who wrote <A>.;SELECT DISTINCT ?uri where { <A> dbo:author ?writer. ?uri dbo:author ?writer };select distinct ?a where { ?a dbo:author ?uri };
+dbo:Book;;;List all books by the author who wrote <A>.;SELECT DISTINCT ?uri where { <A> dbo:author ?writer . ?uri dbo:author ?writer };select distinct ?a where { ?a dbo:author ?uri };
 
 # http://dbpedia.org/ontology/Genre
-dbo:Genre;;;List all <A> albums.;SELECT DISTINCT ?uri where { ?uri dbo:genre <A>. ?uri rdf:type dbo:Album };select distinct ?a where { ?uri dbo:genre ?a. ?uri rdf:type dbo:Album };
-dbo:Genre;;;List all <A> bands.;SELECT DISTINCT ?uri where { ?uri dbo:genre <A>. ?uri rdf:type dbo:Band };select distinct ?a where { ?uri dbo:genre ?a. ?uri rdf:type dbo:Band };
-dbo:Genre;;;List all <A> singers.;SELECT DISTINCT ?uri where { ?uri dbo:genre <A>. ?uri rdf:type dbo:MusicalArtist };select distinct ?a where { ?uri dbo:genre ?a. ?uri rdf:type dbo:MusicalArtist };
+dbo:Genre;;;List all <A> albums.;SELECT DISTINCT ?uri where { ?uri dbo:genre <A> . ?uri rdf:type dbo:Album };select distinct ?a where { ?uri dbo:genre ?a. ?uri rdf:type dbo:Album };
+dbo:Genre;;;List all <A> bands.;SELECT DISTINCT ?uri where { ?uri dbo:genre <A> . ?uri rdf:type dbo:Band };select distinct ?a where { ?uri dbo:genre ?a. ?uri rdf:type dbo:Band };
+dbo:Genre;;;List all <A> singers.;SELECT DISTINCT ?uri where { ?uri dbo:genre <A> . ?uri rdf:type dbo:MusicalArtist };select distinct ?a where { ?uri dbo:genre ?a. ?uri rdf:type dbo:MusicalArtist };
 dbo:Album;dbo:Genre;;Is <A> <B>?;ASK where { ?a dbo:genre ?b };select distinct ?a, ?b where { ?a dbo:genre ?b };
 
 # http://dbpedia.org/ontology/Band
 dbo:Band;;;Who are the members of <A>?;SELECT DISTINCT ?uri where { <A> dbp:currentMembers ?uri };select distinct ?a where { ?a dbp:currentMembers ?uri };
-dbo:Band;;;List all albums by <A>.;SELECT DISTINCT ?uri where { ?uri dbp:artist <A>. ?uri rdf:type dbo:Album };select distinct ?a where { ?uri dbp:artist ?a. ?uri rdf:type dbo:Album };
+dbo:Band;;;List all albums by <A>.;SELECT DISTINCT ?uri where { ?uri dbp:artist <A> . ?uri rdf:type dbo:Album };select distinct ?a where { ?uri dbp:artist ?a. ?uri rdf:type dbo:Album };
 dbo:Band;;;What genre of music is <A>?;SELECT DISTINCT ?uri where { <A> dbp:genre ?uri };select distinct ?a where { ?a dbo:genre ?uri };
 dbo:Band;;;Where is <A> from?;SELECT DISTINCT ?uri where { <A> dbp:genre ?uri };select distinct ?a where { ?a dbo:genre ?uri };
 dbo:Band;;;When was <A> formed?;SELECT DISTINCT ?uri where { <A> dbo:activeYearsStartYear ?uri };select distinct ?a where { ?a dbo:activeYearsStartYear ?uri};
