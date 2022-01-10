@@ -464,9 +464,11 @@ dbo:Band;;;What genre of music is <A>?;SELECT DISTINCT ?uri where { <A> dbp:genr
 dbo:Band;;;Where is <A> from?;SELECT DISTINCT ?uri where { <A> dbp:genre ?uri };select distinct ?a where { ?a dbo:genre ?uri };
 dbo:Band;;;When was <A> formed?;SELECT DISTINCT ?uri where { <A> dbo:activeYearsStartYear ?uri };select distinct ?a where { ?a dbo:activeYearsStartYear ?uri};
 
-
-
 # http://dbpedia.org/ontology/President
+dbo:President;;;When did he come to power?;SELECT DISTINCT ?uri where { <A> dbo:activeYearsStartDate ?uri };select distinct ?a where { ?a dbo:activeYearsStartDate ?uri };
+dbo:President;;;Who is the successor of <A>?;SELECT DISTINCT ?uri where { <A> dbo:successor ?uri };select distinct ?a where { ?a dbo:successor ?uri };
+dbo:President;;;Which party does <A> belong to;SELECT DISTINCT ?uri where { <A> dbo:party ?uri };select distinct ?a where { ?a dbo:party ?uri };
+
 # http://dbpedia.org/ontology/Pandemic
 
 # http://dbpedia.org/ontology/Beverage
