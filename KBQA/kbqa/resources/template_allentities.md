@@ -420,6 +420,13 @@ dbo:Animal;;;What is the type of the <A>?;SELECT DISTINCT ?uri where { <A> dbo:c
 dbo:Animal;;;<A> belongs to which family?;SELECT DISTINCT ?uri where { <A> dbo:family ?uri };select distinct ?a where {?a dbo:family ?uri};
 
 # http://dbpedia.org/ontology/Aircraft
+dbo:Aircraft;;;How many <A> are built?;SELECT DISTINCT ?uri where { <A> dbp:numberBuilt ?uri };select distinct ?a where { ?a dbp:numberBuilt ?uri };
+dbo:Aircraft;dbo:Company;;Is <A> built by <B>?;ASK where { <A> dbp:manufacturer <B> };select distinct ?a, ?b where { ?a dbp:manufacturer ?b };
+dbo:Aircraft;;;What is the successor to <A>?;SELECT DISTINCT ?uri where { <A> dbo:successor ?uri };select distinct ?a where { ?a dbo:successor ?uri };
+dbo:Aircraft;;;What is the predecessor to <A>?;SELECT DISTINCT ?uri where { <A> dbo:predecessor ?uri };select distinct ?a where { ?a dbo:predecessor ?uri };
+dbo:Aircraft;;;When was the Boeing 747's first flight?;SELECT DISTINCT ?uri where { <A> dbp:firstFlight ?uri };select distinct ?a where { ?a dbp:firstFlight ?uri };
+dbo:Aircraft;dbo:Aircraft;;Is <A> the successor to <B>?;ASK where { <B> dbo:successor <A> };select distinct ?a, ?b where { ?b dbo:successor ?a };
+dbo:Aircraft;dbo:Aircraft;;Is <A> the predecessor to <B>?;ASK where { <B> dbo:predecessor <A> };select distinct ?a, ?b where { ?b dbo:predecessor ?a };
 
 # http://dbpedia.org/ontology/Airport
 dbo:Airport;;;Where is <A> located?;SELECT DISTINCT ?uri where { <A> dbp:location ?uri };select distinct ?a where { ?a dbp:location ?uri };
@@ -428,6 +435,7 @@ dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?ur
 
   
 # http://dbpedia.org/ontology/Album
+
 # http://dbpedia.org/ontology/AmericanFootballPlayer
 # http://dbpedia.org/ontology/MusicalArtist
 # http://dbpedia.org/ontology/Writer
