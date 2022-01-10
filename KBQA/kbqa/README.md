@@ -1,27 +1,29 @@
 # Documentation for the webservice
 
-In order to run the webservice _nginx_ and _docker-compose_ have to be installed. The whole webservice is splitted into modules, which are running in their own containers, and composed by Docker.
+In order to structure the project, the logic of the webservice and all used resources are divided into two different directories. The directory **/webservice** contains the files for running the webservice (e.g. Dockerfiles, python files, ...) and the directory **/resources** contains all files, which are accessed by the webservice (e.g. models, embeddings, ...). Note that most of those files are too large to be pushed to the remote Github server. Therefore, those files have to be added to the VM manually.
 
-# Build the webservice
+In general, it is not necessary to build, start or stop the webservice, since we use an action-runner, which applies each merge to the branch develop to the running system on the VM. However, the webservice can be built, started or stopped by hand using some simple Docker commands.
 
-For the first or if there were any changes on the files, the webservice has to be built:
+## Build the webservice
+
+Building the webservice can be done by the command:
 
 ```bash
 docker-compose build
 ```
 
-# Start the webservice
+## Start the webservice
 
-After building the webservice, the container for all modules can be started by the command:
+Starting the webservice can be done by the command:
 
 ```bash
 docker-compose up
 ```
 
-# Stop the webservice
+## Stop the webservice
 
-The webservice is stopped by stopping all containers. This can be done by using the command:
+Stopping the webservice can be done by the command:
 
 ```bash
-docker stop $(docker ps -a -q)
+docker-compose down
 ```
