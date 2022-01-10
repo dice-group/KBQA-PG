@@ -306,7 +306,6 @@ http://dbpedia.org/ontology/City;;;Count the cities whihch are on the same sea a
 http://dbpedia.org/ontology/City;;;How many buildings are located in <A> ?;SELECT DISTINCT COUNT(?uri) where { ?uri dbp:location <A> . ?uri a dbo:Building };select distinct ?a where { ?uri dbp:location ?a . ?uri a dbo:Building };6a6a9694fbb44140ada81d7a8c89aa0f
 
 # http://dbpedia.org/ontology/Planet
-  
 dbo:Planet;;;What is the average speed of the planet <A>?;SELECT DISTINCT ?uri where { <A> dbp:averageSpeed ?uri };select distinct ?a where {?a dbp:averageSpeed ?uri};id
 dbo:Planet;;;What is the density of the planet <A>?;SELECT DISTINCT ?uri where { <A> dbo:density ?uri };select distinct ?a where {?a dbo:density ?uri};id
 dbo:Planet;;;What is the mass of the planet <A>?;SELECT DISTINCT ?uri where { <A> dbo:mass ?uri };select distinct ?a where {?a dbo:mass ?uri};id
@@ -321,7 +320,6 @@ dbo:CricketTeam;;;Who is the t20 captain of <A>?;SELECT DISTINCT ?uri where { <A
 dbo:CricketTeam;;;Who is the test captain of <A>?;SELECT DISTINCT ?uri where { <A> dbp:testcaptain ?uri };select distinct ?a where {?a dbp:testcaptain ?uri};id
 
 # http://dbpedia.org/ontology/Mountain
-
 http://dbpedia.org/ontology/MountainRange;http://dbpedia.org/ontology/Volcano;;Name the mountain whose range is <A> and parent mountain peak is <B>?;SELECT DISTINCT ?uri where { ?uri dbo:mountainRange <A> . ?uri dbo:parentMountainPeak <B> . ?uri a dbo:Mountain };select distinct ?a, ?b where { ?uri dbo:mountainRange ?a . ?uri dbo:parentMountainPeak ?b . ?uri a dbo:Mountain };838eaa04147b4081beae5daad514fb0c
 http://dbpedia.org/ontology/MountainRange;;;In which country is <A>?;SELECT DISTINCT ?uri where { <A> dbo:country ?uri };select distinct ?a where { ?a dbo:country ?uri };aaa9856758804b05ae5363e65a3bd2a7
 http://dbpedia.org/ontology/Mountain;;;In which mountain range does the <A> lie?;SELECT DISTINCT ?uri where { ?x dbo:parentMountainPeak <A> . ?x dbo:mountainRange ?uri };select distinct ?a where { ?x dbo:parentMountainPeak ?a . ?x dbo:mountainRange ?uri };f717accc0ab04b15bed31ee97a11045f
@@ -407,7 +405,6 @@ dbo:BasketballPlayer;dbo:BasketballTeam;;;Has <A> played in <B>?;ASK where { <A>
 dbo:BasketballTeam;;;Where is the home of the Los Angeles Lakers;SELECT DISTINCT ?uri where { <A> dbo:stadium ?uri };select distinct ?a where {?a dbo:stadium ?uri};
 
 # http://dbpedia.org/ontology/Artist
-  
 http://dbpedia.org/ontology/WrittenWork;http://dbpedia.org/ontology/Artist;;Did <B> do the cover of <A>?;ASK where { <A> dbo:coverArtist <B> };select distinct ?a, ?b where { ?a dbo:coverArtist ?b };f3e6a145912e4850b3f93dbc9342c2b0
 http://dbpedia.org/ontology/TelevisionShow|http://dbpedia.org/ontology/Artwork;http://dbpedia.org/ontology/Artist;;What artist of <A> influenced <B> in her career?;SELECT DISTINCT ?uri where { <A> dbp:artist ?uri . <B> dbp:influencedBy ?uri };select distinct ?a, ?b where { ?a dbp:artist ?uri . ?b dbp:influencedBy ?uri };acd23184141840d2a1677901fd42bbd9
 http://dbpedia.org/ontology/Artist;;;Which artist married to <A>?;SELECT DISTINCT ?uri where { ?uri dbp:spouse <A> . ?uri a dbo:Artist };select distinct ?a where { ?uri dbp:spouse ?a . ?uri a dbo:Artist };dc3403a37b77457aafadb0b90e8ed62a
@@ -444,6 +441,8 @@ dbo:Album;;;List other albums by the artist of <A>?;SELECT DISTINCT ?uri where {
 dbo:Album;;;Who is the producer of <A>?;SELECT DISTINCT ?uri where { <A> dbp:producer ?uri };select distinct ?a where { ?a dbp:producer ?uri };
 
 # http://dbpedia.org/ontology/AmericanFootballPlayer
+
+
 # http://dbpedia.org/ontology/MusicalArtist
 dbo:Song;dbo:MusicalArtist;;Is <A> written by <B>?;ASK where { <A> dbp:writer <B> };select distinct ?a, ?b where { ?a dbp:writer ?b };
 dbo:MusicalArtist;;;List all songs written by <A>.;SELECT DISTINCT ?uri where { ?uri dbp:writer <A>. ?uri rdf:type dbo:Song };select distinct ?a where { ?uri dbp:writer ?a. ?uri rdf:type dbo:Song };
@@ -454,6 +453,9 @@ dbo:Song;dbo:MusicalArtist;;Did <B> sing <A>?;ASK where { <A> dbp:artist <B> };s
 # http://dbpedia.org/ontology/Writer
 # http://dbpedia.org/ontology/Genre
 # http://dbpedia.org/ontology/Band
+dbo:Band;;;Who are the members of <A>?;SELECT DISTINCT ?uri where { <A> dbp:currentMembers ?uri };select distinct ?a where { ?a dbp:currentMembers ?uri };
+dbo:Band;;;List all albums by <A>.;SELECT DISTINCT ?uri where { ?uri dbp:artist <A>. ?uri rdf:type dbo:Album };select distinct ?a where { ?uri dbp:artist ?a. ?uri rdf:type dbo:Album };
+
 # http://dbpedia.org/ontology/President
 # http://dbpedia.org/ontology/Pandemic
 
