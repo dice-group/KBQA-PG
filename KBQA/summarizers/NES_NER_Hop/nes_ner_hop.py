@@ -1,5 +1,6 @@
 """A module to use NES_NER_Hop named entity summarization."""
 from typing import List
+from typing import Tuple
 
 from rdflib.graph import Graph
 from rdflib.plugins.sparql import prepareQuery
@@ -88,6 +89,77 @@ def hop_dbpedia_subgraph(entities: List[URIRef], *, limit: int = -1) -> Graph:
         for triple in subgraph_entity_inverse:
             subgraph.add(triple)
     return subgraph
+
+
+def nes_ner_hop_regular_and_inverse_subgraph(
+    question: str, *, confidence: float = 0.8, limit: int = -1
+) -> Tuple[Graph, Graph]:
+    """Given a question, two sub-graphs are returned based on the entities found in the question.
+
+    Given a question, first, the named entities in dbpedia are recognized. Based on them, two sub-graphs are returned,
+    which consist of the traversed graph while doing a breath-first-search of depth one which starts on each found
+    named entity separately. The first returned subgraph is build by following the relations between entities along the
+    relation direction. The second follows the relation inversely.
+
+    :param question: The question as string.
+    :param confidence: A confidence value in [0,1] which determines how confident the algorithm is in the found
+    entities.
+    :param limit: A natural number which limits the number of triples for each found entity.
+    :return: A pair (class tuple) of rdflib.graph.Graph which are sets of triples. First for regular and second for
+    inverse relations.
+    """
+    entities = ner_dbpedia_spotlight(question, confidence=confidence)
+    regular_subgraph, inverse_subgraph = hop_dbpedia_regular_and_inverse_subgraph(
+        entities, limit=limit
+    )
+    return regular_subgraph, inverse_subgraph
+
+
+def hop_dbpedia_regular_and_inverse_subgraph(
+    entities: List[URIRef], *, limit: int = -1
+) -> Tuple[Graph, Graph]:
+    """Given entities, two sub-graphs are returned based on the entities found in the question.
+
+    Given a list of entities, two sub-graphs are returned, which consist of the traversed graph while doing a
+    breath-first-search of depth one which starts on each found named entity separately. The first returned subgraph is
+    build by following the relations between entities along the relation direction. The second follows the relation
+    inversely.
+
+    :param entities: A list of rdflib.term.URIRef where each entity is a root node for breath-first-search.
+    :param limit: An optional limit for the number of triples per entity.
+    :return: A pair (class tuple) of rdflib.graph.Graph which are sets of triples. First for regular and second for
+    inverse relations.
+    """
+    # Determine if we have a limit or not.
+    if limit == -1:
+        limit_str = ""
+    else:
+        limit_str = f"LIMIT {limit}"
+
+    query = prepareQuery(
+        f"""
+        CONSTRUCT {{ ?s ?p ?o }}
+        WHERE {{
+            SERVICE <http://dbpedia.org/sparql> {{
+                ?s ?p ?o .
+            }}
+        }}
+        {limit_str}
+        """
+    )
+    regular_subgraph = Graph()
+    inverse_subgraph = Graph()
+    for entity in entities:
+        # This is only querying the service endpoint and not subgraph.
+        subgraph_entity = regular_subgraph.query(query, initBindings={"s": entity})
+        subgraph_entity_inverse = inverse_subgraph.query(
+            query, initBindings={"o": entity}
+        )
+        for triple in subgraph_entity:
+            regular_subgraph.add(triple)
+        for triple in subgraph_entity_inverse:
+            inverse_subgraph.add(triple)
+    return regular_subgraph, inverse_subgraph
 
 
 def main() -> None:

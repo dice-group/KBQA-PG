@@ -1,37 +1,105 @@
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.4.1
+    rev: v2.5.1
     hooks:
       - id: prettier
+        name: Prettier - format code of web development files
+
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.29.0
+    rev: v2.31.0
     hooks:
       - id: pyupgrade
+        name: pyupgrade - upgrade syntax for newer python versions
+
   - repo: https://github.com/psf/black
-    rev: 21.10b0
+    rev: 21.12b0
     hooks:
       - id: black
-  - repo: https://github.com/PyCQA/pylint
-    rev: v2.11.1
-    hooks:
-      - id: pylint
-        name: Pylint - check for errors in Python code
-        additional_dependencies:
-          [rdflib==6.0.2, requests==2.26.0, SPARQLWrapper, pandas]
-  - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
-    hooks:
-      - id: flake8
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.910-1
-    hooks:
-      - id: mypy
-        additional_dependencies: [types-requests]
+        name: Black - format python code
+
   - repo: https://github.com/sqlalchemyorg/zimports
     rev: v0.4.1
     hooks:
       - id: zimports
+        name: zimports - reformat python imports
+
+  - repo: https://github.com/PyCQA/pylint
+    rev: v2.12.2
+    hooks:
+      - id: pylint
+        name: Pylint - check for errors in Python code
+        exclude: ^KBQA/kbqa/
+        additional_dependencies:
+          [
+            rdflib==6.0.2,
+            requests==2.26.0,
+            flask==2.0.2,
+            numpy==1.21.3,
+            SPARQLWrapper==1.8.5,
+            pandas==1.3.5,
+          ]
+      - id: pylint
+        name: Pylint (appA)
+        files: ^KBQA/kbqa/webservice/appA/
+        additional_dependencies:
+          [flask==2.0.2, requests==2.26.0, SPARQLWrapper==1.8.5]
+      - id: pylint
+        name: Pylint (appB)
+        files: ^KBQA/kbqa/webservice/appB/
+        additional_dependencies:
+          [flask==2.0.2, requests==2.26.0, SPARQLWrapper==1.8.5]
+      - id: pylint
+        name: Pylint (website_server)
+        files: ^KBQA/kbqa/webservice/website_server/
+        additional_dependencies: [flask==2.0.2, requests==2.26.0]
+      - id: pylint
+        name: Pylint (embedding_server)
+        files: ^KBQA/kbqa/webservice/embedding_server/
+        additional_dependencies: [flask==2.0.2, requests==2.26.0, numpy==1.21.3]
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        name: Flake8 - check python source files for errors and style
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.930
+    hooks:
+      - id: mypy
+        name: Mypy - check python static types
+        exclude: ^KBQA/kbqa/
+        additional_dependencies: [types-requests]
+      - id: mypy
+        name: mypy (appA)
+        files: ^KBQA/kbqa/webservice/appA/
+        additional_dependencies: [types-requests]
+      - id: mypy
+        name: mypy (appB)
+        files: ^KBQA/kbqa/webservice/appB/
+        additional_dependencies: [types-requests]
+      - id: mypy
+        name: mypy (website_server)
+        files: ^KBQA/kbqa/webservice/website_server/
+        additional_dependencies: [types-requests]
+      - id: mypy
+        name: mypy (embedding_server)
+        files: ^KBQA/kbqa/webservice/embedding_server/
+        additional_dependencies: [types-requests]
+
   - repo: https://github.com/PyCQA/pydocstyle
     rev: 6.1.1
     hooks:
       - id: pydocstyle
+        name: pydocstyle - check compliance with python docstring conventions
+
+exclude: |
+  (?x)^(
+    KBQA/appB/transformer_architectures/BERT_CompleX_SPBERT/. |
+    KBQA/appB/transformer_architectures/BERT_WordPiece_SPBERT/. |
+    KBQA/kbqa/webservice/appA/app/nspm/
+  )
+
+ci:
+  autoupdate_branch: "develop"
+  skip: [pylint, flake8, mypy, pydocstyle]

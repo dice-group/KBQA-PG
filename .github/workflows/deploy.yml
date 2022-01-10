@@ -1,0 +1,26 @@
+name: Webservice CD
+
+on:
+  push:
+    branches: [develop]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, kbqa-pg]
+
+    timeout-minutes: 10080
+
+    steps:
+      - name: Stop running webservice
+        working-directory: KBQA/kbqa
+        run: docker-compose -p kbqa down --remove-orphan
+        continue-on-error: true
+      - name: Get new version
+        uses: actions/checkout@v2
+      - name: Build and start webservice
+        working-directory: KBQA/kbqa
+        run: docker-compose -p kbqa up --build
