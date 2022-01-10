@@ -433,16 +433,24 @@ dbo:Airport;;;Where is <A> located?;SELECT DISTINCT ?uri where { <A> dbp:locatio
 dbo:Airport;;;Who is operating the <A>?;SELECT DISTINCT ?uri where { <A> dbp:operator ?uri };select distinct ?a where { ?a dbp:operator ?uri };
 dbo:Airport;;;What tyoe of <A> is?;SELECT DISTINCT ?uri where { <A> dbp:type ?uri };select distinct ?a where { ?a dbp:type ?uri };
 
-  
 # http://dbpedia.org/ontology/Album
+dbo:Album;;;List all titles from <A>;SELECT DISTINCT ?uri where { <A> dbp:title ?uri };select distinct ?a where { ?a dbp:title ?uri };
+dbo:Song;dbo:Album;;Is <A> from <B>?;ASK where { <B> dbp:title <A> };select distinct ?a, ?b where { ?b dbp:title ?a };
+dbo:Song;;;List all songs on the album <A> is in.;SELECT DISTINCT ?uri where { <A> dbo:album ?album. ?album dbp:title ?uri };select distinct ?a where { ?a dbo:album ?album. ?album dbp:title ?uri};
+dbo:Album;;;What genre of music is <A>?;SELECT DISTINCT ?uri where { <A> dbp:genre ?uri };select distinct ?a where { ?a dbp:genre ?uri };
+dbo:Album;;;When was <A> released?;SELECT DISTINCT ?uri where { <A> dbp:released ?uri };select distinct ?a where { ?a dbp:released ?uri };
+dbo:Album;;;Who is the artist of <A>?;SELECT DISTINCT ?uri where { <A> dbp:artist ?uri };select distinct ?a where { ?a dbp:artist ?uri };
+dbo:Album;;;List other albums by the artist of <A>?;SELECT DISTINCT ?uri where { <A> dbp:artist ?artist. ?uri dbp:artist ?artist. ?uri rdf:type dbo:Album };select distinct ?a where { ?a dbp:artist ?artist. ?uri dbp:artist ?artist. ?uri rdf:type dbo:Album };
+dbo:Album;;;Who is the producer of <A>?;SELECT DISTINCT ?uri where { <A> dbp:producer ?uri };select distinct ?a where { ?a dbp:producer ?uri };
+
 
 # http://dbpedia.org/ontology/AmericanFootballPlayer
 # http://dbpedia.org/ontology/MusicalArtist
 # http://dbpedia.org/ontology/Writer
 # http://dbpedia.org/ontology/Genre
 # http://dbpedia.org/ontology/Band
-# http://dbpedia.org/ontology/Browser
-# http://dbpedia.org/ontology/Arena
+# http://dbpedia.org/ontology/President
+# http://dbpedia.org/ontology/Pandemic
 
 # http://dbpedia.org/ontology/Beverage
 dbo:Beverage;;;Where did <A> originated;SELECT DISTINCT ?uri where { <A> dbo:origin ?uri };select distinct ?a where { ?a dbo:origin ?uri };
@@ -450,7 +458,7 @@ dbo:Beverage;;;What are the ingredients used to prepare <A>?;SELECT DISTINCT ?ur
 dbo:Beverage;;;<A> is of which type?;SELECT DISTINCT ?uri where { <A> dbp:type ?uri };select distinct ?a where { ?a dbp:type ?uri };
 
   
-# http://dbpedia.org/ontology/President
+
 
 
 # http://dbpedia.org/ontology/ClubMoss
@@ -631,7 +639,7 @@ dbo:Comic;;;When did the <A> got published?;SELECT DISTINCT ?uri where { <A> dbp
 # http://dbpedia.org/ontology/Newspaper
 # http://dbpedia.org/ontology/Organisation
 # http://dbpedia.org/ontology/Outbreak
-# http://dbpedia.org/ontology/Pandemic
+
 # http://dbpedia.org/ontology/Park
 # http://dbpedia.org/ontology/PersonFunction
 # http://dbpedia.org/ontology/Philosopher
