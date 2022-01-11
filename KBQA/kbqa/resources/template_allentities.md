@@ -531,7 +531,7 @@ dbo:College;;;How many students are graduated from <A>;SELECT DISTINCT ?uri wher
   
 http://dbpedia.org/ontology/Continent;;;Is the <B> assembled in <A>?;ASK where { <B> dbp:assembly <A> };select distinct ?a, ?b where { ?b dbp:assembly ?a };44579153ae3b44e89b30a9b9990e1c09
 http://dbpedia.org/ontology/Continent;;;Is the <B> assembled in <A>?;ASK where { <B> dbp:assembly <A> };select distinct ?a, ?b where { ?b dbp:assembly ?a };d8f88e1d32024fa5bfff232c9286e30a
-http://dbpedia.org/ontology/Continent;;Does <A> fly to the <B>n continent?;ASK where { <A> dbo:destination <B> };select distinct ?a, ?b where { ?a dbo:destination ?b };7ab5eba0fa5e4d2db3867b842e966443
+http://dbpedia.org/ontology/Continent;;Does <A> fly to the <B> continent?;ASK where { <A> dbo:destination <B> };select distinct ?a, ?b where { ?a dbo:destination ?b };7ab5eba0fa5e4d2db3867b842e966443
 http://dbpedia.org/ontology/Continent;;;How many destinations are covered by the airlines which also serves <A> ?;SELECT DISTINCT COUNT(?uri) where { ?x dbp:destinations <A> . ?x dbp:destinations ?uri };select distinct ?a where { ?x dbp:destinations ?a . ?x dbp:destinations ?uri };2110869943d4431c80ed60a4598d5f4a
 http://dbpedia.org/ontology/Continent;;;Is <A> one of the destinations of <B>?;ASK where { <B> dbo:destination <A> };select distinct ?a, ?b where { ?b dbo:destination ?a };7c56af394fc64b84a9f5e244bb068831
 
@@ -610,7 +610,7 @@ http://dbpedia.org/ontology/Athlete;;;What is the state of origin of <A> ?;SELEC
 # http://dbpedia.org/ontology/BroadcastNetwork
 
 # http://dbpedia.org/ontology/Building
-dbo:Building;;;how high is the <A>?;select distinct ?num where { <A> dbo:height ?num . };select distinct ?a where {  ?a dbo:height ?num .  };
+dbo:Building;;;how high is the <A>?;select distinct ?uri where { <A> dbo:height ?uri };select distinct ?a where { ?a dbo:height ?uri };
 dbo:Building;;;in which city are <A>?;select distinct ?uri where { <A> dbo:location ?uri . ?uri a dbo:City . };select distinct ?a where {  ?a dbo:location ?uri . ?uri a dbo:City .  };
 
 # http://dbpedia.org/ontology/BusCompany
