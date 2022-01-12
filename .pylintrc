@@ -21,7 +21,7 @@ init-hook='import sys; sys.path += [
         "KBQA/kbqa/webservice/appB/",
         "KBQA/kbqa/webservice/website_server/",
         "KBQA/kbqa/webservice/embedding_server/",
-        "KBQA/summarizers/NES_NER_Hop/"
+        "KBQA/summarizers/"
     ]'
 
 [MESSAGES CONTROL]

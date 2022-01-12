@@ -10,13 +10,16 @@ import requests
 from SPARQLWrapper import SPARQLWrapper
 
 
+EXCLUDES = [URIRef("http://dbpedia.org/ontology/country")]
+
+
 def entity_relation_hops(
     question: str,
     hops: int = 1,
     relation_pos: int = 1,
     limit: int = 10,
     ignore: bool = False,
-) -> List[Tuple[str, Graph]]:
+) -> List[Tuple[str, Graph, Graph]]:
     """Extract subgraphs from DBpedia.
 
     Given a natural language question, extract a subgraph from DBpedia for each
@@ -45,6 +48,11 @@ def entity_relation_hops(
         which the subgraph is extracted (i.e. entity is the center node of the subgraph).
     """
     entities, relations = entity_relation_recognition(question)
+    entities_dbs = entity_recognition_dbspotlight(question)
+    # print("Entities DBS:", entities_dbs)
+
+    entities += entities_dbs
+    entities = list(set(entities))
 
     sub_graphs = get_subgraph(entities, relations, hops, relation_pos, limit, ignore)
 
@@ -80,23 +88,65 @@ def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRe
     dbpedia_entities = response["entities_dbpedia"]
     dbpedia_relations = response["relations_dbpedia"]
 
-    print("Entities:", dbpedia_entities)
+    # print("Entities:", dbpedia_entities)
     print("Relations:", dbpedia_relations)
 
     entities = []
     relations = []
 
     for entity in dbpedia_entities:
-        resource = URIRef(entity[0])
+        if len(entity) > 1:
+            resource = URIRef(entity[0])
 
-        entities.append(resource)
+            entities.append(resource)
 
     for relation in dbpedia_relations:
-        prop = URIRef(relation[0])
+        if len(relation) > 1:
+            prop = URIRef(relation[0])
 
-        relations.append(prop)
+            # if prop not in EXCLUDES:
+            relations.append(prop)
 
     return entities, relations
+
+
+def entity_recognition_dbspotlight(
+    question: str, confidence: float = 0.8
+) -> List[URIRef]:
+    """Entity recognition using DB-Spotlight.
+
+    In addition to FALCON 2.0 DB-Spotlight is used to recognize entities in hope
+    to be more precise with the entities.
+
+    Parameters
+    ----------
+    question : str
+        Natural language question.
+    confidence : float, optional
+        Confidence of the recognized entity (default: 0.8)
+
+    Returns
+    -------
+    entities : list
+        List of recognized entities as URIRefs
+    """
+    endpoint = "https://api.dbpedia-spotlight.org/en/annotate"
+
+    response = requests.post(
+        endpoint,
+        headers={"Accept": "application/json"},
+        data={"text": question, "confidence": confidence},
+    ).json()
+
+    if "Resources" not in response:
+        return list()
+
+    entities = list()
+
+    for resource in response["Resources"]:
+        entities.append(URIRef(resource["@URI"]))
+
+    return entities
 
 
 def get_subgraph(
@@ -106,7 +156,7 @@ def get_subgraph(
     relation_pos: int,
     limit: int,
     ignore: bool,
-) -> List[Tuple[URIRef, Graph]]:
+) -> List[Tuple[URIRef, Graph, Graph]]:
     """Extract a subgraph for all entities using the relations.
 
     Given a list of entities and relations, extract a subgraph for each entity.
@@ -151,20 +201,28 @@ def get_subgraph(
 
     for entity in entities:
         if len(relations) > 0 and not ignore:
-            subgraph = get_subgraph_for_entity_with_relations(
+            (
+                regular_subgraph,
+                inverse_subgraph,
+            ) = get_subgraphs_for_entity_with_relations(
                 entity, relations, hops, relation_pos, limit
             )
 
-            sub_graphs.append((entity, subgraph))
+            sub_graphs.append((entity, regular_subgraph, inverse_subgraph))
+        elif len(relations) == 0 and not ignore:
+            sub_graphs.append((entity, Graph(), Graph()))
         else:
-            subgraph = get_subgraph_for_entity_without_relations(entity, hops, limit)
+            (
+                regular_subgraph,
+                inverse_subgraph,
+            ) = get_subgraphs_for_entity_without_relations(entity, hops, limit)
 
-            sub_graphs.append((entity, subgraph))
+            sub_graphs.append((entity, regular_subgraph, inverse_subgraph))
 
     return sub_graphs
 
 
-def get_subgraph_for_entity_with_relations(
+def get_subgraphs_for_entity_with_relations(
     entity: URIRef, relations: List[URIRef], hops: int, relation_pos: int, limit: int
 ) -> Graph:
     """Extract a subgraph, which takes all relations into consideration.
@@ -197,18 +255,30 @@ def get_subgraph_for_entity_with_relations(
     ValueError
         If a parameter is not valid.
     """
-    subgraph = Graph()
+    regular_subgraph = Graph()
+    inverse_subgraph = Graph()
 
     for relation in relations:
         if hops == 1:
-            subgraph += get_subgraph_for_one_hop(entity.n3(), relation.n3(), limit)
+            regular_subgraph += get_regular_subgraph_for_one_hop(
+                entity.n3(), relation.n3(), limit
+            )
+            inverse_subgraph += get_inverse_subgraph_for_one_hop(
+                entity.n3(), relation.n3(), limit
+            )
         elif hops == 2:
             if relation_pos == 1:
-                subgraph += get_subgraph_for_two_hops(
+                regular_subgraph += get_regular_subgraph_for_two_hops(
+                    entity.n3(), relation.n3(), "?p2", limit
+                )
+                inverse_subgraph += get_inverse_subgraph_for_two_hops(
                     entity.n3(), relation.n3(), "?p2", limit
                 )
             elif relation_pos == 2:
-                subgraph += get_subgraph_for_two_hops(
+                regular_subgraph += get_regular_subgraph_for_two_hops(
+                    entity.n3(), "?p1", relation.n3(), limit
+                )
+                inverse_subgraph += get_inverse_subgraph_for_two_hops(
                     entity.n3(), "?p1", relation.n3(), limit
                 )
             else:
@@ -216,10 +286,10 @@ def get_subgraph_for_entity_with_relations(
         else:
             raise ValueError("Number of hops should be in [1, 2]")
 
-    return subgraph
+    return regular_subgraph, inverse_subgraph
 
 
-def get_subgraph_for_entity_without_relations(
+def get_subgraphs_for_entity_without_relations(
     entity: URIRef, hops: int, limit: int
 ) -> Graph:
     """Extract a subgraph only based on an entity.
@@ -246,16 +316,23 @@ def get_subgraph_for_entity_without_relations(
     ValueError
         If a parameter is not valid.
     """
-    subgraph = Graph()
+    regular_subgraph = Graph()
+    inverse_subgraph = Graph()
 
     if hops == 1:
-        subgraph += get_subgraph_for_one_hop(entity.n3(), "?p", limit)
+        regular_subgraph += get_regular_subgraph_for_one_hop(entity.n3(), "?p", limit)
+        inverse_subgraph += get_inverse_subgraph_for_one_hop(entity.n3(), "?p", limit)
     elif hops == 2:
-        subgraph += get_subgraph_for_two_hops(entity.n3(), "?p1", "?p2", limit)
+        regular_subgraph += get_regular_subgraph_for_two_hops(
+            entity.n3(), "?p1", "?p2", limit
+        )
+        inverse_subgraph += get_inverse_subgraph_for_two_hops(
+            entity.n3(), "?p1", "?p2", limit
+        )
     else:
         raise ValueError("Number of hops should be in [1, 2]")
 
-    return subgraph
+    return regular_subgraph, inverse_subgraph
 
 
 def ask_dbpedia(query: str) -> Graph:
@@ -281,17 +358,12 @@ def ask_dbpedia(query: str) -> Graph:
     return result
 
 
-def get_subgraph_for_one_hop(entity: str, relation: str, limit: int) -> Graph:
-    """Get the subgraph for a given entity with one hop.
+def get_regular_subgraph_for_one_hop(entity: str, relation: str, limit: int) -> Graph:
+    """Get the subgraph for a given entity with one hop in regular direction.
 
     Given an entity, get the the subgraph of the form
-        e1 ---> entity ---> e2
-    where e1 and e2 are entities found by DBpedia. In order to
-    increase the performance two subgraphs of the form
-        e1 --relation--> entity
-    and
-        entity --relation--> e2
-    are constructed.
+        entity ---> e1
+    where e1 is an entity found by DBpedia.
 
     Parameters
     ----------
@@ -304,26 +376,53 @@ def get_subgraph_for_one_hop(entity: str, relation: str, limit: int) -> Graph:
 
     Returns
     -------
-    result_graph : Graph
-        Graph, which contains all triples (e1, relation, entity) and
-        (entity, relation, e2).
+    regular_graph : Graph
+        Graph, which contains all triples (entity, relation, e1).
     """
-    result_graph = Graph()
+    regular_graph = Graph()
 
     # entity --relation--> ?o
     query = get_query_for_one_hop(entity, relation, "?o", limit)
-    subgraph = ask_dbpedia(query)
+
+    regular_graph += ask_dbpedia(query)
+
+    return regular_graph
+
+
+def get_inverse_subgraph_for_one_hop(entity: str, relation: str, limit: int) -> Graph:
+    """Get the subgraph for a given entity with one hop in inverse direction.
+
+    Given an entity, get the the subgraph of the form
+        e1 ---> entity
+    where e1 is an entity found by DBpedia.
+
+    Parameters
+    ----------
+    entity : str
+        Entity as DBpedia-resource or as variable.
+    relation : str
+        Relation as DBpedia-property or as variable.
+    limit : int
+        Limit the number of triples in the graph (use -1 to not use any limit).
+
+    Returns
+    -------
+    regular_graph : Graph
+        Graph, which contains all triples (e1, relation, entity).
+    """
+    inverse_graph = Graph()
 
     # ?s --relation--> entity
     query = get_query_for_one_hop("?s", relation, entity, limit)
-    inverse_subgraph = ask_dbpedia(query)
 
-    result_graph = subgraph + inverse_subgraph
+    inverse_graph += ask_dbpedia(query)
 
-    return result_graph
+    return inverse_graph
 
 
-def get_subgraph_for_two_hops(entity: str, p_1: str, p_2: str, limit: int) -> Graph:
+def get_regular_subgraph_for_two_hops(
+    entity: str, p_1: str, p_2: str, limit: int
+) -> Graph:
     """Get subgraph for an entity with two hops in forward direction.
 
     Given an entity, contruct a subgraph of the form
@@ -354,19 +453,30 @@ def get_subgraph_for_two_hops(entity: str, p_1: str, p_2: str, limit: int) -> Gr
     result_graph : Graph
         Graph with the entity as center node and outgoing edges of length one or two.
     """
-    result_graph = Graph()
+    regular_graph = Graph()
 
     # entity --p1--> e1 --p2--> e2
     query = get_query_for_two_hops(entity, p_1, p_2, limit)
-    subgraph = ask_dbpedia(query)
+    regular_graph += ask_dbpedia(query)
+
+    return regular_graph
+
+
+def get_inverse_subgraph_for_two_hops(
+    entity: str, p_1: str, p_2: str, limit: int
+) -> Graph:
+    """Extract subgraph from entity with two hops.
+
+    e2 --p_2--> e1 --p_1--> entity
+
+    """
+    inverse_graph = Graph()
 
     # e1 --p2--> e2 --p1--> entity
     query = get_query_for_two_hops_inverse(entity, p_1, p_2, limit)
-    inverse_subgraph = ask_dbpedia(query)
+    inverse_graph += ask_dbpedia(query)
 
-    result_graph = subgraph + inverse_subgraph
-
-    return result_graph
+    return inverse_graph
 
 
 def get_query_for_one_hop(subj: str, pred: str, obj: str, limit: int) -> str:
@@ -396,9 +506,10 @@ def get_query_for_one_hop(subj: str, pred: str, obj: str, limit: int) -> str:
     else:
         limit_str = f"LIMIT {limit}"
 
+    # FILTER(STRSTARTS(STR({pred}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({pred}), "http://dbpedia.org/property/"))
+    # FILTER(STR({pred}) != STR(<http://dbpedia.org/ontology/wikiPageWikiLink>))
     query = f"""CONSTRUCT WHERE {{
         {subj} {pred} {obj}
-        FILTER(STRSTARTS(STR({pred}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({pred}), "http://dbpedia.org/property/"))
     }} {limit_str}"""
 
     return query
@@ -431,11 +542,12 @@ def get_query_for_two_hops(entity: str, p_1: str, p_2: str, limit: int) -> str:
     else:
         limit_str = f"LIMIT {limit}"
 
+    # FILTER(STRSTARTS(STR({p_1}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_1}), "http://dbpedia.org/property/"))
+    # FILTER(STRSTARTS(STR({p_2}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_2}), "http://dbpedia.org/property/"))
+
     query = f"""CONSTRUCT WHERE {{
         {entity} {p_1} ?e2 .
         ?e2 {p_2} ?e3 .
-        FILTER(STRSTARTS(STR({p_1}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_1}), "http://dbpedia.org/property/"))
-        FILTER(STRSTARTS(STR({p_2}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_2}), "http://dbpedia.org/property/"))
     }} {limit_str}"""
 
     return query
@@ -468,14 +580,68 @@ def get_query_for_two_hops_inverse(entity: str, p_1: str, p_2: str, limit: int) 
     else:
         limit_str = f"LIMIT {limit}"
 
+    # FILTER(STRSTARTS(STR({p_1}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_1}), "http://dbpedia.org/property/"))
+    # FILTER(STRSTARTS(STR({p_2}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_2}), "http://dbpedia.org/property/"))
+
     query = f"""CONSTRUCT WHERE {{
         ?e1 {p_1} {entity} .
         ?e2 {p_2} ?e1 .
-        FILTER(STRSTARTS(STR({p_1}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_1}), "http://dbpedia.org/property/"))
-        FILTER(STRSTARTS(STR({p_2}), "http://dbpedia.org/ontology/") || STRSTARTS(STR({p_2}), "http://dbpedia.org/property/"))
     }} {limit_str}"""
 
     return query
+
+
+def get_subgraphs_based_on_relations(
+    entity: URIRef, relations: List[URIRef]
+) -> Tuple[Graph, Graph]:
+    """Additional function to get subgraphs for an entity based on relations.
+
+    Given an entity and relations, extract a subgraph with the entity as central node
+    and all outgoing edges with the specified relations and a subgraph with the entity
+    as central node and all ingoing edges with the specified relations.
+
+    Parameters
+    ----------
+    entity : URIRef
+        Entity, which is used as central node, as URIRef
+    relations : list
+        List of relations as URIRefs.
+
+    Returns
+    -------
+    regular_graph : Graph
+        Subgraph with entity as central node and all relations as outgoing edges.
+    inverse_graph : Graph
+        Subgraph with entity as central node and all relations as ingoing edges.
+    """
+    relation_str = ""
+
+    for relation in relations:
+        relation_str += relation.n3() + ","
+
+    query_regular = f"""CONSTRUCT WHERE {{
+        {entity.n3()} ?p ?o
+        FILTER( ?p IN ({relation_str[:-1]}) )
+    }}
+    """
+
+    query_inverse = f"""CONSTRUCT WHERE {{
+        ?s ?p {entity.n3()}
+        FILTER( ?p IN ({relation_str[:-1]}) )
+    }}
+    """
+
+    regular_graph = Graph()
+    inverse_graph = Graph()
+
+    sparql = SPARQLWrapper("http://dbpedia.org/sparql/")
+    sparql.setQuery(query_regular)
+    regular_graph += sparql.query().convert()
+
+    sparql.setQuery(query_inverse)
+    inverse_graph += sparql.query().convert()
+
+    return regular_graph, inverse_graph
 
 
 if __name__ == "__main__":
@@ -525,8 +691,13 @@ if __name__ == "__main__":
 
     print("-" * 30)
 
-    for s, p, o in subgraphs[0][1]:
-        print(s, p, o)
+    if len(subgraphs) > 0:
+        subgraph = subgraphs[0][1] + subgraphs[0][2]
 
-    print("Found triples:", len(subgraphs[0][1]))
+        for s, p, o in subgraph:
+            print(s, p, o)
+
+        print("Found triples:", len(subgraph))
+    else:
+        print("No entities found. Hence no subgraph found.")
     print("-" * 30)
