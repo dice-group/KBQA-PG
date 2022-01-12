@@ -158,7 +158,9 @@ def predicate_count_inverse_relations(inverse_triples_list: list) -> Dict[str, i
     return inverse_table
 
 
-def get_ranking_tables(datasetfile: str) -> Tuple[dict, dict]:
+def get_ranking_tables(
+    datasetfile: str, datasettype: str = "qald"
+) -> Tuple[dict, dict]:
     """
     Given dataset file, two tables are returned.
 
@@ -166,10 +168,17 @@ def get_ranking_tables(datasetfile: str) -> Tuple[dict, dict]:
     The second table contains predicate and rank for inverse relation.
 
     :param datasetfile: path to json with dataset as string.
+    :param datasettype: type of dataset (qald or lc-quad)
     :return: 2 dictionaries predicate, rank for inverse and regular relation.
+    :raise ValueError: if datasettype is not qald or lc-quad.
     """
-    # sparqllist = load_sparql_from_json_lcqald(datasetfile)
-    sparqllist = load_sparql_from_json(datasetfile)
+    if datasettype == "lc-quad":
+        sparqllist = load_sparql_from_json_lcqald(datasetfile)
+    elif datasettype == "qald":
+        sparqllist = load_sparql_from_json(datasetfile)
+    else:
+        raise ValueError("Datasettype not supported.")
+
     tripleslist = []
     for sparql_item in sparqllist:
         with suppress(Exception):

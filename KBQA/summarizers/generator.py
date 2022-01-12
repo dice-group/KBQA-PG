@@ -29,10 +29,10 @@ if __name__ == "__main__":
     # generate_triples(qald, nes)
     # qald.save_qtq_dataset("KBQA/data-generator/qtq-9-train-multilingual.json")
 
-    DATASET = "datasets/qald/qald-9-train-multilingual.json"
+    DATASET = "datasets/qald-8-train-multilingual.json"
 
-    qald = Dataset()
-    qald.load_qald_dataset(DATASET)
+    train_data = Dataset()
+    train_data.load_dataset(DATASET)
     ohrs = OneHopRankSummarizer(dataset_path=DATASET)
 
     parser = argparse.ArgumentParser()
@@ -41,5 +41,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ohrs.summarize(args.question)
-    # generate_triples(qald, ohrs)
-    # qald.save_qtq_dataset("qtq_quald_9.json")
+    # generate_triples(train_data, ohrs)
+    # train_data.save_qtq_dataset("qtq_lc_quad.json")

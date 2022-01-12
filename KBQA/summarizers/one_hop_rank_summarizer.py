@@ -29,11 +29,17 @@ class OneHopRankSummarizer(Summarizer):
     limit : int, optional
         Limit the number of occurences of triples, which have the same subject and
         predictes or the same predicate and object (default: 3).
+    extend_preds : bool, optional
+        Extend the ranked predicates by their counterpart of "ontology" and "property".
+        This might increase the number of triples, but might also be more precise
+        (default: False).
 
     Raises
     ------
     ValueError
         If lower_rank is not greater or equal to 1.
+    ValueError
+        If dataset_path does not contain qald or lc-quad.
     """
 
     PRINT = True
@@ -42,13 +48,28 @@ class OneHopRankSummarizer(Summarizer):
         "http://dbpedia.org/ontology/wikiPageWikiLink",
     ]
 
-    def __init__(self, dataset_path: str, lower_rank: int = 1, limit: int = 3) -> None:
-        self.regular_predicates, self.inverse_predicates = get_ranking_tables(
-            dataset_path
-        )
+    def __init__(
+        self,
+        dataset_path: str,
+        lower_rank: int = 1,
+        limit: int = 3,
+        extend_preds: bool = False,
+    ) -> None:
 
-        # self.regular_predicates = self._extend_predicates(self.regular_predicates)
-        # self.inverse_predicates = self._extend_predicates(self.inverse_predicates)
+        if "qald" in dataset_path:
+            self.regular_predicates, self.inverse_predicates = get_ranking_tables(
+                dataset_path, datasettype="qald"
+            )
+        elif "lc-quad" in dataset_path:
+            self.regular_predicates, self.inverse_predicates = get_ranking_tables(
+                dataset_path, datasettype="lc-quad"
+            )
+        else:
+            raise ValueError("Dataset does not contain qald or lc-quad.")
+
+        if extend_preds:
+            self.regular_predicates = extend_predicates(self.regular_predicates)
+            self.inverse_predicates = extend_predicates(self.inverse_predicates)
 
         if lower_rank < 1:
             raise ValueError("Lower rank cannot be smaller than 1")
@@ -219,6 +240,9 @@ def aggregate_regular_triples(graph: Graph, limit: int) -> Graph:
     regular_dict: DefaultDict = defaultdict(int)
 
     for subj, pred, obj in graph:
+        if subj == "" or obj == "":
+            continue
+
         if (subj, pred) in regular_dict:
             if regular_dict[(subj, pred)] < limit:
                 regular_dict[(subj, pred)] += 1
@@ -287,18 +311,35 @@ def format_graph(graph: Graph) -> List[str]:
 
     return triples
 
-    # def _extend_predicates(self, predicates):
-    #     extended_predicates = dict()
 
-    #     for predicate, rank in predicates.items():
-    #         if "ontology" in predicate:
-    #             extended_predicate = predicate.replace("ontology", "property")
-    #             extended_predicates[extended_predicate] = rank
+def extend_predicates(predicates: Dict[str, int]) -> Dict[str, int]:
+    """Extend the predicates by "ontology" and "property".
 
-    #         if "property" in predicate:
-    #             extended_predicate = predicate.replace("property", "ontology")
-    #             extended_predicates[extended_predicate] = rank
+    Since DBpedia makes a difference between properties from "ontology"
+    and "property", it is possible to add the counterpart to the
+    predicates.
 
-    #         extended_predicates[predicate] = rank
+    Parameters
+    ----------
+    predicates : dict
+        Dictionary containing the predicates and their ranks.
 
-    #     return extended_predicates
+    Returns
+    -------
+    extended_predicates : dict
+        Updated dictionary containing the predicates and their ranks.
+    """
+    extended_predicates = {}
+
+    for predicate, rank in predicates.items():
+        if "ontology" in predicate:
+            extended_predicate = predicate.replace("ontology", "property")
+            extended_predicates[extended_predicate] = rank
+
+        if "property" in predicate:
+            extended_predicate = predicate.replace("property", "ontology")
+            extended_predicates[extended_predicate] = rank
+
+        extended_predicates[predicate] = rank
+
+    return extended_predicates

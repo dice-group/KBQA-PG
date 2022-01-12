@@ -634,7 +634,9 @@ def get_subgraphs_based_on_relations(
     regular_graph = Graph()
     inverse_graph = Graph()
 
-    sparql = SPARQLWrapper("http://dbpedia.org/sparql/")
+    sparql = SPARQLWrapper("https://dbpedia.org/sparql/")
+    sparql.setMethod("POST")
+
     sparql.setQuery(query_regular)
     regular_graph += sparql.query().convert()
 
