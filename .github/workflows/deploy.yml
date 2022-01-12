@@ -18,6 +18,7 @@ jobs:
       - name: Stop running webservice
         working-directory: KBQA/kbqa
         run: docker-compose -p kbqa down --remove-orphan
+        continue-on-error: true
       - name: Get new version
         uses: actions/checkout@v2
       - name: Build and start webservice
