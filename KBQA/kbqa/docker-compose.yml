@@ -6,7 +6,7 @@ services:
     container_name: embedding_server
     restart: always
     volumes:
-      - ./resources/embeddings/embedding_query:/embedding_query
+      - ${RESOURCE_PATH}/embeddings/embedding_query:/embedding_query
     expose:
       - 24805
 
@@ -22,7 +22,7 @@ services:
     container_name: approach_a
     restart: always
     volumes:
-      - ./resources/approach_a/data:/data
+      - ${RESOURCE_PATH}/approach_a/data:/data
     expose:
       - 24801
 
