@@ -99,7 +99,7 @@ class Dataset:
                     if len(question_results) > 0:
                         answers.append(list(question_results.values())[0]["value"])
 
-            self.questions.append(Question(nl_question, sparql_query, answers))
+            self.questions.append(Question(nl_question, sparql_query, answers, list()))
 
     def load_lc_quad_dataset(self, dataset_path: str) -> None:
         """Load LC-QuAD dataset from given path.
@@ -116,7 +116,7 @@ class Dataset:
             nl_question = question["corrected_question"]
             sparql_query = question["sparql_query"]
             answers: List = list()
-            self.questions.append(Question(nl_question, sparql_query, answers))
+            self.questions.append(Question(nl_question, sparql_query, answers, list()))
 
     def save_qtq_dataset(self, dataset_path: str) -> None:
         """Save QTQ dataset to disk.

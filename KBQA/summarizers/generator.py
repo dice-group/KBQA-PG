@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # generate_triples(qald, nes)
     # qald.save_qtq_dataset("KBQA/data-generator/qtq-9-train-multilingual.json")
 
-    DATASET = "datasets/qald-8-train-multilingual.json"
+    DATASET = "datasets/qald-9-train-multilingual.json"
 
     train_data = Dataset()
     train_data.load_dataset(DATASET)
@@ -40,6 +40,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    ohrs.summarize(args.question)
-    # generate_triples(train_data, ohrs)
-    # train_data.save_qtq_dataset("qtq_lc_quad.json")
+    # ohrs.summarize(args.question)
+    generate_triples(train_data, ohrs)
+    train_data.save_qtq_dataset("qtq_qald_9.json")
