@@ -1,6 +1,7 @@
 """Module to extract subgraphs from DBpedia based one or two hops."""
 import argparse
 import json
+from json.decoder import JSONDecodeError
 from typing import List
 from typing import Tuple
 
@@ -79,11 +80,14 @@ def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRe
     """
     endpoint = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1"
 
-    response = requests.post(
-        endpoint,
-        headers={"Content-Type": "application/json"},
-        data=json.dumps({"text": question}),
-    ).json()
+    try:
+        response = requests.post(
+            endpoint,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps({"text": question}),
+        ).json()
+    except JSONDecodeError:
+        print("It was not possible to parse the response.")
 
     dbpedia_entities = response["entities_dbpedia"]
     dbpedia_relations = response["relations_dbpedia"]
@@ -132,11 +136,14 @@ def entity_recognition_dbspotlight(
     """
     endpoint = "https://api.dbpedia-spotlight.org/en/annotate"
 
-    response = requests.post(
-        endpoint,
-        headers={"Accept": "application/json"},
-        data={"text": question, "confidence": confidence},
-    ).json()
+    try:
+        response = requests.post(
+            endpoint,
+            headers={"Accept": "application/json"},
+            data={"text": question, "confidence": confidence},
+        ).json()
+    except JSONDecodeError:
+        print("It was not possible to parse the answer.")
 
     if "Resources" not in response:
         return list()
