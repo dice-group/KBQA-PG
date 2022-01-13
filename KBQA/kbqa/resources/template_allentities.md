@@ -8,10 +8,10 @@ dbo:Company;;;Who is the founder of <A>?;SELECT DISTINCT ?uri where { <A> dbo:fo
 dbo:Company;;;Who founded <A>?;SELECT DISTINCT ?uri where { <A> dbo:foundedBy ?uri };select distinct ?a where { ?a dbo:foundedBy ?uri };2
 dbo:Company;;;When was <A> founded?;SELECT DISTINCT ?uri where { <A> dbo:foundingYear ?uri };select distinct ?a where { ?a dbo:foundedYear ?uri };3
 dbo:Company;;;In which city is <A>'s headquarters?;SELECT DISTINCT ?uri where { <A> dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri };select distinct ?a where { ?a dbo:headquarter ?headquarter . ?headquarter dbp:location ?uri };4
-dbo:Company;;;In which industry is <A>?;SELECT DISTINCT ?uri where { <A> dbo:industry ?uri };select distinct ?a where {?a dbo:industry ?uri };5
-dbo:Company;dbo:Company;;Is <A> a subsidiary of <B>?;ASK where { <A> dbo:parentCompany <B> };select distinct ?a, ?b {?a dbo:parentCompany ?b };6
-dbo:Company;;;List all products from <A>.;SELECT DISTINCT ?uri where { <A> dbo:products ?uri };select distinct ?a where {?a dbo:products ?uri };7
-dbo:Company;;;What is <A>'s annual revenue?;SELECT DISTINCT ?uri where { <A> dbo:revenue ?uri };select distinct ?a where {?a dbo:revenue ?uri };8
+dbo:Company;;;In which industry is <A>?;SELECT DISTINCT ?uri where { <A> dbo:industry ?uri };select distinct ?a where { ?a dbo:industry ?uri };5
+dbo:Company;dbo:Company;;Is <A> a subsidiary of <B>?;ASK where { <A> dbo:parentCompany <B> };select distinct ?a, ?b { ?a dbo:parentCompany ?b };6
+dbo:Company;;;List all products from <A>.;SELECT DISTINCT ?uri where { <A> dbo:products ?uri };select distinct ?a where { ?a dbo:products ?uri };7
+dbo:Company;;;What is <A>'s annual revenue?;SELECT DISTINCT ?uri where { <A> dbo:revenue ?uri };select distinct ?a where { ?a dbo:revenue ?uri };8
 
 # http://dbpedia.org/ontology/Activity
 dbo:Activity;;;What ball is used in <A>?;SELECT DISTINCT ?uri where { <A> dbp:ball ?uri };select distinct ?a where { ?a dbp:ball ?uri };9
@@ -340,7 +340,7 @@ dbo:Olympics;;;When did the <A> happen?;SELECT DISTINCT ?uri where { <A> dbo:gam
 dbo:Olympics;;;Where did the <A> organised?;SELECT DISTINCT ?uri where { <A> dbp:venue ?uri };select distinct ?a where { ?a dbp:venue ?uri };
 dbo:Olympics;;;Who won the gold medal in <A>?;SELECT DISTINCT ?uri where { <A> dbo:goldMedalist ?uri };select distinct ?a where { ?a dbo:goldMedalist ?uri };
 dbo:Olympics;;;Who won the silver medal in <A>?;SELECT DISTINCT ?uri where { <A> dbo:silverMedalist ?uri };select distinct ?a where { ?a dbo:silverMedalist ?uri };
-dbo:Olympics;;;Who won the bronze medal in <A>?;SELECT DISTINCT ?uri where { <A> dbp:bronze ?uri };select distinct ?a where {?a dbp:bronze ?uri};
+dbo:Olympics;;;Who won the bronze medal in <A>?;SELECT DISTINCT ?uri where { <A> dbp:bronze ?uri };select distinct ?a where { ?a dbp:bronze ?uri };
 
 # http://dbpedia.org/ontology/Lake
 http://dbpedia.org/ontology/Lake;;;How many cities are close to <A>?;SELECT DISTINCT COUNT(?uri) where { <A> dbo:nearestCity ?uri };select distinct ?a where { ?a dbo:nearestCity ?uri };209c460e684848fe9572d27a98ecbfea

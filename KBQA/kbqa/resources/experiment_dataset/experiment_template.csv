@@ -1,5 +1,0 @@
-dbo:Person;;;Did <A> study at the <B>?;ASK where { <A> dbp:university <B> };select distinct ?a, ?b where { ?a dbp:university ?b };e3a008c553da49fd876ece5a7c775750
-dbo:Company;;;In which city is <A>'s headquarters?;SELECT DISTINCT ?uri where { <A> dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri };select distinct ?a where { ?a dbo:headquarter ?headquarter. ?headquarter dbp:location ?uri };4
-dbo:Building;;;how high is the <A>?;select distinct ?uri where { <A> dbo:height ?uri };select distinct ?a where { ?a dbo:height ?uri };
-dbo:College;;;How many students are graduated from <A>;SELECT DISTINCT ?uri where { <A> dbp:graduates ?uri };select distinct ?a where { ?a dbp:graduates ?uri };
-dbo:Comic;;;Who published <A>?;SELECT DISTINCT ?uri where { <A> dbo:publisher ?uri };select distinct ?a where { ?a dbo:publisher ?uri };
