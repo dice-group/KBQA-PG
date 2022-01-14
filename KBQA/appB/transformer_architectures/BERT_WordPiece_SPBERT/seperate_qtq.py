@@ -1,6 +1,15 @@
 import argparse
 import json
 
+def filter_triples(triples: list) -> list:
+    """
+    Filter out triples containing \\n character.
+
+    :param triples: list of triples 
+    :return: list of filtered triples
+    """
+    return [triple for triple in triples if not "\n" in triple]
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", dest="data_dir", required=True)
@@ -22,7 +31,7 @@ if __name__ == "__main__":
     for element in data["questions"]:
         en_file.write(element["question"] + "\n")
         sparql_file.write(element["query"] + "\n")
-        triple_file.write("\t".join(element["triples"]) + "\n")
+        triple_file.write("\t".join(filter_triples(element["triples"])) + "\n")
 
     en_file.close()
     sparql_file.close()
