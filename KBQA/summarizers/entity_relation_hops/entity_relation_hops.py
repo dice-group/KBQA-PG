@@ -89,11 +89,13 @@ def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRe
     except JSONDecodeError:
         print("It was not possible to parse the response.")
 
+        return list(), list()
+
     dbpedia_entities = response["entities_dbpedia"]
     dbpedia_relations = response["relations_dbpedia"]
 
     # print("Entities:", dbpedia_entities)
-    print("Relations:", dbpedia_relations)
+    # print("Relations:", dbpedia_relations)
 
     entities = []
     relations = []
@@ -144,6 +146,8 @@ def entity_recognition_dbspotlight(
         ).json()
     except JSONDecodeError:
         print("It was not possible to parse the answer.")
+
+        return list()
 
     if "Resources" not in response:
         return list()

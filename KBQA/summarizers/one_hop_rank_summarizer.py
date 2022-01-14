@@ -1,8 +1,10 @@
 """Summarizer, which extracts a subgraph of based on one hop and ranked triples."""
+from collections import Counter
 from collections import defaultdict
 from typing import DefaultDict
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 from data_generator.summarizer import Summarizer
@@ -42,7 +44,8 @@ class OneHopRankSummarizer(Summarizer):
         If dataset_path does not contain qald or lc-quad.
     """
 
-    PRINT = True
+    PRINT = False
+    DATASET_PATH = "datasets/"
     EXCLUDE = [
         "http://dbpedia.org/ontology/abstract",
         "http://dbpedia.org/ontology/wikiPageWikiLink",
@@ -50,22 +53,46 @@ class OneHopRankSummarizer(Summarizer):
 
     def __init__(
         self,
-        dataset_path: str,
+        dataset_path: Optional[str] = None,
         lower_rank: int = 1,
         limit: int = 3,
         extend_preds: bool = False,
     ) -> None:
 
-        if "qald" in dataset_path:
-            self.regular_predicates, self.inverse_predicates = get_ranking_tables(
-                dataset_path, datasettype="qald"
+        if dataset_path is None:
+            qald_8_path = self.DATASET_PATH + "qald-8-train-multilingual.json"
+            qald_9_path = self.DATASET_PATH + "qald-9-train-multilingual.json"
+            lc_quad_path = self.DATASET_PATH + "lc-quad-train.json"
+
+            qald_8_regular_preds, qald_8_inverse_preds = get_ranking_tables(
+                qald_8_path, datasettype="qald"
             )
-        elif "lc-quad" in dataset_path:
-            self.regular_predicates, self.inverse_predicates = get_ranking_tables(
-                dataset_path, datasettype="lc-quad"
+            qald_9_regular_preds, qald_9_inverse_preds = get_ranking_tables(
+                qald_9_path, datasettype="qald"
             )
+            lc_quad_regular_preds, lc_quad_inverse_preds = get_ranking_tables(
+                lc_quad_path, datasettype="lc-quad"
+            )
+
+            self.regular_predicates = combine_predicates(
+                qald_8_regular_preds, qald_9_regular_preds, lc_quad_regular_preds
+            )
+            self.inverse_predicates = combine_predicates(
+                qald_8_inverse_preds, qald_9_inverse_preds, lc_quad_inverse_preds
+            )
+
         else:
-            raise ValueError("Dataset does not contain qald or lc-quad.")
+
+            if "qald" in dataset_path:
+                self.regular_predicates, self.inverse_predicates = get_ranking_tables(
+                    dataset_path, datasettype="qald"
+                )
+            elif "lc-quad" in dataset_path:
+                self.regular_predicates, self.inverse_predicates = get_ranking_tables(
+                    dataset_path, datasettype="lc-quad"
+                )
+            else:
+                raise ValueError("Dataset does not contain qald or lc-quad.")
 
         if extend_preds:
             self.regular_predicates = extend_predicates(self.regular_predicates)
@@ -116,7 +143,6 @@ class OneHopRankSummarizer(Summarizer):
             entities.append(sub_graph[0])
 
         print("Recognized entities:", entities)
-        print("Triples from summarizer:", len(graph))
 
         # ranked triples
         regular_rank_graph, inverse_rank_graph = self._get_ranked_triples_for_dataset(
@@ -133,7 +159,7 @@ class OneHopRankSummarizer(Summarizer):
             for subj, pred, obj in graph:
                 print(subj, pred, obj)
 
-            print("Number of triples:", len(graph))
+        print("Number of triples:", len(graph))
 
         triples = format_graph(graph)
 
@@ -195,6 +221,34 @@ class OneHopRankSummarizer(Summarizer):
             inverse_graph += inv_graph
 
         return regular_graph, inverse_graph
+
+
+def combine_predicates(
+    qald_8: Dict[str, int], qald_9: Dict[str, int], lc_quad: Dict[str, int]
+) -> Dict[str, int]:
+    """Combine the dictionaries containing the ranked predicates into one dictionary.
+
+    Parameters
+    ----------
+    qald_8 : dict
+        Predicates from QALD-8 dataset.
+    qald_9 : dict
+        Predicates from QALD-8 dataset.
+    lc_quad : dict
+        Predicates from QALD-8 dataset.
+
+    Returns
+    -------
+    combined_dict : dict
+        Combined dictionary with all predicates and their ranks added up.
+    """
+    q_8 = Counter(qald_8)
+    q_9 = Counter(qald_9)
+    lc_q = Counter(lc_quad)
+
+    combined_dict = q_8 + q_9 + lc_q
+
+    return combined_dict
 
 
 def predicates_to_uriref(predicates: Dict[str, int]) -> List[str]:

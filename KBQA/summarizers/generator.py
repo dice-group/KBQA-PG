@@ -17,7 +17,7 @@ def generate_triples(dataset: Dataset, summarizer: Summarizer) -> None:
         Used summarizer for triple generation
     """
     for question in dataset.questions:
-        print(question.text)
+        print("-" * 30, "\n", question.text)
         triple = summarizer.summarize(question.text)
         question.triples.extend(triple)
 
@@ -33,13 +33,14 @@ if __name__ == "__main__":
 
     train_data = Dataset()
     train_data.load_dataset(DATASET)
-    ohrs = OneHopRankSummarizer(dataset_path=DATASET)
+    # ohrs = OneHopRankSummarizer(dataset_path=DATASET)
+    ohrs = OneHopRankSummarizer()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("question", type=str, help="Natural language question")
 
     args = parser.parse_args()
 
-    # ohrs.summarize(args.question)
+    ohrs.summarize(args.question)
     generate_triples(train_data, ohrs)
     train_data.save_qtq_dataset("qtq_qald_9.json")
