@@ -518,7 +518,7 @@ def main():
         # Prepare training data loader
         train_examples = read_examples(
             args.train_filename + "." + args.source,
-            args.train_filename + ".triples",
+            args.train_filename + ".triple",
             args.train_filename + "." + args.target,
         )
         train_features = convert_examples_to_features(
@@ -653,7 +653,7 @@ def main():
                 else:
                     eval_examples = read_examples(
                         args.dev_filename + "." + args.source,
-                        args.dev_filename + ".triples",
+                        args.dev_filename + ".triple",
                         args.dev_filename + "." + args.target,
                     )
                     eval_examples = random.sample(
@@ -752,7 +752,7 @@ def main():
         for idx, file in enumerate(files):
             logger.info("Test file: {}".format(file))
             eval_examples = read_examples(
-                file + "." + args.source, file + ".triples", file + "." + args.target
+                file + "." + args.source, file + ".triple", file + "." + args.target
             )
             eval_features = convert_examples_to_features(
                 eval_examples, tokenizer, args, stage="test"
