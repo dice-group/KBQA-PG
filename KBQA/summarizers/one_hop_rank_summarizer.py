@@ -4,13 +4,13 @@ from collections import defaultdict
 from typing import DefaultDict
 from typing import Dict
 from typing import List
-from typing import Optional
 from typing import Tuple
 
 from data_generator.summarizer import Summarizer
 from entity_relation_hops.entity_relation_hops import entity_relation_hops
 from entity_relation_hops.entity_relation_hops import get_subgraphs_based_on_relations
 from ranking.ranking import get_ranking_tables
+from ranking.ranking import rank_list
 from rdflib import Graph
 from rdflib.term import URIRef
 
@@ -23,93 +23,71 @@ class OneHopRankSummarizer(Summarizer):
 
     Parameters
     ----------
-    dataset_path : str
-        Path to a dataset.
     lower_rank : int, optional
         Lower bound for the ranked triples. Only triples with a rank greater or
         equal to this parameter are summarized (should be at least 1).
-    limit : int, optional
+    max_triples : int, optional
         Limit the number of occurences of triples, which have the same subject and
         predictes or the same predicate and object (default: 3).
-    extend_preds : bool, optional
-        Extend the ranked predicates by their counterpart of "ontology" and "property".
-        This might increase the number of triples, but might also be more precise
-        (default: False).
 
     Raises
     ------
     ValueError
         If lower_rank is not greater or equal to 1.
-    ValueError
-        If dataset_path does not contain qald or lc-quad.
     """
 
     PRINT = False
     DATASET_PATH = "datasets/"
     EXCLUDE = [
         "http://dbpedia.org/ontology/abstract",
-        "http://dbpedia.org/ontology/wikiPageWikiLink",
     ]
+    # "http://dbpedia.org/ontology/wikiPageWikiLink",
 
-    def __init__(
-        self,
-        dataset_path: Optional[str] = None,
-        lower_rank: int = 1,
-        limit: int = 3,
-        extend_preds: bool = False,
-    ) -> None:
+    def __init__(self, lower_rank: int = 1, max_triples: int = 3) -> None:
+        qald_8_train_path = self.DATASET_PATH + "qald-8-train-multilingual.json"
+        # qald_8_test_path = self.DATASET_PATH + "qald-8-test-multilingual.json"
+        qald_9_train_path = self.DATASET_PATH + "qald-9-train-multilingual.json"
+        # qald_9_test_path = self.DATASET_PATH + "qald-9-test-multilingual.json"
+        lc_quad_train_path = self.DATASET_PATH + "lc-quad-train.json"
+        # lc_quad_test_path = self.DATASET_PATH + "lc-quad-test.json"
 
-        if dataset_path is None:
-            qald_8_path = self.DATASET_PATH + "qald-8-train-multilingual.json"
-            qald_9_path = self.DATASET_PATH + "qald-9-train-multilingual.json"
-            lc_quad_path = self.DATASET_PATH + "lc-quad-train.json"
+        qald_8_regular_preds, qald_8_inverse_preds = get_ranking_tables(
+            qald_8_train_path, datasettype="qald"
+        )
+        qald_9_regular_preds, qald_9_inverse_preds = get_ranking_tables(
+            qald_9_train_path, datasettype="qald"
+        )
 
-            qald_8_regular_preds, qald_8_inverse_preds = get_ranking_tables(
-                qald_8_path, datasettype="qald"
-            )
-            qald_9_regular_preds, qald_9_inverse_preds = get_ranking_tables(
-                qald_9_path, datasettype="qald"
-            )
-            lc_quad_regular_preds, lc_quad_inverse_preds = get_ranking_tables(
-                lc_quad_path, datasettype="lc-quad"
-            )
+        self.qald_regular_preds = combine_predicates(
+            qald_8_regular_preds, qald_9_regular_preds
+        )
+        self.qald_inverse_preds = combine_predicates(
+            qald_8_inverse_preds, qald_9_inverse_preds
+        )
 
-            self.regular_predicates = combine_predicates(
-                qald_8_regular_preds, qald_9_regular_preds, lc_quad_regular_preds
-            )
-            self.inverse_predicates = combine_predicates(
-                qald_8_inverse_preds, qald_9_inverse_preds, lc_quad_inverse_preds
-            )
+        self.qald_regular_preds = filter_predicates(
+            self.qald_regular_preds, self.EXCLUDE, lower_rank
+        )
+        self.qald_inverse_preds = filter_predicates(
+            self.qald_inverse_preds, self.EXCLUDE, lower_rank
+        )
 
-        else:
+        self.lc_quad_regular_preds, self.lc_quad_inverse_preds = get_ranking_tables(
+            lc_quad_train_path, datasettype="lc-quad"
+        )
 
-            if "qald" in dataset_path:
-                self.regular_predicates, self.inverse_predicates = get_ranking_tables(
-                    dataset_path, datasettype="qald"
-                )
-            elif "lc-quad" in dataset_path:
-                self.regular_predicates, self.inverse_predicates = get_ranking_tables(
-                    dataset_path, datasettype="lc-quad"
-                )
-            else:
-                raise ValueError("Dataset does not contain qald or lc-quad.")
-
-        if extend_preds:
-            self.regular_predicates = extend_predicates(self.regular_predicates)
-            self.inverse_predicates = extend_predicates(self.inverse_predicates)
+        self.lc_quad_regular_preds = filter_predicates(
+            self.lc_quad_regular_preds, self.EXCLUDE, lower_rank
+        )
+        self.lc_quad_inverse_preds = filter_predicates(
+            self.lc_quad_inverse_preds, self.EXCLUDE, lower_rank
+        )
 
         if lower_rank < 1:
             raise ValueError("Lower rank cannot be smaller than 1")
 
-        self.regular_predicates = self._filter_predicates(
-            self.regular_predicates, lower_rank
-        )
-        self.inverse_predicates = self._filter_predicates(
-            self.inverse_predicates, lower_rank
-        )
-
         self.lower_rank = lower_rank
-        self.limit = limit
+        self.max_triples = max_triples
 
     def summarize(self, question: str) -> List[str]:
         """Summarize a subgraph based on the entities from a question.
@@ -128,127 +106,173 @@ class OneHopRankSummarizer(Summarizer):
         triples : list
             A list of triples found by the summarizer in the format "<s> <p> <o>"
         """
-        graph = Graph()
+        summarized_graph = Graph()
 
         # triples with one hop and recognized relations
         one_hop_graphs = entity_relation_hops(
-            question, hops=1, relation_pos=1, limit=self.limit
+            question, hops=1, relation_pos=1, limit=self.max_triples
         )
         entities = list()
 
         for sub_graph in one_hop_graphs:
             combined_graph = sub_graph[1] + sub_graph[2]
-            graph += combined_graph
+            summarized_graph += combined_graph
 
             entities.append(sub_graph[0])
 
         print("Recognized entities:", entities)
 
         # ranked triples
-        regular_rank_graph, inverse_rank_graph = self._get_ranked_triples_for_dataset(
-            entities
+        regular_preds = combine_predicates(
+            self.qald_regular_preds, self.lc_quad_regular_preds
+        )
+        inverse_preds = combine_predicates(
+            self.qald_inverse_preds, self.lc_quad_inverse_preds
         )
 
-        regular_rank_graph = aggregate_regular_triples(regular_rank_graph, self.limit)
-        inverse_rank_graph = aggregate_inverse_triples(inverse_rank_graph, self.limit)
+        reg_graph, inv_graph = subgraphs_for_entities(
+            entities, regular_preds, inverse_preds
+        )
 
-        graph += regular_rank_graph
-        graph += inverse_rank_graph
+        # remove triples to have at most <max_triples> of the same form
+        aggregated_reg_graph = aggregate_regular_triples(reg_graph, self.max_triples)
+        aggregated_inv_graph = aggregate_inverse_triples(inv_graph, self.max_triples)
+
+        # triples with ranks
+        qald_reg_rank_list = rank_list(self.qald_regular_preds, aggregated_reg_graph)
+        qald_reg_rank_list = filter_predicates(
+            qald_reg_rank_list, self.EXCLUDE, self.max_triples
+        )
+
+        qald_inv_rank_list = rank_list(self.qald_inverse_preds, aggregated_inv_graph)
+        qald_inv_rank_list = filter_predicates(
+            qald_inv_rank_list, self.EXCLUDE, self.lower_rank
+        )
+
+        lc_quad_reg_rank_list = rank_list(
+            self.lc_quad_regular_preds, aggregated_reg_graph
+        )
+        lc_quad_reg_rank_list = filter_predicates(
+            lc_quad_reg_rank_list, self.EXCLUDE, self.lower_rank
+        )
+
+        lc_quad_inv_rank_list = rank_list(
+            self.lc_quad_inverse_preds, aggregated_inv_graph
+        )
+        lc_quad_inv_rank_list = filter_predicates(
+            lc_quad_inv_rank_list, self.EXCLUDE, self.lower_rank
+        )
+
+        # combined triples for qald and lc-quad inverted: triples : rank --> rank : triples
+        qald_triples = combine_triples_by_rank(qald_reg_rank_list, qald_inv_rank_list)
+        lc_quad_triples = combine_triples_by_rank(
+            lc_quad_reg_rank_list, lc_quad_inv_rank_list
+        )
+
+        # format triples: <subj> <pred> <obj>
+        summarizer_formated = format_graph(summarized_graph)
+        qald_formated = format_triples_by_order(qald_triples)
+        lc_quad_formated = format_triples_by_order(lc_quad_triples)
+
+        formated_triples = summarizer_formated + qald_formated + lc_quad_formated
 
         if self.PRINT:
-            for subj, pred, obj in graph:
-                print(subj, pred, obj)
+            for triple in formated_triples:
+                print(triple)
 
-        print("Number of triples:", len(graph))
+        print("Number of triples:", len(formated_triples))
 
-        triples = format_graph(graph)
-
-        return triples
-
-    def _filter_predicates(
-        self, predicates: Dict[str, int], lower_bound: int
-    ) -> Dict[str, int]:
-        """Filter predicates and remove predicates with rank lower than lower bound.
-
-        Parameters
-        ----------
-        predicates : dict
-            Dictionary with predicates as keys and ranks as values.
-        lower_bound : int
-            Lower bound for rank of predicates.
-
-        Returns
-        -------
-        updated_predicates : dict
-            Updated dictionary with predicates having ranks greater or equal to lower bound.
-        """
-        updated_predicates = {}
-
-        for pred, rank in predicates.items():
-            if pred not in self.EXCLUDE and rank >= lower_bound:
-                updated_predicates[pred] = rank
-
-        return updated_predicates
-
-    def _get_ranked_triples_for_dataset(
-        self, entities: List[str]
-    ) -> Tuple[Graph, Graph]:
-        """Get graphs containing all triples extracted by the ranked predicates.
-
-        Parameters
-        ----------
-        entities : list
-            List of recognized entities from a question.
-
-        Returns
-        -------
-        regular_graph : Graph
-            Graph with outgoing edges from the entities.
-        inverse_graph : Graph
-            Graph with ingoing edges from the entities.
-        """
-        regular_graph = Graph()
-        inverse_graph = Graph()
-
-        reg_predicates = predicates_to_uriref(self.regular_predicates)
-        inv_predicates = predicates_to_uriref(self.inverse_predicates)
-
-        for entity in entities:
-            reg_graph, _ = get_subgraphs_based_on_relations(entity, reg_predicates)
-            _, inv_graph = get_subgraphs_based_on_relations(entity, inv_predicates)
-
-            regular_graph += reg_graph
-            inverse_graph += inv_graph
-
-        return regular_graph, inverse_graph
+        return formated_triples
 
 
 def combine_predicates(
-    qald_8: Dict[str, int], qald_9: Dict[str, int], lc_quad: Dict[str, int]
+    dataset_1: Dict[str, int], dataset_2: Dict[str, int]
 ) -> Dict[str, int]:
     """Combine the dictionaries containing the ranked predicates into one dictionary.
 
     Parameters
     ----------
-    qald_8 : dict
+    dataset_1 : dict
         Predicates from QALD-8 dataset.
-    qald_9 : dict
-        Predicates from QALD-8 dataset.
-    lc_quad : dict
-        Predicates from QALD-8 dataset.
+    dataset_2 : dict
+        Predicates from QALD-9 dataset.
 
     Returns
     -------
     combined_dict : dict
         Combined dictionary with all predicates and their ranks added up.
     """
-    q_8 = Counter(qald_8)
-    q_9 = Counter(qald_9)
-    lc_q = Counter(lc_quad)
+    d_1 = Counter(dataset_1)
+    d_2 = Counter(dataset_2)
 
-    combined_dict = q_8 + q_9 + lc_q
+    combined_dict = d_1 + d_2
 
     return combined_dict
+
+
+def filter_predicates(
+    predicates: Dict[str, int], exclude: List, lower_bound: int
+) -> Dict[str, int]:
+    """Filter predicates and remove predicates with rank lower than lower bound.
+
+    Parameters
+    ----------
+    predicates : dict
+        Dictionary with predicates as keys and ranks as values.
+    exclude : list
+        List of predicates (DBpedia-relations), which should be removed.
+    lower_bound : int
+        Lower bound for rank of predicates.
+
+    Returns
+    -------
+    updated_predicates : dict
+        Updated dictionary with predicates having ranks greater or equal to lower bound.
+    """
+    updated_predicates = {}
+
+    for pred, rank in predicates.items():
+        if pred not in exclude and rank >= lower_bound:
+            updated_predicates[pred] = rank
+
+    return updated_predicates
+
+
+def subgraphs_for_entities(
+    entities: List[URIRef], regular_preds: Dict[str, int], inverse_preds: Dict[str, int]
+) -> Tuple[Graph, Graph]:
+    """Get graphs containing all triples extracted by the ranked predicates.
+
+    Parameters
+    ----------
+    entities : list
+        List of recognized entities from a question.
+    regular_preds : dict
+        Dictionary containing the ranked regular predicates.
+    inverse_preds : Graph
+        Dictionary containing the ranked inverse predicates.
+
+    Returns
+    -------
+    regular_graph : Graph
+        Graph with outgoing edges from the entities.
+    inverse_graph : Graph
+        Graph with ingoing edges to the entities.
+    """
+    regular_graph = Graph()
+    inverse_graph = Graph()
+
+    reg_predicates = predicates_to_uriref(regular_preds)
+    inv_predicates = predicates_to_uriref(inverse_preds)
+
+    for entity in entities:
+        reg_graph, _ = get_subgraphs_based_on_relations(entity, reg_predicates)
+        _, inv_graph = get_subgraphs_based_on_relations(entity, inv_predicates)
+
+        regular_graph += reg_graph
+        inverse_graph += inv_graph
+
+    return regular_graph, inverse_graph
 
 
 def predicates_to_uriref(predicates: Dict[str, int]) -> List[str]:
@@ -272,7 +296,7 @@ def predicates_to_uriref(predicates: Dict[str, int]) -> List[str]:
     return result
 
 
-def aggregate_regular_triples(graph: Graph, limit: int) -> Graph:
+def aggregate_regular_triples(graph: Graph, max_triples: int) -> Graph:
     """Aggregate similiar triples to <limit> triples.
 
     Given a graph with triples, extract the first <limit> triples
@@ -282,7 +306,7 @@ def aggregate_regular_triples(graph: Graph, limit: int) -> Graph:
     ----------
     graph : Graph
         The graph to aggregate.
-    limit : int
+    max_triples : int
         The maximum number of triples of the form <s> <p> <...>.
 
     Returns
@@ -298,7 +322,7 @@ def aggregate_regular_triples(graph: Graph, limit: int) -> Graph:
             continue
 
         if (subj, pred) in regular_dict:
-            if regular_dict[(subj, pred)] < limit:
+            if regular_dict[(subj, pred)] < max_triples - 1:
                 regular_dict[(subj, pred)] += 1
 
                 updated_graph.add((subj, pred, obj))
@@ -309,7 +333,7 @@ def aggregate_regular_triples(graph: Graph, limit: int) -> Graph:
     return updated_graph
 
 
-def aggregate_inverse_triples(graph: Graph, limit: int) -> Graph:
+def aggregate_inverse_triples(graph: Graph, max_triples: int) -> Graph:
     """Aggregate similiar triples to <limit> triples.
 
     Given a graph with triples, extract the first <limit> triples
@@ -319,7 +343,7 @@ def aggregate_inverse_triples(graph: Graph, limit: int) -> Graph:
     ----------
     graph : Graph
         The graph to aggregate.
-    limit : int
+    max_triples : int
         The maximum number of triples of the form <...> <p> <o>.
 
     Returns
@@ -332,7 +356,7 @@ def aggregate_inverse_triples(graph: Graph, limit: int) -> Graph:
 
     for subj, pred, obj in graph:
         if (pred, obj) in inverse_dict:
-            if inverse_dict[(pred, obj)] < limit - 1:
+            if inverse_dict[(pred, obj)] < max_triples - 1:
                 inverse_dict[(pred, obj)] += 1
 
                 updated_graph.add((subj, pred, obj))
@@ -341,6 +365,35 @@ def aggregate_inverse_triples(graph: Graph, limit: int) -> Graph:
             updated_graph.add((subj, pred, obj))
 
     return updated_graph
+
+
+def combine_triples_by_rank(
+    reg_triples: Dict[str, int],
+    inv_triples: Dict[str, int],
+) -> DefaultDict[int, List]:
+    """Combine regular and inverse triples by their rank into a new dictionary.
+
+    Parameters
+    ----------
+    reg_triples : dict
+        Dictionary containing regular triples as key and their ranks as value.
+    inv_triples : dict
+        Dictionary containing inverse triples as key and their ranks as value.
+
+    Returns
+    -------
+    combined_triples : defaultdict
+        Dictionary containing the ranks as keys and all triples in a list with this rank as value.
+    """
+    combined_triples = defaultdict(list)
+
+    for triple, rank in reg_triples.items():
+        combined_triples[rank].append(triple)
+
+    for triple, rank in inv_triples.items():
+        combined_triples[rank].append(triple)
+
+    return combined_triples
 
 
 def format_graph(graph: Graph) -> List[str]:
@@ -353,8 +406,8 @@ def format_graph(graph: Graph) -> List[str]:
 
     Returns
     -------
-        triples : list
-            List of strings for each triple in the correct format.
+    triples : list
+        List of strings for each triple in the correct format.
     """
     triples = list()
 
@@ -366,34 +419,32 @@ def format_graph(graph: Graph) -> List[str]:
     return triples
 
 
-def extend_predicates(predicates: Dict[str, int]) -> Dict[str, int]:
-    """Extend the predicates by "ontology" and "property".
-
-    Since DBpedia makes a difference between properties from "ontology"
-    and "property", it is possible to add the counterpart to the
-    predicates.
+def format_triples_by_order(
+    triples: Dict[int, List[Tuple[URIRef, URIRef, URIRef]]]
+) -> List[str]:
+    """Sort the triples by their ranks and store them in a list in the correct output format.
 
     Parameters
     ----------
-    predicates : dict
-        Dictionary containing the predicates and their ranks.
+    triples : dict
+        Dictionary containing the ranks as keys and the triples in a list as values.
 
     Returns
     -------
-    extended_predicates : dict
-        Updated dictionary containing the predicates and their ranks.
+    formated_triples : list
+        List of strings for each triple in the correct order.
     """
-    extended_predicates = {}
+    sorted_triples = sorted(triples.items(), reverse=True)
+    ordered_triple_list = list()
 
-    for predicate, rank in predicates.items():
-        if "ontology" in predicate:
-            extended_predicate = predicate.replace("ontology", "property")
-            extended_predicates[extended_predicate] = rank
+    for _, triple_list in sorted_triples:
+        ordered_triple_list += triple_list
 
-        if "property" in predicate:
-            extended_predicate = predicate.replace("property", "ontology")
-            extended_predicates[extended_predicate] = rank
+    formated_triples = list()
 
-        extended_predicates[predicate] = rank
+    for triple in ordered_triple_list:
+        formated_triple = f"{triple[0].n3()} {triple[1].n3()} {triple[2].n3()}"
 
-    return extended_predicates
+        formated_triples.append(formated_triple)
+
+    return formated_triples
