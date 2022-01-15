@@ -124,7 +124,7 @@ class BertSeq2Seq(nn.Module):
         else:
             # Predict
             preds = []
-            zero = torch.tensor(1, dtype=torch.long, device=self.device).fill_(0)
+            zero = torch.full(size=(1,), fill_value=0, dtype=torch.long, device=self.device)
             for i in range(encoder_output.shape[0]):
                 context = encoder_output[i: i + 1, :]
                 context_mask = encoder_attention_mask[i: i + 1, :]
