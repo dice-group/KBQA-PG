@@ -1,6 +1,7 @@
 """Summarizer, which extracts a subgraph of based on one hop and ranked triples."""
 from collections import Counter
 from collections import defaultdict
+from math import inf
 from typing import DefaultDict
 from typing import Dict
 from typing import List
@@ -43,7 +44,9 @@ class OneHopRankSummarizer(Summarizer):
     ]
     # "http://dbpedia.org/ontology/wikiPageWikiLink",
 
-    def __init__(self, lower_rank: int = 1, max_triples: int = 3) -> None:
+    def __init__(
+        self, lower_rank: int = 1, max_triples: int = 3, limit: int = -1
+    ) -> None:
         qald_8_train_path = self.DATASET_PATH + "qald-8-train-multilingual.json"
         # qald_8_test_path = self.DATASET_PATH + "qald-8-test-multilingual.json"
         qald_9_train_path = self.DATASET_PATH + "qald-9-train-multilingual.json"
@@ -88,6 +91,7 @@ class OneHopRankSummarizer(Summarizer):
 
         self.lower_rank = lower_rank
         self.max_triples = max_triples
+        self.limit = limit
 
     def summarize(self, question: str) -> List[str]:
         """Summarize a subgraph based on the entities from a question.
@@ -119,6 +123,9 @@ class OneHopRankSummarizer(Summarizer):
             summarized_graph += combined_graph
 
             entities.append(sub_graph[0])
+
+        if self.limit > -1:
+            summarized_graph = limit_graph(summarized_graph, self.limit)
 
         print("Recognized entities:", entities)
 
@@ -171,10 +178,22 @@ class OneHopRankSummarizer(Summarizer):
 
         # format triples: <subj> <pred> <obj>
         summarizer_formated = format_graph(summarized_graph)
+
         qald_formated = format_triples_by_order(qald_triples)
         lc_quad_formated = format_triples_by_order(lc_quad_triples)
 
-        formated_triples = summarizer_formated + qald_formated + lc_quad_formated
+        ranked_triples_formated = qald_formated + lc_quad_formated
+
+        if self.limit > -1:
+            cur_limit = float(self.limit - len(summarized_graph))
+        else:
+            cur_limit = inf
+
+        limited_ranked_triples_formated = limit_triples(
+            ranked_triples_formated, cur_limit
+        )
+
+        formated_triples = summarizer_formated + limited_ranked_triples_formated
 
         if self.PRINT:
             for triple in formated_triples:
@@ -396,6 +415,36 @@ def combine_triples_by_rank(
     return combined_triples
 
 
+def limit_graph(graph: Graph, limit: int) -> Graph:
+    """Limit the number of triples in a graph.
+
+    Given a graph, reduce the number of triples to the first
+    <limit> triples.
+
+    Parameters
+    ----------
+    graph : Graph
+        Graph containing all triples.
+    limit : int
+        Number of maximal triples in the given graph.
+
+    Returns
+    -------
+    limited_graph : Graph
+        Graph with at most <limit> triples.
+    """
+    limited_graph = Graph()
+    num_triples = 0
+
+    for subj, pred, obj in graph:
+        if num_triples < limit:
+            limited_graph.add((subj, pred, obj))
+
+            num_triples += 1
+
+    return limited_graph
+
+
 def format_graph(graph: Graph) -> List[str]:
     """Format triples in a graph into the <s> <p> <o> format.
 
@@ -417,6 +466,35 @@ def format_graph(graph: Graph) -> List[str]:
         triples.append(triple)
 
     return triples
+
+
+def limit_triples(triples: List[str], limit: float) -> List[str]:
+    """Limit the number of triples.
+
+    Given a list of triples, extract the <limit> triples from this list.
+
+    Parameters
+    ----------
+    triples : list
+        List of triples in the format <subj> <pred> <obj>.
+    limit : int
+        Number of maximal triples in the list.
+
+    Returns
+    -------
+    limited_triples : list
+        List with the first <limit> triples from the given triple list.
+    """
+    limited_triples = list()
+    num_triples = 0
+
+    for triple in triples:
+        if num_triples < limit:
+            limited_triples.append(triple)
+
+            num_triples += 1
+
+    return limited_triples
 
 
 def format_triples_by_order(
