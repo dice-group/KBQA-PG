@@ -12,7 +12,6 @@ from SPARQLWrapper import SPARQLWrapper
 
 
 EXCLUDES = [URIRef("http://dbpedia.org/ontology/country")]
-TIMEOUT = 0  # Timeout for SPARQL-endpoint (use 1 to set the timeout)
 
 
 def entity_relation_hops(
@@ -648,7 +647,6 @@ def get_subgraphs_based_on_relations(
 
     sparql = SPARQLWrapper("https://dbpedia.org/sparql/")
     sparql.setMethod("POST")
-    sparql.setTimeout(TIMEOUT)
 
     sparql.setQuery(query_regular)
     regular_graph += sparql.query().convert()

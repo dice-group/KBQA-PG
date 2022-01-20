@@ -2,6 +2,7 @@
 from collections import Counter
 from collections import defaultdict
 from math import inf
+import time
 from typing import DefaultDict
 from typing import Dict
 from typing import List
@@ -30,6 +31,12 @@ class OneHopRankSummarizer(Summarizer):
     max_triples : int, optional
         Limit the number of occurences of triples, which have the same subject and
         predictes or the same predicate and object (default: 3).
+    limit : int, optional
+        Limit the number of triples found by the summarizer (use -1 to not use any limit,
+        default: -1).
+    timeout : float, optional
+        Set a timeout in milliseconds between requests. This might avoid some connection
+        errors (default: 0).
 
     Raises
     ------
@@ -45,7 +52,11 @@ class OneHopRankSummarizer(Summarizer):
     # "http://dbpedia.org/ontology/wikiPageWikiLink",
 
     def __init__(
-        self, lower_rank: int = 1, max_triples: int = 3, limit: int = -1
+        self,
+        lower_rank: int = 1,
+        max_triples: int = 3,
+        limit: int = -1,
+        timeout: float = 0,
     ) -> None:
         qald_8_train_path = self.DATASET_PATH + "qald-8-train-multilingual.json"
         # qald_8_test_path = self.DATASET_PATH + "qald-8-test-multilingual.json"
@@ -92,6 +103,7 @@ class OneHopRankSummarizer(Summarizer):
         self.lower_rank = lower_rank
         self.max_triples = max_triples
         self.limit = limit
+        self.timeout = timeout
 
     def summarize(self, question: str) -> List[str]:
         """Summarize a subgraph based on the entities from a question.
@@ -128,6 +140,9 @@ class OneHopRankSummarizer(Summarizer):
             summarized_graph = limit_graph(summarized_graph, self.limit)
 
         print("Recognized entities:", entities)
+
+        # timeout
+        time.sleep(self.timeout)
 
         # ranked triples
         regular_preds = combine_predicates(
@@ -258,7 +273,9 @@ def filter_predicates(
 
 
 def subgraphs_for_entities(
-    entities: List[URIRef], regular_preds: Dict[str, int], inverse_preds: Dict[str, int]
+    entities: List[URIRef],
+    regular_preds: Dict[str, int],
+    inverse_preds: Dict[str, int],
 ) -> Tuple[Graph, Graph]:
     """Get graphs containing all triples extracted by the ranked predicates.
 
