@@ -1,8 +1,13 @@
 """Main module for the application logic of approach B."""
+
+from typing import Dict
+from typing import Tuple
+
+from app.t5.sparql_predictor import process_question
 from app.qald_builder import qald_builder
 from app.qald_builder import qald_builder_empty_answer
 from SPARQLWrapper import JSON
-from SPARQLWrapper import SPARQLWrapper
+from SPARQLWrapper import SPARQLWrapper, SPARQLWrapperException
 
 
 def main(query: str, lang: str = "en") -> str:
@@ -23,18 +28,47 @@ def main(query: str, lang: str = "en") -> str:
     answer_qald : dict
         Answers for the given question formatted in the QALD-format.
     """
-    # ===========================================
-    # Add here the logic for approach B and
-    # return the answer in the QALD format
-    # ===========================================
-
-    # -------------------- Example ----------------------
-    # Example in order to check, whether the connection works
-    print("Question:", query)
-
-    answer_qald = example(query, lang)
+    answer, sparql_query = get_answer(query)
+    if sparql_query == "":
+        answer_qald = qald_builder_empty_answer(sparql_query, query, lang)
+    else:
+        answer_qald = qald_builder(sparql_query, answer, query, lang)
 
     return answer_qald
+
+
+def get_answer(question: str) -> Tuple[Dict, str]:
+    """Interprete an asked question using the Neural SPARQL Machine.
+    Parameters
+    ----------
+    question : str
+        Natural language question asked by an enduser.
+    Returns
+    -------
+    answer : dict
+        Bindings of the variables from the generated SPARQL-query, which contain
+        the answers for the given question.
+    sparql_query : str
+        Generated SPARQL-query by the Neural SPARQL Machine.
+    """
+
+    sparql_query = process_question(question)
+
+    print("Predicted SPARQL-Query:", sparql_query)
+
+    try:
+        sparql = SPARQLWrapper("http://dbpedia.org/sparql/")
+        sparql.setReturnFormat(JSON)
+        sparql.setQuery(sparql_query)
+        answer = sparql.query().convert()
+    except SPARQLWrapperException as exception:
+        # Unfortunately, the NSPM does not always return a valid SPARQL query.
+        print("SPARQLWrapperException", exception)
+
+        return {}, ""
+
+    return answer, sparql_query
+
 
 
 def example(question: str, lang: str) -> str:
