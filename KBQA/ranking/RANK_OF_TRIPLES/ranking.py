@@ -6,7 +6,6 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
-from nes_ner_hop import nes_ner_hop_regular_and_inverse_subgraph
 from rdflib.graph import Graph
 from rdflib.plugins.sparql import algebra
 from rdflib.plugins.sparql import parser
@@ -48,7 +47,7 @@ def load_sparql_from_json_lcqald(jsonfile: str) -> List[str]:
 
 def extract_triples_rec(query: Query) -> List[URIRef]:
     """
-    Given a spaql.Query object(query), set of triples from sparql object are returned.
+    Given a spaql.Query object(query), set of triples from sparql with only one triple object are returned.
 
     This procedure extracts all possible triples from the sparql object.
     :param query: rdflib.plugins.sparql.sparql.Query object.
@@ -76,6 +75,43 @@ def extract_triples_rec(query: Query) -> List[URIRef]:
     return triples
 
 
+def extract_hop_triples_rec(query: Query) -> List[URIRef]:
+    """
+    Given a spaql.Query object(query), set of triples from sparql with one or two hop are returned.
+
+    This procedure extracts all possible triples from the sparql object with one or two hopes.
+    :param query: rdflib.plugins.sparql.sparql.Query object.
+    :return: List of all triples from sparql object.
+    """
+    if not hasattr(query, "keys"):
+        return []
+    triples = []
+    keys = query.keys()
+    for key in keys:
+        if key == "triples":
+            value = query[key]
+            if len(value) == 1:
+                subj1 = value[0][0]
+                pred1 = value[0][1]
+                obj1 = value[0][2]
+                triples.append([(subj1, pred1, obj1)])
+            else:
+                if len(value) == 2:
+                    if value[0][2] == value[1][0]:
+                        subj1 = value[0][0]
+                        pred1 = value[0][1]
+                        obj1 = value[0][2]
+                        subj2 = value[1][0]
+                        pred2 = value[1][1]
+                        obj2 = value[1][2]
+                        triples.append([(subj1, pred1, obj1), (subj2, pred2, obj2)])
+        else:
+            newtriples = extract_hop_triples_rec(query[key])
+            for triple in newtriples:
+                triples.append(triple)
+    return triples
+
+
 def extract_triples(sparql: str) -> List[URIRef]:
     """
     Given a spaql string, set of triples from sparql string are returned.
@@ -89,6 +125,21 @@ def extract_triples(sparql: str) -> List[URIRef]:
     q_algebra = algebra.translateQuery(query_tree)
     triples = extract_triples_rec(q_algebra.algebra)
     return triples
+
+
+def extract_hop_triples(sparql: str) -> List[URIRef]:
+    """
+    Given a spaql string, set of triples from sparql string are returned.
+
+    This procedure parses sparql string to sparql object and extracts all possible triples from the sparql object.
+    :param sparql: sparql string.
+    :return: List of all triples from sparql string.
+    """
+    # get sparql tree from sparql string
+    query_tree = parser.parseQuery(sparql)
+    q_algebra = algebra.translateQuery(query_tree)
+    triples_hop = extract_hop_triples_rec(q_algebra.algebra)
+    return triples_hop
 
 
 def inverse_relations(tripleslist: list) -> List[URIRef]:
@@ -131,10 +182,10 @@ def predicate_count_relations(regular_triples_list: list) -> Dict[str, int]:
     relations_list = relations(regular_triples_list)
     regular_table = {}
     for triple_item in relations_list:
-        key = str(triple_item[1][1])
-        if key not in regular_table:
-            regular_table[key] = 0
-        regular_table[key] = regular_table[key] + 1
+        predicate = str(triple_item[1][1])
+        if predicate not in regular_table:
+            regular_table[predicate] = 0
+        regular_table[predicate] = regular_table[predicate] + 1
     return regular_table
 
 
@@ -148,11 +199,49 @@ def predicate_count_inverse_relations(inverse_triples_list: list) -> Dict[str, i
     inverse_relations_list = inverse_relations(inverse_triples_list)
     inverse_table = {}
     for triple_item in inverse_relations_list:
-        key = str(triple_item[1][1])
-        if key not in inverse_table:
-            inverse_table[key] = 0
-        inverse_table[key] = inverse_table[key] + 1
+        predicate = str(triple_item[1][1])
+        if predicate not in inverse_table:
+            inverse_table[predicate] = 0
+        inverse_table[predicate] = inverse_table[predicate] + 1
     return inverse_table
+
+
+def predicate_count_with_multihop(
+    tripleslist: List[List[URIRef]],
+) -> List[List[URIRef]]:
+    """
+    Given lists with one or two hop triples. Lists with predicates for one or two hopes in sort order are returned.
+
+    This procedure counts how many times one or two hopes predicates occur in the dataset QALD and
+    returns lists with predicates with rank in decreasing order.
+    :param tripleslist: lists with triples for one and two hopes.
+    :return: lists with predicate for one or two hopes in decreasing order (ordered by rank).
+    """
+    rank_table = {}
+    predicate_rank = []
+    for triples_item in tripleslist:
+        if len(triples_item) == 1:
+            predicate = triples_item[0][1]
+            if predicate not in rank_table:
+                rank_table[predicate] = 0
+            rank_table[predicate] = rank_table[predicate] + 1
+        elif len(triples_item) == 2:
+            predicate1_predicate2 = []
+            predicate1 = triples_item[0][1]
+            predicate2 = triples_item[1][1]
+            predicate1_predicate2.append(predicate1)
+            predicate1_predicate2.append(predicate2)
+            predicates_tuple = tuple(predicate1_predicate2)
+            if predicates_tuple not in rank_table:
+                rank_table[predicates_tuple] = 0
+            rank_table[predicates_tuple] = rank_table[predicates_tuple] + 1
+    rank_table_list = sorted(rank_table.items(), key=lambda x: x[1], reverse=True)
+    for item in rank_table_list:
+        if isinstance(item[0], tuple):
+            predicate_rank.append(list(item[0]))
+        else:
+            predicate_rank.append([item[0]])
+    return predicate_rank
 
 
 def get_ranking_tables(datasetfile: str) -> Tuple[dict, dict]:
@@ -330,18 +419,20 @@ def ranked_triples_for_inverse_subgraph(
 
 def main() -> None:
     """Call ranked_triples_for_regular_subgraph to get ranking of regular triples."""
-    (
-        regular_subgraph,
-        inverse_subgraph,
-    ) = nes_ner_hop_regular_and_inverse_subgraph(question="Who is Angela Merkel?")
-    ranked_regular_triples = ranked_triples_for_regular_subgraph(regular_subgraph, 10)
-    ranked_inverse_triples = ranked_triples_for_inverse_subgraph(inverse_subgraph, 20)
-    for triple_item in ranked_inverse_triples.items():
-        print(triple_item)
-        print("\n")
-    for triple_item in ranked_regular_triples.items():
-        print(triple_item)
-        print("\n")
+    # (
+    #    regular_subgraph,
+    #    inverse_subgraph,
+    # ) = nes_ner_hop_regular_and_inverse_subgraph(question="Who is Angela Merkel?")
+    # ranked_regular_triples = ranked_triples_for_regular_subgraph(regular_subgraph, 100)
+    # ranked_inverse_triples = ranked_triples_for_inverse_subgraph(inverse_subgraph, 1)
+    # for triple_item in ranked_regular_triples.items():
+    #    print(triple_item)
+    #    print("\n")
+    # print("\n")
+    # print("\n")
+    # for triple_item in ranked_inverse_triples.items():
+    #    print(triple_item)
+    #    print("\n")
 
 
 # Call from shell as main.
