@@ -31,6 +31,7 @@ def preprocess_sentence(w):
     return w
 
 
+
 def create_dataset(path, num_examples):
     lines = io.open(path, encoding='UTF-8').read().strip().split('\n')
 
