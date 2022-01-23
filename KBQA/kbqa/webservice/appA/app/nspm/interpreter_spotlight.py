@@ -1,15 +1,12 @@
-import tensorflow as tf
-
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+import pickle
 
 import numpy as np
-import pickle
-from prepare_dataset import preprocess_sentence
-from nmt import Encoder, Decoder
-from generator_utils import decode, fix_URI
-
 import spacy_dbpedia_spotlight
+import tensorflow as tf
+
+from generator_utils import decode, fix_URI
+from nmt import Decoder, Encoder
+from prepare_dataset import preprocess_sentence
 
 
 def evaluate(sentence):
@@ -18,7 +15,9 @@ def evaluate(sentence):
     sentence = preprocess_sentence(sentence)
 
     inputs = [inp_lang.word_index[i] for i in sentence.split(' ')]
-    inputs = tf.keras.preprocessing.sequence.pad_sequences([inputs], maxlen=max_length_inp, padding='post')
+    inputs = tf.keras.preprocessing.sequence.pad_sequences([inputs],
+                                                           maxlen=max_length_inp,
+                                                           padding='post')
     inputs = tf.convert_to_tensor(inputs)
 
     result = ''
@@ -30,7 +29,9 @@ def evaluate(sentence):
     dec_input = tf.expand_dims([targ_lang.word_index['<start>']], 0)
 
     for t in range(max_length_targ):
-        predictions, dec_hidden, attention_weights = decoder(dec_input, dec_hidden, enc_out)
+        predictions, dec_hidden, attention_weights = decoder(dec_input,
+                                                             dec_hidden,
+                                                             enc_out)
 
         # storing the attention weights to plot later on
         attention_weights = tf.reshape(attention_weights, (-1, ))
@@ -64,33 +65,8 @@ def mkdir_p(mypath):
             raise
 
 
-def plot_attention(attention, sentence, predicted_sentence, ou_dir):
-    fig = plt.figure(figsize=(10, 10))
-    ax = fig.add_subplot(1, 1, 1)
-    ax.matshow(attention, cmap='viridis')
-
-    fontdict = {'fontsize': 14}
-
-    ax.set_xticklabels([''] + sentence, fontdict=fontdict, rotation=90)
-    ax.set_yticklabels([''] + predicted_sentence, fontdict=fontdict)
-
-    ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
-
-    plt.show()
-    fig = plt.figure()
-    mkdir_p(ou_dir)
-    fig.savefig('{}/graph.png'.format(ou_dir))
-
-
-def translate(sentence, ou_dir):
-    result, sentence, attention_plot = evaluate(sentence)
-
-    print('Input: %s' % (sentence))
-    print('Predicted translation: {}'.format(result))
-
-    attention_plot = attention_plot[:len(result.split(' ')), :len(sentence.split(' '))]
-    plot_attention(attention_plot, sentence.split(' '), result.split(' '), ou_dir)
+def translate(sentence):
+    result, _, _ = evaluate(sentence)
     return result
 
 
@@ -131,8 +107,8 @@ def restore_entity(sparql, entities):
 def process_question(question):
     global max_length_targ, max_length_inp, encoder, decoder, inp_lang, units, targ_lang
 
-    model_dir = "data/qald_all"
-    input_dir = "data/qald_all"
+    model_dir = "data/all_temp_ph"
+    input_dir = "data/all_temp_ph"
 
     model_dir += '/training_checkpoints'
     pic_dir = input_dir + '/pickle_objects'
@@ -169,28 +145,30 @@ def process_question(question):
 
     entities = find_entity(question)
     question_ph = replace_entities(question, entities)
-    for ph, (entity, uri) in entities.items():
-        print(ph, entity, uri)
 
-    finaltrans = "input qurey : \n"
+    finaltrans = "input qurey: \n"
     finaltrans += question
-    finaltrans += "\n \n \n input query with placeholder : \n"
+
+    finaltrans += "\n\n\ninput query with placeholder:\n"
     finaltrans += question_ph
-    finaltrans += "\n \n \n entities : \n"
+
+    finaltrans += "\n\n\nentities:\n"
     for placeholder, (entity, uri) in entities.items():
-        finaltrans += placeholder + ',    '
-        finaltrans += entity + ',     '
-        finaltrans += uri + '\n'
-    finaltrans += "\n \n \n output qurey : \n"
-    finaltranso = translate(question_ph, input_dir)
+        finaltrans += "{},  {},  {}".format(placeholder, entity, uri)
+
+    finaltrans += "\n\n\noutput qurey:\n"
+    finaltranso = translate(question_ph)
     finaltrans += finaltranso
-    finaltrans += '\n \n \n output query with placeholder decoded : \n'
+
+    finaltrans += '\n\n\noutput query with placeholder decoded:\n'
     finaltranso = decode(finaltranso)
     finaltranso = fix_URI(finaltranso)
-    finaltrans += '\n \n \n output query with entities: \n'
-    finaltranso = restore_entity(finaltranso, entities)
-
-    print('Decoded translation: {}'.format(finaltranso))
     finaltrans += finaltranso
-    print(finaltrans)
-    return finaltranso.split('<end>'[0])
+
+    finaltrans += '\n\n\noutput query with entities:\n'
+    finaltranso = restore_entity(finaltranso, entities)
+    finaltranso = finaltranso.replace("OFFSET", "")
+    finaltranso = finaltranso.replace("LIMIT", "")
+    finaltrans += finaltranso
+
+    return finaltranso
