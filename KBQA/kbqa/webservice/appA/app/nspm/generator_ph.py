@@ -195,7 +195,7 @@ def generate_dataset(templates, output_dir, file_mode):
                 dataset_pair = build_dataset_pair(template)
                 english_questions.write("{}\n".format(dataset_pair['english']))
                 sparql_queries.write("{}\n".format(dataset_pair['sparql']))
-            except:
+            except Exception:
                 exception = traceback.format_exc()
                 logging.error('template {} caused exception {}'.format(
                     getattr(template, 'id'), exception))
@@ -237,7 +237,7 @@ templates = read_template_file(template_file)
 
 try:
     generate_dataset(templates, output_dir, file_mode)
-except:
+except Exception:
     print('exception occured, look for error in log file')
     save_cache(resource_dump_file, used_resources)
 else:
