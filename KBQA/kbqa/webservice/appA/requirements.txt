@@ -9,3 +9,4 @@ numpy
 SPARQLWrapper==1.8.5
 airML==0.0.3
 gensim
+spacy_dbpedia_spotlight==0.2.1
