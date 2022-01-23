@@ -32,6 +32,29 @@ class Question:
         self.answers: List = answers
         self.triples: List = triples
 
+    def save_to_qtq_dataset(self, dataset_path: str) -> None:
+        """Append question to QTQ dataset and save it to disk.
+
+        Parameters
+        ----------
+        dataset_path : str
+            Path to QTQ dataset json file
+        """
+        try:
+            with open(dataset_path, "r", encoding="utf-8") as file_handle:
+                dataset = json.load(file_handle)
+        except OSError:
+            dataset = {"questions": list()}
+
+        qtq: Dict = {}
+        qtq["question"] = self.text
+        qtq["query"] = self.sparql
+        qtq["triples"] = self.triples
+        dataset["questions"].append(qtq)
+
+        with open(dataset_path, "w", encoding="utf-8") as file_handle:
+            json.dump(dataset, file_handle, indent=4, separators=(",", ": "))
+
 
 class Dataset:
     """Represents a question dataset."""
