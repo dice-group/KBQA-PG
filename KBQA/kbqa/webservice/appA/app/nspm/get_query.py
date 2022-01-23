@@ -1,4 +1,5 @@
-from interpreter_pt_model import process_question
+# from interpreter_pt_model import process_question
+from interpreter_spotlight import process_question
 
 
 def read_query_output(question):
