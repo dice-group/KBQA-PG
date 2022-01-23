@@ -1,12 +1,13 @@
+import os
 import pickle
 
 import numpy as np
 import spacy_dbpedia_spotlight
 import tensorflow as tf
 
-from generator_utils import decode, fix_URI
-from nmt import Decoder, Encoder
-from prepare_dataset import preprocess_sentence
+from app.nspm.generator_utils import decode, fix_URI
+from app.nspm.nmt import Decoder, Encoder
+from app.nspm.prepare_dataset import preprocess_sentence
 
 
 def evaluate(sentence):
@@ -107,8 +108,8 @@ def restore_entity(sparql, entities):
 def process_question(question):
     global max_length_targ, max_length_inp, encoder, decoder, inp_lang, units, targ_lang
 
-    model_dir = "data/all_temp_ph"
-    input_dir = "data/all_temp_ph"
+    model_dir = os.path.dirname(__file__) + '../../../../../resources'
+    input_dir = os.path.dirname(__file__) + '../../../../../resources'
 
     model_dir += '/training_checkpoints'
     pic_dir = input_dir + '/pickle_objects'
@@ -170,5 +171,7 @@ def process_question(question):
     finaltranso = finaltranso.replace("OFFSET", "")
     finaltranso = finaltranso.replace("LIMIT", "")
     finaltrans += finaltranso
+
+    print(finaltrans)
 
     return finaltranso
