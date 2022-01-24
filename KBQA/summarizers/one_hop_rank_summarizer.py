@@ -35,7 +35,7 @@ class OneHopRankSummarizer(Summarizer):
         Limit the number of triples found by the summarizer (use -1 to not use any limit,
         default: -1).
     timeout : float, optional
-        Set a timeout in milliseconds between requests. This might avoid some connection
+        Set a timeout in seconds between requests. This might avoid some connection
         errors (default: 0).
 
     Raises
@@ -59,24 +59,46 @@ class OneHopRankSummarizer(Summarizer):
         timeout: float = 0,
     ) -> None:
         qald_8_train_path = self.DATASET_PATH + "qald-8-train-multilingual.json"
-        # qald_8_test_path = self.DATASET_PATH + "qald-8-test-multilingual.json"
+        qald_8_test_path = self.DATASET_PATH + "qald-8-test-multilingual.json"
         qald_9_train_path = self.DATASET_PATH + "qald-9-train-multilingual.json"
-        # qald_9_test_path = self.DATASET_PATH + "qald-9-test-multilingual.json"
+        qald_9_test_path = self.DATASET_PATH + "qald-9-test-multilingual.json"
         lc_quad_train_path = self.DATASET_PATH + "lc-quad-train.json"
-        # lc_quad_test_path = self.DATASET_PATH + "lc-quad-test.json"
+        lc_quad_test_path = self.DATASET_PATH + "lc-quad-test.json"
 
-        qald_8_regular_preds, qald_8_inverse_preds = get_ranking_tables(
+        # qald
+        qald_8_train_regular_preds, qald_8_train_inverse_preds = get_ranking_tables(
             qald_8_train_path, datasettype="qald"
         )
-        qald_9_regular_preds, qald_9_inverse_preds = get_ranking_tables(
+        qald_9_train_regular_preds, qald_9_train_inverse_preds = get_ranking_tables(
             qald_9_train_path, datasettype="qald"
         )
 
+        qald_train_regular_preds = combine_predicates(
+            qald_8_train_regular_preds, qald_9_train_regular_preds
+        )
+        qald_train_inverse_preds = combine_predicates(
+            qald_8_train_inverse_preds, qald_9_train_inverse_preds
+        )
+
+        qald_8_test_regular_preds, qald_8_test_inverse_preds = get_ranking_tables(
+            qald_8_test_path, datasettype="qald"
+        )
+        qald_9_test_regular_preds, qald_9_test_inverse_preds = get_ranking_tables(
+            qald_9_test_path, datasettype="qald"
+        )
+
+        qald_test_regular_preds = combine_predicates(
+            qald_8_test_regular_preds, qald_9_test_regular_preds
+        )
+        qald_test_inverse_preds = combine_predicates(
+            qald_8_test_inverse_preds, qald_9_test_inverse_preds
+        )
+
         self.qald_regular_preds = combine_predicates(
-            qald_8_regular_preds, qald_9_regular_preds
+            qald_train_regular_preds, qald_test_regular_preds
         )
         self.qald_inverse_preds = combine_predicates(
-            qald_8_inverse_preds, qald_9_inverse_preds
+            qald_train_inverse_preds, qald_test_inverse_preds
         )
 
         self.qald_regular_preds = filter_predicates(
@@ -86,8 +108,20 @@ class OneHopRankSummarizer(Summarizer):
             self.qald_inverse_preds, self.EXCLUDE, lower_rank
         )
 
-        self.lc_quad_regular_preds, self.lc_quad_inverse_preds = get_ranking_tables(
+        # lc-quad
+        lc_quad_train_regular_preds, lc_quad_train_inverse_preds = get_ranking_tables(
             lc_quad_train_path, datasettype="lc-quad"
+        )
+
+        lc_quad_test_regular_preds, lc_quad_test_inverse_preds = get_ranking_tables(
+            lc_quad_test_path, datasettype="lc-quad"
+        )
+
+        self.lc_quad_regular_preds = combine_predicates(
+            lc_quad_train_regular_preds, lc_quad_test_regular_preds
+        )
+        self.lc_quad_inverse_preds = combine_predicates(
+            lc_quad_train_inverse_preds, lc_quad_test_inverse_preds
         )
 
         self.lc_quad_regular_preds = filter_predicates(

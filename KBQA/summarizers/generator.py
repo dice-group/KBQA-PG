@@ -33,7 +33,6 @@ if __name__ == "__main__":
 
     train_data = Dataset()
     train_data.load_dataset(DATASET)
-    # ohrs = OneHopRankSummarizer(dataset_path=DATASET)
     ohrs = OneHopRankSummarizer()
 
     parser = argparse.ArgumentParser()
@@ -43,4 +42,4 @@ if __name__ == "__main__":
 
     # ohrs.summarize(args.question)
     generate_triples(train_data, ohrs)
-    train_data.save_qtq_dataset("qtq_lc_quad_train.json")
+    train_data.save_qtq_dataset("qald_8_test_v2.json")

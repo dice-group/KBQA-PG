@@ -64,14 +64,24 @@ def extract_triples_rec(query: Query) -> List[URIRef]:
     for key in keys:
         if key == "triples":
             value = query[key]
-            if len(value) == 1:
-                typestr = str(type(value[0][0]))
-                subj = (typestr, value[0][0])
-                typestr = str(type(value[0][1]))
-                pred = (typestr, value[0][1])
-                typestr = str(type(value[0][2]))
-                obj = (typestr, value[0][2])
+
+            for triple in value:
+                typestr = str(type(triple[0]))
+                subj = (typestr, triple[0])
+                typestr = str(type(triple[1]))
+                pred = (typestr, triple[1])
+                typestr = str(type(triple[2]))
+                obj = (typestr, triple[2])
                 triples.append((subj, pred, obj))
+
+            # if len(value) == 1:
+            #     typestr = str(type(value[0][0]))
+            #     subj = (typestr, value[0][0])
+            #     typestr = str(type(value[0][1]))
+            #     pred = (typestr, value[0][1])
+            #     typestr = str(type(value[0][2]))
+            #     obj = (typestr, value[0][2])
+            #     triples.append((subj, pred, obj))
         else:
             newtriples = extract_triples_rec(query[key])
             for triple in newtriples:
