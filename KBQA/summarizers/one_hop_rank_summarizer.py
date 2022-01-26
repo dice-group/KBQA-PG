@@ -58,78 +58,6 @@ class OneHopRankSummarizer(Summarizer):
         limit: int = -1,
         timeout: float = 0,
     ) -> None:
-        qald_8_train_path = self.DATASET_PATH + "qald-8-train-multilingual.json"
-        qald_8_test_path = self.DATASET_PATH + "qald-8-test-multilingual.json"
-        qald_9_train_path = self.DATASET_PATH + "qald-9-train-multilingual.json"
-        qald_9_test_path = self.DATASET_PATH + "qald-9-test-multilingual.json"
-        lc_quad_train_path = self.DATASET_PATH + "lc-quad-train.json"
-        lc_quad_test_path = self.DATASET_PATH + "lc-quad-test.json"
-
-        # qald
-        qald_8_train_regular_preds, qald_8_train_inverse_preds = get_ranking_tables(
-            qald_8_train_path, datasettype="qald"
-        )
-        qald_9_train_regular_preds, qald_9_train_inverse_preds = get_ranking_tables(
-            qald_9_train_path, datasettype="qald"
-        )
-
-        qald_train_regular_preds = combine_predicates(
-            qald_8_train_regular_preds, qald_9_train_regular_preds
-        )
-        qald_train_inverse_preds = combine_predicates(
-            qald_8_train_inverse_preds, qald_9_train_inverse_preds
-        )
-
-        qald_8_test_regular_preds, qald_8_test_inverse_preds = get_ranking_tables(
-            qald_8_test_path, datasettype="qald"
-        )
-        qald_9_test_regular_preds, qald_9_test_inverse_preds = get_ranking_tables(
-            qald_9_test_path, datasettype="qald"
-        )
-
-        qald_test_regular_preds = combine_predicates(
-            qald_8_test_regular_preds, qald_9_test_regular_preds
-        )
-        qald_test_inverse_preds = combine_predicates(
-            qald_8_test_inverse_preds, qald_9_test_inverse_preds
-        )
-
-        self.qald_regular_preds = combine_predicates(
-            qald_train_regular_preds, qald_test_regular_preds
-        )
-        self.qald_inverse_preds = combine_predicates(
-            qald_train_inverse_preds, qald_test_inverse_preds
-        )
-
-        self.qald_regular_preds = filter_predicates(
-            self.qald_regular_preds, self.EXCLUDE, lower_rank
-        )
-        self.qald_inverse_preds = filter_predicates(
-            self.qald_inverse_preds, self.EXCLUDE, lower_rank
-        )
-
-        # lc-quad
-        lc_quad_train_regular_preds, lc_quad_train_inverse_preds = get_ranking_tables(
-            lc_quad_train_path, datasettype="lc-quad"
-        )
-
-        lc_quad_test_regular_preds, lc_quad_test_inverse_preds = get_ranking_tables(
-            lc_quad_test_path, datasettype="lc-quad"
-        )
-
-        self.lc_quad_regular_preds = combine_predicates(
-            lc_quad_train_regular_preds, lc_quad_test_regular_preds
-        )
-        self.lc_quad_inverse_preds = combine_predicates(
-            lc_quad_train_inverse_preds, lc_quad_test_inverse_preds
-        )
-
-        self.lc_quad_regular_preds = filter_predicates(
-            self.lc_quad_regular_preds, self.EXCLUDE, lower_rank
-        )
-        self.lc_quad_inverse_preds = filter_predicates(
-            self.lc_quad_inverse_preds, self.EXCLUDE, lower_rank
-        )
 
         if lower_rank < 1:
             raise ValueError("Lower rank cannot be smaller than 1")
@@ -138,6 +66,9 @@ class OneHopRankSummarizer(Summarizer):
         self.max_triples = max_triples
         self.limit = limit
         self.timeout = timeout
+
+        self._initialize_qald_predicates()
+        self._initialize_lc_quad_predicates()
 
     def summarize(self, question: str) -> List[str]:
         """Summarize a subgraph based on the entities from a question.
@@ -156,6 +87,119 @@ class OneHopRankSummarizer(Summarizer):
         triples : list
             A list of triples found by the summarizer in the format "<s> <p> <o>"
         """
+        entities, summarized_graph = self._get_summarized_graph(question)
+
+        print("Recognized entities:", entities)
+
+        # timeout
+        time.sleep(self.timeout)
+
+        # ranked triples
+        qald_triples, lc_quad_triples = self._get_ranked_triples(entities)
+
+        # format triples: <subj> <pred> <obj>
+        summarizer_formated = format_graph(summarized_graph)
+
+        qald_formated = format_triples_by_order(qald_triples)
+        lc_quad_formated = format_triples_by_order(lc_quad_triples)
+
+        ranked_triples_formated = qald_formated + lc_quad_formated
+
+        if self.limit > -1:
+            cur_limit = float(self.limit - len(summarized_graph))
+        else:
+            cur_limit = inf
+
+        limited_ranked_triples_formated = limit_triples(
+            ranked_triples_formated, cur_limit
+        )
+
+        formated_triples = summarizer_formated + limited_ranked_triples_formated
+
+        if self.PRINT:
+            for triple in formated_triples:
+                print(triple)
+
+        print("Number of triples:", len(formated_triples))
+
+        return formated_triples
+
+    def _initialize_qald_predicates(self) -> None:
+        # qald
+        qald_8_train_regular_preds, qald_8_train_inverse_preds = get_ranking_tables(
+            self.DATASET_PATH + "qald-8-train-multilingual.json", datasettype="qald"
+        )
+        qald_9_train_regular_preds, qald_9_train_inverse_preds = get_ranking_tables(
+            self.DATASET_PATH + "qald-9-train-multilingual.json", datasettype="qald"
+        )
+
+        qald_train_regular_preds = combine_predicates(
+            qald_8_train_regular_preds, qald_9_train_regular_preds
+        )
+        qald_train_inverse_preds = combine_predicates(
+            qald_8_train_inverse_preds, qald_9_train_inverse_preds
+        )
+
+        qald_8_test_regular_preds, qald_8_test_inverse_preds = get_ranking_tables(
+            self.DATASET_PATH + "qald-8-test-multilingual.json", datasettype="qald"
+        )
+        qald_9_test_regular_preds, qald_9_test_inverse_preds = get_ranking_tables(
+            self.DATASET_PATH + "qald-9-test-multilingual.json", datasettype="qald"
+        )
+
+        qald_test_regular_preds = combine_predicates(
+            qald_8_test_regular_preds, qald_9_test_regular_preds
+        )
+        qald_test_inverse_preds = combine_predicates(
+            qald_8_test_inverse_preds, qald_9_test_inverse_preds
+        )
+
+        self.qald_regular_preds = combine_predicates(
+            qald_train_regular_preds, qald_test_regular_preds
+        )
+        self.qald_inverse_preds = combine_predicates(
+            qald_train_inverse_preds, qald_test_inverse_preds
+        )
+
+        self.qald_regular_preds = combine_predicates(
+            qald_train_regular_preds, qald_test_regular_preds
+        )
+        self.qald_inverse_preds = combine_predicates(
+            qald_train_inverse_preds, qald_test_inverse_preds
+        )
+
+        self.qald_regular_preds = filter_predicates(
+            self.qald_regular_preds, self.EXCLUDE, self.lower_rank
+        )
+        self.qald_inverse_preds = filter_predicates(
+            self.qald_inverse_preds, self.EXCLUDE, self.lower_rank
+        )
+
+    def _initialize_lc_quad_predicates(self) -> None:
+        # lc-quad
+        lc_quad_train_regular_preds, lc_quad_train_inverse_preds = get_ranking_tables(
+            self.DATASET_PATH + "lc-quad-train.json", datasettype="lc-quad"
+        )
+
+        lc_quad_test_regular_preds, lc_quad_test_inverse_preds = get_ranking_tables(
+            self.DATASET_PATH + "lc-quad-test.json", datasettype="lc-quad"
+        )
+
+        self.lc_quad_regular_preds = combine_predicates(
+            lc_quad_train_regular_preds, lc_quad_test_regular_preds
+        )
+        self.lc_quad_inverse_preds = combine_predicates(
+            lc_quad_train_inverse_preds, lc_quad_test_inverse_preds
+        )
+
+        self.lc_quad_regular_preds = filter_predicates(
+            self.lc_quad_regular_preds, self.EXCLUDE, self.lower_rank
+        )
+        self.lc_quad_inverse_preds = filter_predicates(
+            self.lc_quad_inverse_preds, self.EXCLUDE, self.lower_rank
+        )
+
+    def _get_summarized_graph(self, question: str) -> Tuple[List[URIRef], Graph]:
         summarized_graph = Graph()
 
         # triples with one hop and recognized relations
@@ -173,12 +217,11 @@ class OneHopRankSummarizer(Summarizer):
         if self.limit > -1:
             summarized_graph = limit_graph(summarized_graph, self.limit)
 
-        print("Recognized entities:", entities)
+        return entities, summarized_graph
 
-        # timeout
-        time.sleep(self.timeout)
-
-        # ranked triples
+    def _get_ranked_triples(
+        self, entities: List[URIRef]
+    ) -> Tuple[DefaultDict[int, List], DefaultDict[int, List]]:
         regular_preds = combine_predicates(
             self.qald_regular_preds, self.lc_quad_regular_preds
         )
@@ -225,32 +268,7 @@ class OneHopRankSummarizer(Summarizer):
             lc_quad_reg_rank_list, lc_quad_inv_rank_list
         )
 
-        # format triples: <subj> <pred> <obj>
-        summarizer_formated = format_graph(summarized_graph)
-
-        qald_formated = format_triples_by_order(qald_triples)
-        lc_quad_formated = format_triples_by_order(lc_quad_triples)
-
-        ranked_triples_formated = qald_formated + lc_quad_formated
-
-        if self.limit > -1:
-            cur_limit = float(self.limit - len(summarized_graph))
-        else:
-            cur_limit = inf
-
-        limited_ranked_triples_formated = limit_triples(
-            ranked_triples_formated, cur_limit
-        )
-
-        formated_triples = summarizer_formated + limited_ranked_triples_formated
-
-        if self.PRINT:
-            for triple in formated_triples:
-                print(triple)
-
-        print("Number of triples:", len(formated_triples))
-
-        return formated_triples
+        return qald_triples, lc_quad_triples
 
 
 def combine_predicates(

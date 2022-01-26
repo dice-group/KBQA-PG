@@ -8,15 +8,11 @@ The OneHopRankSummarizer combines two approaches for extracting a subgraph from 
 
 ### Parameters:
 
-##### datasetset_path
-
-This parameter specifies the dataset to work with. Currently, only datasets of the type "qald" and "lc-quad" are supported.
-
 ##### lower_rank
 
 By default, all triples with at least rank 1 are included in the summarized subgraph. This way all triples, whose relation occurs at least once in the dataset, is also added to the subgraph. However, it is possible to choose a higher rank to exclude triples with lower ranks. This might be useful, if there are too many ranked triples.
 
-##### limit
+##### max_triples
 
 In general it is possible that many triples have the same form, i.e. they differ only in their object or subject. Setting this parameter will restrict the number of triples of the same form by the value. For example, if the parameter is set to 2 and there are summarized triples
 
@@ -26,10 +22,10 @@ In general it is possible that many triples have the same form, i.e. they differ
 
 then only two of those triples are actually summarized. It is recommended to set this parameter in order to avoid getting subgraphs, which are too large. The default value is 3.
 
-##### extend_preds
+##### limit
 
-Since DBpedia makes a difference between "ontology" and "property" relations, it might be useful to add the corresponding counterpart to the set of possible relations (ranked and recognized). For example, if there is a relation "dbo:capital", setting this parameter will also add "dbp:capital" to the relation set. By default, this parameter is not set.
+Setting this parameter will return at most _limit_ triples. Use -1 to use not any limit.
 
-### Shortcomings:
+##### timeout
 
-This summarizer will only consider triples based on one hop. Since there are some questions, which might require two hops or a more complex SPARQL-query, it is possible that no triples will be found, because relations based on two hops are not supported yet.
+In some cases it might be helpful to have a timeout between requests to avoid connection errors. Setting this parameter will apply a timeout between the requests in seconds.
