@@ -1,0 +1,54 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div class="center">
+    <div class="question_area">
+      <h2 class="titles">What is your question?</h2>
+
+      <form method="POST" class="form_input">
+        <div>
+          <input
+            type="text"
+            id="question_input"
+            name="question"
+            placeholder="Type in your question..."
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <hr class="hline" />
+        <div class="approach">
+          <h2 class="titles">Choose an approach:</h2>
+          <div class="approach_A">
+            <input
+              type="radio"
+              id="radio_app_A"
+              name="approach"
+              value="A"
+              checked
+              class="radio_app"
+            />
+            <label class="radio_label" for="radio_app_A">Approach A</label>
+          </div>
+
+          <div class="approach_B">
+            <input
+              type="radio"
+              id="radio_app_B"
+              name="approach"
+              value="B"
+              class="radio_app"
+            />
+            <label class="radio_label" for="radio_app_B">Approach B</label>
+          </div>
+        </div>
+        <hr class="hline" />
+
+        <input type="submit" value="Ask question" />
+      </form>
+    </div>
+
+    <div id="answer_area" class="answer_area"></div>
+  </div>
+</div>
+{% endblock %}
