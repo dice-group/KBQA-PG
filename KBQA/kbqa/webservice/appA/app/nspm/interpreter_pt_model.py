@@ -8,9 +8,9 @@ import matplotlib.ticker as ticker
 
 import numpy as np
 import pickle
-from prepare_dataset import preprocess_sentence
-from nmt import Encoder,Decoder
-from generator_utils import decode, fix_URI
+from app.nspm.prepare_dataset import preprocess_sentence
+from app.nspm.nmt import Encoder,Decoder
+from app.nspm.generator_utils import decode, fix_URI
 
 from airML import airML
 import json
@@ -47,47 +47,48 @@ def evaluate(sentence):
   #   inputs = [w2v_model.wv.vocab[i].index for i in sentence.split(' ')]
 
   # else:  
-    
-  inputs = [w2v_model.wv.vocab[i].index for i in sentence.split(' ')]
-  # inputs = [inp_lang.word_index[i] for i in sentence.split(' ')]
-  # inputs = [w2v_model.vocab[i].index for i in sentence.split(' ')]
-  inputs = tf.keras.preprocessing.sequence.pad_sequences([inputs],
-                                                         maxlen=max_length_inp,
-                                                         padding='post')
+  try:  
+    inputs = [w2v_model.wv.vocab[i].index for i in sentence.split(' ')]
+    # inputs = [inp_lang.word_index[i] for i in sentence.split(' ')]
+    # inputs = [w2v_model.vocab[i].index for i in sentence.split(' ')]
+    inputs = tf.keras.preprocessing.sequence.pad_sequences([inputs],
+                                                          maxlen=max_length_inp,
+                                                          padding='post')
 
 
-  inputs = tf.convert_to_tensor(inputs)
+    inputs = tf.convert_to_tensor(inputs)
 
-  result = ''
+    result = ''
 
-  hidden = [tf.zeros((1, units))]
-  enc_out, enc_hidden = encoder(inputs, hidden)
+    hidden = [tf.zeros((1, units))]
+    enc_out, enc_hidden = encoder(inputs, hidden)
 
-  dec_hidden = enc_hidden
-  # dec_input = tf.expand_dims([targ_lang.word_index['<start>']], 0)
-  dec_input = tf.expand_dims([w2v_model_spql.wv.vocab['<start>'].index], 0)
+    dec_hidden = enc_hidden
+    # dec_input = tf.expand_dims([targ_lang.word_index['<start>']], 0)
+    dec_input = tf.expand_dims([w2v_model_spql.wv.vocab['<start>'].index], 0)
 
-  for t in range(max_length_targ):
-    predictions, dec_hidden, attention_weights = decoder(dec_input,
-                                                         dec_hidden,
-                                                         enc_out)
+    for t in range(max_length_targ):
+      predictions, dec_hidden, attention_weights = decoder(dec_input,
+                                                          dec_hidden,
+                                                          enc_out)
 
-    # storing the attention weights to plot later on
-    attention_weights = tf.reshape(attention_weights, (-1, ))
-    attention_plot[t] = attention_weights.numpy()
+      # storing the attention weights to plot later on
+      attention_weights = tf.reshape(attention_weights, (-1, ))
+      attention_plot[t] = attention_weights.numpy()
 
-    predicted_id = tf.argmax(predictions[0]).numpy()
+      predicted_id = tf.argmax(predictions[0]).numpy()
 
-    # result += targ_lang.index_word[predicted_id] + ' '
-    result += w2v_model_spql.wv.index2word[predicted_id] + ' '
+      # result += targ_lang.index_word[predicted_id] + ' '
+      result += w2v_model_spql.wv.index2word[predicted_id] + ' '
 
-    # if targ_lang.index_word[predicted_id] == '<end>':
-    if w2v_model_spql.wv.index2word[predicted_id] == '<end>':
-      return result, sentence, attention_plot
+      # if targ_lang.index_word[predicted_id] == '<end>':
+      if w2v_model_spql.wv.index2word[predicted_id] == '<end>':
+        return result, sentence, attention_plot
 
-    # the predicted ID is fed back into the model
-    dec_input = tf.expand_dims([predicted_id], 0)
-
+      # the predicted ID is fed back into the model
+      dec_input = tf.expand_dims([predicted_id], 0)
+  except KeyError:
+    result = ""
   return result, sentence, attention_plot
 
 def mkdir_p(mypath):
@@ -155,35 +156,20 @@ def locate_model(url):
 
 def process_question(question):
     global max_length_targ,max_length_inp,encoder,decoder,units,w2v_model,w2v_model_spql
-# if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    # requiredNamed = parser.add_argument_group('required named arguments')
-    # requiredNamed.add_argument(
-    #     '--input', dest='input', metavar='inputDirectory', help='dataset directory', required=False)
-    # requiredNamed.add_argument(
-    #     '--airml', dest='airml', metavar='airmlURL', help='name of the knowledge base', required=False)
-    # requiredNamed.add_argument(
-    #     '--output', dest='output', metavar='outputDirectory', help='dataset directory', required=False) #modified
-    # requiredNamed.add_argument(
-    #     '--inputstr', dest='inputstr', metavar='inputString', help='Input string for translation', required=False)
 
-    args = parser.parse_args()
-    args.inputstr = question
-    inputs = args.inputstr
-    args.input = 'data/qald8'
-    # args.input = None
-    args.ouput = 'data/qald8'
-    args.airml = None
-    # args.airml = None
-    # model_dir = None
-    # input_dir = None
-    model_dir = 'data/qald8'
-    input_dir = 'data/qald8'
-    if args.input is not None:
-        model_dir = args.input
-        input_dir = args.input
-    elif args.airml is not None:
-        airml_url = args.airml
+    inputstr = question
+    inputs = inputstr
+    input = 'data/new_qald8'
+    output = 'data/new_qald8'
+    airml = None
+
+    model_dir = 'data/new_qald8'
+    input_dir = 'data/new_qald8'
+    if input is not None:
+        model_dir = input
+        input_dir = input
+    elif airml is not None:
+        airml_url = airml
         model_dir = locate_model(airml_url)
         input_dir = model_dir
     else:
@@ -197,18 +183,13 @@ def process_question(question):
     embedding_dim = 300
     units = 1024
     
-    # w2v_model = FastText(size=300, window=2, min_count=1, min_n=2)
 
-    # w2v_model_spql = FastText(size=300, window=2, min_count=1, min_n=2)
-    
-    # w2v_model = KeyedVectors.load("data/new_qald8/FastText.wordvectors", mmap='r')
-    # w2v_model_spql =  KeyedVectors.load("data/new_qald8/FastText_spql.wordvectors", mmap='r')
-    with open(pic_dir+'/model_nl.pickle', 'rb') as f:
-        w2v_model=pickle.load(f)
-    with open(pic_dir+'/model_spql.pickle', 'rb') as f:
-        w2v_model_spql=pickle.load(f)
-    with open(pic_dir+'/BATCH_SIZE.pickle', 'rb') as f:
-        BATCH_SIZE=pickle.load(f)
+    w2v_model = FastText.load(pic_dir+'/model_nl.model')
+
+    w2v_model_spql = FastText.load(pic_dir+'/model_spql.model')
+
+    # with open(pic_dir+'/BATCH_SIZE.pickle', 'rb') as f:
+    #     BATCH_SIZE=pickle.load(f)
     with open(pic_dir+'/embedding_matrix.pickle', 'rb') as f:
       embedding_matrix=pickle.load(f)
     with open(pic_dir+'/embedding_matrix_spql.pickle', 'rb') as f:
@@ -222,6 +203,8 @@ def process_question(question):
     max_length_targ = input_tensor.shape[1]
     print('max_length_targ', max_length_targ)
     max_length_inp = target_tensor.shape[1]
+
+    BATCH_SIZE = 32
 
     vocab_inp_size = len(embedding_matrix)
     vocab_tar_size = len(embedding_matrix_spql)
