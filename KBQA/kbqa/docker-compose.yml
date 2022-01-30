@@ -34,13 +34,13 @@ services:
       - 24802
 
   gerbil:
-    build: ./gerbil
+    build: ./webservice/gerbil
     container_name: gerbil
     restart: always
     expose:
       - 24804
     volumes:
-      - evaluation:/evaluation
+      - ./gerbil/evaluation:/evaluation
 
   nginx:
     build: ./webservice/nginx
@@ -48,6 +48,3 @@ services:
     restart: always
     ports:
       - "80:80"
-
-volumes:
-  evaluation: null

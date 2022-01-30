@@ -1,0 +1,165 @@
+<html>
+  <head>
+    <title>Evaluation - Knowledge Base Question Answering</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  </head>
+
+  <body>
+    <header>
+      <div class="title">GERBIL evaluation results</div>
+    </header>
+    <div><canvas id="myChart"></canvas></div>
+    <main>{{ results|safe }}</main>
+  </body>
+
+  <script>
+    const ctx = document.getElementById("myChart");
+
+    var jsonData = JSON.parse("{{ data | tojson | safe}}");
+    jsonData2 = jsonData.map(function (experiment) {
+      return (experiment.sub_experiments = experiment.sub_experiments[0]);
+    });
+    console.log(jsonData);
+
+    const data = {
+      datasets: [
+        {
+          label: "Micro F1",
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.micro_f1",
+          },
+        },
+        {
+          label: "Micro Precision",
+          hidden: true,
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.micro_precision",
+          },
+        },
+        {
+          label: "Micro Recall",
+          hidden: true,
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.micro_recall",
+          },
+        },
+        {
+          label: "Macro F1",
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.macro_f1",
+          },
+        },
+        {
+          label: "Macro Precision",
+          hidden: true,
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.macro_precision",
+          },
+        },
+        {
+          label: "Macro Recall",
+          hidden: true,
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.macro_recall",
+          },
+        },
+        {
+          label: "Error Count",
+          hidden: true,
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.error_count",
+          },
+        },
+        {
+          label: "Avg. Millis/Doc",
+          hidden: true,
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.avg_millis_per_doc",
+          },
+        },
+        {
+          label: "Macro F1 QALD",
+          hidden: true,
+          data: jsonData,
+          parsing: {
+            yAxisKey: "sub_experiments.experiment_data.macro_f1_qald",
+          },
+        },
+      ],
+    };
+
+    const config = {
+      type: "line",
+      data: data,
+      options: {
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "rgba(255, 159, 64, 1)",
+        ],
+        plugins: {
+          tooltip: {
+            callbacks: {
+              afterLabel: (context) =>
+                "Experiment: " +
+                context.raw.gerbil_id +
+                "\nSystem: " +
+                context.raw.kbqa_name +
+                "\nVersion: " +
+                context.raw.kbqa_version +
+                "\nDataset: " +
+                context.raw.dataset,
+            },
+          },
+        },
+        parsing: {
+          xAxisKey: "gerbil_timestamp",
+        },
+        scales: {
+          x: {
+            type: "time",
+            time: {
+              unit: "day",
+            },
+          },
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    };
+
+    const myChart = new Chart(ctx, config);
+  </script>
+</html>
