@@ -23,6 +23,11 @@ def process_question(question: str, app: str) -> Tuple[List[str], str]:
         List of natural language answers for the asked question.
     query : str
         Generated SPARQL-query used to find the answers.
+
+    Raises
+    ------
+    ValueError
+        If app is not 'A' or 'B'.
     """
     # Ask the webserver for an answer for the query using approach "app"
     webserver_address = "http://nginx{dir}"
@@ -31,10 +36,12 @@ def process_question(question: str, app: str) -> Tuple[List[str], str]:
         response = requests.post(
             webserver_address.format(dir="/appA/"), data={"query": question}
         )
-    else:
+    elif app == "B":
         response = requests.post(
             webserver_address.format(dir="/appB/"), data={"query": question}
         )
+    else:
+        raise ValueError("Approach should be A or B.")
 
     response_json = json.loads(response.text)
     bindings, query = extract_bindings_from_qald(response_json)
