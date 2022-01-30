@@ -47,47 +47,48 @@ def evaluate(sentence):
   #   inputs = [w2v_model.wv.vocab[i].index for i in sentence.split(' ')]
 
   # else:  
-    
-  inputs = [w2v_model.wv.vocab[i].index for i in sentence.split(' ')]
-  # inputs = [inp_lang.word_index[i] for i in sentence.split(' ')]
-  # inputs = [w2v_model.vocab[i].index for i in sentence.split(' ')]
-  inputs = tf.keras.preprocessing.sequence.pad_sequences([inputs],
-                                                         maxlen=max_length_inp,
-                                                         padding='post')
+  try:  
+    inputs = [w2v_model.wv.vocab[i].index for i in sentence.split(' ')]
+    # inputs = [inp_lang.word_index[i] for i in sentence.split(' ')]
+    # inputs = [w2v_model.vocab[i].index for i in sentence.split(' ')]
+    inputs = tf.keras.preprocessing.sequence.pad_sequences([inputs],
+                                                          maxlen=max_length_inp,
+                                                          padding='post')
 
 
-  inputs = tf.convert_to_tensor(inputs)
+    inputs = tf.convert_to_tensor(inputs)
 
-  result = ''
+    result = ''
 
-  hidden = [tf.zeros((1, units))]
-  enc_out, enc_hidden = encoder(inputs, hidden)
+    hidden = [tf.zeros((1, units))]
+    enc_out, enc_hidden = encoder(inputs, hidden)
 
-  dec_hidden = enc_hidden
-  # dec_input = tf.expand_dims([targ_lang.word_index['<start>']], 0)
-  dec_input = tf.expand_dims([w2v_model_spql.wv.vocab['<start>'].index], 0)
+    dec_hidden = enc_hidden
+    # dec_input = tf.expand_dims([targ_lang.word_index['<start>']], 0)
+    dec_input = tf.expand_dims([w2v_model_spql.wv.vocab['<start>'].index], 0)
 
-  for t in range(max_length_targ):
-    predictions, dec_hidden, attention_weights = decoder(dec_input,
-                                                         dec_hidden,
-                                                         enc_out)
+    for t in range(max_length_targ):
+      predictions, dec_hidden, attention_weights = decoder(dec_input,
+                                                          dec_hidden,
+                                                          enc_out)
 
-    # storing the attention weights to plot later on
-    attention_weights = tf.reshape(attention_weights, (-1, ))
-    attention_plot[t] = attention_weights.numpy()
+      # storing the attention weights to plot later on
+      attention_weights = tf.reshape(attention_weights, (-1, ))
+      attention_plot[t] = attention_weights.numpy()
 
-    predicted_id = tf.argmax(predictions[0]).numpy()
+      predicted_id = tf.argmax(predictions[0]).numpy()
 
-    # result += targ_lang.index_word[predicted_id] + ' '
-    result += w2v_model_spql.wv.index2word[predicted_id] + ' '
+      # result += targ_lang.index_word[predicted_id] + ' '
+      result += w2v_model_spql.wv.index2word[predicted_id] + ' '
 
-    # if targ_lang.index_word[predicted_id] == '<end>':
-    if w2v_model_spql.wv.index2word[predicted_id] == '<end>':
-      return result, sentence, attention_plot
+      # if targ_lang.index_word[predicted_id] == '<end>':
+      if w2v_model_spql.wv.index2word[predicted_id] == '<end>':
+        return result, sentence, attention_plot
 
-    # the predicted ID is fed back into the model
-    dec_input = tf.expand_dims([predicted_id], 0)
-
+      # the predicted ID is fed back into the model
+      dec_input = tf.expand_dims([predicted_id], 0)
+  except KeyError:
+    result = ""
   return result, sentence, attention_plot
 
 def mkdir_p(mypath):
