@@ -108,8 +108,15 @@ def restore_entity(sparql, entities):
 def process_question(question):
     global max_length_targ, max_length_inp, encoder, decoder, inp_lang, units, targ_lang
 
-    model_dir = os.path.dirname(__file__) + '../../../../../resources'
-    input_dir = os.path.dirname(__file__) + '../../../../../resources'
+    # for local test
+    # model_dir = os.path.dirname(__file__) + '../../../../../resources'
+    # input_dir = os.path.dirname(__file__) + '../../../../../resources'
+
+    # for docker locally
+    model_dir = "/data"
+    input_dir = "/data"
+
+    print(os.path.dirname(__file__))
 
     model_dir += '/training_checkpoints'
     pic_dir = input_dir + '/pickle_objects'
