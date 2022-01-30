@@ -30,7 +30,7 @@ def main(query: str, lang: str = "en") -> str:
 
     # -------------------- Example ----------------------
     # Example in order to check, whether the connection works
-    print("Question:", query)
+    print("Question:", query.encode("utf-8"))
 
     answer_qald = example(query, lang)
 
@@ -67,5 +67,8 @@ def example(question: str, lang: str) -> str:
         qald_answer = qald_builder_empty_answer(sparql_query, question, lang)
     else:
         qald_answer = qald_builder(sparql_query, answer, question, lang)
+
+    # only to make gerbil work for the moment
+    qald_answer = qald_builder_empty_answer(sparql_query, question, lang)
 
     return qald_answer
