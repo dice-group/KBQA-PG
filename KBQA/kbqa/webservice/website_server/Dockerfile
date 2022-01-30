@@ -17,9 +17,9 @@ RUN pip install --no-cache-dir --user -r requirements.txt
 FROM ubuntu:20.04 AS website_runner
 
 RUN apt-get update && \
-	apt-get install --no-install-recommends -y python3.9 libpython3.9 && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+    apt-get install --no-install-recommends -y python3.9 libpython3.9 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy the uWSGI binary and all installed python packages
 COPY --from=website_builder /root/.local/bin /usr/local/bin
