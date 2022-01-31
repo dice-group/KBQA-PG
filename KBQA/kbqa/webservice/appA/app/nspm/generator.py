@@ -83,8 +83,9 @@ def extract_bindings(data, template):
 
 def sort_matches(matches, template):
     variables = getattr(template, 'variables')
-    def get_usages(match): return [
-        used_resources[match[variable]["value"]] for variable in variables]
+    
+    def get_usages(match): 
+        return [used_resources[match[variable]["value"]] for variable in variables]
 
     matches_with_usages = [{'usages': get_usages(
         match), 'match': match} for match in matches]
@@ -127,7 +128,8 @@ def prioritize_single_match(usage):
 
 
 def prioritize_couple_match(usages):
-    def between_zero_and_upper_limit(value): return 0 < value < 30
+    def between_zero_and_upper_limit(value):
+        return 0 < value < 30
     usage, other_usage = usages
     highest_priority = all(map(between_zero_and_upper_limit, usages))
     second_highest_priority = any(map(between_zero_and_upper_limit, usages))
@@ -143,7 +145,8 @@ def prioritize_couple_match(usages):
 
 
 def prioritize_triple_match(usages):
-    def between_zero_and_upper_limit(value): return 0 < value < 30
+    def between_zero_and_upper_limit(value): 
+        return 0 < value < 30
     highest_priority = all(map(between_zero_and_upper_limit, usages))
     second_highest_priority = list(
         filter(between_zero_and_upper_limit, usages)) >= 2
@@ -225,7 +228,7 @@ def generate_dataset(templates, output_dir, file_mode):
 
                         sparql_queries.write(
                             "{}\n".format(dataset_pair['sparql']))
-            except:
+            except Exception:
                 exception = traceback.format_exc()
                 logging.error('template {} caused exception {}'.format(
                     getattr(template, 'id'), exception))
@@ -235,12 +238,14 @@ def generate_dataset(templates, output_dir, file_mode):
 
 
 def get_results_of_generator_query(cache, template):
-    generator_query = getattr(template, 'generator_query')
-    def first_attempt(template): return prepare_generator_query(template)
-    def second_attempt(template): return prepare_generator_query(
-        template, do_special_class_replacement=False)
-    def third_attempt(template): return prepare_generator_query(
-        template, add_type_requirements=False)
+    def first_attempt(template):
+        return prepare_generator_query(template)
+
+    def second_attempt(template):
+        return prepare_generator_query(template, do_special_class_replacement=False)
+
+    def third_attempt(template):
+        return prepare_generator_query(template, add_type_requirements=False)
 
     for attempt, prepare_query in enumerate([first_attempt, second_attempt, third_attempt], start=1):
         query = prepare_query(template)
@@ -249,10 +254,10 @@ def get_results_of_generator_query(cache, template):
             break
         logging.debug('{}. attempt generator_query: {}'.format(attempt, query))
         # results = query_dbpedia(query)
-        results = {'results':{'bindings':[]}}
-        for offset in range(0,2200000,10000):
-            offset_results = query_dbpedia(query+' OFFSET {} LIMIT 10000'.format(offset))['results']['bindings']
-            if len(offset_results)==0:
+        results = {'results': {'bindings': []}}
+        for offset in range(0, 2200000, 10000):
+            offset_results = query_dbpedia(query + ' OFFSET {} LIMIT 10000'.format(offset))['results']['bindings']
+            if len(offset_results) == 0:
                 break
             results['results']['bindings'].extend(offset_results)
         sufficient_examples = len(
@@ -260,7 +265,7 @@ def get_results_of_generator_query(cache, template):
         if sufficient_examples:
             cache[query] = results
             break
-        
+
     return results
 
 
@@ -332,7 +337,7 @@ if __name__ == '__main__':
 
     ssl._create_default_https_context = ssl._create_unverified_context
 
-   # print use_resources_dump => False
+    # print use_resources_dump => False
 
     time = datetime.datetime.today()
     logging.basicConfig(
@@ -358,7 +363,7 @@ if __name__ == '__main__':
 
     try:
         generate_dataset(templates, output_dir, file_mode)
-    except:
+    except Exception:
         print('exception occured, look for error in log file')
         save_cache(resource_dump_file, used_resources)
     else:

@@ -232,7 +232,7 @@ class Annotation:
         self.query = query
         self.generator_query = generator_query
         self.id = id
-        self.target_classes = target_classes if target_classes != None else []
+        self.target_classes = target_classes if target_classes is not None else []
         self.variables = extract_variables(generator_query)
 
 
@@ -306,7 +306,7 @@ def splitIntoTriples(whereStatement):
 
     tripleStatements = reduce(repair, trimmed, [""])
     triplesWithNones = list(map(splitIntoTripleParts, tripleStatements))
-    triples = [triple for triple in triplesWithNones if triple != None]
+    triples = [triple for triple in triplesWithNones if triple is not None]
     return triples
 
 
