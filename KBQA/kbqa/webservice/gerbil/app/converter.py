@@ -69,6 +69,7 @@ class SubExperiment:
 class ExperimentData:
     """Results of a Sub Experiment."""
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         micro_f1: float,
@@ -142,30 +143,32 @@ def convert_experiment(
     Experiment
         All data of the given GERBIL experiment
     """
-    gerbil_data = pd.read_csv(
-        gerbil_file_path,
-        header=0,
-        names=[
-            "system",
-            "dataset",
-            "language",
-            "experiment",
-            "micro_f1",
-            "micro_precision",
-            "micro_recall",
-            "macro_f1",
-            "macro_precision",
-            "macro_recall",
-            "error_count",
-            "avg_millis_per_doc",
-            "macro_f1_qald",
-            "timestamp",
-            "gerbil_version",
-        ],
+    gerbil_data = pd.DataFrame(
+        pd.read_csv(
+            gerbil_file_path,
+            header=0,
+            names=[
+                "system",
+                "dataset",
+                "language",
+                "experiment",
+                "micro_f1",
+                "micro_precision",
+                "micro_recall",
+                "macro_f1",
+                "macro_precision",
+                "macro_recall",
+                "error_count",
+                "avg_millis_per_doc",
+                "macro_f1_qald",
+                "timestamp",
+                "gerbil_version",
+            ],
+        )
     )
     sub_experiments = list()
 
-    for index, row in gerbil_data.iterrows():
+    for _, row in gerbil_data.iterrows():
         experiment_data = ExperimentData(
             row["micro_f1"],
             row["micro_precision"],
@@ -193,7 +196,7 @@ def convert_experiment(
     return experiment
 
 
-def save_experiment(experiment: List[Experiment], file_path: str):
+def save_experiment(experiment: List[Experiment], file_path: str) -> None:
     """Save the given GERBIL experiment as a JSON file.
 
     Parameters
@@ -203,8 +206,8 @@ def save_experiment(experiment: List[Experiment], file_path: str):
     file_path : str
         Path to a JSON file
     """
-    with open(file_path, "w", encoding="utf-8") as f:
-        simplejson.dump(experiment, f, default=vars, ignore_nan=True)
+    with open(file_path, "w", encoding="utf-8") as file:
+        simplejson.dump(experiment, file, default=vars, ignore_nan=True)
 
 
 def summarize_results(approach: Approach) -> None:
@@ -224,7 +227,7 @@ def summarize_results(approach: Approach) -> None:
                 commit_id, gerbil_id = file.split(".")[0].split("-")
 
                 data = convert_experiment(
-                    file_path, gerbil_id, "gerbil url", approach.name, commit_id
+                    file_path, int(gerbil_id), "gerbil url", approach.name, commit_id
                 )
                 experiments.append(data)
 

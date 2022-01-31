@@ -54,7 +54,8 @@ repos:
       - id: pylint
         name: Pylint (gerbil)
         files: ^KBQA/kbqa/webservice/gerbil/
-        additional_dependencies: [flask==2.0.2, requests==2.26.0]
+        additional_dependencies:
+          [flask==2.0.2, requests==2.26.0, pandas, simplejson]
       - id: pylint
         name: Pylint (embedding_server)
         files: ^KBQA/kbqa/webservice/embedding_server/
@@ -88,7 +89,7 @@ repos:
       - id: mypy
         name: mypy (gerbil)
         files: ^KBQA/kbqa/webservice/gerbil/
-        additional_dependencies: [types-requests]
+        additional_dependencies: [types-requests, types-simplejson]
       - id: mypy
         name: mypy (embedding_server)
         files: ^KBQA/kbqa/webservice/embedding_server/

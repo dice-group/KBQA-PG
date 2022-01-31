@@ -1,15 +1,18 @@
 """Approach for a QA system."""
 
 
+from typing import Optional
+
+
 class Approach:
     """Approach for a QA system."""
 
     def __init__(
         self,
         name: str,
-        url: str = None,
-        experiment_name: str = None,
-        experiment_id: int = None,
+        url: Optional[str] = None,
+        experiment_name: Optional[str] = None,
+        experiment_id: int = 0,
     ) -> None:
         """Initialize an Approach.
 

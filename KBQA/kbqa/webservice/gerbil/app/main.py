@@ -11,7 +11,7 @@ from app.converter import summarize_results
 import pandas as pd
 from pandas.core.frame import DataFrame
 import requests
-
+from requests import RequestException
 
 all_datasets = [
     "LCQUAD",
@@ -79,29 +79,30 @@ def start_experiment(
     experiment_data = {
         "type": "QA",
         "matching": "STRONG_ENTITY_MATCH",
-        "annotator": ["{}({})".format(system_name, system_url)],
+        "annotator": [f"{system_name}({system_url})"],
         "dataset": datasets,
         "answerFiles": [],
         "questionLanguage": language,
     }
     param = {"experimentData": json.dumps(experiment_data)}
+    gerbil_id = 0
 
     try:
         html = requests.get(url, params=param).content
-        id = int(html)
-    except Exception as e:
-        print(e)
-        return 0
+        gerbil_id = int(html)
+    except RequestException as exception:
+        print(exception)
+        return gerbil_id
 
-    return id
+    return gerbil_id
 
 
-def get_evaluation(id: int, gerbil_url: str) -> DataFrame:
+def get_evaluation(gerbil_id: int, gerbil_url: str) -> DataFrame:
     """Get the evaluation result of the given GERBIL experiment.
 
     Parameters
     ----------
-    id : int
+    gerbil_id : int
         ID of the GERBIL experiment
     gerbil_url : str
         Base URL of the used GERBIL system
@@ -111,35 +112,35 @@ def get_evaluation(id: int, gerbil_url: str) -> DataFrame:
     DataFrame
         Evaluation result
     """
-    if not id:
+    if not gerbil_id:
         return None
 
     # id = 202201230018  # DEBUG
     # id = 202112140000
-    url = f"{gerbil_url}/experiment?id={id}"
+    url = f"{gerbil_url}/experiment?id={gerbil_id}"
 
     try:
         html = requests.get(url)
         df_list = pd.read_html(html.content)
-        df = df_list[0]
-        macro_f1 = df.iloc[0]["Macro F1"]
+        results = df_list[0]
+        macro_f1 = results.iloc[0]["Macro F1"]
         print(macro_f1)
-    except Exception as e:
-        print(e)
+    except RequestException as exception:
+        print(exception)
         return None
 
     # print(html.text)
     if "The annotator caused too many single errors." in html.text:
-        print(f"Experiment {id} could not be executed.")
+        print(f"Experiment {gerbil_id} could not be executed.")
         return None
     elif "The experiment is still running." in html.text:
         time.sleep(60)
-        return get_evaluation(id, gerbil_url)
+        return get_evaluation(gerbil_id, gerbil_url)
     else:
-        return df
+        return results
 
 
-def startup():
+def startup() -> None:
     """Handle GERBIL evaluation for our systems."""
     commit = os.environ.get("GITHUB_SHA")
     print(f"Commit {commit}")
