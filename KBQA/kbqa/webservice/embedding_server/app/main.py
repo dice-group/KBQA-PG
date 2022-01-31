@@ -22,7 +22,7 @@ def main(hash_table: EmbeddingHashtable, uris: list) -> dict:
         encoding="utf-8",
     ) as tsv_file:
         for uri in uris:
-            print(uri)
+            print(uri.encode("utf-8"))
             if uri.startswith("http"):
                 uri = uri.split("/", maxsplit=2)[2]
             seek_positions = hash_table.lookup(uri)

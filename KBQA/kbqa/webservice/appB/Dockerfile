@@ -17,15 +17,17 @@ RUN pip install --no-cache-dir --user -r requirements.txt
 FROM ubuntu:20.04 AS app_b_runner
 
 RUN apt-get update && \
-	apt-get install --no-install-recommends -y python3.9 libpython3.9 && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+    apt-get install --no-install-recommends -y python3.9 python3-pip libpython3.9 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy the uWSGI binary and all installed python packages
 COPY --from=app_b_builder /root/.local/bin /usr/local/bin
 COPY --from=app_b_builder /root/.local/lib/python3.9/site-packages /usr/local/lib/python3.9/dist-packages
 
-WORKDIR /website_server
+RUN pip install --upgrade certifi
+
+WORKDIR /
 COPY . .
 
 CMD ["uwsgi", "appB.ini"]
