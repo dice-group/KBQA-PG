@@ -9,10 +9,9 @@ services:
       # This volume is used for the VM. Comment this line if you are deploying the
       # webservice locally.
       - ${RESOURCE_PATH}/approach_a/data:/data
-
       # If you are deploying the webservice locally, you can uncomment the following line.
       # Place all your models/files into the resources/approach_a/data directory. In your
-      # program you can access them by starting with "data/<path_to_file>". This path will
+      # program you can access them by starting with "/data/<path_to_file>". This path will
       # also be used when running on the VM.
       # - ./resources/approach_a/data:/data
     expose:
@@ -40,14 +39,29 @@ services:
       # This volume is used for the VM. Comment this line if you are deploying the
       # webservice locally.
       - ${RESOURCE_PATH}/embeddings/embedding_query:/embedding_query
-
       # If you are deploying the webservice locally, you can uncomment the following line.
       # Place all your models/files into the resources/embeddings/embedding_query directory.
-      # In your program you can access them by starting with "embedding_query/<path_to_file>".
+      # In your program you can access them by starting with "/embedding_query/<path_to_file>".
       # This path will also be used when running on the VM.
       # - ./resources/embeddings/embedding_query:/embedding_query
     expose:
       - 24805
+
+  gerbil:
+    build: ./webservice/gerbil
+    container_name: gerbil
+    restart: always
+    volumes:
+      # This volume is used for the VM. Comment this line if you are deploying the
+      # webservice locally.
+      - ${RESOURCE_PATH}/gerbil/evaluation:/evaluation
+      # If you are deploying the webservice locally, you can uncomment the following line.
+      # Place all your models/files into the resources/gerbil/evaluation directory.
+      # In your program you can access them by starting with "/evaluation/<path_to_file>".
+      # This path will also be used when running on the VM.
+      # - ./resources/gerbil/evaluation:/evaluation
+    expose:
+      - 24804
 
   nginx:
     build: ./webservice/nginx

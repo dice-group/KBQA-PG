@@ -20,6 +20,7 @@ init-hook='import sys; sys.path += [
         "KBQA/kbqa/webservice/appA/",
         "KBQA/kbqa/webservice/appB/",
         "KBQA/kbqa/webservice/website_server/",
+        "KBQA/kbqa/webservice/gerbil/",
         "KBQA/kbqa/webservice/embedding_server/",
         "KBQA/summarizers/"
     ]'
@@ -36,6 +37,7 @@ disable=
     unsubscriptable-object, # faulty in py39, https://github.com/PyCQA/pylint/issues/3882
     use-list-literal, # list() is saver since [] reffers to the same list
     dangerous-default-value, # using list() instead of [] is not dangerous
+    fixme, # allow TODOs
 
 [SIMILARITIES]
 
