@@ -1,6 +1,6 @@
 flask==2.0.2
 requests==2.26.0
-uwsgi
+uwsgi==2.0.20
 
 lxml
 html5lib
