@@ -91,6 +91,25 @@ def read_examples(source_file, triples_file, target_file):
     return examples
 
 
+def read_examples_without_target(source_file, triples_file):
+    """Read examples from filename."""
+    examples = []
+    with open(source_file, encoding="utf-8") as source_f:
+        with open(triples_file, encoding="utf-8") as triples_f:
+            for idx, (source, triples) in enumerate(
+                zip(source_f, triples_f)
+            ):
+                examples.append(
+                    Example(
+                        idx=idx,
+                        source=source.strip(),
+                        triples=triples.strip(),
+                        target="",
+                    )
+                )
+    return examples
+
+
 class InputFeatures:
     """A single training/test features for a example."""
 
@@ -134,7 +153,7 @@ def convert_examples_to_features(examples, tokenizer, args, stage=None):
         triples_mask += [0] * padding_length
 
         # target
-        if stage == "test":
+        if stage == "test" or stage == "predict":
             target_tokens = tokenizer.tokenize("None")
         else:
             target_tokens = tokenizer.tokenize(example.target)[
@@ -262,13 +281,19 @@ def main():
         "--dev_filename",
         default=None,
         type=str,
-        help="The dev filename. Should contain the .jsonl files for this task.",
+        help="The dev filename.",
     )
     parser.add_argument(
         "--test_filename",
         default=None,
         type=str,
-        help="The test filename. Should contain the .jsonl files for this task.",
+        help="The test filename.",
+    )
+    parser.add_argument(
+        "--predict_filename",
+        default=None,
+        type=str,
+        help="The prediction filename.",
     )
     parser.add_argument(
         "--source",
@@ -323,7 +348,10 @@ def main():
         "--do_eval", action="store_true", help="Whether to run eval on the dev set."
     )
     parser.add_argument(
-        "--do_test", action="store_true", help="Whether to run eval on the dev set."
+        "--do_test", action="store_true", help="Whether to run test on the test set."
+    )
+    parser.add_argument(
+        "--do_predict", action="store_true", help="Whether to run prediction on the predict set."
     )
     parser.add_argument(
         "--do_lower_case",
@@ -518,7 +546,7 @@ def main():
         # Prepare training data loader
         train_examples = read_examples(
             args.train_filename + "." + args.source,
-            args.train_filename + ".triples",
+            args.train_filename + ".triple",
             args.train_filename + "." + args.target,
         )
         train_features = convert_examples_to_features(
@@ -653,7 +681,7 @@ def main():
                 else:
                     eval_examples = read_examples(
                         args.dev_filename + "." + args.source,
-                        args.dev_filename + ".triples",
+                        args.dev_filename + ".triple",
                         args.dev_filename + "." + args.target,
                     )
                     eval_examples = random.sample(
@@ -752,7 +780,7 @@ def main():
         for idx, file in enumerate(files):
             logger.info("Test file: {}".format(file))
             eval_examples = read_examples(
-                file + "." + args.source, file + ".triples", file + "." + args.target
+                file + "." + args.source, file + ".triple", file + "." + args.target
             )
             eval_features = convert_examples_to_features(
                 eval_examples, tokenizer, args, stage="test"
@@ -818,6 +846,70 @@ def main():
 
             bl_score = corpus_bleu(label_str, pred_str) * 100
             logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
+            logger.info("  " + "*" * 20)
+    if args.do_predict:
+        files = []
+        if args.predict_filename is not None:
+            files.append(args.predict_filename)
+        for idx, file in enumerate(files):
+            logger.info("Predict file: {}".format(file))
+            eval_examples = read_examples_without_target(
+                file + "." + args.source, file + ".triple"
+            )
+            eval_features = convert_examples_to_features(
+                eval_examples, tokenizer, args, stage="predict"
+            )
+            all_source_ids = torch.tensor(
+                [f.source_ids for f in eval_features], dtype=torch.long
+            )
+            all_source_mask = torch.tensor(
+                [f.source_mask for f in eval_features], dtype=torch.long
+            )
+            all_triples_ids = torch.tensor(
+                [f.triples_ids for f in eval_features], dtype=torch.long
+            )
+            all_triples_mask = torch.tensor(
+                [f.triples_mask for f in eval_features], dtype=torch.long
+            )
+            eval_data = TensorDataset(all_source_ids, all_source_mask, all_triples_ids, all_triples_mask)
+
+            # Calculate bleu
+            eval_sampler = SequentialSampler(eval_data)
+            eval_dataloader = DataLoader(
+                eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size
+            )
+
+            model.eval()
+            p = []
+            for batch in tqdm(eval_dataloader, total=len(eval_dataloader)):
+                batch = tuple(t.to(device) for t in batch)
+                source_ids, source_mask, triples_ids, triples_mask = batch
+                with torch.no_grad():
+                    preds = model(source_ids=source_ids, source_mask=source_mask, triples_ids=triples_ids,
+                                  triples_mask=triples_mask)
+                    for pred in preds:
+                        t = pred[0].cpu().numpy()
+                        t = list(t)
+                        if 0 in t:
+                            t = t[: t.index(0)]
+                        text = tokenizer.decode(t, clean_up_tokenization_spaces=False)
+                        p.append(text)
+            model.train()
+            pred_str = []
+            with open(
+                    os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w"
+            ) as f:
+                for ref, example in zip(p, eval_examples):
+                    ref = ref.strip().replace("< ", "<").replace(" >", ">")
+                    ref = re.sub(r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref)
+                    ref = ref.replace("attr_close>", "attr_close >").replace(
+                        "_attr_open", "_ attr_open"
+                    )
+                    ref = ref.replace(" [ ", " [").replace(" ] ", "] ")
+                    ref = ref.replace("_obd_", " _obd_ ").replace("_oba_", " _oba_ ")
+
+                    pred_str.append(ref.split())
+                    f.write(str(example.idx) + "\t" + ref + "\n")
             logger.info("  " + "*" * 20)
 
 

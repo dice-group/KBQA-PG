@@ -8,6 +8,9 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  RESOURCE_PATH: /home/kbqa_mngr/resources
+
 jobs:
   deploy:
     runs-on: [self-hosted, kbqa-pg]

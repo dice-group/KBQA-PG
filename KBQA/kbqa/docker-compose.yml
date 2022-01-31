@@ -1,28 +1,20 @@
 version: "3.7"
 
 services:
-  embedding_server:
-    build: ./webservice/embedding_server
-    container_name: embedding_server
-    restart: always
-    volumes:
-      - ./resources/embeddings/embedding_query:/embedding_query
-    expose:
-      - 24805
-
-  website_server:
-    build: ./webservice/website_server
-    container_name: website_server
-    restart: always
-    expose:
-      - 24803
-
   approach_a:
     build: ./webservice/appA
     container_name: approach_a
     restart: always
     volumes:
-      - ./resources/approach_a/data:/data
+      # This volume is used for the VM. Comment this line if you are deploying the
+      # webservice locally.
+      - ${RESOURCE_PATH}/approach_a/data:/data
+
+      # If you are deploying the webservice locally, you can uncomment the following line.
+      # Place all your models/files into the resources/approach_a/data directory. In your
+      # program you can access them by starting with "data/<path_to_file>". This path will
+      # also be used when running on the VM.
+      # - ./resources/approach_a/data:/data
     expose:
       - 24801
 
@@ -32,6 +24,30 @@ services:
     restart: always
     expose:
       - 24802
+
+  website_server:
+    build: ./webservice/website_server
+    container_name: website_server
+    restart: always
+    expose:
+      - 24803
+
+  embedding_server:
+    build: ./webservice/embedding_server
+    container_name: embedding_server
+    restart: always
+    volumes:
+      # This volume is used for the VM. Comment this line if you are deploying the
+      # webservice locally.
+      - ${RESOURCE_PATH}/embeddings/embedding_query:/embedding_query
+
+      # If you are deploying the webservice locally, you can uncomment the following line.
+      # Place all your models/files into the resources/embeddings/embedding_query directory.
+      # In your program you can access them by starting with "embedding_query/<path_to_file>".
+      # This path will also be used when running on the VM.
+      # - ./resources/embeddings/embedding_query:/embedding_query
+    expose:
+      - 24805
 
   gerbil:
     build: ./webservice/gerbil

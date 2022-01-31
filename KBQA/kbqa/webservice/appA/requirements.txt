@@ -8,3 +8,4 @@ matplotlib==3.3.3
 numpy
 SPARQLWrapper==1.8.5
 airML==0.0.3
+gensim
