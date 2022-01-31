@@ -3,6 +3,10 @@
     <title>Knowledge Base Question Answering</title>
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="{{ url_for('static', filename='css/main.css') }}"
     />
     <link
@@ -21,6 +25,9 @@
   <body onload="initialize()">
     <header>
       <div class="title">Knowledge Base Question Answering</div>
+      <div class="right">
+        <a href="{{switch_url}}" class="btn btn-success">{{switch_text}}</a>
+      </div>
     </header>
 
     <main>{% block content %}{% endblock %}</main>

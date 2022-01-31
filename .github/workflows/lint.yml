@@ -1,17 +1,14 @@
 name: Testing
 
-on:
-  push:
-    branches: [develop]
-  pull_request:
-    branches: [develop]
+on: push
 
 jobs:
   lint:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Get new version
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
 

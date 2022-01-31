@@ -1,7 +1,12 @@
 # Knowledge Base Question Answering
 
+[develop](../../tree/develop) branch:
 ![Deployment develop](https://github.com/dice-group/KBQA-PG/actions/workflows/deploy.yml/badge.svg?branch=develop)
 ![Testing develop](https://github.com/dice-group/KBQA-PG/actions/workflows/lint.yml/badge.svg?branch=develop)
+
+[master](../../tree/master) branch:
+![Deployment master](https://github.com/dice-group/KBQA-PG/actions/workflows/deploy.yml/badge.svg?branch=master)
+![Testing master](https://github.com/dice-group/KBQA-PG/actions/workflows/lint.yml/badge.svg?branch=master)
 
 <!-- [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/dice-group/KBQA-PG/develop.svg)](https://results.pre-commit.ci/latest/github/dice-group/KBQA-PG/develop) -->
 
