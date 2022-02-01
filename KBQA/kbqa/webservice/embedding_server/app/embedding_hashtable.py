@@ -68,7 +68,7 @@ class EmbeddingHashtable:
             self.entity_file = data["entity_file"]
             self.num_entities = data["num_entities"]
             log_num_entities = int(np.ceil(np.log2(self.num_entities)))
-            self.hash_table_size = 2 ** log_num_entities
+            self.hash_table_size = 2**log_num_entities
             self.hash_table_mask = self.hash_table_size - 1
             self.use_hash_bytes = (log_num_entities - 1) // 8 + 1
 
