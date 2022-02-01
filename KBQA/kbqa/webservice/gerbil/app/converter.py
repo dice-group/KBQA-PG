@@ -3,7 +3,8 @@
 import os
 from typing import List
 
-from app.approach import Approach
+from app.config import Approach
+from app.config import decode_experiment_filename
 import pandas as pd
 import simplejson
 
@@ -224,11 +225,11 @@ def summarize_results(approach: Approach) -> None:
         for file in files:
             if file.endswith(".csv"):
                 file_path = os.path.join(path, file)
-                commit_id, gerbil_id = file.split(".")[0].split("-")
+                gerbil_url, gerbil_id, _, commit_id = decode_experiment_filename(file)
 
                 data = convert_experiment(
-                    file_path, int(gerbil_id), "gerbil url", approach.name, commit_id
+                    file_path, int(gerbil_id), gerbil_url, approach.name, commit_id
                 )
                 experiments.append(data)
 
-    save_experiment(experiments, f"summary-{approach.name}.json")
+    save_experiment(experiments, f"/evaluation/summary-{approach.name}.json")
