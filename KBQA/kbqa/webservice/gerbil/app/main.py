@@ -6,53 +6,24 @@ from pathlib import Path
 import time
 from typing import List
 
-from app.approach import Approach
+from app.config import approaches
+from app.config import encode_experiment_filename
+from app.config import gerbil_datasets
+from app.config import gerbil_systems
 from app.converter import summarize_results
 import pandas as pd
 from pandas.core.frame import DataFrame
 import requests
 from requests import RequestException
 
-all_datasets = [
-    "LCQUAD",
-    "NLQ",
-    "QALD1 Test DBpedia",
-    "QALD1 Test Musicbrainz",
-    "QALD1 Train DBpedia",
-    "QALD1 Train Musicbrainz",
-    "QALD3 Test DBpedia",
-    "QALD3 Train DBpedia",
-    "QALD4 Test Hybrid",
-    "QALD4 Test Multilingual",
-    "QALD4 Train Hybrid",
-    "QALD4 Train Multilingual",
-    "QALD5 Test Hybrid",
-    "QALD5 Test Multilingual",
-    "QALD5 Train Hybrid",
-    "QALD5 Train Multilingual",
-    "QALD6 Test Hybrid",
-    "QALD6 Test Multilingual",
-    "QALD6 Train Hybrid",
-    "QALD6 Train Multilingual",
-    "QALD7 Test Multilingual",
-    "QALD7 Test Wikidata en",
-    "QALD7 Train Hybrid",
-    "QALD7 Train Multilingual",
-    "QALD7 Train Wikidata en",
-    "QALD8 Test Multilingual",
-    "QALD8 Train Multilingual",
-    "QALD9 Test Multilingual",
-    "QALD9 Train Multilingual",
-]  # "DBpedia Entity INEX","DBpedia Entity QALD2","DBpedia Entity SemSearch","DBpedia Entity TREC Entity" can not be loaded
-
-# all_datasets = ["QALD9 Test Multilingual"] # DEBUG
-
 
 def start_experiment(
     system_name: str,
     system_url: str,
-    gerbil_url: str = "http://gerbil-qa.aksw.org/gerbil",
-    datasets: List[str] = all_datasets,
+    gerbil_url: str = "{}/gerbil".format(
+        gerbil_systems["aksw"]
+    ),  # pylint: disable=consider-using-f-string
+    datasets: List[str] = gerbil_datasets,
     language: str = "en",
 ) -> int:
     """Start a GERBIL experiment of the given system and dataset.
@@ -140,31 +111,36 @@ def get_evaluation(gerbil_id: int, gerbil_url: str) -> DataFrame:
         return results
 
 
-def startup() -> None:
-    """Handle GERBIL evaluation for our systems."""
-    commit = os.environ.get("GITHUB_SHA")
-    print(f"Commit {commit}")
+def startup(gerbil_system: str) -> None:
+    """Handle GERBIL evaluation for our systems.
 
-    approaches = [Approach("appA"), Approach("appB")]
+    :param gerbil_system: Key of GERBIL system that should be used
+    :type gerbil_system: str
+    """
+    commit_id = os.environ.get("GITHUB_SHA") or "local"
+    print(f"Commit {commit_id}")
+
+    gerbil_system_url = gerbil_systems[gerbil_system]
+
     # approaches = [Approach("appB")]  # DEBUG
     # approaches = []
 
-    gerbil_system = "http://gerbil-qa.aksw.org/gerbil"  # official
-    gerbil_system = "http://gerbil-qa.cs.upb.de:8080/gerbil"  # DICE group
-
     for approach in approaches:
         approach.experiment_id = start_experiment(
-            approach.experiment_name, approach.url, gerbil_system
+            approach.experiment_name, approach.url, gerbil_system_url
         )
         print(f"Start experiment {approach.experiment_id} of {approach.name}.")
 
     for approach in approaches:
         path = f"/evaluation/{approach.name}"
         Path(path).mkdir(parents=True, exist_ok=True)
-        result = get_evaluation(approach.experiment_id, gerbil_system)
+        result = get_evaluation(approach.experiment_id, gerbil_system_url)
 
         if result is not None:
-            result.to_csv(f"{path}/{commit}-{approach.experiment_id}.csv")
-            result.to_html(f"{path}/{commit}-{approach.experiment_id}.html")
+            filename = encode_experiment_filename(
+                approach.experiment_id, gerbil_system, commit_id
+            )
+            result.to_csv(f"{path}/{filename}.csv")
+            result.to_html(f"{path}/{filename}.html")
 
         summarize_results(approach)
