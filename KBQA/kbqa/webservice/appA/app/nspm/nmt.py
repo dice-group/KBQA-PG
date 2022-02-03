@@ -1,6 +1,4 @@
 import tensorflow as tf
-import numpy as np
-import pickle
 
 class Encoder(tf.keras.Model):
   def __init__(self, vocab_size, embedding_dim, enc_units, batch_sz,embedding_matrix):

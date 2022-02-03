@@ -1,10 +1,4 @@
-import sys
-
 import tensorflow as tf
-import argparse
-
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 
 import numpy as np
 import pickle
@@ -12,10 +6,6 @@ from app.nspm.prepare_dataset import preprocess_sentence
 from app.nspm.nmt import Encoder,Decoder
 from app.nspm.generator_utils import decode, fix_URI
 
-from airML import airML
-import json
-from numpy import random as np_random
-import gensim
 from gensim.models.fasttext import FastText
 
 def evaluate(sentence):
@@ -104,24 +94,6 @@ def mkdir_p(mypath):
             pass
         else: raise
 
-def plot_attention(attention, sentence, predicted_sentence,ou_dir):
-  fig = plt.figure(figsize=(10,10))
-  ax = fig.add_subplot(1, 1, 1)
-  ax.matshow(attention, cmap='viridis')
-
-  fontdict = {'fontsize': 14}
-
-  ax.set_xticklabels([''] + sentence, fontdict=fontdict, rotation=90)
-  ax.set_yticklabels([''] + predicted_sentence, fontdict=fontdict)
-
-  ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
-  ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
-
-  plt.show()
-  fig = plt.figure()
-  mkdir_p(ou_dir)
-  fig.savefig('{}/graph.png'.format(ou_dir))
-
 
 def translate(sentence):
   result, sentence, attention_plot = evaluate(sentence)
@@ -133,26 +105,6 @@ def translate(sentence):
 #   plot_attention(attention_plot, sentence.split(' '), result.split(' '),ou_dir) #modified to disable plotting
   return result
 
-
-def install_model(url):
-    output = airML.install(url, format='nspm')
-    output = json.loads(output)
-    if output['status_code'] == 200:
-        print(output['message'])
-    else:
-        raise Exception(output['message'])
-
-
-def locate_model(url):
-    install_model(url)
-    output = airML.locate(url, format='nspm')
-    output = json.loads(output)
-    if output['status_code'] == 200:
-        print(output['message'])
-        model_dir = output['results'][0]
-        return model_dir
-    else:
-        raise Exception(output['message'])
 
 def process_question(question):
 
@@ -166,11 +118,8 @@ def process_question(question):
     finaltrans += '\n \n \n output query decoded : \n'
     finaltranso = decode(finaltranso)
     finaltranso = fix_URI(finaltranso)
-    # print('Decoded translation: {}'.format(finaltranso))
+    print('Decoded translation: {}'.format(finaltranso))
     finaltrans += finaltranso
-    # outputfile = open((input_dir+'/output_query.txt'),'w',encoding="utf8")
-    # outputfile.writelines([finaltrans])
-    # outputfile.close()
     print(finaltrans)
     return(finaltranso.split('<end>')[0])
 
@@ -221,5 +170,6 @@ def load_model():
                                  decoder=decoder)
 
     checkpoint.restore(tf.train.latest_checkpoint(model_dir)).expect_partial()
+    print("app a model loaded successfully")
 
 load_model()
