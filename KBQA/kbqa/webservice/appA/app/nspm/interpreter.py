@@ -78,6 +78,7 @@ def evaluate(sentence):
       # the predicted ID is fed back into the model
       dec_input = tf.expand_dims([predicted_id], 0)
   except KeyError:
+    print("KeyError encountered.")
     result = ""
   return result, sentence, attention_plot
 
