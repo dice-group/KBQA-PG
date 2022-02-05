@@ -105,7 +105,8 @@ exclude: |
   (?x)^(
     KBQA/appB/transformer_architectures/BERT_CompleX_SPBERT/. |
     KBQA/appB/transformer_architectures/BERT_WordPiece_SPBERT/. |
-    KBQA/kbqa/webservice/appA/app/nspm/
+    KBQA/kbqa/webservice/appA/app/nspm/ |
+    KBQA/kbqa/webservice/appB/app/bert_wordpiece_spbert/
   )
 
 ci:
