@@ -120,7 +120,7 @@ def process_question(question):
     finaltranso = fix_URI(finaltranso)
     print('Decoded translation: {}'.format(finaltranso))
     finaltrans += finaltranso
-    print(finaltrans)
+
     return(finaltranso.split('<end>')[0])
 
 def load_model():
@@ -132,12 +132,15 @@ def load_model():
     model_dir += '/training_checkpoints'
     pic_dir = input_dir + '/pickle_objects'
 
-    # print(model_dir)
     embedding_dim = 300
     units = 1024
 
     global w2v_model, w2v_model_spql
+
+    print("Loading model_nl.model")
     w2v_model = FastText.load(pic_dir+'/model_nl.model')
+
+    print("Loading model_spql.model")
     w2v_model_spql = FastText.load(pic_dir+'/model_spql.model')
 
     # with open(pic_dir+'/BATCH_SIZE.pickle', 'rb') as f:
@@ -170,6 +173,6 @@ def load_model():
                                  decoder=decoder)
 
     checkpoint.restore(tf.train.latest_checkpoint(model_dir)).expect_partial()
-    print("app a model loaded successfully")
+    print("Models loaded successfully.")
 
 load_model()
