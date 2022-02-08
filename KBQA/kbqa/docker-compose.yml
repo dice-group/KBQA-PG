@@ -21,6 +21,15 @@ services:
     build: ./webservice/appB
     container_name: approach_b
     restart: always
+    volumes:
+      # This volume is used for the VM. Comment this line if you are deploying the
+      # webservice locally.
+      - ${RESOURCE_PATH}/approach_b/models:/models
+      # If you are deploying the webservice locally, you can uncomment the following line.
+      # Place all your models/files into the resources/approach_a/data directory. In your
+      # program you can access them by starting with "/models/<path_to_file>". This path will
+      # also be used when running on the VM.
+      # - ./resources/approach_b/models:/models
     expose:
       - 24802
 
