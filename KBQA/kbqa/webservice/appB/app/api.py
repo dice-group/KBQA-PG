@@ -1,14 +1,16 @@
 """API for approach B. There is only a POST endpoint."""
 from app.main import main
 from flask import Flask
+from flask import jsonify
 from flask import request
+from flask import Response
 
 
 application = Flask(__name__)
 
 
 @application.route("/appB/", methods=["POST"])
-def endpoint() -> str:
+def endpoint() -> Response:
     """Endpoint for approach B.
 
     This endpoint only accepts POST requests, which sets a
@@ -31,4 +33,4 @@ def endpoint() -> str:
     else:
         answer = main(query)
 
-    return answer
+    return jsonify(answer)

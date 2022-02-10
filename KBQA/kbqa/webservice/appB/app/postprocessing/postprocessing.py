@@ -33,16 +33,6 @@ def postprocessing() -> Dict[str, str]:
             query_decoded = decode(query_pair[1])
             # query_decoded = fix_URI(query_decoded)
             query_decoded = query_decoded.replace("<", "").replace(">", "")
-            query_decoded = (
-                query_decoded.replace("select", "SELECT")
-                .replace("distinct", "DISTINCT")
-                .replace("where", "WHERE")
-                .replace("offset", "OFFSET")
-                .replace("limit", "LIMIT")
-                .replace("order by", "ORDER BY")
-                .replace("as", "AS")
-                .replace("desc", "DESC")
-            )
 
             queries[query_number] = query_decoded
 

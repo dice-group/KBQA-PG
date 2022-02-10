@@ -1,4 +1,5 @@
 """Main module for the application logic of approach A."""
+from typing import Any
 from typing import Dict
 from typing import Tuple
 
@@ -10,7 +11,7 @@ from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper.SPARQLExceptions import SPARQLWrapperException
 
 
-def main(query: str, lang: str = "en") -> str:
+def main(query: str, lang: str = "en") -> Dict[str, Any]:
     """Start main method of the application logic for approach A.
 
     Process the query, which contains the question asked by an enduser and an
