@@ -4,8 +4,8 @@ from typing import Dict
 from typing import Tuple
 
 from app.nspm.interpreter_pt_model import process_question
-from app.qald_builder import qald_builder
 from app.qald_builder import qald_builder_empty_answer
+from app.qald_builder import qald_builder_select_answer
 from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper.SPARQLExceptions import SPARQLWrapperException
@@ -34,7 +34,7 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     if sparql_query == "":
         answer_qald = qald_builder_empty_answer(sparql_query, query, lang)
     else:
-        answer_qald = qald_builder(sparql_query, answer, query, lang)
+        answer_qald = qald_builder_select_answer(sparql_query, answer, query, lang)
 
     return answer_qald
 

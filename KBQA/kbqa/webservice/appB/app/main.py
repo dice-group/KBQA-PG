@@ -9,8 +9,9 @@ from app.bert_wordpiece_spbert.run import run
 from app.postprocessing.postprocessing import postprocessing
 from app.preprocessing.preprocessing_qtq import preprocessing_qtq
 from app.preprocessing.seperate_qtq import seperate_qtq
-from app.qald_builder import qald_builder
+from app.qald_builder import qald_builder_ask_answer
 from app.qald_builder import qald_builder_empty_answer
+from app.qald_builder import qald_builder_select_answer
 from app.summarizer.one_hop_rank_summarizer import OneHopRankSummarizer
 from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
@@ -85,10 +86,20 @@ def ask_dbpedia(question: str, sparql_query: str, lang: str) -> Dict[str, Any]:
 
         return qald_answer
 
-    if len(answer["results"]["bindings"]) == 0:
-        qald_answer = qald_builder_empty_answer(sparql_query, question, lang)
+    if "results" in dict(answer):
+        # SELECT queries
+        if len(answer["results"]["bindings"]) == 0:
+            qald_answer = qald_builder_empty_answer(sparql_query, question, lang)
+        else:
+            qald_answer = qald_builder_select_answer(
+                sparql_query, answer, question, lang
+            )
+    elif "boolean" in dict(answer):
+        # ASK queries
+        qald_answer = qald_builder_ask_answer(sparql_query, answer, question, lang)
     else:
-        qald_answer = qald_builder(sparql_query, answer, question, lang)
+        print("No results and boolean found.")
+        qald_answer = qald_builder_empty_answer("", question, lang)
 
     return qald_answer
 

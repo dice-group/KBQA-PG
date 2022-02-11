@@ -3,17 +3,17 @@ from typing import Any
 from typing import Dict
 
 
-def qald_builder(
+def qald_builder_select_answer(
     sparql_query: str, answer: Dict, question: str, language: str
 ) -> Dict[str, Any]:
-    """Build a QALD-string with the given parameters.
+    """Build a QALD-string with the given parameters for a SELECT query.
 
     Parameters
     ----------
     sparql_query : str
         Generated SPARQL-query for the question used to find the answers.
-    answer : list
-        List of DBpedia-resources, which contain the answers for the question.
+    answer : dict
+        Answer from DBpedia in the JSON format for a SELECT query.
     question : str
         The natural language question.
     language : str
@@ -21,8 +21,8 @@ def qald_builder(
 
     Returns
     -------
-    qald_string : str
-        JSON string formatted in the QALD format
+    qald_string : dict
+        Dictionary formatted in the QALD format.
     """
     # id-Object
     json_id = {"id": "1"}
@@ -56,6 +56,50 @@ def qald_builder(
     return json_questions
 
 
+def qald_builder_ask_answer(
+    sparql_query: str, answer: Dict, question: str, language: str
+) -> Dict[str, Any]:
+    """Build a QALD-string with the given parameters for an ASK query.
+
+    Parameters
+    ----------
+    sparql_query : str
+        Generated SPARQL-query for the question used to find the answers.
+    answer : dict
+        Answer from DBpedia in the JSON format for an ASK query.
+    question : str
+        The natural language question.
+    language : str
+        Language tag.
+
+    Returns
+    -------
+    qald_str : dict
+        Dictionary formatted in the QALD format.
+    """
+    json_id = {"id": "1"}
+
+    json_question = {"question": [{"language": language, "string": question}]}
+
+    json_query = {"query": {"sparql": sparql_query}}
+
+    boolean_value = answer["boolean"]
+
+    json_answers = {"answers": [{"boolean": boolean_value}]}
+
+    questions_obj = {
+        "id": json_id["id"],
+        "question": json_question["question"],
+        "query": json_query["query"],
+        "answers": json_answers["answers"],
+    }
+
+    json_questions: Dict = {"questions": []}
+    json_questions["questions"].append(questions_obj)
+
+    return json_questions
+
+
 def qald_builder_empty_answer(
     sparql_query: str, question: str, language: str
 ) -> Dict[str, Any]:
@@ -72,8 +116,8 @@ def qald_builder_empty_answer(
 
     Returns
     -------
-    qald_string : str
-        JSON string formatted in the QALD format
+    qald_string : dict
+        Dictionary formatted in the QALD format.
     """
     # id-Object
     json_id = {"id": "1"}
