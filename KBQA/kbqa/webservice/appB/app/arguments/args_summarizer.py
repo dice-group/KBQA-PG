@@ -10,6 +10,6 @@ ONE_HOP_RANK_SUMMARIZER = SimpleNamespace(
         # maximum triples
         "limit": 50,
         # timeout between requests
-        "timeout": 0,
+        "timeout": 0.1,
     }
 )

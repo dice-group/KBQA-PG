@@ -32,11 +32,6 @@ def seperate_qtq() -> None:
     data_dir = data_dir.rstrip("/")
     output_dir = output_dir.rstrip("/")
 
-    # en_file = open(f"{output_dir}/{subset}.en", "w", encoding="utf-8")
-    # sparql_file = open(f"{output_dir}/{subset}.sparql", "w", encoding="utf-8")
-    # triple_file = open(f"{output_dir}/{subset}.triple", "w", encoding="utf-8")
-    # data = json.load(open(f"{data_dir}/{subset}.json", "r", encoding="utf-8"))
-
     with open(f"{output_dir}/{subset}.en", "w", encoding="utf-8") as en_file, open(
         f"{output_dir}/{subset}.sparql", "w", encoding="utf-8"
     ) as sparql_file, open(
@@ -51,10 +46,6 @@ def seperate_qtq() -> None:
             en_file.write(element["question"] + "\n")
             sparql_file.write(element["query"] + "\n")
             triple_file.write("\t".join(filter_triples(element["triples"])) + "\n")
-
-    # en_file.close()
-    # sparql_file.close()
-    # triple_file.close()
 
 
 if __name__ == "__main__":
