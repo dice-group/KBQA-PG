@@ -1,16 +1,20 @@
 """Main module for the application logic of approach A."""
+from typing import Any
 from typing import Dict
 from typing import Tuple
 
+
 from app.nspm.interpreter import process_question
 from app.qald_builder import qald_builder
+
 from app.qald_builder import qald_builder_empty_answer
+from app.qald_builder import qald_builder_select_answer
 from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper.SPARQLExceptions import SPARQLWrapperException
 
 
-def main(query: str, lang: str = "en") -> str:
+def main(query: str, lang: str = "en") -> Dict[str, Any]:
     """Start main method of the application logic for approach A.
 
     Process the query, which contains the question asked by an enduser and an
@@ -33,7 +37,7 @@ def main(query: str, lang: str = "en") -> str:
     if sparql_query == "":
         answer_qald = qald_builder_empty_answer(sparql_query, query, lang)
     else:
-        answer_qald = qald_builder(sparql_query, answer, query, lang)
+        answer_qald = qald_builder_select_answer(sparql_query, answer, query, lang)
 
     return answer_qald
 
