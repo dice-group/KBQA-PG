@@ -1,4 +1,4 @@
-name: Webservice CD
+name: Deployment
 
 on:
   push:
