@@ -1,10 +1,4 @@
-import sys
-
 import tensorflow as tf
-import argparse
-
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 
 import numpy as np
 import pickle
@@ -12,10 +6,6 @@ from app.nspm.prepare_dataset import preprocess_sentence
 from app.nspm.nmt import Encoder,Decoder
 from app.nspm.generator_utils import decode, fix_URI
 
-from airML import airML
-import json
-from numpy import random as np_random
-import gensim
 from gensim.models.fasttext import FastText
 
 def evaluate(sentence):
@@ -88,6 +78,7 @@ def evaluate(sentence):
       # the predicted ID is fed back into the model
       dec_input = tf.expand_dims([predicted_id], 0)
   except KeyError:
+    print("KeyError encountered.")
     result = ""
   return result, sentence, attention_plot
 
@@ -104,26 +95,8 @@ def mkdir_p(mypath):
             pass
         else: raise
 
-def plot_attention(attention, sentence, predicted_sentence,ou_dir):
-  fig = plt.figure(figsize=(10,10))
-  ax = fig.add_subplot(1, 1, 1)
-  ax.matshow(attention, cmap='viridis')
 
-  fontdict = {'fontsize': 14}
-
-  ax.set_xticklabels([''] + sentence, fontdict=fontdict, rotation=90)
-  ax.set_yticklabels([''] + predicted_sentence, fontdict=fontdict)
-
-  ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
-  ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
-
-  plt.show()
-  fig = plt.figure()
-  mkdir_p(ou_dir)
-  fig.savefig('{}/graph.png'.format(ou_dir))
-
-
-def translate(sentence,ou_dir):
+def translate(sentence):
   result, sentence, attention_plot = evaluate(sentence)
 
   print('Input: %s' % (sentence))
@@ -134,58 +107,41 @@ def translate(sentence,ou_dir):
   return result
 
 
-def install_model(url):
-    output = airML.install(url, format='nspm')
-    output = json.loads(output)
-    if output['status_code'] == 200:
-        print(output['message'])
-    else:
-        raise Exception(output['message'])
-
-
-def locate_model(url):
-    install_model(url)
-    output = airML.locate(url, format='nspm')
-    output = json.loads(output)
-    if output['status_code'] == 200:
-        print(output['message'])
-        model_dir = output['results'][0]
-        return model_dir
-    else:
-        raise Exception(output['message'])
-
 def process_question(question):
-    global max_length_targ,max_length_inp,encoder,decoder,units,w2v_model,w2v_model_spql
 
-    inputstr = question
-    inputs = inputstr
-    input = 'data/new_qald8'
-    output = 'data/new_qald8'
-    airml = None
+    inputs = question
+
+    finaltrans = "input qurey : \n"
+    finaltrans += inputs
+    finaltrans += "\n \n \n output qurey : \n"
+    finaltranso = translate(inputs)
+    finaltrans += finaltranso
+    finaltrans += '\n \n \n output query decoded : \n'
+    finaltranso = decode(finaltranso)
+    finaltranso = fix_URI(finaltranso)
+    print('Decoded translation: {}'.format(finaltranso))
+    finaltrans += finaltranso
+
+    return(finaltranso.split('<end>')[0])
+
+def load_model():
+    global max_length_targ,max_length_inp,encoder,decoder,units,w2v_model,w2v_model_spql, checkpoint
 
     model_dir = 'data/new_qald8'
     input_dir = 'data/new_qald8'
-    if input is not None:
-        model_dir = input
-        input_dir = input
-    elif airml is not None:
-        airml_url = airml
-        model_dir = locate_model(airml_url)
-        input_dir = model_dir
-    else:
-        print('--input or --airml argument should be provided to load the model.')
-        sys.exit()
 
     model_dir += '/training_checkpoints'
     pic_dir = input_dir + '/pickle_objects'
 
-    print(model_dir)
     embedding_dim = 300
     units = 1024
-    
 
+    global w2v_model, w2v_model_spql
+
+    print("Loading model_nl.model")
     w2v_model = FastText.load(pic_dir+'/model_nl.model')
 
+    print("Loading model_spql.model")
     w2v_model_spql = FastText.load(pic_dir+'/model_spql.model')
 
     # with open(pic_dir+'/BATCH_SIZE.pickle', 'rb') as f:
@@ -201,14 +157,13 @@ def process_question(question):
 
     # Calculate max_length of the target tensors'
     max_length_targ = input_tensor.shape[1]
-    print('max_length_targ', max_length_targ)
+    # print('max_length_targ', max_length_targ)
     max_length_inp = target_tensor.shape[1]
 
     BATCH_SIZE = 32
 
     vocab_inp_size = len(embedding_matrix)
     vocab_tar_size = len(embedding_matrix_spql)
-
 
     encoder = Encoder(vocab_inp_size, embedding_dim, units, BATCH_SIZE,embedding_matrix)
     decoder = Decoder(vocab_tar_size, embedding_dim, units, BATCH_SIZE,embedding_matrix_spql)
@@ -218,22 +173,7 @@ def process_question(question):
                                  encoder=encoder,
                                  decoder=decoder)
 
-
     checkpoint.restore(tf.train.latest_checkpoint(model_dir)).expect_partial()
+    print("Models loaded successfully.")
 
-
-    finaltrans = "input qurey : \n"
-    finaltrans += inputs
-    finaltrans += "\n \n \n output qurey : \n"
-    print(inputs,input_dir)
-    finaltranso = translate(inputs,input_dir)
-    finaltrans += finaltranso
-    finaltrans += '\n \n \n output query decoded : \n'
-    finaltranso = decode(finaltranso)
-    finaltranso = fix_URI(finaltranso)
-    # print('Decoded translation: {}'.format(finaltranso))
-    finaltrans += finaltranso
-    # outputfile = open((input_dir+'/output_query.txt'),'w',encoding="utf8")
-    # outputfile.writelines([finaltrans])
-    # outputfile.close()
-    return(finaltranso.split('<end>')[0])
+load_model()

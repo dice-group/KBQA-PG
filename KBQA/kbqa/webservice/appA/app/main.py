@@ -3,7 +3,7 @@ from typing import Any
 from typing import Dict
 from typing import Tuple
 
-from app.nspm.interpreter_pt_model import process_question
+from app.nspm.interpreter import process_question
 from app.qald_builder import qald_builder_empty_answer
 from app.qald_builder import qald_builder_select_answer
 from SPARQLWrapper import JSON

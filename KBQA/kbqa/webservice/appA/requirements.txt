@@ -4,8 +4,6 @@ uwsgi==2.0.20
 
 tensorflow==2.7.0
 argparse==1.4.0
-matplotlib==3.3.3
 numpy==1.22.1
 SPARQLWrapper==1.8.5
-airML==0.0.3
 gensim==3.8.3
