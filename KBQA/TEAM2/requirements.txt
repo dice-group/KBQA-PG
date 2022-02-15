@@ -1,5 +1,0 @@
-SPARQLWrapper==1.8.5
-spacy==3.1.4
-rdflib==5.0.0
-django==3.2.12
-djangorestframework
