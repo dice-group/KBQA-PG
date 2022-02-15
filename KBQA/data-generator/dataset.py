@@ -12,7 +12,7 @@ class Question:
         self,
         question: str,
         sparql: str = "",
-        answers: Union[list, None] = None,
+        answers: Optional[List] = None,
         triples: Union[list, None] = None,
     ) -> None:
         """Initialize a Question.
