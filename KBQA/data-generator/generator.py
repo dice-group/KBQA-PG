@@ -26,8 +26,6 @@ class DatasetGenerator:
         :return: The next question or None
         :rtype: Question
         """
-        self.current_question += 1
-
         if self.current_question >= len(self.dataset.questions):
             return None
 
@@ -53,8 +51,9 @@ class DatasetGenerator:
             try:
                 print(f"Summarize question '{question.text}'")
                 triple = summarizer.summarize(question.text)
-                question.triples.extend(triple)
+                question.triples = triple
                 print(f"Found {len(triple)} triples!")
+                self.current_question += 1
                 # question.save_to_qtq_dataset("KBQA/data-generator/qtq-9-train-multilingual-2.json")
             except Exception as exception:  # pylint: disable=broad-except
                 print(f"Error summarizing question {question.text}: {exception}")

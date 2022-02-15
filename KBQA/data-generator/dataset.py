@@ -2,6 +2,7 @@
 import json
 from typing import Dict
 from typing import List
+from typing import Optional
 
 
 class Question:
@@ -11,8 +12,8 @@ class Question:
         self,
         question: str,
         sparql: str = "",
-        answers: List = list(),
-        triples: List = list(),
+        answers: Optional[List] = None,
+        triples: Optional[List] = None,
     ) -> None:
         """Initialize a Question.
 
@@ -27,6 +28,11 @@ class Question:
         triples : List, optional
             A List related triples to the question, by default list()
         """
+        if triples is None:
+            triples = list()
+        if answers is None:
+            answers = list()
+
         self.text = question
         self.sparql: str = sparql
         self.answers: List = answers
