@@ -12,13 +12,13 @@ repos:
         name: pyupgrade - upgrade syntax for newer python versions
 
   - repo: https://github.com/psf/black
-    rev: 21.12b0
+    rev: 22.1.0
     hooks:
       - id: black
         name: Black - format python code
 
   - repo: https://github.com/sqlalchemyorg/zimports
-    rev: v0.4.1
+    rev: v0.5.0
     hooks:
       - id: zimports
         name: zimports - reformat python imports
@@ -68,7 +68,7 @@ repos:
         name: Flake8 - check python source files for errors and style
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.930
+    rev: v0.931
     hooks:
       - id: mypy
         name: Mypy - check python static types
@@ -105,7 +105,8 @@ exclude: |
   (?x)^(
     KBQA/appB/transformer_architectures/BERT_CompleX_SPBERT/. |
     KBQA/appB/transformer_architectures/BERT_WordPiece_SPBERT/. |
-    KBQA/kbqa/webservice/appA/app/nspm/
+    KBQA/kbqa/webservice/appA/app/nspm/ |
+    KBQA/kbqa/webservice/appB/app/bert_wordpiece_spbert/
   )
 
 ci:

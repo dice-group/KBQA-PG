@@ -20,13 +20,13 @@
       <div class="title">GERBIL evaluation results</div>
     </header>
     <div><canvas id="myChart"></canvas></div>
-    <main>{{ results|safe }}</main>
+    <main>{{ evaluations['appA'][0] | safe }}</main>
   </body>
 
   <script>
     const ctx = document.getElementById("myChart");
 
-    var jsonData = JSON.parse("{{ data | tojson | safe}}");
+    var jsonData = JSON.parse('{{ evaluations["appA"][1] | tojson | safe}}');
     jsonData2 = jsonData.map(function (experiment) {
       return (experiment.sub_experiments = experiment.sub_experiments[0]);
     });

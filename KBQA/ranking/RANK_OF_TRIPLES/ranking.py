@@ -1,4 +1,4 @@
-"""A module to get ranking of triples from summarized subgraph."""
+"""A module to count occurrence of multihope predicates in QALD8, LCQUAD and QALD9 data set."""
 from contextlib import suppress
 import json
 import pickle
@@ -23,15 +23,15 @@ def load_sparql_from_json(jsonfile: str) -> List[str]:
     with open(jsonfile, encoding="utf8") as file:
         data_js = json.load(file)
     sparql_strings = []
-    # parse all sparql strings from the json (works only for qald dataset)
+    # parse all sparql strings from the json (works only for qald8 dataset)
     for question in data_js["questions"]:
         sparql_strings.append(question["query"]["sparql"])
     return sparql_strings
 
 
-def load_sparql_from_json_lcqald(jsonfile: str) -> List[str]:
+def load_sparql_from_json_lcquad(jsonfile: str) -> List[str]:
     """
-    Given a json file (for LCQALD dataset) with train data, sparql strings of all the questions are returned.
+    Given a json file (for LCQUAD dataset) with train data, sparql strings of all the questions are returned.
 
     :param jsonfile: Path to json file as string.
     :return: List of all sparql strings from the given json file.
@@ -208,7 +208,7 @@ def predicate_count_inverse_relations(inverse_triples_list: list) -> Dict[str, i
 
 def predicate_count_with_multihop(
     tripleslist: List[List[URIRef]],
-) -> List[List[URIRef]]:
+) -> List[Tuple[Tuple, int]]:
     """
     Given lists with one or two hop triples. Lists with predicates for one or two hopes in sort order are returned.
 
@@ -218,7 +218,7 @@ def predicate_count_with_multihop(
     :return: lists with predicate for one or two hopes in decreasing order (ordered by rank).
     """
     rank_table = {}
-    predicate_rank = []
+    # predicate_rank = []
     for triples_item in tripleslist:
         if len(triples_item) == 1:
             predicate = triples_item[0][1]
@@ -236,12 +236,7 @@ def predicate_count_with_multihop(
                 rank_table[predicates_tuple] = 0
             rank_table[predicates_tuple] = rank_table[predicates_tuple] + 1
     rank_table_list = sorted(rank_table.items(), key=lambda x: x[1], reverse=True)
-    for item in rank_table_list:
-        if isinstance(item[0], tuple):
-            predicate_rank.append(list(item[0]))
-        else:
-            predicate_rank.append([item[0]])
-    return predicate_rank
+    return rank_table_list
 
 
 def get_ranking_tables(datasetfile: str) -> Tuple[dict, dict]:
@@ -418,21 +413,30 @@ def ranked_triples_for_inverse_subgraph(
 
 
 def main() -> None:
-    """Call ranked_triples_for_regular_subgraph to get ranking of regular triples."""
-    # (
-    #    regular_subgraph,
-    #    inverse_subgraph,
-    # ) = nes_ner_hop_regular_and_inverse_subgraph(question="Who is Angela Merkel?")
-    # ranked_regular_triples = ranked_triples_for_regular_subgraph(regular_subgraph, 100)
-    # ranked_inverse_triples = ranked_triples_for_inverse_subgraph(inverse_subgraph, 1)
-    # for triple_item in ranked_regular_triples.items():
-    #    print(triple_item)
-    #    print("\n")
-    # print("\n")
-    # print("\n")
-    # for triple_item in ranked_inverse_triples.items():
-    #    print(triple_item)
-    #    print("\n")
+    """Call load_sparql_from_json_lcquad to get all sparql strings from LCQUAD."""
+    # qald = "C:/Users/User/Downloads/QALD8-train.json"
+    # lcquad = "C:/Users/User/Downloads/train-data.json"
+    # sparql_strings = load_sparql_from_json_lcquad(lcquad)
+    # tripleslist = []
+    # for string in sparql_strings:
+    #    try:
+    #        triples = extract_hop_triples(string)
+    #        for trip in triples:
+    #            tripleslist.append(trip)
+    #    except Exception:
+    #        pass
+
+    # for triple in tripleslist:
+    #   print(triple)
+    # table = predicate_count_with_multihop(tripleslist)
+    # open_file = open("predicates_rank_multy_hop_lcquad.pickle", "wb")
+    # pickle.dump(table, open_file)
+    # open_file.close()
+
+    with open("predicates_rank_multy_hop_lcquad1.pickle", "rb") as file:
+        mynewlist2 = pickle.load(file)
+    for item in mynewlist2:
+        print(item)
 
 
 # Call from shell as main.

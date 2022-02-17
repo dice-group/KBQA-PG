@@ -2,6 +2,7 @@
 import json
 from typing import Dict
 from typing import List
+from typing import Optional
 
 
 class Question:
@@ -11,8 +12,8 @@ class Question:
         self,
         question: str,
         sparql: str = "",
-        answers: List = list(),
-        triples: List = list(),
+        answers: Optional[List] = None,
+        triples: Optional[List] = None,
     ) -> None:
         """Initialize a Question.
 
@@ -27,10 +28,38 @@ class Question:
         triples : List, optional
             A List related triples to the question, by default list()
         """
+        if triples is None:
+            triples = list()
+        if answers is None:
+            answers = list()
+
         self.text = question
         self.sparql: str = sparql
         self.answers: List = answers
         self.triples: List = triples
+
+    def save_to_qtq_dataset(self, dataset_path: str) -> None:
+        """Append question to QTQ dataset and save it to disk.
+
+        Parameters
+        ----------
+        dataset_path : str
+            Path to QTQ dataset json file
+        """
+        try:
+            with open(dataset_path, "r", encoding="utf-8") as file_handle:
+                dataset = json.load(file_handle)
+        except OSError:
+            dataset = {"questions": list()}
+
+        qtq: Dict = {}
+        qtq["question"] = self.text
+        qtq["query"] = self.sparql
+        qtq["triples"] = self.triples
+        dataset["questions"].append(qtq)
+
+        with open(dataset_path, "w", encoding="utf-8") as file_handle:
+            json.dump(dataset, file_handle, indent=4, separators=(",", ": "))
 
 
 class Dataset:
