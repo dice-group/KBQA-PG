@@ -1,7 +1,6 @@
-"""A module to summarize the triples for predicates from QALD8 and LCQALD data set."""
+"""A module to summarize the triples for predicates from QALD8, QALD9 and LCQALD data set."""
 from builtins import FileNotFoundError
 import pickle
-import time
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -28,7 +27,7 @@ def ask_for_entities(question: str, *, confidence: float = 0.8) -> List[URIRef]:
 
 
 def generate_sparql_string(
-    entity: URIRef, list_of_predicates: List[List[URIRef]]
+    entity: URIRef, list_of_predicates: List[Tuple[Tuple, int]]
 ) -> str:
     """
     Given entity and list of predicates. Sparql string for all predicates are returned.
@@ -46,9 +45,9 @@ def generate_sparql_string(
     first_predicate = True
     num = 1
     for pred in list_of_predicates:
-        pred1 = "<" + str(pred[0]) + ">"
         object1 = "?o" + str(num) + "."
-        if len(pred) == 1:
+        if len(pred[0]) != 2:
+            pred1 = "<" + str(pred[0]) + ">"
             string1 = string1 + subj1 + pred1 + object1
             if first_predicate:
                 string2 = string2 + """WHERE{{""" + subj1 + pred1 + object1 + """}"""
@@ -56,8 +55,9 @@ def generate_sparql_string(
             else:
                 string2 = string2 + """UNION{""" + subj1 + pred1 + object1 + """}"""
             num = num + 1
-        elif len(pred) == 2:
-            pred2 = "<" + str(pred[1]) + ">"
+        elif len(pred[0]) == 2:
+            pred1 = "<" + str(pred[0][0]) + ">"
+            pred2 = "<" + str(pred[0][1]) + ">"
             object1 = "?o" + str(num) + "."
             object11 = "?o" + str(num)
             object2 = "?o" + str(num) + "1."
@@ -168,7 +168,7 @@ def get_ranked_triples(
 
 
 def query_dbpedia_for_all_entities(
-    entities: List[URIRef], list_of_predicates: List[URIRef]
+    entities: List[URIRef], list_of_predicates: List[Tuple[Tuple, int]]
 ) -> Graph:
     """
     Given list of entities and list of predicates. Subgraph from DBPedia for all entities and predicates will be returned.
@@ -176,7 +176,7 @@ def query_dbpedia_for_all_entities(
     This function generate sparql string, send request to DBPedia for all entities and given predicates and combined two subgraphs
     without triples duplicates.
     :param entities: list of entities from the question.
-    :param list_of_predicates: predicates fom data set in decreasing order regarding rank.
+    :param list_of_predicates: predicates fom data set in decreasing order according rank.
     :return: triples_list for all entities without duplicates.
     """
     endpoint = "https://dbpedia.org/sparql"
@@ -185,7 +185,7 @@ def query_dbpedia_for_all_entities(
         sparql_string1 = generate_sparql_string(entity, list_of_predicates)
         sparql = SPARQLWrapper(
             endpoint,
-            agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11",
+            agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko)",
         )
         sparql.setQuery(sparql_string1)
         sparql.method = "POST"
@@ -236,7 +236,7 @@ def add_triples_for_entity_hop(
     predicate: URIRef,
     triples_list: List[Tuple],
     triples_list_sorted: Dict[Tuple, int],
-    number_triples_each_predicate: int = 10,
+    number_triples_each_predicate: int = 7,
 ) -> Dict[Tuple, int]:
     """
     Given entity, predicate and triples list. Two hop triples for entity and predicate added to final triple list in right order and necessary number and returned.
@@ -276,12 +276,13 @@ def add_triples_for_entity(
     predicate: URIRef,
     triples_list: List[Tuple],
     triples_list_sorted: Dict[Tuple, int],
-    number_triples_each_predicate: int = 10,
+    number_triples_each_predicate: int = 7,
 ) -> Dict[Tuple, int]:
     """
     Given entity, predicate and triples list. One hop triples for entity and predicate added to final triple list in right order and necessary number and returned.
 
-    This function adds one hop triples with rank for given entity and predicate in right order and necessary number in final triples list.
+    This function adds one hop triples with rank for given entity and predicate in right order and necessary
+    number in final triples list.
     :param entity: URIRef of entity from the question.
     :param predicate: URIRef of predicate.
     :param triples_list: triples_list to add.
@@ -304,7 +305,7 @@ def add_triples_for_entity(
 def sort_triples_from_the_query(
     triples_list: List[Tuple],
     entities: List[URIRef],
-    rank_table_path: str,
+    rank_table: List[Tuple],
     triples_list_sorted: Dict[Tuple, int],
 ) -> Dict[Tuple, int]:
     """
@@ -312,93 +313,71 @@ def sort_triples_from_the_query(
 
     :param triples_list: triples for each entity and each predicate.
     :param entities: list of entities from the question.
-    :param rank_table_path: path for file with predicates and ranks for these predicates.
+    :param rank_table: list with tuples predicate:rank.
     :param triples_list_sorted: list with previous triples and ranks.
     :return: triples_list_sortet with new triples and their rank.
     """
-    with open(rank_table_path, "rb") as file:
-        rank_table = pickle.load(file)
-        for predicate in rank_table:
-            for entity in entities:
-                if len(predicate[0]) == 2:
-                    triples_list_sorted = add_triples_for_entity_hop(
-                        entity, predicate, triples_list, triples_list_sorted
-                    )
-                else:
-                    triples_list_sorted = add_triples_for_entity(
-                        entity, predicate, triples_list, triples_list_sorted
-                    )
+    for predicate in rank_table:
+        for entity in entities:
+            if len(predicate[0]) == 2:
+                triples_list_sorted = add_triples_for_entity_hop(
+                    entity, predicate, triples_list, triples_list_sorted
+                )
+            else:
+                triples_list_sorted = add_triples_for_entity(
+                    entity, predicate, triples_list, triples_list_sorted
+                )
     return triples_list_sorted
 
 
-def get_ranked_triples_faster(
-    entities: List[URIRef],
+def triples_for_all_datasets(
+    question: str,
     number_of_triples: int = 100,
 ) -> List[Tuple[Tuple, int]]:
     """
-    Given entity list from the question, and number of triples, that is needed. Necessary number of triples in ranked order are returned.
+    Given question string, and number of triples, that is needed. Necessary number of triples in ranked order are returned.
 
-    This pocedure send big requests to DBPedia in oreder to get triples for each entity and each predicate
-    in ranked order. the requests will be sent until necessary number of triples are in the final list.
+    This function sends sparql to DBPedia in order to get triples for each entity and each predicate
+    in ranked order. The sparql requests will be sent until necessary number of triples are in the final list.
 
-    :param entities: list of entities from the question.
-    :param number_of_triples: total number of triples
+    :param question: question string in natural language.
+    :param number_of_triples: how many triples are needed.
 
     :return: final_triples_list with triples and rank.
     """
+    entities = ask_for_entities(question)
     triples_list_sorted: Dict[Tuple, int] = {}
     final_triples_list: List[Tuple[Tuple, int]] = []
     try:
-        with open("predicates_qald8.pickle", "rb") as file:
-            rank_table_qald8 = pickle.load(file)
-        with open("predicates_lcquad1.pickle", "rb") as file:
-            rank_table_lcquad = pickle.load(file)
+        with open("qald8_qald9_lcquad.pickle", "rb") as file:
+            qald8_qald9_lcquad = pickle.load(file)
     except FileNotFoundError:
         pass
     num_of_query = 0
     first_pred = 0
-    last_pred = 52
-    while len(final_triples_list) < number_of_triples and num_of_query < 2:
+    last_pred = 69
+    while len(final_triples_list) < number_of_triples and num_of_query < 11:
         triples_list = query_dbpedia_for_all_entities(
-            entities, rank_table_qald8[first_pred:last_pred]
+            entities, qald8_qald9_lcquad[first_pred:last_pred]
         )
         triples_list_sorted = sort_triples_from_the_query(
             triples_list,
             entities,
-            "predicates_rank_multy_hop.pickle",
+            qald8_qald9_lcquad[first_pred:last_pred],
             triples_list_sorted,
         )
         final_triples_list = list(triples_list_sorted.items())
         num_of_query = num_of_query + 1
-        first_pred = first_pred + 52
-        last_pred = last_pred + 53
-
-    num_of_query = 0
-    first_pred = 0
-    last_pred = 61
-    while len(final_triples_list) < number_of_triples and num_of_query < 10:
-        triples_list = query_dbpedia_for_all_entities(
-            entities, rank_table_lcquad[first_pred:last_pred]
-        )
-        triples_list_sorted = sort_triples_from_the_query(
-            triples_list,
-            entities,
-            "predicates_rank_multy_hop_lcquad1.pickle",
-            triples_list_sorted,
-        )
-        final_triples_list = list(triples_list_sorted.items())
-        num_of_query = num_of_query + 1
-        first_pred = first_pred + 61
-        last_pred = last_pred + 61
-
+        first_pred = first_pred + 69
+        last_pred = last_pred + 69
     final_triples_list = final_triples_list[0:number_of_triples]
     return final_triples_list
 
 
 def main() -> None:
-    """Call get_ranked_triples to get triples with highest rank."""
-    # entities = ask_for_entities("Who is Angela Merkel")
-    # triples = get_ranked_triples_faster(entities)
+    """Call triples_for_all_datasets() to get triples with a rank for all data sets."""
+    # triples = triples_for_all_datasets("Who is Brad Pitt?")
+    # print(len(triples))
     # for triple in triples:
     #    print(triple)
     #    print("\n")
@@ -406,6 +385,6 @@ def main() -> None:
 
 # Call from shell as main.
 if __name__ == "__main__":
-    start_time = time.time()
+    # start_time = time.time()
     main()
-    print(time.time() - start_time)
+    # print(time.time() - start_time)
