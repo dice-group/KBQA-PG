@@ -375,12 +375,12 @@ def triples_for_all_datasets(
 
 
 def main() -> None:
-    """Call qald8_qald9_lcquad to get triples with a rank for all datasets."""
-    triples = triples_for_all_datasets("Who is Brad Pitt?")
-    print(len(triples))
-    for triple in triples:
-        print(triple)
-        print("\n")
+    """Call triples_for_all_datasets() to get triples with a rank for all data sets."""
+    # triples = triples_for_all_datasets("Who is Brad Pitt?")
+    # print(len(triples))
+    # for triple in triples:
+    #    print(triple)
+    #    print("\n")
 
 
 # Call from shell as main.
