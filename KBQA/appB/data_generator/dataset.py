@@ -123,5 +123,5 @@ class Dataset:
             qtq["triples"] = question.triples
             dataset["questions"].append(qtq)
 
-        with open(dataset_path, "w", encoding="utf-8") as file_handle:
+        with open(dataset_path, "w+", encoding="utf-8") as file_handle:
             json.dump(dataset, file_handle, indent=4, separators=(",", ": "))

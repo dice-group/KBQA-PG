@@ -22,7 +22,6 @@ init-hook='import sys; sys.path += [
         "KBQA/kbqa/webservice/website_server/",
         "KBQA/kbqa/webservice/gerbil/",
         "KBQA/kbqa/webservice/embedding_server/",
-        "KBQA/summarizers/"
     ]'
 
 [MESSAGES CONTROL]
@@ -39,6 +38,8 @@ disable=
     use-dict-literal, # dict() is saver since {} reffers to the same dict
     dangerous-default-value, # using list() instead of [] is not dangerous
     fixme, # allow TODOs
+	invalid-name, # used to allow KBQA as a module
+	no-self-use, # class methods should be usable, even if they do not access self
 
 [SIMILARITIES]
 

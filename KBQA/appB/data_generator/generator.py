@@ -2,10 +2,12 @@
 import pickle
 from typing import Union
 
-from dataset import Dataset
-from dataset import Question
-from nes import NES
-from summarizer import Summarizer
+from KBQA.appB.data_generator.dataset import Dataset
+from KBQA.appB.data_generator.dataset import Question
+from KBQA.appB.summarizers.one_hop_rank_summarizer.one_hop_rank_summarizer import (
+    OneHopRankSummarizer,
+)
+from KBQA.appB.data_generator.summarizer import Summarizer
 
 
 class DatasetGenerator:
@@ -59,9 +61,14 @@ class DatasetGenerator:
                 print(f"Error summarizing question {question.text}: {exception}")
 
 
+# DATASET_PATH = sys.path[0] + "/../../datasets/qald-8-test-multilingual.json"
+# DATASET_PATH = os.path.dirname(__file__) + "/../../datasets/qald-8-test-multilingual.json"
+DATASET_PATH = "./../../datasets/qald-8-test-multilingual.json"
+
 qald = Dataset()
-qald.load_qald_dataset("KBQA/data-generator/qald-9-train-multilingual.json")
-nes = NES()
+qald.load_qald_dataset(DATASET_PATH)
+# nes = NES()
+nes = OneHopRankSummarizer(limit=50, timeout=0.1)
 
 dataset_generator = DatasetGenerator(qald)
 
@@ -80,5 +87,5 @@ except KeyboardInterrupt:
         pickle.dump(dataset_generator, f)
 finally:
     dataset_generator.dataset.save_qtq_dataset(
-        "KBQA/data-generator/qtq-9-train-multilingual.json"
+        "./../../datasets/qtq-8-train-multilingual.json"
     )
