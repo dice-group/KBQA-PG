@@ -96,9 +96,7 @@ def read_examples_without_target(source_file, triples_file):
     examples = []
     with open(source_file, encoding="utf-8") as source_f:
         with open(triples_file, encoding="utf-8") as triples_f:
-            for idx, (source, triples) in enumerate(
-                zip(source_f, triples_f)
-            ):
+            for idx, (source, triples) in enumerate(zip(source_f, triples_f)):
                 examples.append(
                     Example(
                         idx=idx,
@@ -241,11 +239,11 @@ def main():
     ## Other parameters
     parser.add_argument(
         "--load_model_checkpoint",
-        default='Dynamic',
+        default="Dynamic",
         type=str,
-        choices=['Yes', 'No'],
-        help="Should the model weights at load_model_path be loaded. Defaults to \"No\" in training and \"Yes\" in "
-             "testing",
+        choices=["Yes", "No"],
+        help='Should the model weights at load_model_path be loaded. Defaults to "No" in training and "Yes" in '
+        "testing",
     )
     parser.add_argument(
         "--load_model_path",
@@ -261,7 +259,7 @@ def main():
     )
     parser.add_argument(
         "--model_architecture",
-        default='bert2bert',
+        default="bert2bert",
         type=str,
         help="Model architecture: e.g. bert2bert, bert2rnd",
     )
@@ -331,7 +329,7 @@ def main():
         default=128,
         type=int,
         help="The maximum total triples sequence length after tokenization. Sequences longer "
-             "than this will be truncated, sequences shorter will be padded.",
+        "than this will be truncated, sequences shorter will be padded.",
     )
     parser.add_argument(
         "--max_target_length",
@@ -351,7 +349,9 @@ def main():
         "--do_test", action="store_true", help="Whether to run test on the test set."
     )
     parser.add_argument(
-        "--do_predict", action="store_true", help="Whether to run prediction on the predict set."
+        "--do_predict",
+        action="store_true",
+        help="Whether to run prediction on the predict set.",
     )
     parser.add_argument(
         "--do_lower_case",
@@ -475,9 +475,7 @@ def main():
     )
 
     # Build triple encoder.
-    triple_encoder_config = BertConfig.from_pretrained(
-        args.decoder_model_name_or_path
-    )
+    triple_encoder_config = BertConfig.from_pretrained(args.decoder_model_name_or_path)
     triple_encoder = BertModel.from_pretrained(
         args.decoder_model_name_or_path, config=triple_encoder_config
     )
@@ -517,13 +515,15 @@ def main():
             max_length=args.max_target_length,
             sos_id=tokenizer.cls_token_id,
             eos_id=tokenizer.sep_token_id,
-            device=device
+            device=device,
         )
     else:
         raise Exception("Model architecture is not valid.")
 
     # Load model checkpoint.
-    if args.load_model_checkpoint == 'Yes' or (args.load_model_checkpoint == 'Dynamic' and args.do_test):
+    if args.load_model_checkpoint == "Yes" or (
+        args.load_model_checkpoint == "Dynamic" and args.do_test
+    ):
         logger.info("reload model from {}".format(args.load_model_path))
         model.load_state_dict(torch.load(args.load_model_path))
 
@@ -572,7 +572,12 @@ def main():
         )
 
         train_data = TensorDataset(
-            all_source_ids, all_source_mask, all_triples_ids, all_triples_mask, all_target_ids, all_target_mask
+            all_source_ids,
+            all_source_mask,
+            all_triples_ids,
+            all_triples_mask,
+            all_target_ids,
+            all_target_mask,
         )
 
         if args.local_rank == -1:
@@ -639,7 +644,14 @@ def main():
             bar = tqdm(train_dataloader, total=len(train_dataloader))
             for batch in bar:
                 batch = tuple(t.to(device) for t in batch)
-                source_ids, source_mask, triples_ids, triples_mask, target_ids, target_mask = batch
+                (
+                    source_ids,
+                    source_mask,
+                    triples_ids,
+                    triples_mask,
+                    target_ids,
+                    target_mask,
+                ) = batch
                 loss, _, _ = model(
                     source_ids=source_ids,
                     source_mask=source_mask,
@@ -702,7 +714,12 @@ def main():
                     all_triples_mask = torch.tensor(
                         [f.triples_mask for f in eval_features], dtype=torch.long
                     )
-                    eval_data = TensorDataset(all_source_ids, all_source_mask, all_triples_ids, all_triples_mask)
+                    eval_data = TensorDataset(
+                        all_source_ids,
+                        all_source_mask,
+                        all_triples_ids,
+                        all_triples_mask,
+                    )
                     dev_dataset["dev_bleu"] = eval_examples, eval_data
 
                 eval_sampler = SequentialSampler(eval_data)
@@ -716,8 +733,12 @@ def main():
                     batch = tuple(t.to(device) for t in batch)
                     source_ids, source_mask, triples_ids, triples_mask = batch
                     with torch.no_grad():
-                        preds = model(source_ids=source_ids, source_mask=source_mask, triples_ids=triples_ids,
-                                      triples_mask=triples_mask)
+                        preds = model(
+                            source_ids=source_ids,
+                            source_mask=source_mask,
+                            triples_ids=triples_ids,
+                            triples_mask=triples_mask,
+                        )
                         for pred in preds:
                             t = pred[0].cpu().numpy()
                             t = list(t)
@@ -797,7 +818,9 @@ def main():
             all_triples_mask = torch.tensor(
                 [f.triples_mask for f in eval_features], dtype=torch.long
             )
-            eval_data = TensorDataset(all_source_ids, all_source_mask, all_triples_ids, all_triples_mask)
+            eval_data = TensorDataset(
+                all_source_ids, all_source_mask, all_triples_ids, all_triples_mask
+            )
 
             # Calculate bleu
             eval_sampler = SequentialSampler(eval_data)
@@ -811,8 +834,12 @@ def main():
                 batch = tuple(t.to(device) for t in batch)
                 source_ids, source_mask, triples_ids, triples_mask = batch
                 with torch.no_grad():
-                    preds = model(source_ids=source_ids, source_mask=source_mask, triples_ids=triples_ids,
-                                  triples_mask=triples_mask)
+                    preds = model(
+                        source_ids=source_ids,
+                        source_mask=source_mask,
+                        triples_ids=triples_ids,
+                        triples_mask=triples_mask,
+                    )
                     for pred in preds:
                         t = pred[0].cpu().numpy()
                         t = list(t)
@@ -871,7 +898,9 @@ def main():
             all_triples_mask = torch.tensor(
                 [f.triples_mask for f in eval_features], dtype=torch.long
             )
-            eval_data = TensorDataset(all_source_ids, all_source_mask, all_triples_ids, all_triples_mask)
+            eval_data = TensorDataset(
+                all_source_ids, all_source_mask, all_triples_ids, all_triples_mask
+            )
 
             # Calculate bleu
             eval_sampler = SequentialSampler(eval_data)
@@ -885,8 +914,12 @@ def main():
                 batch = tuple(t.to(device) for t in batch)
                 source_ids, source_mask, triples_ids, triples_mask = batch
                 with torch.no_grad():
-                    preds = model(source_ids=source_ids, source_mask=source_mask, triples_ids=triples_ids,
-                                  triples_mask=triples_mask)
+                    preds = model(
+                        source_ids=source_ids,
+                        source_mask=source_mask,
+                        triples_ids=triples_ids,
+                        triples_mask=triples_mask,
+                    )
                     for pred in preds:
                         t = pred[0].cpu().numpy()
                         t = list(t)
@@ -897,7 +930,7 @@ def main():
             model.train()
             pred_str = []
             with open(
-                    os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w"
+                os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w"
             ) as f:
                 for ref, example in zip(p, eval_examples):
                     ref = ref.strip().replace("< ", "<").replace(" >", ">")

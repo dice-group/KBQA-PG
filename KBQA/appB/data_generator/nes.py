@@ -1,9 +1,8 @@
 """NES summarizer."""
-
 from typing import List
 
-import nes_ner_hop
-from summarizer import Summarizer
+from KBQA.appB.summarizers.NES_NER_Hop.nes_ner_hop import nes_ner_hop
+from KBQA.appB.data_generator.summarizer import Summarizer
 
 
 class NES(Summarizer):
@@ -22,7 +21,7 @@ class NES(Summarizer):
         list[str]
             A list of triples found by the summarizer in the format "<s> <p> <o>"
         """
-        graph = nes_ner_hop.nes_ner_hop(question)
+        graph = nes_ner_hop(question)
         triples = list()
 
         for sub, pre, obj in graph:

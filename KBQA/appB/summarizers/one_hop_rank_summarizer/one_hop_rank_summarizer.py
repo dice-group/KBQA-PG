@@ -8,13 +8,17 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
-from data_generator.summarizer import Summarizer
-from entity_relation_hops.entity_relation_hops import entity_relation_hops
-from entity_relation_hops.entity_relation_hops import get_subgraphs_based_on_relations
-from ranking.ranking import get_ranking_tables
-from ranking.ranking import rank_list
 from rdflib import Graph
 from rdflib.term import URIRef
+from KBQA.appB.data_generator.summarizer import Summarizer
+from KBQA.appB.summarizers.entity_relation_hops.entity_relation_hops import (
+    entity_relation_hops,
+)
+from KBQA.appB.summarizers.entity_relation_hops.entity_relation_hops import (
+    get_subgraphs_based_on_relations,
+)
+from KBQA.appB.summarizers.ranking.ranking import get_ranking_tables
+from KBQA.appB.summarizers.ranking.ranking import rank_list
 
 
 class OneHopRankSummarizer(Summarizer):
@@ -45,7 +49,7 @@ class OneHopRankSummarizer(Summarizer):
     """
 
     PRINT = False
-    DATASET_PATH = "datasets/"
+    DATASET_PATH = "./../../datasets/"
     EXCLUDE = [
         "http://dbpedia.org/ontology/abstract",
     ]
