@@ -1,4 +1,4 @@
-"""A module to get ranking of triples from summarized subgraph."""
+"""A module to count occurrence of multihop predicates in QALD8, LCQUAD and QALD9 data set."""
 from contextlib import suppress
 import json
 import pickle
@@ -23,15 +23,15 @@ def load_sparql_from_json(jsonfile: str) -> List[str]:
     with open(jsonfile, encoding="utf8") as file:
         data_js = json.load(file)
     sparql_strings = []
-    # parse all sparql strings from the json (works only for qald dataset)
+    # parse all sparql strings from the json (works only for qald8 dataset)
     for question in data_js["questions"]:
         sparql_strings.append(question["query"]["sparql"])
     return sparql_strings
 
 
-def load_sparql_from_json_lcqald(jsonfile: str) -> List[str]:
+def load_sparql_from_json_lcquad(jsonfile: str) -> List[str]:
     """
-    Given a json file (for LCQALD dataset) with train data, sparql strings of all the questions are returned.
+    Given a json file (for LCQUAD dataset) with train data, sparql strings of all the questions are returned.
 
     :param jsonfile: Path to json file as string.
     :return: List of all sparql strings from the given json file.
@@ -208,7 +208,7 @@ def predicate_count_inverse_relations(inverse_triples_list: list) -> Dict[str, i
 
 def predicate_count_with_multihop(
     tripleslist: List[List[URIRef]],
-) -> List[List[URIRef]]:
+) -> List[Tuple[Tuple, int]]:
     """
     Given lists with one or two hop triples. Lists with predicates for one or two hopes in sort order are returned.
 
@@ -218,7 +218,7 @@ def predicate_count_with_multihop(
     :return: lists with predicate for one or two hopes in decreasing order (ordered by rank).
     """
     rank_table = {}
-    predicate_rank = []
+    # predicate_rank = []
     for triples_item in tripleslist:
         if len(triples_item) == 1:
             predicate = triples_item[0][1]
@@ -236,12 +236,7 @@ def predicate_count_with_multihop(
                 rank_table[predicates_tuple] = 0
             rank_table[predicates_tuple] = rank_table[predicates_tuple] + 1
     rank_table_list = sorted(rank_table.items(), key=lambda x: x[1], reverse=True)
-    for item in rank_table_list:
-        if isinstance(item[0], tuple):
-            predicate_rank.append(list(item[0]))
-        else:
-            predicate_rank.append([item[0]])
-    return predicate_rank
+    return rank_table_list
 
 
 def get_ranking_tables(datasetfile: str) -> Tuple[dict, dict]:
@@ -417,22 +412,67 @@ def ranked_triples_for_inverse_subgraph(
         return inverse_subgraph_triples_ranked
 
 
+def create_table_predicate_rank(dataset: str, lcquad: bool) -> List[Tuple[Tuple, int]]:
+    """
+    Given a path to data set. List with tuples for this data set predicate, rank is returned.
+
+    :param dataset: path to folder with data set.
+    :param lcquad: decide whether we parse lcquad or not.
+    :return: List with predicate, rank in decreasing order according rank.
+    """
+    if lcquad:
+        sparql_strings = load_sparql_from_json_lcquad(dataset)
+    else:
+        sparql_strings = load_sparql_from_json(dataset)
+    tripleslist = []
+    for string in sparql_strings:
+        with suppress(Exception):
+            triples = extract_hop_triples(string)
+            for trip in triples:
+                tripleslist.append(trip)
+    tripleslist = predicate_count_with_multihop(tripleslist)
+    return tripleslist
+
+
+def combine_predicates_without_dublicates(
+    first_dataset: List[Tuple], second_dataset: List[Tuple]
+) -> List[Tuple]:
+    """
+    Given two triples lists with predicate:rank. List with tuples for two triples list with predicate, rank without duplicates is returned.
+
+    This function combined predicates:rank from second triples list for second data set with the
+    first triples list without duplicates.
+    :param first_dataset: List with tuples predicate:rank for the first data set.
+    :param second_dataset: List with tuples predicate:rank for the second data set.
+    :return: List with predicate :rank in decreasing order according rank for first data set, after for second data set without duplicates.
+    """
+    pred_without_rank = []
+    for pred in first_dataset:
+        pred_without_rank.append(pred[0])
+    for pred in second_dataset:
+        if pred[0] not in pred_without_rank:
+            first_dataset.append(pred)
+    combined_predicates = first_dataset
+    return combined_predicates
+
+
 def main() -> None:
-    """Call ranked_triples_for_regular_subgraph to get ranking of regular triples."""
-    # (
-    #    regular_subgraph,
-    #    inverse_subgraph,
-    # ) = nes_ner_hop_regular_and_inverse_subgraph(question="Who is Angela Merkel?")
-    # ranked_regular_triples = ranked_triples_for_regular_subgraph(regular_subgraph, 100)
-    # ranked_inverse_triples = ranked_triples_for_inverse_subgraph(inverse_subgraph, 1)
-    # for triple_item in ranked_regular_triples.items():
-    #    print(triple_item)
-    #    print("\n")
-    # print("\n")
-    # print("\n")
-    # for triple_item in ranked_inverse_triples.items():
-    #    print(triple_item)
-    #    print("\n")
+    """Call create_table_predicate_rank to create list pred:rank."""
+    # qald8 = "C:/Users/User/Downloads/QALD8-train.json"
+    # lcquad = "C:/Users/User/Downloads/train-data.json"
+    # qald9 = "C:/Users/User/Downloads/qald-9-train-multilingual.json"
+    # first_dataset = create_table_predicate_rank(qald8, False)
+    # second_dataset = create_table_predicate_rank(qald9, False)
+    # third_dataset = create_table_predicate_rank(lcquad, True)
+    # combined_dataset = combine_predicates_without_dublicates(first_dataset, second_dataset)
+    # combined_dataset1 = combine_predicates_without_dublicates(combined_dataset, third_dataset)
+
+    # open_file = open("qald8_qald9_lcquad.pickle", "wb")
+    # pickle.dump(combined_dataset1, open_file)
+    # open_file.close()
+    # with open("qald8_qald9_lcquad.pickle", "rb") as file:
+    #    lst = pickle.load(file)
+    # print(len(lst))
 
 
 # Call from shell as main.
