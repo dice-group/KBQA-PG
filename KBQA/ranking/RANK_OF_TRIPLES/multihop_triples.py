@@ -1,6 +1,7 @@
 """A module to summarize the triples for predicates from QALD8, QALD9 and LCQALD data set."""
 from builtins import FileNotFoundError
 import pickle
+import time
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -185,7 +186,7 @@ def query_dbpedia_for_all_entities(
         sparql_string1 = generate_sparql_string(entity, list_of_predicates)
         sparql = SPARQLWrapper(
             endpoint,
-            agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko)",
+            agent="Mozilla/5.0 (Windows NT x.y; Win64; x64; X11; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0",
         )
         sparql.setQuery(sparql_string1)
         sparql.method = "POST"
@@ -330,17 +331,19 @@ def sort_triples_from_the_query(
     return triples_list_sorted
 
 
-def triples_for_all_datasets(
+def triples_for_predicates_all_datasets(
     question: str,
+    predicate_table: str,
     number_of_triples: int = 100,
 ) -> List[Tuple[Tuple, int]]:
     """
-    Given question string, and number of triples, that is needed. Necessary number of triples in ranked order are returned.
+    Given question string, predicate_table and number of triples, that is needed. Necessary number of triples in ranked order are returned.
 
     This function sends sparql to DBPedia in order to get triples for each entity and each predicate
     in ranked order. The sparql requests will be sent until necessary number of triples are in the final list.
 
     :param question: question string in natural language.
+    :param predicate_table: name of the file with predicates from data sets qald8, qald9, lcquad.
     :param number_of_triples: how many triples are needed.
 
     :return: final_triples_list with triples and rank.
@@ -349,8 +352,8 @@ def triples_for_all_datasets(
     triples_list_sorted: Dict[Tuple, int] = {}
     final_triples_list: List[Tuple[Tuple, int]] = []
     try:
-        with open("qald8_qald9_lcquad.pickle", "rb") as file:
-            qald8_qald9_lcquad = pickle.load(file)
+        with open(predicate_table, "rb") as file:
+            predicates_table = pickle.load(file)
     except FileNotFoundError:
         pass
     num_of_query = 0
@@ -358,12 +361,12 @@ def triples_for_all_datasets(
     last_pred = 69
     while len(final_triples_list) < number_of_triples and num_of_query < 11:
         triples_list = query_dbpedia_for_all_entities(
-            entities, qald8_qald9_lcquad[first_pred:last_pred]
+            entities, predicates_table[first_pred:last_pred]
         )
         triples_list_sorted = sort_triples_from_the_query(
             triples_list,
             entities,
-            qald8_qald9_lcquad[first_pred:last_pred],
+            predicates_table[first_pred:last_pred],
             triples_list_sorted,
         )
         final_triples_list = list(triples_list_sorted.items())
@@ -375,8 +378,8 @@ def triples_for_all_datasets(
 
 
 def main() -> None:
-    """Call triples_for_all_datasets() to get triples with a rank for all data sets."""
-    # triples = triples_for_all_datasets("Who is Brad Pitt?")
+    """Call triples_for_predicates_all_datasets() to get triples with a rank for predicates from all data sets."""
+    # triples = triples_for_predicates_all_datasets("Who is Justin Bieber?", "qald9_qald8_lcquad.pickle")
     # print(len(triples))
     # for triple in triples:
     #    print(triple)
@@ -385,6 +388,6 @@ def main() -> None:
 
 # Call from shell as main.
 if __name__ == "__main__":
-    # start_time = time.time()
+    start_time = time.time()
     main()
-    # print(time.time() - start_time)
+    print(time.time() - start_time)
