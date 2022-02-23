@@ -1,6 +1,7 @@
 """Generator to generate a (question, sparql, triples) dataset using summarizers."""
 import pickle
 from typing import Union
+from typing import Tuple
 
 from KBQA.appB.data_generator.dataset import Dataset
 from KBQA.appB.data_generator.dataset import Question
@@ -63,7 +64,7 @@ class DatasetGenerator:
                 print(f"Error summarizing question {question.text}: {exception}")
 
 
-def get_args() -> tuple[str, str, str]:
+def get_args() -> Tuple[str, str, str]:
     """Get cmd-args.
 
     :return:

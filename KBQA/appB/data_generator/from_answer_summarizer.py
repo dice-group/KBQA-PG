@@ -2,6 +2,9 @@
 import re
 from typing import Optional
 from typing import Set
+from typing import List
+from typing import Tuple
+from typing import Dict
 
 from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
@@ -13,7 +16,7 @@ from KBQA.appB.data_generator.summarizer import Summarizer
 class FromAnswerSummarizer(Summarizer):
     """Summarizer which generates triples from a given SPARQL translation of a NL Question."""
 
-    def summarize(self, question: Question) -> list[str]:
+    def summarize(self, question: Question) -> List[str]:
         """Summarize a natural question and return relevant triples.
 
         Parameters
@@ -55,7 +58,7 @@ class FromAnswerSummarizer(Summarizer):
             print("\n")
         return relevant_triples
 
-    def _tokenize_query(self, query_body: str) -> list[str]:
+    def _tokenize_query(self, query_body: str) -> List[str]:
         """
         Tokenizes the query body of a SPARQL query.
 
@@ -94,7 +97,7 @@ class FromAnswerSummarizer(Summarizer):
 
     def _construct_triple_templates(
         self, tokenized_query: list
-    ) -> tuple[list[str], list[str]]:
+    ) -> Tuple[List[str], List[str]]:
         """
         Construct triple templates from tokenized query.
 
@@ -132,7 +135,7 @@ class FromAnswerSummarizer(Summarizer):
                     triples[-1] = triples[-1] + " " + token
         return triples, union_triples
 
-    def _expand_templates(self, templates: list, prefixes: dict) -> list[str]:
+    def _expand_templates(self, templates: list, prefixes: dict) -> List[str]:
         """
         Expand prefixes in triples.
 
@@ -157,7 +160,7 @@ class FromAnswerSummarizer(Summarizer):
             expanded_templates.append(" ".join(expanded_tokens))
         return expanded_templates
 
-    def _extract_sparql_prefixes(self, sparql_query: str) -> dict[str, str]:
+    def _extract_sparql_prefixes(self, sparql_query: str) -> Dict[str, str]:
         """
         Extract all SPARQL PREFIX statements into a dict.
 
@@ -178,7 +181,7 @@ class FromAnswerSummarizer(Summarizer):
     def _extract_sparql_query_metadata(
         self,
         sparql_query: str,
-    ) -> tuple[str, str, str, dict]:
+    ) -> Tuple[str, str, str, dict]:
         """
         Extract and preprocess metadata from SPARQL query for further processing.
 
@@ -211,7 +214,7 @@ class FromAnswerSummarizer(Summarizer):
 
         return sparql_query, query_body, query_constraint, query_prefixes
 
-    def _execute_sparql_query(self, query: str) -> dict:
+    def _execute_sparql_query(self, query: str) -> Dict:
         """
         Get results from a "SELECT WHERE" SPARQL query.
 
@@ -227,7 +230,7 @@ class FromAnswerSummarizer(Summarizer):
 
     def _get_query_results(
         self, sparql_query: str, query_constraint: str
-    ) -> tuple[list, Optional[str], list]:
+    ) -> Tuple[List, Optional[str], List]:
         """
         Execute SPARQL query and gather the results.
 
@@ -267,7 +270,7 @@ class FromAnswerSummarizer(Summarizer):
         results: dict,
         check_triple: bool = False,
         ask_template: str = "",
-    ) -> set:
+    ) -> Set:
         """
         Build triples from SPARQL query results.
 
@@ -327,7 +330,7 @@ class FromAnswerSummarizer(Summarizer):
         query_constraint: str,
         triple_templates: list,
         union_templates: list,
-    ) -> list:
+    ) -> List:
         """
         Gather all relevant triples.
 
