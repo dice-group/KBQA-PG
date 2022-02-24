@@ -22,7 +22,7 @@ If no embedding is found for a relation URI, then an empty dict is returned.
 In order to test the functionality of the embedding server locally, start the server in the kbqa folder:
 
 ```bash
-sudo env RESOURCE_PATH="/location/to/entity_embedding_file" docker-compose up --build 
+sudo env RESOURCE_PATH="/location/to/entity_embedding_file" docker-compose up --build
 ```
 
 In another terminal execute the script **stress_test.py**:
