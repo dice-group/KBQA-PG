@@ -83,8 +83,10 @@ def convert_examples_to_features(examples, tokenizer, args):
                 [x.replace("\u0120", "_") for x in tokens]
             )
         )
-        logger.info("ids: {}".format(" ".join(map(str, ids))))
-        logger.info("mask: {}".format(" ".join(map(str, mask))))
+        if args.print_token_ids:
+            logger.info("ids: {}".format(" ".join(map(str, ids))))
+        if args.print_mask:
+            logger.info("mask: {}".format(" ".join(map(str, mask))))
 
 
 def main():
@@ -117,6 +119,16 @@ def main():
     )
 
     # Not required
+    parser.add_argument(
+        "--print_token_ids",
+        action="store_true",
+        help="Set this flag if you want to have the ids of the tokens printed.",
+    )
+    parser.add_argument(
+        "--print_mask",
+        action="store_true",
+        help="Set this flag if you want to see the mask of the token sequence printed.",
+    )
     parser.add_argument(
         "--tokenizer_name",
         default="",
