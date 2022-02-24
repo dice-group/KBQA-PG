@@ -10,7 +10,7 @@ from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
 
 from KBQA.appB.data_generator.dataset import Question
-from KBQA.appB.data_generator.summarizer import Summarizer
+from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
 
 
 class FromAnswerSummarizer(Summarizer):
@@ -29,7 +29,6 @@ class FromAnswerSummarizer(Summarizer):
         list[str]
             A list of triples found by the summarizer in the format "<s> <p> <o>"
         """
-        print(question)
         (
             sparql_query,
             query_body,

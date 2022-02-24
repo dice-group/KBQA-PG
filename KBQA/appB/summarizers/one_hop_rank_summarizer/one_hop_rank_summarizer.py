@@ -10,7 +10,7 @@ from typing import Tuple
 
 from rdflib import Graph
 from rdflib.term import URIRef
-from KBQA.appB.data_generator.summarizer import Summarizer
+from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
 from KBQA.appB.summarizers.entity_relation_hops.entity_relation_hops import (
     entity_relation_hops,
 )

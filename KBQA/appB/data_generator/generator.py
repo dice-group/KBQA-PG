@@ -5,12 +5,14 @@ from typing import Tuple
 
 from KBQA.appB.data_generator.dataset import Dataset
 from KBQA.appB.data_generator.dataset import Question
-from KBQA.appB.data_generator.nes import NES
-from KBQA.appB.data_generator.from_answer_summarizer import FromAnswerSummarizer
+from KBQA.appB.summarizers.NES_NER_Hop.nes_summarizer import NES
+from KBQA.appB.summarizers.from_answer_summarizer.from_answer_summarizer import (
+    FromAnswerSummarizer,
+)
 from KBQA.appB.summarizers.one_hop_rank_summarizer.one_hop_rank_summarizer import (
     OneHopRankSummarizer,
 )
-from KBQA.appB.data_generator.summarizer import Summarizer
+from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
 
 
 class DatasetGenerator:
@@ -147,7 +149,9 @@ def main() -> None:
         with open("generator.pickle", "wb") as f:
             pickle.dump(dataset_generator, f)
     finally:
-        dataset_generator.dataset.save_qtq_dataset(outfile_name)
+        dataset_generator.dataset.save_qtq_dataset(
+            DATASET_ROOT_PATH + "/" + outfile_name
+        )
 
     sys.exit()
 

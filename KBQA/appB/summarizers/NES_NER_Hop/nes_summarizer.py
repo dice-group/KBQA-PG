@@ -2,7 +2,7 @@
 from typing import List
 
 from KBQA.appB.summarizers.NES_NER_Hop.nes_ner_hop import nes_ner_hop
-from KBQA.appB.data_generator.summarizer import Summarizer
+from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
 from KBQA.appB.data_generator.dataset import Question
 
 
