@@ -2,7 +2,7 @@
 
 import requests
 
-ENTITY_EMBEDDING_PATH = "/media/jmenzel/INTENSO1/Embeddings/dbp21-03_complex/embeddings/embedding_query/entity_embeddings_dbp21-03_complex.tsv"
+ENTITY_EMBEDDING_PATH = "/media/jmenzel/INTENSO2/Embeddings/dbp21-03_complex/embeddings/embedding_query/entity_embeddings_dbp21-03_complex.tsv"
 
 
 def stress_test(path: str, stop_after: int = 1000, status_every: int = 100) -> None:
@@ -82,7 +82,7 @@ def stress_test_batch(
             expected_embeddings.append(line)
 
             if i % status_every == 0:
-                print(f"Gone throught {i}/{stop_after} Embeddings.")
+                print(f"Gone through {i}/{stop_after} Embeddings.")
             if i == stop_after:
                 break
     print(f"Passed batch({batch_size}) after testing {stop_after} entities")
