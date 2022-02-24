@@ -1,4 +1,4 @@
-"""A module to count occurrence of multihope predicates in QALD8, LCQUAD and QALD9 data set."""
+"""A module to count occurrence of multihop predicates in QALD8, LCQUAD and QALD9 data set."""
 from contextlib import suppress
 import json
 import pickle
@@ -412,31 +412,67 @@ def ranked_triples_for_inverse_subgraph(
         return inverse_subgraph_triples_ranked
 
 
+def create_table_predicate_rank(dataset: str, lcquad: bool) -> List[Tuple[Tuple, int]]:
+    """
+    Given a path to data set. List with tuples for this data set predicate, rank is returned.
+
+    :param dataset: path to folder with data set.
+    :param lcquad: decide whether we parse lcquad or not.
+    :return: List with predicate, rank in decreasing order according rank.
+    """
+    if lcquad:
+        sparql_strings = load_sparql_from_json_lcquad(dataset)
+    else:
+        sparql_strings = load_sparql_from_json(dataset)
+    tripleslist = []
+    for string in sparql_strings:
+        with suppress(Exception):
+            triples = extract_hop_triples(string)
+            for trip in triples:
+                tripleslist.append(trip)
+    tripleslist = predicate_count_with_multihop(tripleslist)
+    return tripleslist
+
+
+def combine_predicates_without_dublicates(
+    first_dataset: List[Tuple], second_dataset: List[Tuple]
+) -> List[Tuple]:
+    """
+    Given two triples lists with predicate:rank. List with tuples for two triples list with predicate, rank without duplicates is returned.
+
+    This function combined predicates:rank from second triples list for second data set with the
+    first triples list without duplicates.
+    :param first_dataset: List with tuples predicate:rank for the first data set.
+    :param second_dataset: List with tuples predicate:rank for the second data set.
+    :return: List with predicate :rank in decreasing order according rank for first data set, after for second data set without duplicates.
+    """
+    pred_without_rank = []
+    for pred in first_dataset:
+        pred_without_rank.append(pred[0])
+    for pred in second_dataset:
+        if pred[0] not in pred_without_rank:
+            first_dataset.append(pred)
+    combined_predicates = first_dataset
+    return combined_predicates
+
+
 def main() -> None:
-    """Call load_sparql_from_json_lcquad to get all sparql strings from LCQUAD."""
-    # qald = "C:/Users/User/Downloads/QALD8-train.json"
+    """Call create_table_predicate_rank() to create list pred:rank."""
+    # qald8 = "C:/Users/User/Downloads/QALD8-train.json"
     # lcquad = "C:/Users/User/Downloads/train-data.json"
-    # sparql_strings = load_sparql_from_json_lcquad(lcquad)
-    # tripleslist = []
-    # for string in sparql_strings:
-    #    try:
-    #        triples = extract_hop_triples(string)
-    #        for trip in triples:
-    #            tripleslist.append(trip)
-    #    except Exception:
-    #        pass
+    # qald9 = "C:/Users/User/Downloads/qald-9-train-multilingual.json"
+    # first_dataset = create_table_predicate_rank(qald8, False)
+    # second_dataset = create_table_predicate_rank(qald9, False)
+    # third_dataset = create_table_predicate_rank(lcquad, False)
+    # combined_dataset = combine_predicates_without_dublicates(first_dataset, second_dataset)
+    # combined_dataset1 = combine_predicates_without_dublicates(combined_dataset, third_dataset)
 
-    # for triple in tripleslist:
-    #   print(triple)
-    # table = predicate_count_with_multihop(tripleslist)
-    # open_file = open("predicates_rank_multy_hop_lcquad.pickle", "wb")
-    # pickle.dump(table, open_file)
+    # open_file = open("lcquad_qald9_qald8.pickle", "wb")
+    # pickle.dump(combined_dataset1, open_file)
     # open_file.close()
-
-    with open("predicates_rank_multy_hop_lcquad1.pickle", "rb") as file:
-        mynewlist2 = pickle.load(file)
-    for item in mynewlist2:
-        print(item)
+    # with open("lcquad_qald9_qald8.pickle", "rb") as file:
+    #    lst = pickle.load(file)
+    # print(len(lst))
 
 
 # Call from shell as main.

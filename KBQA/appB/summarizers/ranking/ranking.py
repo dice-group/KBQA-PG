@@ -6,15 +6,17 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
-from NES_NER_Hop.nes_ner_hop import nes_ner_hop_regular_and_inverse_subgraph
 from rdflib.graph import Graph
 from rdflib.plugins.sparql import algebra
 from rdflib.plugins.sparql import parser
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.term import URIRef
+from KBQA.appB.summarizers.NES_NER_Hop.nes_ner_hop import (
+    nes_ner_hop_regular_and_inverse_subgraph,
+)
 
 
-PICKLE_OBJECT_PATH = "ranking/pickle_objects/"
+PICKLE_OBJECT_PATH = "./pickle_objects/"
 
 
 def load_sparql_from_json(jsonfile: str) -> List[str]:

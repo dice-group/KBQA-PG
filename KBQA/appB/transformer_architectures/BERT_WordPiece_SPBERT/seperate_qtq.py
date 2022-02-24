@@ -1,14 +1,16 @@
 import argparse
 import json
 
+
 def filter_triples(triples: list) -> list:
     """
     Filter out triples containing \\n character.
 
-    :param triples: list of triples 
+    :param triples: list of triples
     :return: list of filtered triples
     """
     return [triple for triple in triples if not "\n" in triple]
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
