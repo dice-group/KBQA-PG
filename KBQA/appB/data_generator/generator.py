@@ -1,13 +1,18 @@
 """Generator to generate a (question, sparql, triples) dataset using summarizers."""
 import pickle
 from typing import Union
+from typing import Tuple
 
 from KBQA.appB.data_generator.dataset import Dataset
 from KBQA.appB.data_generator.dataset import Question
+from KBQA.appB.summarizers.NES_NER_Hop.nes_summarizer import NES
+from KBQA.appB.summarizers.from_answer_summarizer.from_answer_summarizer import (
+    FromAnswerSummarizer,
+)
 from KBQA.appB.summarizers.one_hop_rank_summarizer.one_hop_rank_summarizer import (
     OneHopRankSummarizer,
 )
-from KBQA.appB.data_generator.summarizer import Summarizer
+from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
 
 
 class DatasetGenerator:
@@ -52,40 +57,108 @@ class DatasetGenerator:
 
             try:
                 print(f"Summarize question '{question.text}'")
-                triple = summarizer.summarize(question.text)
+                triple = summarizer.summarize(question)
                 question.triples = triple
                 print(f"Found {len(triple)} triples!")
                 self.current_question += 1
-                # question.save_to_qtq_dataset("KBQA/data-generator/qtq-9-train-multilingual-2.json")
+            # question.save_to_qtq_dataset("KBQA/data-generator/qtq-9-train-multilingual-2.json")
             except Exception as exception:  # pylint: disable=broad-except
                 print(f"Error summarizing question {question.text}: {exception}")
 
 
-# DATASET_PATH = sys.path[0] + "/../../datasets/qald-8-test-multilingual.json"
-# DATASET_PATH = os.path.dirname(__file__) + "/../../datasets/qald-8-test-multilingual.json"
-DATASET_PATH = "./../../datasets/qald-8-test-multilingual.json"
+def get_args() -> Tuple[str, str, str]:
+    """Get cmd-args.
 
-qald = Dataset()
-qald.load_qald_dataset(DATASET_PATH)
-# nes = NES()
-nes = OneHopRankSummarizer(limit=50, timeout=0.1)
-
-dataset_generator = DatasetGenerator(qald)
-
-try:
-    with open("generator.pickle", "rb") as f:
-        dataset_generator = pickle.load(f)
-    print("Continue with latest run.")
-except FileNotFoundError:
-    pass
-
-try:
-    dataset_generator.generate_triples(nes)
-except KeyboardInterrupt:
-    print("Interrupted summarization. Save progress...")
-    with open("generator.pickle", "wb") as f:
-        pickle.dump(dataset_generator, f)
-finally:
-    dataset_generator.dataset.save_qtq_dataset(
-        "./../../datasets/qtq-8-train-multilingual.json"
+    :return:
+        dataset_name: Name of the a QALD or LC-QuAD dataset located at ROOT_PATH
+        summarizer_name: Name of a summarizer such as NES, FromAnswer or OneHopRanking
+        outfile_name: Name of the output qtq file.
+    :rType: tuple
+    """
+    (opt_args, _) = getopt.getopt(
+        sys.argv[1:], "d:s:o", ["dataset=", "summarizer=", "output="]
     )
+    dataset_name = ""
+    summarizer_name = "NES"
+    outfile_name = ""
+    for opt, value in opt_args:
+        if opt in ("-d", "--dataset"):
+            dataset_name = value
+        if opt in ("-s", "--summarizer"):
+            summarizer_name = value
+        if opt in ("-o", "--output"):
+            outfile_name = value
+    return dataset_name, summarizer_name, outfile_name
+
+
+def main() -> None:
+    """Start this module from as __main__ (e.g. from commandline) to invoke this function.
+
+    Synopsis: python generator.py {--dataset | -d} <dataset-name> [{--summarizer | -s} <summarizer>] [{--output|-o} <output-file>]
+    """
+    # Gather the given options.
+    dataset_name, summarizer_name, outfile_name = get_args()
+
+    if dataset_name == "":
+        print(
+            f'Provide a dataset with "{sys.argv[0]}\\ {{-d | --dataset}} <dataset_name>".'
+        )
+        sys.exit()
+
+    summarizers = {
+        "NES": NES,
+        "FromAnswer": FromAnswerSummarizer,
+        "OneHopRanking": OneHopRankSummarizer,
+    }
+
+    if summarizer_name not in summarizers:
+        print(
+            f'Provide a summarizer with "{sys.argv[0]}\\ {{-s | --summarizer}} <summarizer_name>".'
+        )
+        print("Available Summarizers are:")
+        for summ in summarizers:
+            print(summ)
+    else:
+        summarizer = summarizers[summarizer_name]()
+
+    if outfile_name == "":
+        print("[WARNING] output file not specified, defaulting to:", end=" ")
+        outfile_name = "qtq-" + dataset_name
+        print(outfile_name)
+        print(
+            f'Provide a output file name with "{sys.argv[0]}\\ {{-o | --output}} <outfile_name>".'
+        )
+
+    DATASET_ROOT_PATH = "./../../datasets"
+    dataset = Dataset()
+    dataset.load_dataset(DATASET_ROOT_PATH + "/" + dataset_name)
+
+    dataset_generator = DatasetGenerator(dataset)
+
+    try:
+        with open("generator.pickle", "rb") as f:
+            dataset_generator = pickle.load(f)
+        print("Continue with latest run.")
+    except FileNotFoundError:
+        pass
+
+    try:
+        dataset_generator.generate_triples(summarizer)
+    except KeyboardInterrupt:
+        print("Interrupted summarization. Save progress...")
+        with open("generator.pickle", "wb") as f:
+            pickle.dump(dataset_generator, f)
+    finally:
+        dataset_generator.dataset.save_qtq_dataset(
+            DATASET_ROOT_PATH + "/" + outfile_name
+        )
+
+    sys.exit()
+
+
+# Call from shell as main.
+if __name__ == "__main__":
+    import sys
+    import getopt
+
+    main()

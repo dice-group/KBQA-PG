@@ -1,5 +1,6 @@
 """Question Dataset."""
 import json
+import re
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -76,6 +77,29 @@ class Dataset:
         self.language: str = language
         self.questions: List[Question] = list()
 
+    def load_dataset(self, dataset_path: str) -> None:
+        """Load datset from given path.
+
+        Currently supported are QALD and LC-QuAD
+
+        Parameters
+        ----------
+        dataset_path : str
+            Path to dataset file
+
+        :raises ValueError: If dataset is not recognized as QALD or LC-QuAD
+        """
+        qald_regex = r"qald-[0-9]+-(train|test)-multilingual"
+        lc_quad_regex = r"lc-quad-(train|test)"
+        dataset_file = dataset_path.split("/")[-1]
+
+        if re.match(qald_regex, dataset_file):
+            self.load_qald_dataset(dataset_path)
+        elif re.match(lc_quad_regex, dataset_file):
+            self.load_lc_quad_dataset(dataset_path)
+        else:
+            raise ValueError(f"{dataset_file} is neither QALD nor LC-QuAD datset")
+
     def load_qald_dataset(self, dataset_path: str) -> None:
         """Load QALD dataset from given path.
 
@@ -96,7 +120,7 @@ class Dataset:
                     break
 
             sparql_query = question["query"]["sparql"]
-            answers = list()
+            answers: List = list()
             results = question["answers"][0]["results"]
 
             if len(results) > 0:
@@ -104,6 +128,23 @@ class Dataset:
                     if len(question_results) > 0:
                         answers.append(list(question_results.values())[0]["value"])
 
+            self.questions.append(Question(nl_question, sparql_query, answers))
+
+    def load_lc_quad_dataset(self, dataset_path: str) -> None:
+        """Load LC-QuAD dataset from given path.
+
+        Parameters
+        ----------
+        dataset_path : str
+            Path to LC-QuAD dataset json file
+        """
+        with open(dataset_path, "r", encoding="utf-8") as file_handle:
+            qald_data = json.load(file_handle)
+
+        for question in qald_data:
+            nl_question = question["corrected_question"]
+            sparql_query = question["sparql_query"]
+            answers: List = list()
             self.questions.append(Question(nl_question, sparql_query, answers))
 
     def save_qtq_dataset(self, dataset_path: str) -> None:

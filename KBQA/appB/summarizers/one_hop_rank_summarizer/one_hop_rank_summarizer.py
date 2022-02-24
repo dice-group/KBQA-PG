@@ -10,7 +10,7 @@ from typing import Tuple
 
 from rdflib import Graph
 from rdflib.term import URIRef
-from KBQA.appB.data_generator.summarizer import Summarizer
+from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
 from KBQA.appB.summarizers.entity_relation_hops.entity_relation_hops import (
     entity_relation_hops,
 )
@@ -19,6 +19,7 @@ from KBQA.appB.summarizers.entity_relation_hops.entity_relation_hops import (
 )
 from KBQA.appB.summarizers.ranking.ranking import get_ranking_tables
 from KBQA.appB.summarizers.ranking.ranking import rank_list
+from KBQA.appB.data_generator.dataset import Question
 
 
 class OneHopRankSummarizer(Summarizer):
@@ -74,7 +75,7 @@ class OneHopRankSummarizer(Summarizer):
         self._initialize_qald_predicates()
         self._initialize_lc_quad_predicates()
 
-    def summarize(self, question: str) -> List[str]:
+    def summarize(self, question: Question) -> List[str]:
         """Summarize a subgraph based on the entities from a question.
 
         Given a natural langugae question, extract a subgraph based on
@@ -83,15 +84,15 @@ class OneHopRankSummarizer(Summarizer):
 
         Parameters
         ----------
-        question : str
-            A natural language question.
+        question : Question
+            Question object containing a natural language question.
 
         Returns
         -------
         triples : list
             A list of triples found by the summarizer in the format "<s> <p> <o>"
         """
-        entities, summarized_graph = self._get_summarized_graph(question)
+        entities, summarized_graph = self._get_summarized_graph(question.text)
 
         print("Recognized entities:", entities)
 
