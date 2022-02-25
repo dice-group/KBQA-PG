@@ -23,17 +23,7 @@ import argparse
 from io import open
 import logging
 
-from transformers import BertConfig
-from transformers import BertModel
-from transformers import BertTokenizer
-from transformers import RobertaConfig
-from transformers import RobertaModel
-from transformers import RobertaTokenizer
-
-MODEL_CLASSES = {
-    "roberta": (RobertaConfig, RobertaModel, RobertaTokenizer),
-    "bert": (BertConfig, BertModel, BertTokenizer),
-}
+from transformers import AutoTokenizer
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
@@ -100,12 +90,6 @@ def main():
         help="Path to pre-trained model: e.g. roberta-base",
     )
     parser.add_argument(
-        "--model_type",
-        type=str,
-        required=True,
-        help="Model type: e.g. bert",
-    )
-    parser.add_argument(
         "--filename",
         type=str,
         required=True,
@@ -146,10 +130,10 @@ def main():
     logger.info(args)
 
     # Load models.
-    _, _, tokenizer_class = MODEL_CLASSES[args.model_type]
-    tokenizer = tokenizer_class.from_pretrained(
+    tokenizer = AutoTokenizer.from_pretrained(
         args.tokenizer_name if args.tokenizer_name else args.model_name_or_path,
         do_lower_case=args.do_lower_case,
+        use_fast=False,
     )
 
     examples = read_examples(
