@@ -21,6 +21,7 @@ def nes_ner_hop(question: str, *, confidence: float = 0.8, limit: int = -1) -> G
     :param limit: A natural number which limits the number of triples for each found entity.
     :return: A rdflib.graph.Graph which is a set of triples.
     """
+    print(question)
     entities = ner_dbpedia_spotlight(question, confidence=confidence)
     subgraph = hop_dbpedia_subgraph(entities, limit=limit)
     return subgraph

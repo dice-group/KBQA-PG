@@ -3,12 +3,14 @@ from abc import ABC
 from abc import abstractmethod
 from typing import List
 
+from KBQA.appB.data_generator.dataset import Question
+
 
 class Summarizer(ABC):
     """Abstract summarizer."""
 
     @abstractmethod
-    def summarize(self, question: str) -> List[str]:
+    def summarize(self, question: Question) -> List[str]:
         """Summarize a natural question and return relevant triples.
 
         Parameters
