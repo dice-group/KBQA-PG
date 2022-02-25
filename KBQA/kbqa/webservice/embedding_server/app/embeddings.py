@@ -1,5 +1,6 @@
 """Hashtable implementation for large entity embedding files."""
 
+import csv
 import hashlib
 import json
 import os
@@ -10,14 +11,14 @@ from typing import List
 import numpy as np
 
 
-class EmbeddingHashtable:
+class EntityHashTable:
     """
     Hashtable implementation for large entity embedding files.
 
     :param hash_table: list of full size hashtable buffers
     :param hash_table_collisions: dict containing longer collision chain
     :param root_path: Path to folder containing the entity embedding file
-    :param entity_file: entity embedding gile name, has to be stored in hash_table_config.json
+    :param entity_file: entity embedding file name, has to be stored in hash_table_config.json
     :param num_entities: number of enities in entity file, has to be store in hash_table_config.json
     :param hash_table_size: number of entries in hashtable buffer in hash_table
     :param hash_table_mask: used to cut down hash to generate index in [0,hash_table_size[
@@ -64,7 +65,6 @@ class EmbeddingHashtable:
             encoding="UTF-8",
         ) as config_file:
             data = json.load(config_file)
-            print(data)
             self.entity_file = data["entity_file"]
             self.num_entities = data["num_entities"]
             log_num_entities = int(np.ceil(np.log2(self.num_entities)))
@@ -149,7 +149,7 @@ class EmbeddingHashtable:
                         for entry in remove_hashes:
                             del self.hash_table_collisions[entry]
                 i += 1
-                if i % EmbeddingHashtable.PRINT_EVERY == 0:
+                if i % EntityHashTable.PRINT_EVERY == 0:
                     print(f"Hashed {i} elements ({i/self.num_entities*100.0:.1f}%")
                     print(f"Speed: {i/(time.time()-t_start):.1f}")
 
@@ -182,3 +182,98 @@ class EmbeddingHashtable:
             if hash_table_idx in self.hash_table_collisions:
                 seek_positions.extend(self.hash_table_collisions[hash_table_idx])
         return seek_positions
+
+
+class RelationEmbeddings:
+    """
+    Hashtable implementation for large entity embedding files.
+
+    :param relation_embeddings: dict containing the embeddings of relations
+    :param root_path: Path to folder containing the relation embedding file
+    :param relation_file: relation embedding file name, has to be stored in relation_config.json
+    """
+
+    PRINT_EVERY = 100000
+
+    def __init__(self, root_path: str) -> None:
+        self.relation_embeddings: dict = {}
+        self.root_path = root_path
+        self.relation_file = ""
+
+    def load(self) -> None:
+        """
+        Constrict relation_embedding dict directly from relation_embedding file.
+
+        The dict then contains the lhs and rhs embeddings with both the real and imaginary parts.
+        """
+        self.load_config()
+        with open(
+            self.root_path + "/" + self.relation_file,
+            "r",
+            newline="",
+            encoding="utf-8",
+        ) as tsv_file:
+            tsv_reader = csv.reader(tsv_file, delimiter="\t")
+            for row in tsv_reader:
+                if len(row) != 55:
+                    print(f"[ERROR]: len(row) = {len(row)}")
+                try:
+                    uri = row[0].split("/", maxsplit=2)[2]
+                except IndexError:
+                    print(f"[ERROR]: {row[0]} not http")
+                    continue
+                embedding = "\t".join(row[5:])
+                embedding_side = row[1]
+                embedding_part = row[3]
+                if uri in self.relation_embeddings:
+                    if embedding_side in self.relation_embeddings[uri]:
+                        if (
+                            embedding_part
+                            in self.relation_embeddings[uri][embedding_side]
+                        ):
+                            print(
+                                f"[ERROR] Found {uri} {embedding_side} {embedding_part} twice!"
+                            )
+                        else:
+                            self.relation_embeddings[uri][embedding_side][
+                                embedding_part
+                            ] = embedding
+                    else:
+                        self.relation_embeddings[uri][embedding_side] = {}
+                        self.relation_embeddings[uri][embedding_side][
+                            embedding_part
+                        ] = embedding
+                else:
+                    self.relation_embeddings[uri] = {}
+                    self.relation_embeddings[uri]["uri"] = uri
+                    self.relation_embeddings[uri][embedding_side] = {}
+                    self.relation_embeddings[uri][embedding_side][
+                        embedding_part
+                    ] = embedding
+
+    def load_config(self) -> None:
+        """
+        Load relation_comfig.json.
+
+        relation_config.json contains:
+        relation_file: name of the file containing the relation embeddings
+        """
+        with open(
+            os.path.join(self.root_path, "relation_config.json"),
+            "r",
+            encoding="UTF-8",
+        ) as config_file:
+            data = json.load(config_file)
+            self.relation_file = data["relation_file"]
+
+    def lookup(self, uri: str) -> dict:
+        """
+        Return embedding of relation URI.
+
+        :param str uri: URI without "http(s)://"
+        :return: both lhs and rhs embedding with both real part and imaginary part of the embedding
+        """
+        if uri in self.relation_embeddings:
+            return self.relation_embeddings[uri]
+        else:
+            return {}
