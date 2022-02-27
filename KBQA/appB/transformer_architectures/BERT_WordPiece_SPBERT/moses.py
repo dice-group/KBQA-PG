@@ -75,12 +75,12 @@ class MosesTokenizer(TokenizerI):
     RIGHT_STRIP = r" $", r""  # Uses text.rstrip() instead.
 
     # Pad all "other" special characters not in IsAlnum.
-    PAD_NOT_ISALNUM = u"([^{}\\s\\.'\\`\\,\\-])".format(IsAlnum), r" \1 "
+    PAD_NOT_ISALNUM = "([^{}\\s\\.'\\`\\,\\-])".format(IsAlnum), r" \1 "
 
     # Splits all hypens (regardless of circumstances), e.g.
     # 'foo -- bar' -> 'foo @-@ @-@ bar' , 'foo-bar' -> 'foo @-@ bar'
     AGGRESSIVE_HYPHEN_SPLIT = (
-        u"([{alphanum}])\\-(?=[{alphanum}])".format(alphanum=IsAlnum),
+        "([{alphanum}])\\-(?=[{alphanum}])".format(alphanum=IsAlnum),
         r"\1 \@-\@ ",
     )
 
@@ -94,8 +94,8 @@ class MosesTokenizer(TokenizerI):
     # First application uses up B so rule can't see B,C
     # two-step version here may create extra spaces but these are removed later
     # will also space digit,letter or letter,digit forms (redundant with next section)
-    COMMA_SEPARATE_1 = u"([^{}])[,]".format(IsN), r"\1 , "
-    COMMA_SEPARATE_2 = u"[,]([^{}])".format(IsN), r" , \1"
+    COMMA_SEPARATE_1 = "([^{}])[,]".format(IsN), r"\1 , "
+    COMMA_SEPARATE_2 = "[,]([^{}])".format(IsN), r" , \1"
 
     # Attempt to get correct directional quotes.
     DIRECTIONAL_QUOTE_1 = r"^``", r"`` "
@@ -114,18 +114,18 @@ class MosesTokenizer(TokenizerI):
 
     # Pad , with tailing space except if within numbers, e.g. 5,300
     # These are used in nltk.tokenize.moses.penn_tokenize()
-    COMMA_1 = u"([^{numbers}])[,]([^{numbers}])".format(numbers=IsN), r"\1 , \2"
-    COMMA_2 = u"([{numbers}])[,]([^{numbers}])".format(numbers=IsN), r"\1 , \2"
-    COMMA_3 = u"([^{numbers}])[,]([{numbers}])".format(numbers=IsN), r"\1 , \2"
+    COMMA_1 = "([^{numbers}])[,]([^{numbers}])".format(numbers=IsN), r"\1 , \2"
+    COMMA_2 = "([{numbers}])[,]([^{numbers}])".format(numbers=IsN), r"\1 , \2"
+    COMMA_3 = "([^{numbers}])[,]([{numbers}])".format(numbers=IsN), r"\1 , \2"
 
     # Pad unicode symbols with spaces.
-    SYMBOLS = u"([;:@#\\$%&{}{}])".format(IsSc, IsSo), r" \1 "
+    SYMBOLS = "([;:@#\\$%&{}{}])".format(IsSc, IsSo), r" \1 "
 
     # Separate out intra-token slashes.  PTB tokenization doesn't do this, so
     # the tokens should be merged prior to parsing with a PTB-trained parser.
     # e.g. "and/or" -> "and @/@ or"
     INTRATOKEN_SLASHES = (
-        u"([{alphanum}])\\/([{alphanum}])".format(alphanum=IsAlnum),
+        "([{alphanum}])\\/([{alphanum}])".format(alphanum=IsAlnum),
         r"$1 \@\/\@ $2",
     )
 
@@ -200,14 +200,14 @@ class MosesTokenizer(TokenizerI):
     ESCAPE_LEFT_SQUARE_BRACKET = r"\[", r"&#91;"
     ESCAPE_RIGHT_SQUARE_BRACKET = r"]", r"&#93;"
 
-    EN_SPECIFIC_1 = u"([^{alpha}])[']([^{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
+    EN_SPECIFIC_1 = "([^{alpha}])[']([^{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
     EN_SPECIFIC_2 = (
-        u"([^{alpha}{isn}])[']([{alpha}])".format(alpha=IsAlpha, isn=IsN),
+        "([^{alpha}{isn}])[']([{alpha}])".format(alpha=IsAlpha, isn=IsN),
         r"\1 ' \2",
     )
-    EN_SPECIFIC_3 = u"([{alpha}])[']([^{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
-    EN_SPECIFIC_4 = u"([{alpha}])[']([{alpha}])".format(alpha=IsAlpha), r"\1 '\2"
-    EN_SPECIFIC_5 = u"([{isn}])[']([s])".format(isn=IsN), r"\1 '\2"
+    EN_SPECIFIC_3 = "([{alpha}])[']([^{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
+    EN_SPECIFIC_4 = "([{alpha}])[']([{alpha}])".format(alpha=IsAlpha), r"\1 '\2"
+    EN_SPECIFIC_5 = "([{isn}])[']([s])".format(isn=IsN), r"\1 '\2"
 
     ENGLISH_SPECIFIC_APOSTROPHE = [
         EN_SPECIFIC_1,
@@ -217,10 +217,10 @@ class MosesTokenizer(TokenizerI):
         EN_SPECIFIC_5,
     ]
 
-    FR_IT_SPECIFIC_1 = u"([^{alpha}])[']([^{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
-    FR_IT_SPECIFIC_2 = u"([^{alpha}])[']([{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
-    FR_IT_SPECIFIC_3 = u"([{alpha}])[']([^{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
-    FR_IT_SPECIFIC_4 = u"([{alpha}])[']([{alpha}])".format(alpha=IsAlpha), r"\1' \2"
+    FR_IT_SPECIFIC_1 = "([^{alpha}])[']([^{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
+    FR_IT_SPECIFIC_2 = "([^{alpha}])[']([{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
+    FR_IT_SPECIFIC_3 = "([{alpha}])[']([^{alpha}])".format(alpha=IsAlpha), r"\1 ' \2"
+    FR_IT_SPECIFIC_4 = "([{alpha}])[']([{alpha}])".format(alpha=IsAlpha), r"\1' \2"
 
     FR_IT_SPECIFIC_APOSTROPHE = [
         FR_IT_SPECIFIC_1,
@@ -541,77 +541,77 @@ class MosesDetokenizer(TokenizerI):
     ]
 
     FINNISH_MORPHSET_1 = [
-        u"N",
-        u"n",
-        u"A",
-        u"a",
-        u"\xc4",
-        u"\xe4",
-        u"ssa",
-        u"Ssa",
-        u"ss\xe4",
-        u"Ss\xe4",
-        u"sta",
-        u"st\xe4",
-        u"Sta",
-        u"St\xe4",
-        u"hun",
-        u"Hun",
-        u"hyn",
-        u"Hyn",
-        u"han",
-        u"Han",
-        u"h\xe4n",
-        u"H\xe4n",
-        u"h\xf6n",
-        u"H\xf6n",
-        u"un",
-        u"Un",
-        u"yn",
-        u"Yn",
-        u"an",
-        u"An",
-        u"\xe4n",
-        u"\xc4n",
-        u"\xf6n",
-        u"\xd6n",
-        u"seen",
-        u"Seen",
-        u"lla",
-        u"Lla",
-        u"ll\xe4",
-        u"Ll\xe4",
-        u"lta",
-        u"Lta",
-        u"lt\xe4",
-        u"Lt\xe4",
-        u"lle",
-        u"Lle",
-        u"ksi",
-        u"Ksi",
-        u"kse",
-        u"Kse",
-        u"tta",
-        u"Tta",
-        u"ine",
-        u"Ine",
+        "N",
+        "n",
+        "A",
+        "a",
+        "\xc4",
+        "\xe4",
+        "ssa",
+        "Ssa",
+        "ss\xe4",
+        "Ss\xe4",
+        "sta",
+        "st\xe4",
+        "Sta",
+        "St\xe4",
+        "hun",
+        "Hun",
+        "hyn",
+        "Hyn",
+        "han",
+        "Han",
+        "h\xe4n",
+        "H\xe4n",
+        "h\xf6n",
+        "H\xf6n",
+        "un",
+        "Un",
+        "yn",
+        "Yn",
+        "an",
+        "An",
+        "\xe4n",
+        "\xc4n",
+        "\xf6n",
+        "\xd6n",
+        "seen",
+        "Seen",
+        "lla",
+        "Lla",
+        "ll\xe4",
+        "Ll\xe4",
+        "lta",
+        "Lta",
+        "lt\xe4",
+        "Lt\xe4",
+        "lle",
+        "Lle",
+        "ksi",
+        "Ksi",
+        "kse",
+        "Kse",
+        "tta",
+        "Tta",
+        "ine",
+        "Ine",
     ]
 
-    FINNISH_MORPHSET_2 = [u"ni", u"si", u"mme", u"nne", u"nsa"]
+    FINNISH_MORPHSET_2 = ["ni", "si", "mme", "nne", "nsa"]
 
     FINNISH_MORPHSET_3 = [
-        u"ko",
-        u"k\xf6",
-        u"han",
-        u"h\xe4n",
-        u"pa",
-        u"p\xe4",
-        u"kaan",
-        u"k\xe4\xe4n",
-        u"kin",
+        "ko",
+        "k\xf6",
+        "han",
+        "h\xe4n",
+        "pa",
+        "p\xe4",
+        "kaan",
+        "k\xe4\xe4n",
+        "kin",
     ]
 
-    FINNISH_REGEX = u"^({})({})?({})$".format(
+    FINNISH_REGEX = "^({})({})?({})$".format(
         text_type("|".join(FINNISH_MORPHSET_1)),
         text_type("|".join(FINNISH_MORPHSET_2)),
         text_type("|".join(FINNISH_MORPHSET_3)),
@@ -634,7 +634,7 @@ class MosesDetokenizer(TokenizerI):
         :return: str
         """
         # Convert the list of tokens into a string and pad it with spaces.
-        text = u" {} ".format(" ".join(tokens))
+        text = " {} ".format(" ".join(tokens))
         # Converts input string into unicode.
         text = text_type(text)
         # Detokenize the agressive hyphen split.
@@ -644,7 +644,7 @@ class MosesDetokenizer(TokenizerI):
             # Unescape the XML symbols.
             text = self.unescape_xml(text)
         # Keep track of no. of quotation marks.
-        quote_counts = {u"'": 0, u'"': 0, u"``": 0, u"`": 0, u"''": 0}
+        quote_counts = {"'": 0, '"': 0, "``": 0, "`": 0, "''": 0}
 
         # The *prepend_space* variable is used to control the "effects" of
         # detokenization as the function loops through the list of tokens and
@@ -682,7 +682,7 @@ class MosesDetokenizer(TokenizerI):
             elif (
                 self.lang == "en"
                 and i > 0
-                and re.search(u"^['][{}]".format(self.IsAlpha), token)
+                and re.search("^['][{}]".format(self.IsAlpha), token)
             ):
                 # and re.search(u'[{}]$'.format(self.IsAlnum), tokens[i-1])):
                 # For English, left-shift the contraction.
@@ -705,8 +705,8 @@ class MosesDetokenizer(TokenizerI):
             elif (
                 self.lang in ["fr", "it", "ga"]
                 and i <= len(tokens) - 2
-                and re.search(u"[{}][']$".format(self.IsAlpha), token)
-                and re.search(u"^[{}]$".format(self.IsAlpha), tokens[i + 1])
+                and re.search("[{}][']$".format(self.IsAlpha), token)
+                and re.search("^[{}]$".format(self.IsAlpha), tokens[i + 1])
             ):  # If the next token is alpha.
                 # For French and Italian, right-shift the contraction.
                 detokenized_text += prepend_space + token
@@ -715,9 +715,9 @@ class MosesDetokenizer(TokenizerI):
             elif (
                 self.lang == "cs"
                 and i <= len(tokens) - 3
-                and re.search(u"[{}][']$".format(self.IsAlpha), token)
-                and re.search(u"^[-–]$", tokens[i + 1])
-                and re.search(u"^li$|^mail.*", tokens[i + 2], re.IGNORECASE)
+                and re.search("[{}][']$".format(self.IsAlpha), token)
+                and re.search("^[-–]$", tokens[i + 1])
+                and re.search("^li$|^mail.*", tokens[i + 2], re.IGNORECASE)
             ):  # In Perl, ($words[$i+2] =~ /^li$|^mail.*/i)
                 # In Czech, right-shift "-li" and a few Czech dashed words (e.g. e-mail)
                 detokenized_text += prepend_space + token + tokens[i + 1]
@@ -731,15 +731,15 @@ class MosesDetokenizer(TokenizerI):
                     normalized_quo = '"'
                 quote_counts[normalized_quo] = quote_counts.get(normalized_quo, 0)
 
-                if self.lang == "cs" and token == u"„":
+                if self.lang == "cs" and token == "„":
                     quote_counts[normalized_quo] = 0
-                if self.lang == "cs" and token == u"“":
+                if self.lang == "cs" and token == "“":
                     quote_counts[normalized_quo] = 1
 
                 if quote_counts[normalized_quo] % 2 == 0:
                     if (
                         self.lang == "en"
-                        and token == u"'"
+                        and token == "'"
                         and i > 0
                         and re.search(r"[s]$", tokens[i - 1])
                     ):

@@ -1,2 +1,5 @@
 .DS_Store
 **/__pycache__/
+KBQA/kbqa/resources/*
+kbqa_pg.egg-info/*
+build/**
