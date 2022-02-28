@@ -1,8 +1,14 @@
 import tensorflow as tf
 
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
 import unicodedata
 import re
+import numpy as np
+import os
 import io
+import time
 from gensim.models.fasttext import FastText
 
 def unicode_to_ascii(s):

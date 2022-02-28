@@ -53,10 +53,8 @@ def preprocess_sparql(s):
 
     return s
 
-
 def preprocess_triples(triples):
     return [preprocess_sparql(triple) for triple in triples]
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

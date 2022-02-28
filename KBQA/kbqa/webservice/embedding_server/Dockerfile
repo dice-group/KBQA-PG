@@ -8,9 +8,9 @@ RUN apt update && \
 
 COPY requirements.txt .
 
-RUN python3 -m pip install --upgrade pip
-RUN python3 -m pip install --upgrade setuptools
-RUN python3 -m pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install --upgrade setuptools
+RUN pip install --no-cache-dir --user -r requirements.txt
 
 
 # runner image

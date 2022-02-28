@@ -1,1 +1,0 @@
-"""Root of the OneHopRankSummarizer."""

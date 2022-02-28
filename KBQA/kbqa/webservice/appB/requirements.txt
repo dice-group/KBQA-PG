@@ -1,8 +1,4 @@
 flask==2.0.2
 requests==2.26.0
 uwsgi==2.0.20
-
 SPARQLWrapper==1.8.5
-transformers==4.5.1
-torch==1.8.1
-nltk==3.6.7
