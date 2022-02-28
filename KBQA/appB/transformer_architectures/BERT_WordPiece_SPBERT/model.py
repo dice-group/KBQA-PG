@@ -48,7 +48,7 @@ class BertSeq2Seq(nn.Module):
         max_length=None,
         sos_id=None,
         eos_id=None,
-        device=None
+        device=None,
     ):
         super(BertSeq2Seq, self).__init__()
         self.encoder = encoder
@@ -89,13 +89,15 @@ class BertSeq2Seq(nn.Module):
         triples_ids=None,
         triples_mask=None,
         target_ids=None,
-        target_mask=None
+        target_mask=None,
     ):
         outputs = self.encoder(source_ids, attention_mask=source_mask)
         question_encoder_output = outputs[0]
         outputs = self.triple_encoder(triples_ids, attention_mask=triples_mask)
         triple_encoder_output = outputs[0]
-        encoder_output = torch.cat([question_encoder_output, triple_encoder_output], dim=1)
+        encoder_output = torch.cat(
+            [question_encoder_output, triple_encoder_output], dim=1
+        )
         encoder_attention_mask = torch.cat([source_mask, triples_mask], dim=1)
 
         if target_ids is not None:
@@ -124,10 +126,12 @@ class BertSeq2Seq(nn.Module):
         else:
             # Predict
             preds = []
-            zero = torch.full(size=(1,), fill_value=0, dtype=torch.long, device=self.device)
+            zero = torch.full(
+                size=(1,), fill_value=0, dtype=torch.long, device=self.device
+            )
             for i in range(encoder_output.shape[0]):
-                context = encoder_output[i: i + 1, :]
-                context_mask = encoder_attention_mask[i: i + 1, :]
+                context = encoder_output[i : i + 1, :]
+                context_mask = encoder_attention_mask[i : i + 1, :]
                 beam = Beam(
                     self.beam_size, self.sos_id, self.eos_id, device=self.device
                 )

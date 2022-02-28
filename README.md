@@ -76,6 +76,18 @@ For documenting the code we use docstrings ([PEP 257](https://www.python.org/dev
 
 ## Setup
 
+### Installation
+
+In order to include modules from different directories, you can install the project as a package. This way the project can be splitted into different subdirectories/subprojects, which can be imported by each other. The installation can be done by running the following command in this directory:
+
+```
+pip install -e .
+```
+
+After that, you can import all source files starting with the root directory `KBQA`.
+
+### Linters
+
 We use the different linters to apply style rules and point out issues in code. This greatly simplifies code reviews and helps to detect errors early on.
 
 To automatically run the linters on every commit, we use [pre-commit](https://pre-commit.com/). To setup pre-commit once run the following commands:
