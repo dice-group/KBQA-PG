@@ -1,18 +1,14 @@
 """Generator to generate a (question, sparql, triples) dataset using summarizers."""
 import pickle
-from typing import Union
 from typing import Tuple
+from typing import Union
 
-from KBQA.appB.data_generator.dataset import Dataset
-from KBQA.appB.data_generator.dataset import Question
-from KBQA.appB.summarizers.NES_NER_Hop.nes_summarizer import NES
-from KBQA.appB.summarizers.from_answer_summarizer.from_answer_summarizer import (
-    FromAnswerSummarizer,
-)
-from KBQA.appB.summarizers.one_hop_rank_summarizer.one_hop_rank_summarizer import (
-    OneHopRankSummarizer,
-)
-from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
+from KBQA.appB.data_generator import Dataset
+from KBQA.appB.data_generator import Question
+from KBQA.appB.summarizers import BaseSummarizer
+from KBQA.appB.summarizers import FromAnswerSummarizer
+from KBQA.appB.summarizers import NES
+from KBQA.appB.summarizers import OneHopRankSummarizer
 
 
 class DatasetGenerator:
@@ -41,7 +37,7 @@ class DatasetGenerator:
         #     self.current_question = position
         #     yield question
 
-    def generate_triples(self, summarizer: Summarizer) -> None:
+    def generate_triples(self, summarizer: BaseSummarizer) -> None:
         """Generate triples for the dataset using the given summarizer.
 
         Parameters

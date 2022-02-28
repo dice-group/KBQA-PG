@@ -1,32 +1,34 @@
-# Approach B
+# Embedding server
 
-This is the implementation for querying embeddings of URIs.
+This is the implementation for querying embeddings of URIs of both Entities and Relations.
 Once running, the embedding server should be available at http://kbqa-pg.cs.upb.de/embedding_query/ via a POST request.
-The POST request has to send a JSON file containing a list of URIs(str). The server then returns a JSON file containing the embeddings in corresponding list positions as a response.
+The POST request has to send a JSON file containing a list of entity URIs and a list of relation URIs. Both may be empty. The server then returns a JSON file containing the embeddings in corresponding list positions as a response.
 
 ```python
 import requests
-uri_dict = {"uris": ["http://foo/bar1","http://foo/bar2"]}
+uri_dict = {"entities": ["http://foo/bar1","http://foo/bar2"], "relations" : ["http://foo/bar3"]}
 r = requests.post("http://kbqa-pg.cs.upb.de/embedding_query/", json=uri_dict)
 #r.json() contains the embeddings
 ```
 
-If no embedding is found for a URI, then an empty string is returned for that URI.
+The entity embeddings are send as tab seperated values.
+The relation embeddings are send as a dict containing both the rhs and lhs embeddings with the respective real and imaginary parts.
+
+If no embedding is found for an entity URI, then an empty string is returned.
+If no embedding is found for a relation URI, then an empty dict is returned.
 
 ## Local Tests
 
-In order to test the functionality of the embedding server, a local script can be executed to simulate a query by going through entities found in one of the QALD datasets.
-
-Start the development server:
+In order to test the functionality of the embedding server locally, start the server in the kbqa folder:
 
 ```bash
-python3 embedding_server_wsgi.py
+sudo env RESOURCE_PATH="/location/to/entity_embedding_file" docker-compose up --build
 ```
 
-In another terminal execute the script **local_test.py**:
+In another terminal execute the script **stress_test.py**:
 
 ```bash
-python3 local_test.py
+python stress_test.py
 ```
 
-Local test will then report on the coverage of requested URIs in the database. Note that the database for the embedding server is a slightly older DBPedia version, so some entities might not be found.
+The stress test will try to query the first **n** entities from the entity embedding file and will report all entities which can not be found by the server, which should be 0.

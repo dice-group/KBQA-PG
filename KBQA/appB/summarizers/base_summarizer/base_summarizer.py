@@ -3,10 +3,10 @@ from abc import ABC
 from abc import abstractmethod
 from typing import List
 
-from KBQA.appB.data_generator.dataset import Question
+from KBQA.appB.data_generator import Question
 
 
-class Summarizer(ABC):
+class BaseSummarizer(ABC):
     """Abstract summarizer."""
 
     @abstractmethod

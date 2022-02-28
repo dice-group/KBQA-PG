@@ -1,19 +1,18 @@
 """Module for generating question-triple-query(qtq) dataset from dataset."""
 import re
+from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Set
-from typing import List
 from typing import Tuple
-from typing import Dict
 
+from KBQA.appB.data_generator import Question
+from KBQA.appB.summarizers import BaseSummarizer
 from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
 
-from KBQA.appB.data_generator.dataset import Question
-from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
 
-
-class FromAnswerSummarizer(Summarizer):
+class FromAnswerSummarizer(BaseSummarizer):
     """Summarizer which generates triples from a given SPARQL translation of a NL Question."""
 
     def summarize(self, question: Question) -> List[str]:
