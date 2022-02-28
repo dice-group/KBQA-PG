@@ -111,7 +111,7 @@ def get_evaluation(gerbil_id: int, gerbil_url: str) -> DataFrame:
         return results
 
 
-def startup(gerbil_system: str) -> None:
+def evaluate_approaches(gerbil_system: str) -> None:
     """Handle GERBIL evaluation for our systems.
 
     :param gerbil_system: Key of GERBIL system that should be used
