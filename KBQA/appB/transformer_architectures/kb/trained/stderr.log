@@ -1,0 +1,95 @@
+  0%|          | 0/1429887384 [00:00<?, ?B/s]
+  1%|          | 12356608/1429887384 [00:10<19:10, 1232406.94B/s]
+  2%|1         | 25529344/1429887384 [00:20<18:15, 1282224.73B/s]
+  3%|3         | 44502016/1429887384 [00:30<14:46, 1562035.17B/s]
+  5%|5         | 74124288/1429887384 [00:40<10:41, 2114099.28B/s]
+  8%|8         | 114625536/1429887384 [00:50<07:47, 2811425.41B/s]
+ 11%|#         | 155109376/1429887384 [01:11<09:01, 2354996.62B/s]
+ 12%|#2        | 176187392/1429887384 [01:21<09:07, 2290396.13B/s]
+ 14%|#3        | 197265408/1429887384 [01:34<10:08, 2025564.92B/s]
+ 15%|#5        | 220482560/1429887384 [01:44<09:35, 2102193.30B/s]
+ 17%|#7        | 243686400/1429887384 [02:08<12:26, 1588006.23B/s]
+ 19%|#9        | 274025472/1429887384 [02:18<10:05, 1907639.69B/s]
+ 21%|##1       | 306875392/1429887384 [02:28<08:21, 2237224.78B/s]
+ 24%|##3       | 339654656/1429887384 [02:45<08:37, 2108252.80B/s]
+ 25%|##5       | 364547072/1429887384 [02:55<08:04, 2197762.98B/s]
+ 27%|##7       | 389438464/1429887384 [03:06<07:45, 2234042.01B/s]
+ 29%|##9       | 418106368/1429887384 [03:16<07:01, 2399208.26B/s]
+ 31%|###1      | 449465344/1429887384 [03:26<06:17, 2599222.13B/s]
+ 34%|###3      | 483036160/1429887384 [03:36<05:36, 2811062.04B/s]
+ 36%|###6      | 516606976/1429887384 [03:46<05:08, 2963260.71B/s]
+ 39%|###9      | 558877696/1429887384 [03:56<04:21, 3328823.89B/s]
+ 42%|####2     | 601143296/1429887384 [04:14<04:43, 2918353.85B/s]
+ 44%|####4     | 634014720/1429887384 [04:24<04:24, 3010878.11B/s]
+ 47%|####6     | 666846208/1429887384 [04:36<04:22, 2912050.63B/s]
+ 49%|####9     | 702286848/1429887384 [04:46<03:56, 3078723.38B/s]
+ 52%|#####1    | 737721344/1429887384 [05:14<05:25, 2127724.99B/s]
+ 54%|#####3    | 768429056/1429887384 [05:24<04:44, 2321949.92B/s]
+ 56%|#####5    | 799128576/1429887384 [05:35<04:14, 2476758.72B/s]
+ 58%|#####8    | 830295040/1429887384 [05:45<03:47, 2632945.36B/s]
+ 60%|######    | 861461504/1429887384 [05:59<03:47, 2500004.24B/s]
+ 62%|######1   | 883737600/1429887384 [06:12<04:04, 2233006.35B/s]
+ 63%|######3   | 907136000/1429887384 [06:22<03:51, 2259316.86B/s]
+ 65%|######5   | 930529280/1429887384 [06:32<03:39, 2279066.21B/s]
+ 67%|######6   | 955583488/1429887384 [06:42<03:22, 2340069.26B/s]
+ 70%|######9   | 995855360/1429887384 [06:52<02:34, 2811674.01B/s]
+ 72%|#######2  | 1036125184/1429887384 [07:04<02:12, 2982255.14B/s]
+ 75%|#######4  | 1069487104/1429887384 [07:15<02:00, 3002085.75B/s]
+ 77%|#######6  | 1099979776/1429887384 [07:35<02:20, 2348713.25B/s]
+ 78%|#######8  | 1120537600/1429887384 [07:45<02:15, 2279100.95B/s]
+ 81%|########  | 1151814656/1429887384 [07:55<01:51, 2493647.12B/s]
+ 83%|########2 | 1183091712/1429887384 [08:07<01:36, 2556624.30B/s]
+ 85%|########4 | 1213402112/1429887384 [08:17<01:20, 2683070.76B/s]
+ 87%|########6 | 1243705344/1429887384 [08:30<01:13, 2546013.19B/s]
+ 89%|########8 | 1270598656/1429887384 [08:40<01:01, 2583910.07B/s]
+ 91%|######### | 1297486848/1429887384 [08:57<01:00, 2201832.63B/s]
+ 92%|#########2| 1316064256/1429887384 [09:07<00:53, 2115164.59B/s]
+ 93%|#########3| 1334602752/1429887384 [09:19<00:48, 1970208.29B/s]
+ 95%|#########5| 1362480128/1429887384 [09:29<00:30, 2186596.41B/s]
+ 97%|#########7| 1392839680/1429887384 [09:39<00:15, 2419689.31B/s]
+100%|#########9| 1423197184/1429887384 [09:50<00:02, 2483187.00B/s]
+100%|##########| 1429887384/1429887384 [09:53<00:00, 2410179.53B/s]
+
+  0%|          | 0/47010282 [00:00<?, ?B/s]
+ 43%|####3     | 20295680/47010282 [00:10<00:13, 2029556.48B/s]
+ 86%|########6 | 40591360/47010282 [00:21<00:03, 1899231.14B/s]
+100%|##########| 47010282/47010282 [00:24<00:00, 1881423.53B/s]
+
+  0%|          | 0/231553 [00:00<?, ?B/s]
+  8%|7         | 17408/231553 [00:00<00:02, 82668.28B/s]
+ 23%|##2       | 52224/231553 [00:00<00:01, 136127.82B/s]
+ 53%|#####2    | 121856/231553 [00:01<00:01, 104323.55B/s]
+ 68%|######7   | 156672/231553 [00:01<00:00, 119650.99B/s]
+100%|##########| 231553/231553 [00:01<00:00, 169777.08B/s]
+
+0it [00:00, ?it/s]
+0it [00:00, ?it/s]
+
+Traceback (most recent call last):
+  File "/home/jmenzel/python-envs/knowbert-env/bin/allennlp", line 33, in <module>
+    sys.exit(load_entry_point('allennlp===0.8.3-unreleased', 'console_scripts', 'allennlp')())
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/run.py", line 18, in run
+    main(prog="allennlp")
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/commands/__init__.py", line 101, in main
+    args.func(args)
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/commands/train.py", line 103, in train_model_from_args
+    args.force)
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/commands/train.py", line 136, in train_model_from_file
+    return train_model(params, serialization_dir, file_friendly_logging, recover, force)
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/commands/train.py", line 184, in train_model
+    pieces = TrainerPieces.from_params(params, serialization_dir, recover)  # pylint: disable=no-member
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/training/trainer.py", line 850, in from_params
+    all_datasets = training_util.datasets_from_params(params)
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/training/util.py", line 139, in datasets_from_params
+    train_data = dataset_reader.read(train_data_path)
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/data/dataset_readers/dataset_reader.py", line 73, in read
+    instances = [instance for instance in Tqdm.tqdm(instances)]
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/data/dataset_readers/dataset_reader.py", line 73, in <listcomp>
+    instances = [instance for instance in Tqdm.tqdm(instances)]
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/tqdm/std.py", line 1180, in __iter__
+    for obj in iterable:
+  File "/home/jmenzel/Programs/kb/kb/evaluation/tacred_dataset_reader.py", line 103, in _read
+    with open(cached_path(file_path), 'r') as f:
+  File "/home/jmenzel/python-envs/knowbert-env/lib/python3.6/site-packages/allennlp/common/file_utils.py", line 105, in cached_path
+    raise FileNotFoundError("file {} not found".format(url_or_filename))
+FileNotFoundError: file /home/matthewp/data/tacred/train.json not found

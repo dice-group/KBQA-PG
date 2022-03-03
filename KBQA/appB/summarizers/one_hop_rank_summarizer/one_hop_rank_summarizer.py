@@ -47,6 +47,7 @@ class OneHopRankSummarizer(Summarizer):
     ------
     ValueError
         If lower_rank is not greater or equal to 1.
+
     """
 
     PRINT = False
@@ -62,6 +63,7 @@ class OneHopRankSummarizer(Summarizer):
         max_triples: int = 3,
         limit: int = -1,
         timeout: float = 0,
+        dataset_path: str = "",
     ) -> None:
 
         if lower_rank < 1:
@@ -71,6 +73,9 @@ class OneHopRankSummarizer(Summarizer):
         self.max_triples = max_triples
         self.limit = limit
         self.timeout = timeout
+
+        if dataset_path:
+            self.DATASET_PATH = dataset_path
 
         self._initialize_qald_predicates()
         self._initialize_lc_quad_predicates()
