@@ -45,7 +45,14 @@ class OneHopRankSummarizer(BaseSummarizer):
         If lower_rank is not greater or equal to 1 or dataset is not supported.
     """
 
-    DATASETS = ["qald8_qald9_lcquad", "qald9_qald8_lcquad"]
+    DATASETS = [
+        "qald8_qald9_lcquad",
+        "qald9_qald8_lcquad",
+        "qald8_lcquad_qald9",
+        "qald9_lcquad_qald8",
+        "lcquad_qald8_qald9",
+        "lcquad_qald9_qald8",
+    ]
     EXCLUDE = [
         "<http://dbpedia.org/ontology/abstract>",
         "<http://dbpedia.org/wikiPageWikiLink>",

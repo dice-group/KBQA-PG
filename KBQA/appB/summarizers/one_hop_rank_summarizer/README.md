@@ -1,12 +1,10 @@
-# Summarizers
-
-In this directory you can find our summarizers.
-
-## OneHopRankSummarizer
-
-The OneHopRankSummarizer combines two approaches for extracting a subgraph from DBpedia. Given a natural language question, this summarizer tries to recognize entities from DBpedia, which are used as root nodes for the summarized subgraphs. The first approach tries to recognize relations from DBpedia additionaly, which are then used for creating triples containing the entities and relations. This way, for each recognized entity a subgraph with outgoing (regular) and ingoing (inverse) edges of length 1 is extracted (one hop from an entity). In the second approach relations from a given dataset are extracted and ranked by their occurrence. In the next step triples based on these relations and the recognized entities are created. This way, for each recognized entity a subgraph containing triples, whose predicates occur in the dataset at least once, is summarized. The OneHopRankSummarizer just combines all triples found by the two approaches.
+# OneHopRankSummarizer
 
 ### Parameters:
+
+##### datasets
+
+Order of the datasets 'qald8', 'qald9' and 'lcquad'. The value has to be in '["qald8_qald9_lcquad", "qald9_qald8_lcquad", "qald8_lcquad_qald9", "qald9_lcquad_qald8", "lcquad_qald8_qald9", "lcquad_qald9_qald8"]'.
 
 ##### lower_rank
 
@@ -29,3 +27,7 @@ Setting this parameter will return at most _limit_ triples. Use -1 to use not an
 ##### timeout
 
 In some cases it might be helpful to have a timeout between requests to avoid connection errors. Setting this parameter will apply a timeout between the requests in seconds.
+
+##### verbose
+
+Print some statements while summarizing.
