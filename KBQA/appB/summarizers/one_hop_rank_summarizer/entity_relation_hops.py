@@ -1,17 +1,13 @@
 """Module to extract subgraphs from DBpedia based one or two hops."""
 import argparse
-import json
-from json.decoder import JSONDecodeError
 from typing import List
 from typing import Tuple
 
+from KBQA.appB.summarizers.utils import entity_recognition_dbspotlight
+from KBQA.appB.summarizers.utils import entity_relation_recognition
 from rdflib import Graph
 from rdflib import URIRef
-import requests
 from SPARQLWrapper import SPARQLWrapper
-
-
-EXCLUDES = [URIRef("http://dbpedia.org/ontology/country")]
 
 
 def entity_relation_hops(
@@ -60,104 +56,103 @@ def entity_relation_hops(
     return sub_graphs
 
 
-def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRef]]:
-    """Extract all entities and relations from a question.
+# def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRef]]:
+#     """Extract all entities and relations from a question.
 
-    Given a natural language question, extract all entities as DBpedia-resources
-    and all relations as Dbpedia-properties using FALCON 2.0 (https://arxiv.org/abs/1912.11270).
+#     Given a natural language question, extract all entities as DBpedia-resources
+#     and all relations as Dbpedia-properties using FALCON 2.0 (https://arxiv.org/abs/1912.11270).
 
-    Parameters
-    ----------
-    question : str
-        Natural language question.
+#     Parameters
+#     ----------
+#     question : str
+#         Natural language question.
 
-    Returns
-    -------
-    entities : list
-        List of all recognized entities as URIRef.
-    relations : list
-        List of all recognized relations as URIRef.
-    """
-    endpoint = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1"
+#     Returns
+#     -------
+#     entities : list
+#         List of all recognized entities as URIRef.
+#     relations : list
+#         List of all recognized relations as URIRef.
+#     """
+#     endpoint = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1"
 
-    try:
-        response = requests.post(
-            endpoint,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps({"text": question}),
-        ).json()
-    except JSONDecodeError:
-        print("It was not possible to parse the response.")
+#     try:
+#         response = requests.post(
+#             endpoint,
+#             headers={"Content-Type": "application/json"},
+#             data=json.dumps({"text": question}),
+#         ).json()
+#     except JSONDecodeError:
+#         print("It was not possible to parse the response.")
 
-        return list(), list()
+#         return list(), list()
 
-    dbpedia_entities = response["entities_dbpedia"]
-    dbpedia_relations = response["relations_dbpedia"]
+#     dbpedia_entities = response["entities_dbpedia"]
+#     dbpedia_relations = response["relations_dbpedia"]
 
-    # print("Entities:", dbpedia_entities)
-    # print("Relations:", dbpedia_relations)
+#     # print("Entities:", dbpedia_entities)
+#     # print("Relations:", dbpedia_relations)
 
-    entities = []
-    relations = []
+#     entities = []
+#     relations = []
 
-    for entity in dbpedia_entities:
-        if len(entity) > 1:
-            resource = URIRef(entity[0])
+#     for entity in dbpedia_entities:
+#         if len(entity) > 1:
+#             resource = URIRef(entity[0])
 
-            entities.append(resource)
+#             entities.append(resource)
 
-    for relation in dbpedia_relations:
-        if len(relation) > 1:
-            prop = URIRef(relation[0])
+#     for relation in dbpedia_relations:
+#         if len(relation) > 1:
+#             prop = URIRef(relation[0])
 
-            # if prop not in EXCLUDES:
-            relations.append(prop)
+#             relations.append(prop)
 
-    return entities, relations
+#     return entities, relations
 
 
-def entity_recognition_dbspotlight(
-    question: str, confidence: float = 0.8
-) -> List[URIRef]:
-    """Entity recognition using DB-Spotlight.
+# def entity_recognition_dbspotlight(
+#     question: str, confidence: float = 0.8
+# ) -> List[URIRef]:
+#     """Entity recognition using DB-Spotlight.
 
-    In addition to FALCON 2.0 DB-Spotlight is used to recognize entities in hope
-    to be more precise with the entities.
+#     In addition to FALCON 2.0 DB-Spotlight is used to recognize entities in hope
+#     to be more precise with the entities.
 
-    Parameters
-    ----------
-    question : str
-        Natural language question.
-    confidence : float, optional
-        Confidence of the recognized entity (default: 0.8)
+#     Parameters
+#     ----------
+#     question : str
+#         Natural language question.
+#     confidence : float, optional
+#         Confidence of the recognized entity (default: 0.8)
 
-    Returns
-    -------
-    entities : list
-        List of recognized entities as URIRefs
-    """
-    endpoint = "https://api.dbpedia-spotlight.org/en/annotate"
+#     Returns
+#     -------
+#     entities : list
+#         List of recognized entities as URIRefs
+#     """
+#     endpoint = "https://api.dbpedia-spotlight.org/en/annotate"
 
-    try:
-        response = requests.post(
-            endpoint,
-            headers={"Accept": "application/json"},
-            data={"text": question, "confidence": confidence},
-        ).json()
-    except JSONDecodeError:
-        print("It was not possible to parse the answer.")
+#     try:
+#         response = requests.post(
+#             endpoint,
+#             headers={"Accept": "application/json"},
+#             data={"text": question, "confidence": confidence},
+#         ).json()
+#     except JSONDecodeError:
+#         print("It was not possible to parse the answer.")
 
-        return list()
+#         return list()
 
-    if "Resources" not in response:
-        return list()
+#     if "Resources" not in response:
+#         return list()
 
-    entities = list()
+#     entities = list()
 
-    for resource in response["Resources"]:
-        entities.append(URIRef(resource["@URI"]))
+#     for resource in response["Resources"]:
+#         entities.append(URIRef(resource["@URI"]))
 
-    return entities
+#     return entities
 
 
 def get_subgraph(

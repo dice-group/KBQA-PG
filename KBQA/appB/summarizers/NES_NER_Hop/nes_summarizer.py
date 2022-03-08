@@ -1,12 +1,13 @@
 """NES summarizer."""
 from typing import List
 
-from KBQA.appB.summarizers.NES_NER_Hop.nes_ner_hop import nes_ner_hop
-from KBQA.appB.summarizers.base_summarizer.summarizer import Summarizer
-from KBQA.appB.data_generator.dataset import Question
+from KBQA.appB.data_generator import Question
+from KBQA.appB.summarizers import BaseSummarizer
+
+from .nes_ner_hop import nes_ner_hop
 
 
-class NES(Summarizer):
+class NES(BaseSummarizer):
     """NES summarizer from module NES_NER_Hop using dbpedia spotlight."""
 
     def summarize(self, question: Question) -> List[str]:

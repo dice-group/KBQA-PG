@@ -2,12 +2,8 @@
 from typing import List
 import unittest
 
-from KBQA.appB.transformer_architectures.BERT_WordPiece_SPBERT.generator_utils import (
-    get_label_for_uri,
-)
-from KBQA.appB.transformer_architectures.BERT_WordPiece_SPBERT.generator_utils import (
-    get_uri_for_label,
-)
+from KBQA.appB.transformer_architectures.BERT_WordPiece_SPBERT.generator_utils import get_label_for_uri
+from KBQA.appB.transformer_architectures.BERT_WordPiece_SPBERT.generator_utils import get_uri_for_label
 
 
 class TestLabeling(unittest.TestCase):

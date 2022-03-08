@@ -1,11 +1,11 @@
 """Generator to generate a qtql dataset from a qtq dataset."""
 import pickle
 from typing import Dict
+from typing import List
 
-from KBQA.appB.labeling.qtql_dataset import QTQLDataset
-from KBQA.appB.transformer_architectures.BERT_WordPiece_SPBERT.generator_utils import (
-    get_label_for_uri,
-)
+from KBQA.appB.summarizers.utils import query_dbpedia
+
+from .qtql_dataset import QTQLDataset
 
 
 class QTQLGenerator:
@@ -61,7 +61,7 @@ class QTQLGenerator:
 
         self.qtql_dataset.save_qtql_dataset(dest_path)
 
-    def _get_labels_for_triple(self, uris: str) -> str:
+    def _get_labels_for_triple(self, uris: List[str]) -> str:
         """Find labels for a triple.
 
         A triple should be a list of 3 elements [subj, pred, obj].
@@ -87,7 +87,7 @@ class QTQLGenerator:
         if subj_uri in self.label_store:
             subj = self.label_store[subj_uri]
         else:
-            subj = get_label_for_uri(subj_uri)
+            subj = self._get_label_for_uri(subj_uri)
 
             if subj == "":
                 self.label_store[subj_uri] = subj_uri
@@ -99,7 +99,7 @@ class QTQLGenerator:
         if pred_uri in self.label_store:
             pred = self.label_store[pred_uri]
         else:
-            pred = get_label_for_uri(pred_uri)
+            pred = self._get_label_for_uri(pred_uri)
 
             if pred == "":
                 self.label_store[pred_uri] = pred_uri
@@ -111,7 +111,7 @@ class QTQLGenerator:
         if obj_uri in self.label_store:
             obj = self.label_store[obj_uri]
         else:
-            obj = get_label_for_uri(obj_uri)
+            obj = self._get_label_for_uri(obj_uri)
 
             if obj == "":
                 self.label_store[obj_uri] = obj_uri
@@ -120,6 +120,22 @@ class QTQLGenerator:
                 self.label_store[obj_uri] = obj
 
         return f"{subj} {pred} {obj}"
+
+    def _get_label_for_uri(self, uri: str) -> str:
+        query = f"""SELECT ?label WHERE
+        {{
+            <{uri}> rdfs:label ?label
+            FILTER(langMATCHES(LANG(?label), "en"))
+        }}
+        """
+
+        answer = query_dbpedia(query)
+        results = answer["results"]["bindings"]
+
+        if len(results) > 0:
+            return results[0]["label"]["value"]
+        else:
+            return ""
 
 
 if __name__ == "__main__":
