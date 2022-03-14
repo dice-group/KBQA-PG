@@ -77,4 +77,4 @@ services:
     container_name: nginx
     restart: always
     ports:
-      - "80:${APP_PORT}"
+      - "${APP_PORT}:80"
