@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build and start webservice
         working-directory: KBQA/kbqa
-        run: docker-compose -p kbqa-dev up --build
+        run: docker-compose -p kbqa-dev up -d --build
 
   deploy-release:
     runs-on: [self-hosted, kbqa-pg-master]
@@ -45,4 +45,4 @@ jobs:
         uses: actions/checkout@v2
       - name: Build and start webservice
         working-directory: KBQA/kbqa
-        run: docker-compose -p kbqa-release up --build
+        run: docker-compose -p kbqa-release up -d --build
