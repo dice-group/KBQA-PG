@@ -1,30 +1,44 @@
 """A module to summarize the triples for predicates from QALD8, QALD9 and LCQALD data set."""
 from builtins import FileNotFoundError
 import pickle
-import time
 from typing import Dict
 from typing import List
 from typing import Tuple
 
-from nes_ner_hop import ner_dbpedia_spotlight
 from rdflib.graph import Graph
 from rdflib.plugins.sparql import prepareQuery
 from rdflib.term import URIRef
+import requests
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper.Wrapper import RDFXML
 
 
 def ask_for_entities(question: str, *, confidence: float = 0.8) -> List[URIRef]:
-    """
-    Given a question string. List of entities is returned.
+    """Named entities are returned for a given question.
 
-    :param question: question string.
-    :param confidence: A confidence value in [0,1] which determines how confident the algorithm is in the found
-    entities.
-    :return: List of entities in URIref.
+    :param question: The question to be annotated.
+    :param confidence: The confidence of the annotation.
+    :return: list of rdflib.term.URIRef which are objects for URIs.
     """
-    entities = ner_dbpedia_spotlight(question, confidence=confidence)
-    return entities
+    # Ask dbpedia spotlight for an annotation of question
+    webserver_address = "https://api.dbpedia-spotlight.org/en/annotate"
+    response = requests.post(
+        webserver_address,
+        data={"text": question, "confidence": confidence},
+        headers={"Accept": "application/json"},
+    ).json()
+    print(response)
+    # print(response["annotation"])
+    # print(URIRef(response["annotation"]["surfaceForm"]["resource"][0]["@uri"]))
+    named_entities: List[URIRef] = []
+    # If no named entity found
+    if "Resources" not in response:
+        return named_entities
+    # Else gather all named entities
+    for resource in response["Resources"]:
+        named_entities.append(URIRef(resource["@URI"]))
+
+    return named_entities
 
 
 def generate_sparql_string(
@@ -384,10 +398,12 @@ def main() -> None:
     # for triple in triples:
     #    print(triple)
     #    print("\n")
+    # entities = ask_for_entities("Where is Washington")
+    # print(entities)
 
 
 # Call from shell as main.
 if __name__ == "__main__":
-    start_time = time.time()
+    # start_time = time.time()
     main()
-    print(time.time() - start_time)
+    # print(time.time() - start_time)
