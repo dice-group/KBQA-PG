@@ -253,8 +253,6 @@ def extract_triples(sparql: str) -> List[URIRef]:
     # get sparql tree from sparql string
     query_tree = parser.parseQuery(sparql)
     q_algebra = algebra.translateQuery(query_tree)
-    # print(q_algebra.algebra)
-    # print("\n")
     triples = extract_triples_rec(q_algebra.algebra)
     return triples
 
