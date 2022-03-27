@@ -13,7 +13,7 @@ from SPARQLWrapper import SPARQLWrapper
 
 
 def entity_recognition_dbspotlight(
-    question: str, confidence: float = 0.8
+    question: str, confidence: float = 0.5, include_conf: bool = False
 ) -> List[URIRef]:
     """Entity recognition using DB-Spotlight.
 
@@ -22,14 +22,16 @@ def entity_recognition_dbspotlight(
     question : str
         Natural language question.
     confidence : float, optional
-        Confidence of the recognized entity (default: 0.8).
+        Confidence of the recognized entity (default: 0.5).
+    include_conf : bool, optional
+        Include the confidence score for each recognized entity (default: False).
 
     Returns
     -------
     entities : list
         List of recognized entities as URIRefs.
     """
-    endpoint = "https://api.dbpedia-spotlight.org/en/annotate"
+    endpoint = "https://api.dbpedia-spotlight.org/en/annotate/"
 
     try:
         response = requests.post(
@@ -47,8 +49,71 @@ def entity_recognition_dbspotlight(
 
     entities = list()
 
-    for resource in response["Resources"]:
-        entities.append(URIRef(resource["@URI"]))
+    if include_conf:
+        for resource in response["Resources"]:
+            entity = (URIRef(resource["@URI"]), float(resource["@similarityScore"]))
+
+            entities.append(entity)
+    else:
+        for resource in response["Resources"]:
+            entities.append(URIRef(resource["@URI"]))
+
+    return entities
+
+
+def entity_recognition_tagme(
+    question: str, conf: float = 0.5
+) -> List[Tuple[URIRef, float]]:
+    """Enttiy recognition using the TagMe API.
+
+    Parameters
+    ----------
+    question : str
+        Natural language question.
+    conf : float
+        Lower bound for the confidence score. Exclude all entities with a lower
+        confidence score.
+
+    Returns
+    -------
+    list
+        List containing objects of the form (entity, confidence), where entity
+        is the URIRef of a recognized entity and confidence the corresponding
+        confidence score.
+    """
+    endpoint = "https://tagme.d4science.org/tagme/tag"
+
+    data = {
+        "text": question,
+        "gcube-token": "ad53a3bc-3cff-4350-b766-aced87f26cbd-843339462",
+        "include_categories": "false",
+    }
+
+    response = requests.post(endpoint, data=data)
+
+    annotations = response.json()["annotations"]
+
+    entities = list()
+
+    for annotation in annotations:
+        ann_id = annotation["id"]
+        confidence = float(annotation["rho"])
+
+        if confidence >= conf:
+
+            query = f"""SELECT ?uri WHERE {{
+                ?uri dbo:wikiPageID ?id
+                FILTER( ?id = {ann_id} )
+            }}
+            """
+            answer = query_dbpedia(query)
+
+            bindings = answer["results"]["bindings"]
+
+            for binding in bindings:
+                entity = URIRef(binding["uri"]["value"])
+
+                entities.append((entity, confidence))
 
     return entities
 
