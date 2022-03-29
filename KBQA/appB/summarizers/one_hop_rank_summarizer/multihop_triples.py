@@ -116,7 +116,7 @@ class Triples_for_pred(ABC):
         string1 = """CONSTRUCT{""" + string1 + """}"""
         string2 = string2 + """}"""
         sparql_string = string1 + string2
-        print(sparql_string)
+
         return sparql_string
 
     def query_dbpedia_for_all_entities(
@@ -440,11 +440,11 @@ def triples_for_predicates_all_datasets(
 def main() -> None:
     """Call triples_for_predicates_all_datasets() to get triples with a rank for predicates from all data sets."""
     triples = triples_for_predicates_all_datasets(
-       "How large is the area of UK?",
-       "pickle_objects/qald8_qald9_lcquad.pickle",
-       True,
-       number_of_triples=100,
-       confidence=0.8,
+        "How large is the area of UK?",
+        "pickle_objects/qald8_qald9_lcquad.pickle",
+        True,
+        number_of_triples=100,
+        confidence=0.8,
     )
     print(len(triples))
     # for triple in triples:
