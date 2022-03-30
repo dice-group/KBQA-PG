@@ -144,7 +144,7 @@ class OneHopRankSummarizer(BaseSummarizer):
 
         # ------------------------------ ranking ------------------------------
         dataset = os.path.join(
-            os.path.dirname(__file__), f"pickle_objects\\{self.datasets}.pickle"
+            os.path.dirname(__file__), f"pickle_objects/{self.datasets}.pickle"
         )
         ranked_triples = triples_for_predicates_all_datasets(
             question.text, dataset, self.filtering, number_of_triples=cur_limit

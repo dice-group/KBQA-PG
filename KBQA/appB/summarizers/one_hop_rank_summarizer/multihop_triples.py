@@ -1,7 +1,6 @@
 """A module to summarize the triples for predicates from QALD8, QALD9 and LCQALD data set."""
 from abc import ABC
 from abc import abstractmethod
-from builtins import FileNotFoundError
 import pickle
 from typing import Dict
 from typing import List
@@ -329,11 +328,10 @@ class Triples_for_pred(ABC):
         entities, confidence = self.ask_for_entities(question, confidence=confidence)
         triples_dict_sorted: Dict[Tuple[URIRef, URIRef, URIRef], int] = {}
         triples_list_sorted: List[Tuple[Tuple[URIRef, URIRef, URIRef], int]] = []
-        try:
-            with open(predicate_table, "rb") as file:
-                predicates_table = pickle.load(file)
-        except FileNotFoundError:
-            pass
+
+        with open(predicate_table, "rb") as file:
+            predicates_table = pickle.load(file)
+
         num_of_query = 0
         first_pred = 0
         last_pred = 66
