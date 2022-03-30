@@ -54,3 +54,4 @@ min-similarity-lines=6
 max-args=9
 max-attributes=9
 max-branches=15
+max-locals=16

@@ -1,4 +1,5 @@
 """Summarizer, which combines one hop triples and ranked tripels."""
+from math import inf
 import os
 import time
 from typing import Dict
@@ -7,7 +8,6 @@ from typing import Tuple
 
 from KBQA.appB.data_generator import Question
 from KBQA.appB.summarizers import BaseSummarizer
-from rdflib import Graph
 from rdflib import URIRef
 
 from .entity_relation_hops import entity_relation_hops
@@ -24,6 +24,8 @@ class OneHopRankSummarizer(BaseSummarizer):
     ----------
     datasets : str, optional
         Permuation of the datasets for the ranked predicates (default: qald8_qald9_lcquad).
+    confidence : float, optional
+        Confidence for entity recognition (default: 0.5).
     lower_rank : int, optional
         Lower bound for the ranked triples. Only triples with a rank greater or
         equal to this parameter are summarized (should be at least 1).
@@ -33,6 +35,8 @@ class OneHopRankSummarizer(BaseSummarizer):
     limit : int, optional
         Limit the number of triples found by the summarizer (use -1 to not use any limit,
         default: -1).
+    filtering : bool, optional
+        Filter all resources and predicates, which don't have an @en tag (default: True).
     timeout : float, optional
         Set a timeout in seconds between requests. This might avoid some connection
         errors (default: 0).
@@ -61,9 +65,11 @@ class OneHopRankSummarizer(BaseSummarizer):
     def __init__(
         self,
         datasets: str = "qald8_qald9_lcquad",
+        confidence: float = 0.5,
         lower_rank: int = 1,
         max_triples: int = 3,
         limit: int = -1,
+        filtering: bool = True,
         timeout: float = 0,
         verbose: bool = True,
     ) -> None:
@@ -75,9 +81,11 @@ class OneHopRankSummarizer(BaseSummarizer):
             raise ValueError("Lower rank cannot be smaller than 1")
 
         self.datasets = datasets
+        self.confidence = confidence
         self.lower_rank = lower_rank
         self.max_triples = max_triples
         self.limit = limit
+        self.filtering = filtering
         self.timeout = timeout
         self.verbose = verbose
 
@@ -95,126 +103,119 @@ class OneHopRankSummarizer(BaseSummarizer):
             List containing the triples in the format <subj> <pred> <obj>.
         """
         # ------------------------------ one hop triples ------------------------------
-        entities, summarized_graph = self._get_summarized_graph(question.text)
+        triples = self.summarize_ranks_confidence(question)
+
+        formated_triples = self._format_triples(triples)
+
+        return formated_triples
+
+    def summarize_ranks_confidence(
+        self, question: Question
+    ) -> List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]:
+        """Summarize triples and their ranks and confidence score for a given question.
+
+        Parameters
+        ----------
+        question : Question
+            Question object containing the question to summarize.
+
+        Returns
+        -------
+        list
+            List containing objects of the form (triple, rank, confidence), where triple
+            is of the form (URIRef, URIRef, URIRef), rank is the corresponding rank of
+            the triple and confidence is the confidence score of the recognized entity
+            in the triple.
+        """
+        # ------------------------------ one hop triples ------------------------------
+        entities, graph_triples = self._get_graph_triples(question.text)
 
         if self.verbose:
             print("Recognized entities:", entities)
-
-        formated_graph = self._format_graph(summarized_graph)
         # ------------------------------ one hop triples ------------------------------
 
         # timeout
         time.sleep(self.timeout)
 
         if self.limit > -1:
-            cur_limit = self.limit - len(summarized_graph)
+            cur_limit = self.limit - len(graph_triples)
         else:
             cur_limit = 9999999
 
         # ------------------------------ ranking ------------------------------
-        # dataset = f"./pickle_objects/{self.datasets}.pickle"
         dataset = os.path.join(
-            os.path.dirname(__file__), f"pickle_objects\\{self.datasets}.pickle"
+            os.path.dirname(__file__), f"pickle_objects/{self.datasets}.pickle"
         )
-
         ranked_triples = triples_for_predicates_all_datasets(
-            question.text, dataset, number_of_triples=cur_limit
+            question.text, dataset, self.filtering, number_of_triples=cur_limit
         )
-        filtered_triples = self._filter_triples(ranked_triples)
-        aggregated_triples = self._aggregate_triples(filtered_triples)
-        formated_triples = self._format_triples(aggregated_triples)
         # ------------------------------ ranking ------------------------------
 
-        result = formated_graph + formated_triples
+        all_triples = graph_triples + ranked_triples
 
-        return result
+        filtered_triples = self._filter_triples(all_triples)
+        aggregated_triples = self._aggregate_triples(filtered_triples)
 
-    def _get_summarized_graph(self, question: str) -> Tuple[List[URIRef], Graph]:
-        summarized_graph = Graph()
+        return aggregated_triples
 
-        one_hop_graphs = entity_relation_hops(
-            question, hops=1, relation_pos=1, limit=self.max_triples
-        )
+    def _get_graph_triples(
+        self, question: str
+    ) -> Tuple[List[URIRef], List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]]:
         entities = list()
-
-        for sub_graph in one_hop_graphs:
-            combined_graph = sub_graph[1] + sub_graph[2]
-            summarized_graph += combined_graph
-
-            entities.append(sub_graph[0])
-
-        if self.limit > -1:
-            summarized_graph = self._limit_graph(summarized_graph)
-
-        return entities, summarized_graph
-
-    def _limit_graph(self, graph: Graph) -> Graph:
-        """Limit the number of triples in a graph.
-
-        Given a graph, reduce the number of triples to the first
-        <limit> triples.
-
-        Parameters
-        ----------
-        graph : Graph
-            Graph containing all triples.
-
-        Returns
-        -------
-        limited_graph : Graph
-            Graph with at most <limit> triples.
-        """
-        limited_graph = Graph()
-        num_triples = 0
-
-        for subj, pred, obj in graph:
-            if num_triples < self.limit:
-                limited_graph.add((subj, pred, obj))
-
-                num_triples += 1
-
-        return limited_graph
-
-    def _format_graph(self, graph: Graph) -> List[str]:
-        """Format triples in a graph into the <s> <p> <o> format.
-
-        Parameters
-        ----------
-        graph : Graph
-            The graph to format.
-
-        Returns
-        -------
-        triples : list
-            List of strings for each triple in the correct format.
-        """
         triples = list()
 
-        for subj, pred, obj in graph:
-            triple = f"<{subj}> <{pred}> <{obj}>"
+        one_hop_graphs = entity_relation_hops(
+            question,
+            confidence=self.confidence,
+            hops=1,
+            relation_pos=1,
+            limit=self.max_triples,
+        )
 
-            triples.append(triple)
+        for one_hop_graph in one_hop_graphs:
+            entity = one_hop_graph[0]
+            regular_graph = one_hop_graph[1]
+            inverse_graph = one_hop_graph[2]
+            confidence = one_hop_graph[3]
 
-        return triples
+            entities.append(entity)
 
-    def _filter_triples(self, triples: List) -> List[Tuple[URIRef, URIRef, URIRef]]:
+            for subj, pred, obj in regular_graph:
+                triple = (subj, pred, obj)
+
+                triples.append((triple, inf, confidence))
+
+            for subj, pred, obj in inverse_graph:
+                triple = (subj, pred, obj)
+
+                triples.append((triple, inf, confidence))
+
+        return entities, triples
+
+    def _filter_triples(
+        self, triples: List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]
+    ) -> List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]:
         updated_triples = list()
 
         for triple in triples:
-            # check rank and predicate
-            if triple[1] >= self.lower_rank and triple[0][1].n3() not in self.EXCLUDE:
-                updated_triples.append(triple[0])
+            # check rank, predicate and confidence
+            if (
+                triple[1] >= self.lower_rank
+                and triple[0][1].n3() not in self.EXCLUDE
+                and triple[2] >= self.confidence
+            ):
+                updated_triples.append(triple)
 
         return updated_triples
 
     def _aggregate_triples(
-        self, triples: List[Tuple[URIRef, URIRef, URIRef]]
-    ) -> List[Tuple[URIRef, URIRef, URIRef]]:
+        self, triples: List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]
+    ) -> List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]:
         updated_triples = list()
         counter_dict: Dict[Tuple, int] = dict()
 
         for triple in triples:
-            subj, pred = triple[0], triple[1]
+            subj, pred = triple[0][0], triple[0][1]
             if (subj, pred) in counter_dict:
                 if counter_dict[(subj, pred)] < self.max_triples - 1:
                     counter_dict[(subj, pred)] += 1
@@ -227,12 +228,14 @@ class OneHopRankSummarizer(BaseSummarizer):
         return updated_triples
 
     def _format_triples(
-        self, triples: List[Tuple[URIRef, URIRef, URIRef]]
+        self, triples: List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]
     ) -> List[str]:
         formated_triples = list()
 
         for triple in triples:
-            formated_triple = f"{triple[0].n3()} {triple[1].n3()} {triple[2].n3()}"
+            formated_triple = (
+                f"{triple[0][0].n3()} {triple[0][1].n3()} {triple[0][2].n3()}"
+            )
 
             formated_triples.append(formated_triple)
 
