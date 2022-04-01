@@ -4,10 +4,12 @@ import os
 import re
 import traceback
 from tqdm import tqdm
+from pathlib import Path
+
+from typing import Union
 
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper import JSON
-from pathlib import Path
 
 SPARQL_WRAPPER = SPARQLWrapper("http://dbpedia.org/sparql")
 SPARQL_WRAPPER.setReturnFormat(JSON)
@@ -191,43 +193,48 @@ ENCODING_REPLACEMENTS = [
 ]
 
 
-def preprocess_qtq_file(file_name, input_file_path, output_file_path="preprocessed_data_files",
-                        keep_separated_input_file=False):
+def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
+                        output_folder_path: Union[str, os.PathLike, Path] = Path("preprocessed_data_files"),
+                        keep_separated_input_file: bool = False,
+                        separated_input_files_folder_path: Union[str, os.PathLike, Path] =
+                        Path("separated_data_files")) -> tuple[Path, Path, Path]:
     """Separate and preprocess a JSON qtq-file into three files, question-, triple-, sparql-file.
 
     Let file_name_without_json be the file_name without the trailing ".json".
-    Store the preprocessed questions in <output_file_path>/<file_name_without_json>.en.
-    Store the preprocessed triples in <output_file_path>/<file_name without_json>.triple.
-    Store the preprocessed SPARQL queries in <output_file_path>/<file_name_without_json>.sparql.
+    Store the preprocessed questions in <output_folder_path>/<file_name_without_json>.en.
+    Store the preprocessed triples in <output_folder_path>/<file_name without_json>.triple.
+    Store the preprocessed SPARQL queries in <output_folder_path>/<file_name_without_json>.sparql.
 
     Also applies filter_triples() on the triples of the qtq-file.
 
     Args:
-        file_name: The name of the input qtq-file. Must be encoded as JSON and the name must end in ".json".
-        keep_separated_input_file: If True, store the separated qtq-file in <output_file_path>/separated_input_files/.
+        input_file_path: The qtq-file-path. Must be a valid JSON with suffix ".json".
+        output_folder_path: The folder-path where the preprocessed files are stored.
+        keep_separated_input_file: If True, store the separated qtq-file in separated_input_files_folder_path.
+        separated_input_files_folder_path: The input-file is separated into questions, triples and SPARQLs before
+                                           preprocessing. This is folder-path where these intermediate files are stored.
     """
-    if not file_name.endswith(".json"):
-        raise ValueError("file_name should be ending with \".json\"")
-    file_name = file_name.removesuffix(".json")
-    input_file_path = input_file_path.rstrip("/")
-    output_file_path = output_file_path.rstrip("/")
-    Path(output_file_path).mkdir(parents=True, exist_ok=True)
-    separated_input_file_path = output_file_path + "/separated_input_files"
-    separate_qtq_file(file_name=file_name + ".json", input_file_path=input_file_path,
-                      output_file_path=separated_input_file_path)
-    preprocess_natural_language_file(file_name=file_name + ".en", input_file_path=separated_input_file_path,
-                                     output_file_path=output_file_path)
-    preprocess_sparql_file(file_name=file_name + ".sparql", input_file_path=separated_input_file_path,
-                           output_file_path=output_file_path)
-    preprocess_triples_file(file_name=file_name + ".triple", input_file_path=separated_input_file_path,
-                            output_file_path=output_file_path)
-    separated_input_file_path = separated_input_file_path.rstrip('/')
+    input_file_path = Path(input_file_path)
+    output_folder_path = Path(output_folder_path)
+    separated_input_files_folder_path = Path(separated_input_files_folder_path)
+    if input_file_path.suffix != ".json":
+        raise ValueError("input_file_path should be ending with \".json\"")
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+    natural_language_file_path, triples_file_path, sparql_file_path = separate_qtq_file(
+        input_file_path=input_file_path, output_folder_path=separated_input_files_folder_path)
+    preprocessed_natural_language_file_path = preprocess_natural_language_file(
+        input_file_path=natural_language_file_path, output_folder_path=output_folder_path)
+    preprocessed_triples_file_path = preprocess_triples_file(input_file_path=triples_file_path,
+                                                             output_folder_path=output_folder_path)
+    preprocessed_sparql_file_path = preprocess_sparql_file(input_file_path=sparql_file_path,
+                                                           output_folder_path=output_folder_path)
     if not keep_separated_input_file:
-        os.remove(separated_input_file_path + '/' + file_name + ".en")
-        os.remove(separated_input_file_path + '/' + file_name + ".triple")
-        os.remove(separated_input_file_path + '/' + file_name + ".sparql")
-        if not any(os.scandir(separated_input_file_path)):
-            os.rmdir(separated_input_file_path)
+        natural_language_file_path.unlink()
+        triples_file_path.unlink()
+        sparql_file_path.unlink()
+        if not any(separated_input_files_folder_path.iterdir()):
+            separated_input_files_folder_path.rmdir()
+    return preprocessed_natural_language_file_path, preprocessed_triples_file_path, preprocessed_sparql_file_path
 
 
 def filter_triples(triples: list) -> list:
@@ -240,83 +247,107 @@ def filter_triples(triples: list) -> list:
     return [triple for triple in triples if "\n" not in triple]
 
 
-def separate_qtq_file(file_name, input_file_path, output_file_path="preprocessed_data_files/separated_input_files"):
+def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
+                      output_folder_path: Union[str, os.PathLike, Path] = "separated_data_files") \
+        -> tuple[Path, Path, Path]:
     """Separate a JSON qtq-file into three files, question-, triple-, sparql-file.
 
     Let file_name_without_json be the file_name without the trailing ".json".
-    Store the questions in <output_file_path>/<file_name_without_json>.en.
-    Store the triples in <output_file_path>/<file_name without_json>.triple.
-    Store the SPARQL queries in <output_file_path>/<file_name_without_json>.sparql.
+    Store the questions in <output_folder_path>/<file_name_without_json>.en.
+    Store the triples in <output_folder_path>/<file_name without_json>.triple.
+    Store the SPARQL queries in <output_folder_path>/<file_name_without_json>.sparql.
 
     Also applies filter_triples() on the triples of the qtq-file.
 
     Args:
-        file_name: The name of the input qtq-file. Must be encoded as JSON and the name must end in ".json".
+        input_file_path: The path to the input file. Suffix must be ".json".
+        output_folder_path: The path where the separated qtq-file parts should be stored.
+
+    Returns:
+        Tuple of (natural_language_file_path, triples_file_path, sparql_file_path).
     """
-    if not file_name.endswith(".json"):
-        raise ValueError("file_name should be ending with \".json\"")
-    file_name = file_name.removesuffix(".json")
-    input_file_path = input_file_path.rstrip("/")
-    output_file_path = output_file_path.rstrip("/")
-    Path(output_file_path).mkdir(parents=True, exist_ok=True)
-    en_file = open(f"{output_file_path}/{file_name}.en", "w")
-    sparql_file = open(f"{output_file_path}/{file_name}.sparql", "w")
-    triple_file = open(f"{output_file_path}/{file_name}.triple", "w")
-    data = json.load(open(f"{input_file_path}/{file_name}.json", "r"))
-    for element in data["questions"]:
+    input_file_path = Path(input_file_path)
+    output_folder_path = Path(output_folder_path)
+    if input_file_path.suffix != ".json":
+        raise ValueError("input_file_path should be ending with \".json\"")
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+    natural_language_file_path = output_folder_path / input_file_path.with_suffix(".en").name
+    triples_file_path = output_folder_path / input_file_path.with_suffix(".triple").name
+    sparql_file_path = output_folder_path / input_file_path.with_suffix(".sparql").name
+    en_file = open(natural_language_file_path, "w")
+    triple_file = open(triples_file_path, "w")
+    sparql_file = open(sparql_file_path, "w")
+    input_file = open(input_file_path, "r")
+    data_json = json.load(input_file)
+    for element in data_json["questions"]:
         en_file.write(element["question"] + "\n")
         sparql_file.write(element["query"] + "\n")
-        triple_file.write("\t".join(filter_triples(element["triples"])) + "\n")
-
+        triple_file.write(
+            "\t".join(filter_triples(element["triples"])) + "\n")  # TODO: Filter should change and not delete triple.
     en_file.close()
     sparql_file.close()
     triple_file.close()
+    input_file.close()
+    return natural_language_file_path, triples_file_path, sparql_file_path
 
 
-def preprocess_natural_language_file(file_name, input_file_path, output_file_path="preprocessed_data_files"):
-    input_file_path = input_file_path.rstrip("/")
-    output_file_path = output_file_path.rstrip("/")
-    Path(output_file_path).mkdir(parents=True, exist_ok=True)
-    with open(f"{output_file_path}/{file_name}", 'w') as out:
-        with open(f"{input_file_path}/{file_name}", 'r') as f:
+def preprocess_natural_language_file(input_file_path: Union[str, os.PathLike, Path],
+                                     output_folder_path: Union[str, os.PathLike, Path] = "preprocessed_data_files") \
+        -> Path:
+    """Preprocess a natural language file.
+
+    Args:
+        input_file_path: The path of the file to preprocess.
+        output_folder_path: The path of the folder where the preprocessed file is stored.
+    Returns:
+        The path of the preprocessed file.
+    """
+    input_file_path = Path(input_file_path)
+    output_folder_path = Path(output_folder_path)
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+    output_file_path = output_folder_path / input_file_path.name
+    with open(output_file_path, 'w') as out:
+        with open(input_file_path, 'r') as f:
             for line in tqdm(f, desc="Amount of preprocessed questions", unit=" questions"):
                 if "\n" == line[-1]:
                     line = line[:-1]
                 out.write(preprocess_natural_language_sentence(line))
                 out.write("\n")
+    return output_file_path
 
 
 def preprocess_natural_language_sentence(w):
-    # creating a space between a word and the punctuation following it
-    # eg: "he is a boy." => "he is a boy ."
-    # Reference:-
-    #   https://stackoverflow.com/questions/3645931/python-padding-punctuation-with-white-spaces-keeping-punctuation
+    # creating a space between a word and the punctuation following it.
     w = re.sub(r"([?.!,¿])", r" \1 ", w)
-    w = re.sub(r'[" "]+', " ", w)
-
-    # replacing everything with space except (a-z, A-Z, ".", "?", "!", ",")
-    # w = re.sub(r"[^a-zA-Z?.!,¿]+", " ", w)
-    # w = re.sub(r'\[.*?\]', '<ans>', w).rstrip().strip()
-    w = w.rstrip().strip().lower()
-
-    # adding a start and an end token to the sentence
-    # so that the model know when to start and stop predicting.
-    # w = '<start> ' + w + ' <end>'
+    w = re.sub(r" +", " ", w)
+    w = w.strip()
     return w
 
 
-def preprocess_sparql_file(file_name, input_file_path, output_file_path="preprocessed_data_files"):
-    # TODO: Store checkpoints.
-    input_file_path = input_file_path.rstrip("/")
-    output_file_path = output_file_path.rstrip("/")
-    Path(output_file_path).mkdir(parents=True, exist_ok=True)
-    with open(f"{output_file_path}/{file_name}", 'w') as out:
-        with open(f"{input_file_path}/{file_name}", 'r') as f:
-            for line in tqdm(f, desc="Amount of preprocessed SPARQL examples", unit=" examples"):
+def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
+                           output_folder_path: Union[str, os.PathLike, Path] = "preprocessed_data_files") \
+        -> Path:
+    """Preprocess a SPARQL file.
+
+    Args:
+        input_file_path: The path of the file to preprocess.
+        output_folder_path: The path of the folder where the preprocessed file is stored.
+    Returns:
+        The path of the preprocessed file.
+    """
+    # TODO: Store checkpoints for all file types.
+    input_file_path = Path(input_file_path)
+    output_folder_path = Path(output_folder_path)
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+    output_file_path = output_folder_path / input_file_path.name
+    with open(output_file_path, 'w') as out:
+        with open(input_file_path, 'r') as f:
+            for line in tqdm(f, desc="Amount of preprocessed SPARQLs", unit=" examples"):
                 if "\n" == line[-1]:
                     line = line[:-1]
                 out.write(preprocess_sparql(line))
                 out.write("\n")
+    return output_file_path
 
 
 def preprocess_sparql(s):
@@ -335,24 +366,36 @@ def preprocess_sparql(s):
 
     s = sparql_keyword_to_lower_case(s)
     s = uri_to_prefix(s)
-    s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # Normalize only English language tag for now.
+    s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # Normalize English language tag.
     s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     s = encode(s)
     return s.strip()
 
 
-def preprocess_triples_file(file_name, input_file_path, output_file_path="preprocessed_data_files"):
-    input_file_path = input_file_path.rstrip("/")
-    output_file_path = output_file_path.rstrip("/")
-    Path(output_file_path).mkdir(parents=True, exist_ok=True)
-    with open(f"{output_file_path}/{file_name}", 'w') as out:
-        with open(f"{input_file_path}/{file_name}", 'r') as f:
-            for line in tqdm(f, desc="Amount of preprocessed triple-sets", unit=" triple-sets"):
+def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
+                            output_folder_path: Union[str, os.PathLike, Path] = "preprocessed_data_files") \
+        -> Path:
+    """Preprocess a triples file.
+
+    Args:
+        input_file_path: The path of the file to preprocess.
+        output_folder_path: The path of the folder where the preprocessed file is stored.
+    Returns:
+        The path of the preprocessed file.
+    """
+    input_file_path = Path(input_file_path)
+    output_folder_path = Path(output_folder_path)
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+    output_file_path = output_folder_path / input_file_path.name
+    with open(output_file_path, 'w') as out:
+        with open(input_file_path, 'r') as f:
+            for line in tqdm(f, desc="Amount of preprocessed triple sets", unit=" triple-sets"):
                 if "\n" == line[-1]:
                     line = line[:-1]
                 triples = line.split("\t")
                 out.write("\t".join(preprocess_triples(triples)))
                 out.write("\n")
+    return output_file_path
 
 
 def preprocess_triples(triples):
@@ -362,7 +405,7 @@ def preprocess_triples(triples):
 def encode(sparql):
     """Encode sparql.
 
-    sparql will not be a valid SPARQL query afterwards and has to be decoded by decode() first.
+    sparql will not be a valid SPARQL query afterwards and has to be decoded by decode() to make it valid again.
     """
     s = sparql
     s = do_replacements(s, ENCODING_REPLACEMENTS)
@@ -383,7 +426,7 @@ def decode(encoded_sparql):
 
 
 def decode_file(file):
-    """Decodes a file of encoded SPARQLs."""
+    """Decode a file of encoded SPARQLs."""
     # TODO:
 
 
@@ -452,7 +495,7 @@ def do_replacements(sparql, replacements, remove_successive_whitespaces=True):
         for original in r[:-2]:
             s = s.replace(original, encoding)
     if remove_successive_whitespaces:
-        s = ' '.join(s.split())
+        s = re.sub(r'[" "]+', " ", s)
     return s
 
 
@@ -472,7 +515,7 @@ def revert_replacements(decoded_sparql, replacements, remove_successive_whitespa
         decoding = r[-1]
         s = s.replace(encoding, decoding)
     if remove_successive_whitespaces:
-        s = ' '.join(s.split())
+        s = re.sub(r" +", " ", s)
     return s
 
 
@@ -507,7 +550,7 @@ def encode_prefix_uri(s):
                 "vrank:", "bif:", "foaf:", "owl:", "yago:", "skos:"]
     for prefix in prefixes:
         s = re.sub(f"(\\b{prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_encoded_prefix_uri, s)
-    s = ' '.join(s.split())
+    s = re.sub(r" +", " ", s)
     return s
 
 
