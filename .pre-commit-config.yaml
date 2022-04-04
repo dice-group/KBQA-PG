@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.6.0
+    rev: v2.6.2
     hooks:
       - id: prettier
         name: Prettier - format code of web development files
@@ -12,7 +12,7 @@ repos:
         name: pyupgrade - upgrade syntax for newer python versions
 
   - repo: https://github.com/psf/black
-    rev: 22.1.0
+    rev: 22.3.0
     hooks:
       - id: black
         name: Black - format python code
@@ -24,7 +24,7 @@ repos:
         name: zimports - reformat python imports
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.12.2
+    rev: v2.13.4
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
@@ -68,7 +68,7 @@ repos:
         name: Flake8 - check python source files for errors and style
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.941
+    rev: v0.942
     hooks:
       - id: mypy
         name: Mypy - check python static types
