@@ -1,12 +1,14 @@
 """Preprocess data."""
 import json
 import os
+import pickle
 import re
 import traceback
 from tqdm import tqdm
 from pathlib import Path
 
 from typing import Union
+from typing import Callable
 
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper import JSON
@@ -185,6 +187,8 @@ ENCODING_REPLACEMENTS = [
     ["!=", " not equal ", " != "],
     ["=", " equal ", " = "],  # After <=, >=, !=
     ["<", " less than ", " < "],  # After <=, >= and after getting rid of chevrons
+    # TODO: <> or <something> occur in our triples which are not removed. Hence they result in "less than" encoding.
+    #       This has to be resolved.
     [">", " greater than ", " > "],  # After <=, >= and after getting rid of chevrons
     ["||", " logical or ", " || "],
     ["&&", " logical and ", " && "],
@@ -197,7 +201,8 @@ def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
                         output_folder_path: Union[str, os.PathLike, Path] = Path("preprocessed_data_files"),
                         keep_separated_input_file: bool = False,
                         separated_input_files_folder_path: Union[str, os.PathLike, Path] =
-                        Path("separated_data_files")) -> tuple[Path, Path, Path]:
+                        Path("separated_data_files"),
+                        checkpointing_period: int = 10) -> tuple[Path, Path, Path]:
     """Separate and preprocess a JSON qtq-file into three files, question-, triple-, sparql-file.
 
     Let file_name_without_json be the file_name without the trailing ".json".
@@ -213,6 +218,13 @@ def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
         keep_separated_input_file: If True, store the separated qtq-file in separated_input_files_folder_path.
         separated_input_files_folder_path: The input-file is separated into questions, triples and SPARQLs before
                                            preprocessing. This is folder-path where these intermediate files are stored.
+        checkpointing_period: For every checkpointing_period of processed examples, the examples are stored in
+                              <output_file_path>.checkpoint_data and the algorithm state in
+                              <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
+                              from the checkpoint by calling it with the same arguments.
+
+    Note:
+        Checkpointing is not applied on the data-separation step.
     """
     input_file_path = Path(input_file_path)
     output_folder_path = Path(output_folder_path)
@@ -222,12 +234,18 @@ def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     output_folder_path.mkdir(parents=True, exist_ok=True)
     natural_language_file_path, triples_file_path, sparql_file_path = separate_qtq_file(
         input_file_path=input_file_path, output_folder_path=separated_input_files_folder_path)
+    preprocessed_natural_language_file_path = output_folder_path / input_file_path.with_suffix(".en").name
+    preprocessed_triples_file_path = output_folder_path / input_file_path.with_suffix(".triple").name
+    preprocessed_sparql_file_path = output_folder_path / input_file_path.with_suffix(".sparql").name
     preprocessed_natural_language_file_path = preprocess_natural_language_file(
-        input_file_path=natural_language_file_path, output_folder_path=output_folder_path)
+        input_file_path=natural_language_file_path, output_file_path=preprocessed_natural_language_file_path,
+        checkpointing_period=checkpointing_period)
     preprocessed_triples_file_path = preprocess_triples_file(input_file_path=triples_file_path,
-                                                             output_folder_path=output_folder_path)
+                                                             output_file_path=preprocessed_triples_file_path,
+                                                             checkpointing_period=checkpointing_period)
     preprocessed_sparql_file_path = preprocess_sparql_file(input_file_path=sparql_file_path,
-                                                           output_folder_path=output_folder_path)
+                                                           output_file_path=preprocessed_sparql_file_path,
+                                                           checkpointing_period=checkpointing_period)
     if not keep_separated_input_file:
         natural_language_file_path.unlink()
         triples_file_path.unlink()
@@ -283,7 +301,8 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
         en_file.write(element["question"] + "\n")
         sparql_file.write(element["query"] + "\n")
         triple_file.write(
-            "\t".join(filter_triples(element["triples"])) + "\n")  # TODO: Filter should change and not delete triple.
+            " . ".join(filter_triples(element["triples"])) + " .\n")
+        # TODO: Filter should change and not delete triple.
     en_file.close()
     sparql_file.close()
     triple_file.close()
@@ -291,28 +310,92 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     return natural_language_file_path, triples_file_path, sparql_file_path
 
 
-def preprocess_natural_language_file(input_file_path: Union[str, os.PathLike, Path],
-                                     output_folder_path: Union[str, os.PathLike, Path] = "preprocessed_data_files") \
-        -> Path:
-    """Preprocess a natural language file.
+def preprocess_file(preprocessing_function: Callable[[str], str], input_file_path: Union[str, os.PathLike, Path],
+                    output_file_path: Union[str, os.PathLike, Path, None] = None,
+                    checkpointing_period: int = 10) -> Path:
+    """Preprocess a file with preprocessing_function.
 
     Args:
+        preprocessing_function: This functions is applied to each line in the input-file at input_file_path. The result
+                                is the respective line in the output-file at output_file_path.
         input_file_path: The path of the file to preprocess.
-        output_folder_path: The path of the folder where the preprocessed file is stored.
+        output_file_path: The path of the final preprocessed file. The file is created if it does not exist or
+                          overwritten if it already exists. If None, defaults to
+                          "preprocessed_data_files/<input_file_name>" where <input_file_name> is the name of the
+                          input-file.
+        checkpointing_period: For every checkpointing_period of processed examples, the examples are stored in
+                              <output_file_path>.checkpoint_data and the algorithm state in
+                              <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
+                              from the checkpoint by calling it with the same arguments.
     Returns:
         The path of the preprocessed file.
     """
     input_file_path = Path(input_file_path)
-    output_folder_path = Path(output_folder_path)
-    output_folder_path.mkdir(parents=True, exist_ok=True)
-    output_file_path = output_folder_path / input_file_path.name
-    with open(output_file_path, 'w') as out:
-        with open(input_file_path, 'r') as f:
-            for line in tqdm(f, desc="Amount of preprocessed questions", unit=" questions"):
-                if "\n" == line[-1]:
-                    line = line[:-1]
-                out.write(preprocess_natural_language_sentence(line))
-                out.write("\n")
+    if output_file_path is None:
+        output_file_path = Path("preprocessed_data_files") / input_file_path.name
+    else:
+        output_file_path = Path(output_file_path)
+    output_file_path.parent.mkdir(parents=True, exist_ok=True)
+    output_file_checkpoint_data_path = output_file_path.parent / (output_file_path.name + ".checkpoint_data")
+    output_file_checkpoint_state_path = output_file_path.parent / (output_file_path.name + ".checkpoint_state")
+    if output_file_checkpoint_state_path.exists():
+        with open(output_file_checkpoint_state_path, "rb") as state_file:
+            num_stored_examples = pickle.load(state_file)
+    else:
+        num_stored_examples = 0
+    with open(input_file_path, "r") as input_file:
+        with open(output_file_checkpoint_data_path, "a") as checkpoint_file:
+            for _ in range(num_stored_examples):
+                input_file.readline()
+            if num_stored_examples == 0:
+                preprocessed_examples = ""
+            else:
+                preprocessed_examples = "\n"
+            num_preprocessed_examples = 0
+            for example in tqdm(input_file, desc="Amount of preprocessed questions", unit=" questions",
+                                initial=num_stored_examples):
+                example = example.rstrip("\n")
+                preprocessed_examples += preprocessing_function(example)
+                preprocessed_examples += "\n"
+                num_preprocessed_examples += 1
+                if num_preprocessed_examples % checkpointing_period == 0:
+                    preprocessed_examples = preprocessed_examples.rstrip("\n")
+                    checkpoint_file.write(preprocessed_examples)
+                    checkpoint_file.flush()
+                    num_stored_examples += num_preprocessed_examples
+                    with open(output_file_checkpoint_state_path, "wb") as state_file:
+                        pickle.dump(obj=num_stored_examples, file=state_file)
+                    preprocessed_examples = "\n"
+                    num_preprocessed_examples = 0
+            preprocessed_examples = preprocessed_examples.rstrip("\n")
+            checkpoint_file.write(preprocessed_examples)
+            checkpoint_file.flush()
+    output_file_checkpoint_data_path.replace(output_file_path)
+    output_file_checkpoint_state_path.unlink(missing_ok=True)
+    return output_file_path
+
+
+def preprocess_natural_language_file(input_file_path: Union[str, os.PathLike, Path],
+                                     output_file_path: Union[str, os.PathLike, Path, None] = None,
+                                     checkpointing_period: int = 10) -> Path:
+    """Preprocess a natural language file.
+
+    Args:
+        input_file_path: The path of the file to preprocess.
+        output_file_path: The path of the final preprocessed file. The file is created if it does not exist or
+                          overwritten if it already exists. If None, defaults to
+                          "preprocessed_data_files/<input_file_name>" where <input_file_name> is the name of the
+                          input-file.
+        checkpointing_period: For every checkpointing_period of processed examples, the examples are stored in
+                              <output_file_path>.checkpoint_data and the algorithm state in
+                              <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
+                              from the checkpoint by calling it with the same arguments.
+    Returns:
+        The path of the preprocessed file.
+    """
+    output_file_path = preprocess_file(preprocessing_function=preprocess_natural_language_sentence,
+                                       input_file_path=input_file_path, output_file_path=output_file_path,
+                                       checkpointing_period=checkpointing_period)
     return output_file_path
 
 
@@ -325,28 +408,25 @@ def preprocess_natural_language_sentence(w):
 
 
 def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
-                           output_folder_path: Union[str, os.PathLike, Path] = "preprocessed_data_files") \
-        -> Path:
+                           output_file_path: Union[str, os.PathLike, Path, None] = None,
+                           checkpointing_period: int = 10) -> Path:
     """Preprocess a SPARQL file.
 
     Args:
         input_file_path: The path of the file to preprocess.
-        output_folder_path: The path of the folder where the preprocessed file is stored.
+        output_file_path: The path of the final preprocessed file. The file is created if it does not exist or
+                          overwritten if it already exists. If None, defaults to
+                          "preprocessed_data_files/<input_file_name>" where <input_file_name> is the name of the
+                          input-file.
+        checkpointing_period: For every checkpointing_period of processed examples, the examples are stored in
+                              <output_file_path>.checkpoint_data and the algorithm state in
+                              <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
+                              from the checkpoint by calling it with the same arguments.
     Returns:
         The path of the preprocessed file.
     """
-    # TODO: Store checkpoints for all file types.
-    input_file_path = Path(input_file_path)
-    output_folder_path = Path(output_folder_path)
-    output_folder_path.mkdir(parents=True, exist_ok=True)
-    output_file_path = output_folder_path / input_file_path.name
-    with open(output_file_path, 'w') as out:
-        with open(input_file_path, 'r') as f:
-            for line in tqdm(f, desc="Amount of preprocessed SPARQLs", unit=" examples"):
-                if "\n" == line[-1]:
-                    line = line[:-1]
-                out.write(preprocess_sparql(line))
-                out.write("\n")
+    output_file_path = preprocess_file(preprocessing_function=preprocess_sparql, input_file_path=input_file_path,
+                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period)
     return output_file_path
 
 
@@ -373,33 +453,35 @@ def preprocess_sparql(s):
 
 
 def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
-                            output_folder_path: Union[str, os.PathLike, Path] = "preprocessed_data_files") \
-        -> Path:
+                            output_file_path: Union[str, os.PathLike, Path, None] = None,
+                            checkpointing_period: int = 10) -> Path:
     """Preprocess a triples file.
 
     Args:
         input_file_path: The path of the file to preprocess.
-        output_folder_path: The path of the folder where the preprocessed file is stored.
+        output_file_path: The path of the final preprocessed file. The file is created if it does not exist or
+                          overwritten if it already exists. If None, defaults to
+                          "preprocessed_data_files/<input_file_name>" where <input_file_name> is the name of the
+                          input-file.
+        checkpointing_period: For every checkpointing_period of processed examples, the examples are stored in
+                              <output_file_path>.checkpoint_data and the algorithm state in
+                              <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
+                              from the checkpoint by calling it with the same arguments.
     Returns:
         The path of the preprocessed file.
     """
-    input_file_path = Path(input_file_path)
-    output_folder_path = Path(output_folder_path)
-    output_folder_path.mkdir(parents=True, exist_ok=True)
-    output_file_path = output_folder_path / input_file_path.name
-    with open(output_file_path, 'w') as out:
-        with open(input_file_path, 'r') as f:
-            for line in tqdm(f, desc="Amount of preprocessed triple sets", unit=" triple-sets"):
-                if "\n" == line[-1]:
-                    line = line[:-1]
-                triples = line.split("\t")
-                out.write("\t".join(preprocess_triples(triples)))
-                out.write("\n")
+    output_file_path = preprocess_file(preprocessing_function=preprocess_triples, input_file_path=input_file_path,
+                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period)
     return output_file_path
 
 
-def preprocess_triples(triples):
-    return [preprocess_sparql(triple) for triple in triples]
+def preprocess_triples(triples_example):
+    triples_example = triples_example.rstrip(" .")
+    triples = triples_example.split(" . ")
+    preprocessed_triples = [preprocess_sparql(triple) for triple in triples]
+    preprocessed_example = " . ".join(preprocessed_triples)
+    preprocessed_example += " ."
+    return preprocessed_example
 
 
 def encode(sparql):
