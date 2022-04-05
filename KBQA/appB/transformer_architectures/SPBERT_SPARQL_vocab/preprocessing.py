@@ -181,19 +181,19 @@ VALID_SPARQL_REPLACEMENTS = [
 ]
 ENCODING_REPLACEMENTS = [
     ['?', " variable: ", " ?"],
-    ["*", " all variables ", " * "],
-    ["<=", " less equal ", " <= "],
-    [">=", " greater equal ", " >= "],
-    ["!=", " not equal ", " != "],
-    ["=", " equal ", " = "],  # After <=, >=, !=
-    ["<", " less than ", " < "],  # After <=, >= and after getting rid of chevrons
-    # TODO: <> or <something> occur in our triples which are not removed. Hence they result in "less than" encoding.
-    #       This has to be resolved.
-    [">", " greater than ", " > "],  # After <=, >= and after getting rid of chevrons
+    [" * ", " all variables ", " * "],
+    # TODO: Having spaces around comparison operators is no necessity from SPARQL. SPBERT still used it. This holds on
+    #       the QA training data still. As soon as we acquire the SPARQL training data, check if this also holds.
+    [" <= ", " less equal ", " <= "],
+    [" >= ", " greater equal ", " >= "],
+    [" != ", " not equal ", " != "],
+    [" = ", " equal ", " = "],  # Necessarily after <=, >=, !=
+    [" < ", " less than ", " < "],  # Necessarily after <=, >=
+    [" > ", " greater than ", " > "],  # Necessarily after <=, >=
     ["||", " logical or ", " || "],
     ["&&", " logical and ", " && "],
-    ["!", " logical not ", " ! "],  # After !=
-    ["@en", " language English ", "@en"],  # For now, we are only considering english literals
+    [" ! ", " logical not ", " ! "],  # Necessarily after !=
+    ["@en", " language English ", "@en "],  # For now, we are only considering english literals
 ]
 
 
