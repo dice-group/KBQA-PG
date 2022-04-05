@@ -521,16 +521,10 @@ def uri_to_prefix(s):
     Args:
         s: string where the substitution is made.
     """
-    # TODO: Can we do this in one regex?
-    # Substitute prefixes
-    for r in PREFIX_SUBSTITUTION:
-        encoding = r[-1]
-        for original in r[:-1]:
-            s = s.replace(original, encoding)
-    # Get rid of chevrons
-    for list_ in PREFIX_SUBSTITUTION:
-        prefix = list_[-1]
-        s = re.sub(f"<({prefix}[^>]+)>", r"\1", s)
+    for row in PREFIX_SUBSTITUTION:
+        encoding = row[-1]
+        for original in row[:-1]:
+            s = re.sub(f"<{original}([^>]*)>", f"{encoding}\\1", s)
     return s
 
 
