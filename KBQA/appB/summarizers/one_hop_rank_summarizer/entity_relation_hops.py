@@ -3,7 +3,7 @@ import argparse
 from typing import List
 from typing import Tuple
 
-from KBQA.appB.summarizers.utils import entity_recognition_dbspotlight
+from KBQA.appB.summarizers.utils import entity_recognition_dbspotlight_confidence
 from KBQA.appB.summarizers.utils import entity_recognition_tagme
 from KBQA.appB.summarizers.utils import entity_relation_recognition
 from rdflib import Graph
@@ -52,8 +52,8 @@ def entity_relation_hops(
     """
     _, relations = entity_relation_recognition(question)
     # print("Relations", relations)
-    entities_dbs = entity_recognition_dbspotlight(
-        question, confidence=confidence, include_conf=True
+    entities_dbs = entity_recognition_dbspotlight_confidence(
+        question, confidence=confidence
     )
     entities_tagme = entity_recognition_tagme(question, conf=confidence)
     # print("Entities DBS:", entities_dbs)
