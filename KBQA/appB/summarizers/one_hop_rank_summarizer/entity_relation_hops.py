@@ -1,26 +1,24 @@
 """Module to extract subgraphs from DBpedia based one or two hops."""
 import argparse
-import json
-from json.decoder import JSONDecodeError
 from typing import List
 from typing import Tuple
 
+from KBQA.appB.summarizers.utils import entity_recognition_dbspotlight
+from KBQA.appB.summarizers.utils import entity_recognition_tagme
+from KBQA.appB.summarizers.utils import entity_relation_recognition
 from rdflib import Graph
 from rdflib import URIRef
-import requests
 from SPARQLWrapper import SPARQLWrapper
-
-
-EXCLUDES = [URIRef("http://dbpedia.org/ontology/country")]
 
 
 def entity_relation_hops(
     question: str,
+    confidence: float = 0.5,
     hops: int = 1,
     relation_pos: int = 1,
     limit: int = 10,
     ignore: bool = False,
-) -> List[Tuple[str, Graph, Graph]]:
+) -> List[Tuple[str, Graph, Graph, float]]:
     """Extract subgraphs from DBpedia.
 
     Given a natural language question, extract a subgraph from DBpedia for each
@@ -32,6 +30,8 @@ def entity_relation_hops(
     ----------
     question : str
         Natural language question.
+    confidence : float
+        Confidence for entity recognition (default: 0.5).
     hops : int
         Number of hops from a recognized entity. Hops in [1, 2] are supported (default: 1).
     relation_pos : int
@@ -45,119 +45,41 @@ def entity_relation_hops(
     Return
     ------
     sub_graphs : list
-        List of subgraphs. The list contains tuples (entity, subgraph), where entity is the entity, from
-        which the subgraph is extracted (i.e. entity is the center node of the subgraph).
+        List of subgraphs. The list contains tuples (entity, reg_graph, inv_graph, conf),
+                where entity is the entity, from which the subgraphs are extracted (i.e. entity
+                is the center node of the subgraph), reg_graph is the regular subgraph, inv_graph
+                is the inverse subgraph and conf the confidence of the recognized entity.
     """
-    entities, relations = entity_relation_recognition(question)
-    entities_dbs = entity_recognition_dbspotlight(question)
+    _, relations = entity_relation_recognition(question)
+    # print("Relations", relations)
+    entities_dbs = entity_recognition_dbspotlight(
+        question, confidence=confidence, include_conf=True
+    )
+    entities_tagme = entity_recognition_tagme(question, conf=confidence)
     # print("Entities DBS:", entities_dbs)
 
-    entities += entities_dbs
-    entities = list(set(entities))
+    dbs_dict = dict(entities_dbs)
+    # print("DBS", dbs_dict)
+    tagme_dict = dict(entities_tagme)
+    # print("Tagme", tagme_dict)
 
-    sub_graphs = get_subgraph(entities, relations, hops, relation_pos, limit, ignore)
+    merged_dict = {
+        k: max(i for i in (dbs_dict.get(k), tagme_dict.get(k)) if i)
+        for k in dbs_dict.keys() | tagme_dict
+    }
 
-    return sub_graphs
+    sub_graphs = get_subgraph(
+        list(merged_dict.keys()), relations, hops, relation_pos, limit, ignore
+    )
 
+    result = list()
 
-def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRef]]:
-    """Extract all entities and relations from a question.
+    # add confidence scores
+    for subgr in sub_graphs:
+        # confidence is at merged_dict[sub_graph[0]]
+        result.append((subgr[0], subgr[1], subgr[2], merged_dict[subgr[0]]))
 
-    Given a natural language question, extract all entities as DBpedia-resources
-    and all relations as Dbpedia-properties using FALCON 2.0 (https://arxiv.org/abs/1912.11270).
-
-    Parameters
-    ----------
-    question : str
-        Natural language question.
-
-    Returns
-    -------
-    entities : list
-        List of all recognized entities as URIRef.
-    relations : list
-        List of all recognized relations as URIRef.
-    """
-    endpoint = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1"
-
-    try:
-        response = requests.post(
-            endpoint,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps({"text": question}),
-        ).json()
-    except JSONDecodeError:
-        print("It was not possible to parse the response.")
-
-        return list(), list()
-
-    dbpedia_entities = response["entities_dbpedia"]
-    dbpedia_relations = response["relations_dbpedia"]
-
-    # print("Entities:", dbpedia_entities)
-    # print("Relations:", dbpedia_relations)
-
-    entities = []
-    relations = []
-
-    for entity in dbpedia_entities:
-        if len(entity) > 1:
-            resource = URIRef(entity[0])
-
-            entities.append(resource)
-
-    for relation in dbpedia_relations:
-        if len(relation) > 1:
-            prop = URIRef(relation[0])
-
-            # if prop not in EXCLUDES:
-            relations.append(prop)
-
-    return entities, relations
-
-
-def entity_recognition_dbspotlight(
-    question: str, confidence: float = 0.8
-) -> List[URIRef]:
-    """Entity recognition using DB-Spotlight.
-
-    In addition to FALCON 2.0 DB-Spotlight is used to recognize entities in hope
-    to be more precise with the entities.
-
-    Parameters
-    ----------
-    question : str
-        Natural language question.
-    confidence : float, optional
-        Confidence of the recognized entity (default: 0.8)
-
-    Returns
-    -------
-    entities : list
-        List of recognized entities as URIRefs
-    """
-    endpoint = "https://api.dbpedia-spotlight.org/en/annotate"
-
-    try:
-        response = requests.post(
-            endpoint,
-            headers={"Accept": "application/json"},
-            data={"text": question, "confidence": confidence},
-        ).json()
-    except JSONDecodeError:
-        print("It was not possible to parse the answer.")
-
-        return list()
-
-    if "Resources" not in response:
-        return list()
-
-    entities = list()
-
-    for resource in response["Resources"]:
-        entities.append(URIRef(resource["@URI"]))
-
-    return entities
+    return result
 
 
 def get_subgraph(
@@ -705,12 +627,13 @@ if __name__ == "__main__":
     print("-" * 30)
 
     if len(subgraphs) > 0:
-        subgraph = subgraphs[0][1] + subgraphs[0][2]
+        for sub_graph in subgraphs:
+            subgraph = sub_graph[1] + sub_graph[2]
 
-        for s, p, o in subgraph:
-            print(s, p, o)
+            for s, p, o in subgraph:
+                print(s, p, o)
 
-        print("Found triples:", len(subgraph))
+            print("Found triples:", len(subgraph))
     else:
         print("No entities found. Hence no subgraph found.")
     print("-" * 30)

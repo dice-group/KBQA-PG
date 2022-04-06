@@ -1,7 +1,6 @@
 """A module to summarize the triples for predicates from QALD8, QALD9 and LCQALD data set."""
 from abc import ABC
 from abc import abstractmethod
-from builtins import FileNotFoundError
 import pickle
 from typing import Dict
 from typing import List
@@ -116,6 +115,7 @@ class Triples_for_pred(ABC):
         string1 = """CONSTRUCT{""" + string1 + """}"""
         string2 = string2 + """}"""
         sparql_string = string1 + string2
+
         return sparql_string
 
     def query_dbpedia_for_all_entities(
@@ -161,8 +161,11 @@ class Triples_for_pred(ABC):
         """
 
     def add_new_triples_without_duplicates_to_dict(
-        self, triple: URIRef, predicate: URIRef, triples_dict_sorted: Dict[Tuple, int]
-    ) -> Dict[Tuple, int]:
+        self,
+        triple: URIRef,
+        predicate: URIRef,
+        triples_dict_sorted: Dict[Tuple[URIRef, URIRef, URIRef], int],
+    ) -> Dict[Tuple[URIRef, URIRef, URIRef], int]:
         """
         Given triple and predicate and dictionary with triple:rank. Dictionary triple:rank together with new triple is returned.
 
@@ -181,10 +184,10 @@ class Triples_for_pred(ABC):
         self,
         entity: URIRef,
         predicate: URIRef,
-        triples_list: List[Tuple],
-        triples_dict_sorted: Dict[Tuple, int],
+        triples_list: List[Tuple[URIRef, URIRef, URIRef]],
+        triples_dict_sorted: Dict[Tuple[URIRef, URIRef, URIRef], int],
         number_triples_each_predicate: int = 7,
-    ) -> Dict[Tuple, int]:
+    ) -> Dict[Tuple[URIRef, URIRef, URIRef], int]:
         """
         Given entity, predicate and triples list. Two hop triples for entity and predicate added to final triple list in right order and necessary number and returned.
 
@@ -225,10 +228,10 @@ class Triples_for_pred(ABC):
         self,
         entity: URIRef,
         predicate: URIRef,
-        triples_list: List[Tuple],
-        triples_dict_sorted: Dict[Tuple, int],
+        triples_list: List[Tuple[URIRef, URIRef, URIRef]],
+        triples_dict_sorted: Dict[Tuple[URIRef, URIRef, URIRef], int],
         number_triples_each_predicate: int = 7,
-    ) -> Dict[Tuple, int]:
+    ) -> Dict[Tuple[URIRef, URIRef, URIRef], int]:
         """
         Given entity, predicate and triples list. One hop triples for entity and predicate added to final triple list in right order and necessary number and returned.
 
@@ -254,11 +257,11 @@ class Triples_for_pred(ABC):
 
     def sort_triples_from_the_query(
         self,
-        triples_list: List[Tuple],
+        triples_list: List[Tuple[URIRef, URIRef, URIRef]],
         entities: List[URIRef],
-        rank_table: List[Tuple],
-        triples_dict_sorted: Dict[Tuple, int],
-    ) -> Dict[Tuple, int]:
+        rank_table: List[Tuple[URIRef, int]],
+        triples_dict_sorted: Dict[Tuple[URIRef, URIRef, URIRef], int],
+    ) -> Dict[Tuple[URIRef, URIRef, URIRef], int]:
         """
         Given a triples list from DBPedia and entities from the question, rank table with ranks in decreasing order. Triples for each predicate and each entity in sorted order will be returned.
 
@@ -281,8 +284,10 @@ class Triples_for_pred(ABC):
         return triples_dict_sorted
 
     def add_confidence(
-        self, triples_list_sorted: List[Tuple[Tuple, int]], confid: float
-    ) -> List[Tuple]:
+        self,
+        triples_list_sorted: List[Tuple[Tuple[URIRef, URIRef, URIRef], int]],
+        confid: float,
+    ) -> List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]:
         """
         Given a list of tuples(triple, rank). List of tuples (triple,rank,confidence) is returned.
 
@@ -290,11 +295,14 @@ class Triples_for_pred(ABC):
         :param confid: confidence score.
         :return: final triples list of tuples (triple, rank, confidence).
         """
-        final_triples_list = []
+        final_triples_list: List[
+            Tuple[Tuple[URIRef, URIRef, URIRef], float, float]
+        ] = []
         for triple in triples_list_sorted:
-            trip_list = list(triple)
-            trip_list.append(confid)
-            final_triples_list.append(tuple(trip_list))
+            # trip_list = list(triple)
+            # trip_list.append(confid)
+            # final_triples_list.append(tuple(trip_list))
+            final_triples_list.append((triple[0], float(triple[1]), confid))
         return final_triples_list
 
     def get_triples_final(
@@ -303,7 +311,7 @@ class Triples_for_pred(ABC):
         predicate_table: str,
         number_of_trip: int,
         confidence: float,
-    ) -> List[Tuple]:
+    ) -> List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]:
         """
         Given question string, predicate_table and number of triples, that is needed. Necessary number of triples in ranked order are returned.
 
@@ -318,13 +326,12 @@ class Triples_for_pred(ABC):
         :return: triples_list_sorted with triples and rank.
         """
         entities, confidence = self.ask_for_entities(question, confidence=confidence)
-        triples_dict_sorted: Dict[Tuple, int] = {}
-        triples_list_sorted: List[Tuple[Tuple, int]] = []
-        try:
-            with open(predicate_table, "rb") as file:
-                predicates_table = pickle.load(file)
-        except FileNotFoundError:
-            pass
+        triples_dict_sorted: Dict[Tuple[URIRef, URIRef, URIRef], int] = {}
+        triples_list_sorted: List[Tuple[Tuple[URIRef, URIRef, URIRef], int]] = []
+
+        with open(predicate_table, "rb") as file:
+            predicates_table = pickle.load(file)
+
         num_of_query = 0
         first_pred = 0
         last_pred = 66
@@ -398,7 +405,7 @@ def triples_for_predicates_all_datasets(
     filtering: bool,
     number_of_triples: int = 100,
     confidence: float = 0.8,
-) -> List[Tuple]:
+) -> List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]:
     """
     Given question string, predicate_table. Necessary number of triples in ranked order are returned.
 
@@ -430,14 +437,14 @@ def triples_for_predicates_all_datasets(
 
 def main() -> None:
     """Call triples_for_predicates_all_datasets() to get triples with a rank for predicates from all data sets."""
-    # triples = triples_for_predicates_all_datasets(
-    #    "Washington",
-    #    "qald8_qald9_lcquad.pickle",
-    #    True,
-    #    number_of_triples=100,
-    #    confidence=0.8,
-    # )
-    # print(len(triples))
+    triples = triples_for_predicates_all_datasets(
+        "How large is the area of UK?",
+        "pickle_objects/qald8_qald9_lcquad.pickle",
+        True,
+        number_of_triples=100,
+        confidence=0.8,
+    )
+    print(len(triples))
     # for triple in triples:
     #    print(triple)
     #    print("\n")

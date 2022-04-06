@@ -1,13 +1,11 @@
 """Module for converting triples from QTQ dataset to their corresponding Embeddings."""
 import json
-
-from typing import Tuple
-from typing import List
 from typing import Dict
-
-import requests
+from typing import List
+from typing import Tuple
 
 import numpy as np
+import requests
 
 
 def load_qtq_dataset(dataset_path: str) -> Dict:

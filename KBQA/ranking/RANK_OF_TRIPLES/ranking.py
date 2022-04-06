@@ -1,4 +1,4 @@
-"""A module to count occurrence of multihop predicates in QALD8, LCQUAD and QALD9 data set."""
+"""A module to precompute occurrence of predicates from simple and complex with multihope questions in QALD8, LCQUAD and QALD9 data set."""
 from contextlib import suppress
 import json
 import pickle
@@ -18,7 +18,7 @@ def load_sparql_from_json(jsonfile: str) -> List[str]:
     Given a json file (for qald dataset) with train data, sparql strings of all the questions are returned.
 
     :param jsonfile: Path to json file.
-    :return: List of all sparql striong from the given json file.
+    :return: List of all sparql strings from the given json file.
     """
     with open(jsonfile, encoding="utf8") as file:
         data_js = json.load(file)
@@ -97,18 +97,148 @@ def extract_hop_triples_rec(query: Query) -> List[URIRef]:
                 triples.append([(subj1, pred1, obj1)])
             else:
                 if len(value) == 2:
-                    if value[0][2] == value[1][0]:
-                        subj1 = value[0][0]
-                        pred1 = value[0][1]
-                        obj1 = value[0][2]
-                        subj2 = value[1][0]
-                        pred2 = value[1][1]
-                        obj2 = value[1][2]
-                        triples.append([(subj1, pred1, obj1), (subj2, pred2, obj2)])
+                    triples = add_two_triples(value, triples)
+                if len(value) == 3:
+                    triples = add_three_triples(value, triples)
+
+                if len(value) == 4:
+                    triples = add_four_triples(value, triples)
+
+                if len(value) == 5:
+                    triples = add_five_triples(value, triples)
+
         else:
             newtriples = extract_hop_triples_rec(query[key])
             for triple in newtriples:
                 triples.append(triple)
+    return triples
+
+
+def add_two_triples(value: List, triples: List[List[URIRef]]) -> List[List[URIRef]]:
+    """
+    Given a value (triples from one sparql object) and a list with one or multihope triples. List with added new triples are returned.
+
+    This function adds new one or multihope triples to previous list of triples. It adds only if list of triples
+    in sparql string has the length 2.
+    :param value: list of all triples from one sparql object.
+    :param triples: list of triples from previous sparql strings.
+    :return: previous list of one and multihope triples plus new triples.
+    """
+    subj1 = value[0][0]
+    pred1 = value[0][1]
+    obj1 = value[0][2]
+    subj2 = value[1][0]
+    pred2 = value[1][1]
+    obj2 = value[1][2]
+    if value[0][2] == value[1][0]:
+        triples.append([(subj1, pred1, obj1), (subj2, pred2, obj2)])
+    else:
+        triples.append([(subj1, pred1, obj1)])
+        triples.append([(subj2, pred2, obj2)])
+    return triples
+
+
+def add_three_triples(value: List, triples: List[List[URIRef]]) -> List[List[URIRef]]:
+    """
+    Given a value (triples from one sparql object) and a list with one or multihope triples. List with added new triples are returned.
+
+    This function adds new one or multihope triples to previous list of triples. It adds only if list of triples
+    in sparql string has the length 3.
+    :param value: list of all triples from one sparql object.
+    :param triples: list of triples from previous sparql strings.
+    :return: previous list of one and multihope triples plus new triples.
+    """
+    subj1 = value[0][0]
+    pred1 = value[0][1]
+    obj1 = value[0][2]
+    subj2 = value[1][0]
+    pred2 = value[1][1]
+    obj2 = value[1][2]
+    subj3 = value[2][0]
+    pred3 = value[2][1]
+    obj3 = value[2][2]
+    if value[0][2] == value[1][0]:
+        triples.append([(subj1, pred1, obj1), (subj2, pred2, obj2)])
+        triples.append([(subj3, pred3, obj3)])
+    elif value[1][2] == value[2][0]:
+        triples.append([(subj2, pred2, obj2), (subj3, pred3, obj3)])
+        triples.append([(subj1, pred1, obj1)])
+    else:
+        triples.append([(subj1, pred1, obj1)])
+        triples.append([(subj2, pred2, obj2)])
+        triples.append([(subj3, pred3, obj3)])
+    return triples
+
+
+def add_four_triples(value: List, triples: List[List[URIRef]]) -> List[List[URIRef]]:
+    """
+    Given a value (triples from one sparql object) and a list with one or multihope triples. List with added new triples are returned.
+
+    This function adds new one or multihope triples to previous list of triples. It adds only if list of triples
+    in sparql string has the length 4.
+    :param value: list of all triples from one sparql object.
+    :param triples: list of triples from previous sparql strings.
+    :return: previous list of one and multihope triples plus new triples.
+    """
+    subj1 = value[0][0]
+    pred1 = value[0][1]
+    obj1 = value[0][2]
+    subj2 = value[1][0]
+    pred2 = value[1][1]
+    obj2 = value[1][2]
+    subj3 = value[2][0]
+    pred3 = value[2][1]
+    obj3 = value[2][2]
+    subj4 = value[3][0]
+    pred4 = value[3][1]
+    obj4 = value[3][2]
+    if value[1][2] == value[2][0]:
+        triples.append([(subj2, pred2, obj2), (subj3, pred3, obj3)])
+        triples.append([(subj1, pred1, obj1)])
+        triples.append([(subj4, pred4, obj4)])
+    elif value[0][2] == value[1][0]:
+        triples.append([(subj1, pred1, obj1), (subj2, pred2, obj2)])
+        triples.append([(subj3, pred3, obj3)])
+        triples.append([(subj4, pred4, obj4)])
+    elif value[2][2] == value[2][0]:
+        triples.append([(subj3, pred3, obj3), (subj4, pred4, obj4)])
+        triples.append([(subj1, pred1, obj1)])
+        triples.append([(subj2, pred2, obj2)])
+    else:
+        triples.append([(subj1, pred1, obj1)])
+        triples.append([(subj2, pred2, obj2)])
+        triples.append([(subj3, pred3, obj3)])
+        triples.append([(subj4, pred4, obj4)])
+    return triples
+
+
+def add_five_triples(value: List, triples: List[List[URIRef]]) -> List[List[URIRef]]:
+    """
+    Given a value (triples from one sparql object) and a list with one or multihope triples. List with added new triples are returned.
+
+    This function adds new one or multihope triples to previous list of triples. It adds only if list of triples
+    in sparql string has the length 5.
+    :param value: list of all triples from one sparql object.
+    :param triples: list of triples from previous sparql strings.
+    :return: previous list of one and multihope triples plus new triples.
+    """
+    subj1 = value[0][0]
+    pred1 = value[0][1]
+    obj1 = value[0][2]
+    subj2 = value[1][0]
+    pred2 = value[1][1]
+    obj2 = value[1][2]
+    subj3 = value[2][0]
+    pred3 = value[2][1]
+    obj3 = value[2][2]
+    subj4 = value[3][0]
+    pred4 = value[3][1]
+    obj4 = value[3][2]
+    triples.append([(subj1, pred1, obj1)])
+    triples.append([(subj2, pred2, obj2)])
+    triples.append([(subj3, pred3, obj3)])
+    triples.append([(subj4, pred4, obj4)])
+    triples.append([(value[4][0], value[4][1], value[4][2])])
     return triples
 
 
@@ -418,20 +548,21 @@ def create_table_predicate_rank(dataset: str, lcquad: bool) -> List[Tuple[Tuple,
 
     :param dataset: path to folder with data set.
     :param lcquad: decide whether we parse lcquad or not.
-    :return: List with predicate, rank in decreasing order according rank.
+    :return: List with predicate-rank in decreasing order according to rank.
     """
     if lcquad:
         sparql_strings = load_sparql_from_json_lcquad(dataset)
     else:
         sparql_strings = load_sparql_from_json(dataset)
     tripleslist = []
+    predicate_rank_list = []
     for string in sparql_strings:
         with suppress(Exception):
             triples = extract_hop_triples(string)
             for trip in triples:
                 tripleslist.append(trip)
-    tripleslist = predicate_count_with_multihop(tripleslist)
-    return tripleslist
+    predicate_rank_list = predicate_count_with_multihop(tripleslist)
+    return predicate_rank_list
 
 
 def combine_predicates_without_dublicates(
@@ -457,22 +588,22 @@ def combine_predicates_without_dublicates(
 
 
 def main() -> None:
-    """Call create_table_predicate_rank() to create list pred:rank."""
+    """Call create_table_predicate_rank() to create list pred:rank, call combine_predicates_without_dublicates to combine 2 lists."""
     # qald8 = "C:/Users/User/Downloads/QALD8-train.json"
     # lcquad = "C:/Users/User/Downloads/train-data.json"
     # qald9 = "C:/Users/User/Downloads/qald-9-train-multilingual.json"
-    # first_dataset = create_table_predicate_rank(qald8, False)
+    # first_dataset = create_table_predicate_rank(lcquad, True)
     # second_dataset = create_table_predicate_rank(qald9, False)
-    # third_dataset = create_table_predicate_rank(lcquad, False)
+    # third_dataset = create_table_predicate_rank(qald8, False)
     # combined_dataset = combine_predicates_without_dublicates(first_dataset, second_dataset)
     # combined_dataset1 = combine_predicates_without_dublicates(combined_dataset, third_dataset)
 
     # open_file = open("lcquad_qald9_qald8.pickle", "wb")
     # pickle.dump(combined_dataset1, open_file)
     # open_file.close()
-    # with open("lcquad_qald9_qald8.pickle", "rb") as file:
-    #    lst = pickle.load(file)
-    # print(len(lst))
+    with open("lcquad_qald9_qald8.pickle", "rb") as file:
+        lst = pickle.load(file)
+        print(len(lst))
 
 
 # Call from shell as main.

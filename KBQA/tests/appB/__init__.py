@@ -1,1 +1,1 @@
-"""Root of tests for appB."""
+"""Root of tests for approach B."""
