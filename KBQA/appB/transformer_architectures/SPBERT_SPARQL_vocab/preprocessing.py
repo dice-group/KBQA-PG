@@ -506,7 +506,7 @@ def encode(sparql):
     s = sparql
     s = do_replacements(s, ENCODING_REPLACEMENTS)
     s = encode_datatype(s)  # TODO: Can we get rid of xsd:? Test if xsd: is the datatype always.
-    # s = encode_uri_by_label(s)
+    s = encode_uri_by_label(s)
     # TODO: Replace prefixes by natural language
     return s
 
@@ -514,7 +514,7 @@ def encode(sparql):
 def decode(encoded_sparql):
     """"Decode encoded sparql to make it a valid sparql query again."""
     s = encoded_sparql
-    # s = decode_label_by_uri(s)
+    s = decode_label_by_uri(s)
     s = decode_datatype(s)
     s = revert_replacements(s, ENCODING_REPLACEMENTS)
     # TODO: Inline prefixes
@@ -669,13 +669,12 @@ def generate_label_encoding(match):
     SPARQL_WRAPPER.setQuery(query)
     try:
         answer = SPARQL_WRAPPER.queryAndConvert()
-    except Exception:
-        traceback.print_exc()
-        print(f"The corresponding query is:\n{query}")
-    else:
-        results = answer["results"]["bindings"]
-        if len(results) > 0:
-            label = results[0]["label"]["value"]
+    except BaseException:
+        print(f"An exception occurred at query:\n{query}")
+        raise
+    results = answer["results"]["bindings"]
+    if len(results) > 0:
+        label = results[0]["label"]["value"]
 
     if label is None:
         return prefix + path
