@@ -193,7 +193,9 @@ ENCODING_REPLACEMENTS = [
     ["||", " logical or ", " || "],
     ["&&", " logical and ", " && "],
     [" ! ", " logical not ", " ! "],  # Necessarily after !=
-    ["@en", " language English ", "@en "],  # For now, we are only considering english literals
+    ["@en", " language English ", "@en "],  # For now, we are only considering english literals.
+    ["{", " bracket open", " { "],  # No space after " bracket open" to enable successive occurrences.
+    ["}", " bracket close", " } "],
 ]
 
 
