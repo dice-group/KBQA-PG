@@ -315,7 +315,7 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
 def preprocess_file(preprocessing_function: Callable[[str], str], input_file_path: Union[str, os.PathLike, Path],
                     output_file_path: Union[str, os.PathLike, Path, None] = None,
                     checkpointing_period: int = 10, progress_bar_description: Union[str, None] = None,
-                    progress_bar_unit: str = " iterations") -> Path:
+                    progress_bar_unit: str = "iteration") -> Path:
     """Preprocess a file with preprocessing_function.
 
     Args:
@@ -332,7 +332,7 @@ def preprocess_file(preprocessing_function: Callable[[str], str], input_file_pat
                               from the checkpoint by calling it with the same arguments.
         progress_bar_description: A str which is shown in front of the progress bar. Defaults to None which disables
                                   the description.
-        progress_bar_unit: A str which is the unit of the progress bar. Defaults to " iterations".
+        progress_bar_unit: A str which is the unit of the progress bar. Defaults to "iteration".
     Returns:
         The path of the preprocessed file.
     """
@@ -403,7 +403,7 @@ def preprocess_natural_language_file(input_file_path: Union[str, os.PathLike, Pa
                                        input_file_path=input_file_path, output_file_path=output_file_path,
                                        checkpointing_period=checkpointing_period,
                                        progress_bar_description="Amount of preprocessed questions",
-                                       progress_bar_unit=" questions")
+                                       progress_bar_unit="question")
     return output_file_path
 
 
@@ -436,7 +436,7 @@ def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
     output_file_path = preprocess_file(preprocessing_function=preprocess_sparql, input_file_path=input_file_path,
                                        output_file_path=output_file_path, checkpointing_period=checkpointing_period,
                                        progress_bar_description="Amount of preprocessed SPARQLs",
-                                       progress_bar_unit=" SPARQLs")
+                                       progress_bar_unit="SPARQL")
     return output_file_path
 
 
@@ -485,7 +485,7 @@ def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
     output_file_path = preprocess_file(preprocessing_function=preprocess_triples, input_file_path=input_file_path,
                                        output_file_path=output_file_path, checkpointing_period=checkpointing_period,
                                        progress_bar_description="Amount of preprocessed triple-sets",
-                                       progress_bar_unit=" triple-sets")
+                                       progress_bar_unit="triple-set")
     return output_file_path
 
 
