@@ -314,7 +314,8 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
 
 def preprocess_file(preprocessing_function: Callable[[str], str], input_file_path: Union[str, os.PathLike, Path],
                     output_file_path: Union[str, os.PathLike, Path, None] = None,
-                    checkpointing_period: int = 10) -> Path:
+                    checkpointing_period: int = 10, progress_bar_description: Union[str, None] = None,
+                    progress_bar_unit: str = " iterations") -> Path:
     """Preprocess a file with preprocessing_function.
 
     Args:
@@ -329,6 +330,9 @@ def preprocess_file(preprocessing_function: Callable[[str], str], input_file_pat
                               <output_file_path>.checkpoint_data and the algorithm state in
                               <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
                               from the checkpoint by calling it with the same arguments.
+        progress_bar_description: A str which is shown in front of the progress bar. Defaults to None which disables
+                                  the description.
+        progress_bar_unit: A str which is the unit of the progress bar. Defaults to " iterations".
     Returns:
         The path of the preprocessed file.
     """
@@ -354,7 +358,7 @@ def preprocess_file(preprocessing_function: Callable[[str], str], input_file_pat
             else:
                 preprocessed_examples = "\n"
             num_preprocessed_examples = 0
-            for example in tqdm(input_file, desc="Amount of preprocessed questions", unit=" questions",
+            for example in tqdm(input_file, desc=progress_bar_description, unit=progress_bar_unit,
                                 initial=num_stored_examples):
                 example = example.rstrip("\n")
                 preprocessed_examples += preprocessing_function(example)
@@ -397,7 +401,9 @@ def preprocess_natural_language_file(input_file_path: Union[str, os.PathLike, Pa
     """
     output_file_path = preprocess_file(preprocessing_function=preprocess_natural_language_sentence,
                                        input_file_path=input_file_path, output_file_path=output_file_path,
-                                       checkpointing_period=checkpointing_period)
+                                       checkpointing_period=checkpointing_period,
+                                       progress_bar_description="Amount of preprocessed questions",
+                                       progress_bar_unit=" questions")
     return output_file_path
 
 
@@ -428,7 +434,9 @@ def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
         The path of the preprocessed file.
     """
     output_file_path = preprocess_file(preprocessing_function=preprocess_sparql, input_file_path=input_file_path,
-                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period)
+                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period,
+                                       progress_bar_description="Amount of preprocessed SPARQLs",
+                                       progress_bar_unit=" SPARQLs")
     return output_file_path
 
 
@@ -475,7 +483,9 @@ def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
         The path of the preprocessed file.
     """
     output_file_path = preprocess_file(preprocessing_function=preprocess_triples, input_file_path=input_file_path,
-                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period)
+                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period,
+                                       progress_bar_description="Amount of preprocessed triple-sets",
+                                       progress_bar_unit=" triple-sets")
     return output_file_path
 
 
@@ -496,7 +506,7 @@ def encode(sparql):
     s = sparql
     s = do_replacements(s, ENCODING_REPLACEMENTS)
     s = encode_datatype(s)  # TODO: Can we get rid of xsd:? Test if xsd: is the datatype always.
-    # s = encode_prefix_uri(s)  # TODO: Make this accessible.
+    # s = encode_uri_by_label(s)
     # TODO: Replace prefixes by natural language
     return s
 
@@ -504,7 +514,7 @@ def encode(sparql):
 def decode(encoded_sparql):
     """"Decode encoded sparql to make it a valid sparql query again."""
     s = encoded_sparql
-    # s = decode_prefix_uri(s)
+    # s = decode_label_by_uri(s)
     s = decode_datatype(s)
     s = revert_replacements(s, ENCODING_REPLACEMENTS)
     # TODO: Inline prefixes
@@ -618,7 +628,7 @@ def decode_datatype(encoded_sparql):
     return s
 
 
-def encode_prefix_uri(s):
+def encode_uri_by_label(s):
     """Replace "<prefix:><path>" by "<prefix:> <label_of_the_corresponding_URI> :end_label".
 
     ":end_label" should be part of the tokenizer vocabulary.
@@ -626,15 +636,15 @@ def encode_prefix_uri(s):
     """
     # TODO: Test encoding -> decoding performance for labels overall.
     # TODO: Check within the preprocessed file if the found labels are reasonable.
-    prefixes = ["dbo:", "dbp:", "dbc:", "dbr:", "rdf:", "rdfs", "dct:", "dc:", "georss:", "geo:", "geof:",
+    prefixes = ["dbo:", "dbp:", "dbc:", "dbr:", "rdf:", "rdfs:", "dct:", "dc:", "georss:", "geo:", "geof:",
                 "vrank:", "bif:", "foaf:", "owl:", "yago:", "skos:"]
     for prefix in prefixes:
-        s = re.sub(f"(\\b{prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_encoded_prefix_uri, s)
+        s = re.sub(f"(\\b{prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_label_encoding, s)
     s = re.sub(r" +", " ", s)
     return s
 
 
-def generate_encoded_prefix_uri(match):
+def generate_label_encoding(match):
     """Generates the string for "<prefix:><path>"  which is "<prefix:> <label_of_the_corresponding_URI> :end_label".
 
     Only supports english labels, i.e. "<label>"@en.
@@ -672,7 +682,7 @@ def generate_encoded_prefix_uri(match):
     return prefix + ' ' + label + " :end_label "
 
 
-def decode_prefix_uri(s):
+def decode_label_by_uri(s):
     """Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
 
     ":end_label" should be part of the tokenizer vocabulary.
@@ -682,11 +692,11 @@ def decode_prefix_uri(s):
                 "vrank:", "bif:", "foaf:", "owl:", "yago:", "skos:"]
     prefixes_regex = '|'.join(prefixes)
     s = re.sub(f"\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
-               generate_decoded_prefix_uri, s)
+               generate_label_decoding, s)
     return s
 
 
-def generate_decoded_prefix_uri(match):
+def generate_label_decoding(match):
     """Generates the string for "<prefix:> <label_of_the_corresponding_URI> :end_label" which is "<prefix:><path>".
 
     Only supports english labels, i.e. "<label>"@en.
