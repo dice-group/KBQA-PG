@@ -449,7 +449,9 @@ def preprocess_sparql(s):
     s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # Normalize English language tag.
     s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     s = encode(s)
-    return s.strip()
+    s = s.strip()
+    s = re.sub(r" +", " ", s)
+    return s
 
 
 def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
@@ -571,7 +573,7 @@ def do_replacements(sparql, replacements, remove_successive_whitespaces=True):
         for original in r[:-2]:
             s = s.replace(original, encoding)
     if remove_successive_whitespaces:
-        s = re.sub(r'[" "]+', " ", s)
+        s = re.sub(r" +", " ", s)
     return s
 
 
