@@ -10,6 +10,7 @@ Answer type is wrong (When was the Statue of Liberty built?)
 Language (@en) oder type tag (@int) is added (Who is the governor of Wyoming?)  
 Fixed dates in SPARQL instead of relative (Give me all world heritage sites designated within the past two years.)  
 Old SPARQL format used e.g. filtering (Give me all actors who were born in Paris after 1950.)  
+Property is missing for some pages (What is the highest mountain?)
 
 
 # Comparison of QALD 8 and 9:
