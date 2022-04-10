@@ -1,6 +1,6 @@
 {
     "dataset": {
-        "id": "quantDataset_22440"
+        "id": "updated-qald-8-test-multilingual.json"
     },
     "questions": [{
         "id": "22440",
@@ -24,7 +24,7 @@
                 "bindings": [{
                     "string": {
                         "type": "literal",
-                        "value": "The Web Ontology Language (OWL) is a family of knowledge representation languages for authoring ontologies. Ontologies are a formal way to describe taxonomies and classification networks, essentially defining the structure of knowledge for various domains: the nouns representing classes of objects and the verbs representing relations between the objects. Ontologies resemble class hierarchies in object-oriented programming but there are several critical differences. Class hierarchies are meant to represent structures used in source code that evolve fairly slowly (typically monthly revisions) whereas ontologies are meant to represent information on the Internet and are expected to be evolving almost constantly. Similarly, ontologies are typically far more flexible as they are meant to represent information on the Internet coming from all sorts of heterogeneous data sources. Class hierarchies on the other hand are meant to be fairly static and rely on far less diverse and more structured sources of data such as corporate databases. The OWL languages are characterized by formal semantics. They are built upon a W3C XML standard for objects called the Resource Description Framework (RDF). OWL and RDF have attracted significant academic, medical and commercial interest. In October 2007, a new W3C working group was started to extend OWL with several new features as proposed in the OWL 1.1 member submission. W3C announced the new version of OWL on 27 October 2009. This new version, called OWL 2, soon found its way into semantic editors such as Protégé and semantic reasoners such as Pellet, RacerPro, FaCT++ and HermiT. The OWL family contains many species, serializations, syntaxes and specifications with similar names. OWL and OWL2 are used to refer to the 2004 and 2009 specifications, respectively. Full species names will be used, including specification version (for example, OWL2 EL). When referring more generally, OWL Family will be used."
+                        "value": "The Web Ontology Language (OWL) is a family of knowledge representation languages for authoring ontologies. Ontologies are a formal way to describe taxonomies and classification networks, essentially defining the structure of knowledge for various domains: the nouns representing classes of objects and the verbs representing relations between the objects. Ontologies resemble class hierarchies in object-oriented programming but there are several critical differences. Class hierarchies are meant to represent structures used in source code that evolve fairly slowly (typically monthly revisions) whereas ontologies are meant to represent information on the Internet and are expected to be evolving almost constantly. Similarly, ontologies are typically far more flexible as they are meant to represent information on the Internet coming from all sorts of heterogeneous data sources. Class hierarchies on the other hand are meant to be fairly static and rely on far less diverse and more structured sources of data such as corporate databases. The OWL languages are characterized by formal semantics. They are built upon a W3C XML standard for objects called the Resource Description Framework (RDF). OWL and RDF have attracted significant academic, medical and commercial interest. In October 2007, a new W3C working group was started to extend OWL with several new features as proposed in the OWL 1.1 member submission. W3C announced the new version of OWL on 27 October 2009. This new version, called OWL 2, soon found its way into semantic editors such as Prot\u00e9g\u00e9 and semantic reasoners such as Pellet, RacerPro, FaCT++ and HermiT. The OWL family contains many species, serializations, syntaxes and specifications with similar names. OWL and OWL2 are used to refer to the 2004 and 2009 specifications, respectively. Full species names will be used, including specification version (for example, OWL2 EL). When referring more generally, OWL Family will be used."
                     }
                 }]
             }
@@ -254,15 +254,55 @@
             }
         }]
     }, {
-        "id": "24326",
+        "id": "15871",
         "answertype": "number",
         "aggregation": true,
         "onlydbo": true,
         "hybrid": false,
         "question": [{
+            "language": "de",
+            "string": "Wie viele Auszeichnungen hat Bertrand Russell? ",
+            "keywords": "Bertrand Russell , Auszeichnungen  "
+        }, {
+            "language": "ru",
+            "string": "\u043a\u0430\u043a \u043c\u043d\u043e\u0433\u0438\u0435 \u043d\u0430\u0433\u0440\u0430\u0434\u044b \u0438\u043c\u0435\u0435\u0442 Bertrand \u0420\u0430\u0441\u0441\u0435\u043b? ",
+            "keywords": "Bertrand \u0420\u0430\u0441\u0441\u0435\u043b  "
+        }, {
+            "language": "pt",
+            "string": "como muitos pr\u00eamios tem Bertrand Russell? ",
+            "keywords": "Bertrand Russell  "
+        }, {
             "language": "en",
             "string": "How many awards has Bertrand Russell?",
-            "keywords": "Bertrand Russell "
+            "keywords": "Bertrand Russell, awards "
+        }, {
+            "language": "hi_IN",
+            "string": "\u092c\u0930\u094d\u091f\u094d\u0930\u0948\u0902\u0921 \u0930\u0938\u0947\u0932 \u0915\u094b \u0915\u094c\u0928 \u0938\u0947 \u092a\u0941\u0930\u0938\u094d\u0915\u093e\u0930 \u0926\u093f\u090f \u0917\u090f \u0925\u0947?",
+            "keywords": "\u092c\u0930\u094d\u091f\u094d\u0930\u0947\u0902\u0921 \u0930\u0938\u0947\u0932, \u092a\u0941\u0930\u0938\u094d\u0915\u093e\u0930 "
+        }, {
+            "language": "fa",
+            "string": "\u0631\u0648\u0637\u0686  \u06cc\u0631\u0627\u06cc\u0633\u0628  \u0632\u06cc\u0627\u0648\u062c  \u06cc\u0627\u0631\u0627\u062f  \u062f\u0646\u0627\u0631\u062a\u0631\u0628  \u061f\u0644\u0633\u0627\u0631  ",
+            "keywords": "\u062f\u0646\u0627\u0631\u062a\u0631\u0628  \u0644\u0633\u0627\u0631   "
+        }, {
+            "language": "it",
+            "string": "Come molti premi ha Bertrand Russell? ",
+            "keywords": "Bertrand Russell  "
+        }, {
+            "language": "fr",
+            "string": "Comment beaucoup prix a Bertrand Russell? ",
+            "keywords": "Bertrand Russell, prix "
+        }, {
+            "language": "ro",
+            "string": "Cum mul\u021bi premii are Bertrand Russell? ",
+            "keywords": "Bertrand Russell  "
+        }, {
+            "language": "es",
+            "string": "c\u00f3mo muchos premios tiene Bertrand Russell? ",
+            "keywords": "Bertrand Russell  "
+        }, {
+            "language": "nl",
+            "string": "hoe veel awards heeft Bertrand Russell? ",
+            "keywords": "Bertrand Russell  "
         }],
         "query": {
             "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT (COUNT(?Awards) AS ?Counter) WHERE { dbr:Bertrand_Russell dbp:awards ?Awards }"
@@ -342,11 +382,11 @@
         "hybrid": false,
         "question": [{
             "language": "en",
-            "string": "how much is the elevation of Düsseldorf Airport ?",
-            "keywords": "Düsseldorf Airport "
+            "string": "how much is the elevation of D\u00fcsseldorf Airport ?",
+            "keywords": "D\u00fcsseldorf Airport "
         }],
         "query": {
-            "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?ele WHERE { dbr:Düsseldorf_Airport dbo:elevation ?ele } LIMIT 1"
+            "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?ele WHERE { dbr:D\u00fcsseldorf_Airport dbo:elevation ?ele } LIMIT 1"
         },
         "answers": [{
             "head": {
@@ -437,7 +477,7 @@
                 "bindings": [{
                     "string": {
                         "type": "literal",
-                        "value": "http://dbpedia.org/resource/Frédéric_Mazzella"
+                        "value": "http://dbpedia.org/resource/Fr\u00e9d\u00e9ric_Mazzella"
                     }
                 }]
             }
@@ -464,7 +504,7 @@
                 "bindings": [{
                     "string": {
                         "type": "literal",
-                        "value": "as a foreign language: 75–100 million"
+                        "value": "as a foreign language: 75\u2013100 million"
                     }
                 }]
             }
@@ -556,15 +596,55 @@
             }
         }]
     }, {
-        "id": "24349",
+        "id": "16493",
         "answertype": "string",
         "aggregation": false,
         "onlydbo": true,
         "hybrid": false,
         "question": [{
+            "language": "de",
+            "string": "Was ist der Spitzname von Bagdad? ",
+            "keywords": "Bagdad , Spitzname  "
+        }, {
+            "language": "ru",
+            "string": "\u043a\u0430\u043a\u0438\u0435 \u044f\u0432\u043b\u044f\u0435\u0442\u0441\u044f  \u041d\u0438\u043a \u0438\u043c\u044f \u0438\u0437 \u0411\u0430\u0433\u0434\u0430\u0434? ",
+            "keywords": "\u0411\u0430\u0433\u0434\u0430\u0434  "
+        }, {
+            "language": "pt",
+            "string": "o que \u00e9 a usuario nome do Bagd\u00e1? ",
+            "keywords": "Bagd\u00e1  "
+        }, {
             "language": "en",
             "string": "What is the nick name of Baghdad?",
-            "keywords": "Baghdad "
+            "keywords": "Baghdad , nickname "
+        }, {
+            "language": "hi_IN",
+            "string": "\u092c\u0917\u0926\u093e\u0926 \u0915\u093e \u0909\u092a\u0928\u093e\u092e \u0915\u094d\u092f\u093e \u0939\u0948?",
+            "keywords": "\u092c\u0917\u0926\u093e\u0926  "
+        }, {
+            "language": "fa",
+            "string": "  \u0628\u063a\u062f\u0627\u062f\u061f  \u0627\u0632  \u0646\u0627\u0645  \u0646\u06cc\u06a9  \u0627\u06cc\u0646  \u0627\u0633\u062a  \u0686\u06cc",
+            "keywords": "  \u0628\u063a\u062f\u0627\u062f "
+        }, {
+            "language": "it",
+            "string": "che cosa \u00e8 il tacca nome di Baghdad? ",
+            "keywords": "Baghdad  "
+        }, {
+            "language": "fr",
+            "string": "quelle est la entaille pr\u00e9nom de Bagdad? ",
+            "keywords": "Bagdad  "
+        }, {
+            "language": "ro",
+            "string": "ce este  nick Nume de Bagdad? ",
+            "keywords": "Bagdad  "
+        }, {
+            "language": "es",
+            "string": "qu\u00e9 es el mella nombre de \u00bfBagdad? ",
+            "keywords": "Bagdad  "
+        }, {
+            "language": "nl",
+            "string": "wat is de Nick naam van Bagdad? ",
+            "keywords": "Bagdad  "
         }],
         "query": {
             "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT ?nm WHERE { dbr:Baghdad foaf:nick ?nm }"
@@ -577,21 +657,61 @@
                 "bindings": [{
                     "string": {
                         "type": "literal",
-                        "value": "The City of Peace (مدينة السلام)"
+                        "value": "The City of Peace (\u0645\u062f\u064a\u0646\u0629 \u0627\u0644\u0633\u0644\u0627\u0645)"
                     }
                 }]
             }
         }]
     }, {
-        "id": "24351",
+        "id": "15666",
         "answertype": "resource",
         "aggregation": false,
         "onlydbo": true,
         "hybrid": false,
         "question": [{
+            "language": "de",
+            "string": "Wer ist der Romanschriftsteller des Werkes ein Lied von Eis und Feuer? ",
+            "keywords": "ein Lied von Eis und Feuer  "
+        }, {
+            "language": "ru",
+            "string": "\u041a\u0442\u043e \u044f\u0432\u043b\u044f\u0435\u0442\u0441\u044f  \u0440\u043e\u043c\u0430\u043d\u0438\u0441\u0442 \u0438\u0437  \u0420\u0430\u0431\u043e\u0442\u0430  \u043f\u0435\u0441\u043d\u044f \u0438\u0437 \u043b\u0435\u0434 \u0430 \u0442\u0430\u043a\u0436\u0435 \u041e\u0433\u043e\u043d\u044c? ",
+            "keywords": " \u043f\u0435\u0441\u043d\u044f \u0438\u0437 \u043b\u0435\u0434 \u0430 \u0442\u0430\u043a\u0436\u0435 \u041e\u0433\u043e\u043d\u044c  "
+        }, {
+            "language": "pt",
+            "string": "Quem \u00e9 a romancista do a trabalhos uma can\u00e7\u00e3o do gelo e fogo? ",
+            "keywords": "uma can\u00e7\u00e3o do gelo e fogo  "
+        }, {
             "language": "en",
             "string": "Who is the novelist of the work a song of ice and fire?",
-            "keywords": "a song of ice and fire "
+            "keywords": "a song of ice and fire, novelist "
+        }, {
+            "language": "hi_IN",
+            "string": "\u092c\u0930\u094d\u092b \u0914\u0930 \u0906\u0917 \u0915\u093e \u090f\u0915 \u0917\u0940\u0924 \u0909\u092a\u0928\u094d\u092f\u093e\u0938 \u0915\u093f\u0938\u0928\u0947 \u0932\u093f\u0916\u093e \u0925\u093e?",
+            "keywords": "\u092c\u0930\u094d\u092b \u0914\u0930 \u0906\u0917 \u0915\u093e \u090f\u0915 \u0917\u0940\u0924, \u0909\u092a\u0928\u094d\u092f\u093e\u0938\u0915\u093e\u0930 "
+        }, {
+            "language": "fa",
+            "string": "\u0647\u06a9  \u062a\u0633\u0627  \u0646\u06cc\u0627  \u0633\u06cc\u0648\u0646 \u0646\u0627\u0645\u0631  \u0632\u0627  \u0646\u06cc\u0627  \u0631\u0627\u06a9  a  \u0647\u0646\u0627\u0631\u062a  \u0632\u0627  \u062e\u06cc  \u0648  \u061f\u0634\u062a\u0622  ",
+            "keywords": "a  \u0647\u0646\u0627\u0631\u062a  \u0632\u0627  \u062e\u06cc  \u0648  \u0634\u062a\u0622   "
+        }, {
+            "language": "it",
+            "string": "Chi \u00e8 il romanziere di il lavoro un canzone di ghiaccio e fuoco? ",
+            "keywords": "un canzone di ghiaccio e fuoco  "
+        }, {
+            "language": "fr",
+            "string": "Qui est la romancier de la travail une chanson de la glace et Feu? ",
+            "keywords": "une chanson de la glace et Feu  "
+        }, {
+            "language": "ro",
+            "string": "Care este  romancier de  munc\u0103 A c\u00e2ntec de ghea\u0163\u0103 \u0219i foc? ",
+            "keywords": "A c\u00e2ntec de ghea\u0163\u0103 \u0219i foc  "
+        }, {
+            "language": "es",
+            "string": "Quien es el novelista de el trabajo un canci\u00f3n de hielo y \u00bffuego? ",
+            "keywords": "un canci\u00f3n de hielo y fuego  "
+        }, {
+            "language": "nl",
+            "string": "Wie is de romanschrijver van de werk een lied van ijs- en brand? ",
+            "keywords": "een lied van ijs- en brand  "
         }],
         "query": {
             "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Novelist WHERE { dbr:A_Song_of_Ice_and_Fire dbp:author ?Novelist }"
@@ -887,7 +1007,7 @@
                 "bindings": [{
                     "uri": {
                         "type": "uri",
-                        "value": "http://dbpedia.org/resource/Eckernförde"
+                        "value": "http://dbpedia.org/resource/Eckernf\u00f6rde"
                     }
                 }]
             }
@@ -914,7 +1034,7 @@
                 "bindings": [{
                     "uri": {
                         "type": "uri",
-                        "value": "http://dbpedia.org/resource/Pinkus_Müller"
+                        "value": "http://dbpedia.org/resource/Pinkus_M\u00fcller"
                     }
                 }, {
                     "uri": {
