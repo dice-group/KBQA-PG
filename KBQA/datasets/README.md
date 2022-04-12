@@ -12,7 +12,6 @@ Fixed dates in SPARQL instead of relative (Give me all world heritage sites desi
 Old SPARQL format used e.g. filtering (Give me all actors who were born in Paris after 1950.)  
 Property is missing for some pages (What is the highest mountain?)
 
-
 # Comparison of QALD 8 and 9:
 
 Number of Questions in:
@@ -22,7 +21,7 @@ Number of Questions in:
 #QALD 8 Train: 219  
 #QALD 9 Train: 408
 
-26 Questions from QALD 8 Train, which are not included in QALD 9 Train: 
+26 Questions from QALD 8 Train, which are not included in QALD 9 Train:
 
 Which museum exhibits The Scream by Munch? (id 15)  
 Which movies did Kurosawa direct? (id 105)  
@@ -49,13 +48,12 @@ When was the De Beers company founded? (id 202)
 Which American presidents were in office during the Vietnam War? (id 204)  
 Who assassinated President McKinley? (id 207)  
 Who killed Caesar? (id 209)  
-How big is the earth's diameter? (id 214)  
-
+How big is the earth's diameter? (id 214)
 
 ## Test Set
 
 #QALD 8 Test: 41  
-#QALD 9 Test: 150  
+#QALD 9 Test: 150
 
 38 Questions from QALD 8 Test, which are not included in QALD 9 Test:
 
@@ -67,9 +65,9 @@ What are the top selling luxury vehicle brands in Germany? (id 5)
 Who is Dan Jurafsky? (id 7)  
 When will start the final match of the football world cup 2018? (id 8)  
 how much is the elevation of Düsseldorf Airport ? (id 10)  
-how much is the total population of  european union? (id 11)  
+how much is the total population of european union? (id 11)  
 when was the founding date of french fifth republic? (id 12)  
-Who are the founders of  BlaBlaCar? (id 13)  
+Who are the founders of BlaBlaCar? (id 13)  
 how many foreigners speak German? (id 15)  
 Where is the birthplace of Goethe? (id 16)  
 Where is the origin of Carolina reaper? (id 17)  
@@ -82,7 +80,7 @@ What is the relation between Resource Description Framework and Web Ontology Lan
 How large is the total area of North Rhine-Westphalia? (id 27)  
 What is the original title of the interpretation of dreams? (id 28)  
 Who are the writers of the Wall album of Pink Floyd? (id 30)  
-When was the death  of  Shakespeare? (id 31)  
+When was the death of Shakespeare? (id 31)  
 With how many countries Iran has borders? (id 32)  
 What is the smallest city by area in Germany? (id 34)  
 Which beer brewing comapnies are located in North-Rhine Westphalia? (id 35)  
@@ -96,4 +94,4 @@ Which species does an elephant belong? (id 43)
 What is Donald Trump's main business? (id 44)  
 What is the last work of Dan Brown? (id 45)  
 What other books have been written by the author of The Fault in Our Stars? (id 46)  
-When was the last episode of the TV series Friends aired? (id 47)  
+When was the last episode of the TV series Friends aired? (id 47)

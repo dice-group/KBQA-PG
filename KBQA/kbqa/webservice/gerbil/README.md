@@ -1,9 +1,7 @@
 # GERBIL evaluation for Question Answering
 
-
 QA
 compare answer set to gold standard (via matching)
-
 
 ## Sub experiments (5)
 
