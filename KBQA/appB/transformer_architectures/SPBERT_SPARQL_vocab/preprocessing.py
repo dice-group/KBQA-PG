@@ -175,9 +175,6 @@ SPARQL_KEYWORDS = {
 VALID_SPARQL_REPLACEMENTS = [
     ["rdf:type", 'a', 'a'],
     ['$', '?', '?'],  # Normalize to one variable symbol
-    [". ", " .", " . ", " . "],  # Normalize as much as possible without tearing apart decimals
-    [", ", " ,", " , ", " , "],  # TODO: Check if this really is valid all the time
-    ["; ", " ;", " ; ", " ; "],
 ]
 ENCODING_REPLACEMENTS = [
     ['?', " variable: ", " ?"],
@@ -506,7 +503,7 @@ def encode(sparql):
     s = sparql
     s = do_replacements(s, ENCODING_REPLACEMENTS)
     s = encode_datatype(s)  # TODO: Can we get rid of xsd:? Test if xsd: is the datatype always.
-    s = encode_uri_by_label(s)
+    # s = encode_uri_by_label(s)
     # TODO: Replace prefixes by natural language
     return s
 
@@ -514,7 +511,7 @@ def encode(sparql):
 def decode(encoded_sparql):
     """"Decode encoded sparql to make it a valid sparql query again."""
     s = encoded_sparql
-    s = decode_label_by_uri(s)
+    # s = decode_label_by_uri(s)
     s = decode_datatype(s)
     s = revert_replacements(s, ENCODING_REPLACEMENTS)
     # TODO: Inline prefixes
