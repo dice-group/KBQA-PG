@@ -1,0 +1,4 @@
+select distinct variable: uri where bracket open variable: x dbo:director dbr:William_Shatner ; dbo:starring dbr:William_Shatner bracket open variable: x dbo:starring variable: uri bracket close union bracket open variable: x dbp:starring variable: uri bracket close bracket close
+select distinct variable: uri where bracket open dbr:Languages_of_the_Philippines dbp:official variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri a dbo:Film ; dbo:country dbr:Denmark bracket close
+select distinct variable: uri where bracket open variable: uri a dbo:Film ; dbo:starring dbr:Brad_Pitt ; dbo:director dbr:Guy_Ritchie bracket close
