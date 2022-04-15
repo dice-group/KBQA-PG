@@ -504,7 +504,6 @@ def encode(sparql):
     s = do_replacements(s, ENCODING_REPLACEMENTS)
     s = encode_datatype(s)  # TODO: Can we get rid of xsd:? Test if xsd: is the datatype always.
     # s = encode_uri_by_label(s)
-    # TODO: Replace prefixes by natural language
     return s
 
 
@@ -632,7 +631,6 @@ def encode_uri_by_label(s):
     Excluded prefixes are: "xsd:".
     """
     # TODO: Test encoding -> decoding performance for labels overall.
-    # TODO: Check within the preprocessed file if the found labels are reasonable.
     prefixes = ["dbo:", "dbp:", "dbc:", "dbr:", "rdf:", "rdfs:", "dct:", "dc:", "georss:", "geo:", "geof:",
                 "vrank:", "bif:", "foaf:", "owl:", "yago:", "skos:"]
     for prefix in prefixes:
@@ -683,7 +681,6 @@ def decode_label_by_uri(s):
 
     ":end_label" should be part of the tokenizer vocabulary.
     """
-    # TODO: Test decoding for many examples.
     prefixes = ["dbo:", "dbp:", "dbc:", "dbr:", "rdf:", "rdfs", "xsd:", "dct:", "dc:", "georss:", "geo:", "geof:",
                 "vrank:", "bif:", "foaf:", "owl:", "yago:", "skos:"]
     prefixes_regex = '|'.join(prefixes)
