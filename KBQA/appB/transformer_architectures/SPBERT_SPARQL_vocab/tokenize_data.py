@@ -160,6 +160,12 @@ def main():
         do_lower_case=args.do_lower_case,
     )
 
+    # Add tokens.
+    with open("sparql_vocabulary.txt") as file:
+        tokens = [line.rstrip() for line in file]
+    tokenizer.add_tokens(tokens)
+    tokenizer_two.add_tokens(tokens)
+
     examples = read_examples(args.filename)
     convert_examples_to_features(examples, tokenizer, args, tokenizer_two)
 
