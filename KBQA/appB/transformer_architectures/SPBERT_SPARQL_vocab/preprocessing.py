@@ -13,6 +13,8 @@ from typing import Callable
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper import JSON
 
+from entity_linking import query_dbspotlight
+
 SPARQL_WRAPPER = SPARQLWrapper("http://dbpedia.org/sparql")
 SPARQL_WRAPPER.setReturnFormat(JSON)
 
@@ -631,8 +633,9 @@ def encode_uri_by_label(s):
     Excluded prefixes are: "xsd:".
     """
     # TODO: Test encoding -> decoding performance for labels overall.
-    prefixes = ["dbo:", "dbp:", "dbc:", "dbr:", "rdf:", "rdfs:", "dct:", "dc:", "georss:", "geo:", "geof:",
-                "vrank:", "bif:", "foaf:", "owl:", "yago:", "skos:"]
+    excluded = ["xsd:"]
+    prefixes = list(PREFIXES.keys())
+    prefixes = [elem for elem in prefixes if elem not in excluded]
     for prefix in prefixes:
         s = re.sub(f"(\\b{prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_label_encoding, s)
     s = re.sub(r" +", " ", s)
@@ -681,10 +684,26 @@ def decode_label_by_uri(s):
 
     ":end_label" should be part of the tokenizer vocabulary.
     """
-    prefixes = ["dbo:", "dbp:", "dbc:", "dbr:", "rdf:", "rdfs", "xsd:", "dct:", "dc:", "georss:", "geo:", "geof:",
-                "vrank:", "bif:", "foaf:", "owl:", "yago:", "skos:"]
+    initial_s = s
+    s = decode_label_with_mapping(s)
+    s = decode_label_with_entity_linking(s, context=initial_s)
+    return s
+
+
+def decode_label_with_mapping(s: str) -> str:
+    """Replace a label with a uri from mapping the label back to the corresponding entity in DBpedia.
+
+    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+
+    Args:
+        s: The string where labels should be decoded.
+
+    Returns:
+        A string with decoded labels if some were found.
+    """
+    prefixes = list(PREFIXES.keys())
     prefixes_regex = '|'.join(prefixes)
-    s = re.sub(f"\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
+    s = re.sub(f"(\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label)",
                generate_label_decoding, s)
     return s
 
@@ -699,8 +718,8 @@ def generate_label_decoding(match):
     Returns:
         string: Some "<prefix:><path>" if a uri is found. Else an empty string "".
     """
-    prefix = match.group(1)
-    label = match.group(2).strip()
+    prefix = match.group(2)
+    label = match.group(3).strip()
     uri = None
 
     query = f"""SELECT DISTINCT ?uri WHERE
@@ -720,6 +739,46 @@ def generate_label_decoding(match):
         uri = bindings[0]["uri"]["value"]
 
     if uri is None:
-        return ""
+        whole_match = match.group(1)
+        return whole_match
     prefix_uri = uri_to_prefix("<" + uri + ">")
     return prefix_uri
+
+
+def decode_label_with_entity_linking(s: str, context: str) -> str:
+    """Replace a label with a uri found by entity recognition on the label.
+
+    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+
+    Args:
+        s: The string where labels should be decoded.
+        context: The string where entities are recognized and then linked to some uri. If a recognized entity is
+                 the same as a label in s, it is replaced by the corresponding uri.
+
+    Returns:
+        A string with decoded labels if some were found.
+    """
+    response = query_dbspotlight(context, confidence=0.1)
+    if "Resources" not in response:
+        resources = list()
+    else:
+        resources = response["Resources"]
+    text_to_uri = dict()
+    for linked_entity in resources:
+        if "@URI" in linked_entity and "@surfaceForm" in linked_entity:
+            text_to_uri[linked_entity["@surfaceForm"]] = linked_entity["@URI"]
+    prefixes = list(PREFIXES.keys())
+    prefixes_regex = '|'.join(prefixes)
+    for match in re.finditer(f"(\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label)", s):
+        whole_match = match.group(1)
+        prefix_label = match.group(2).strip()
+        label = match.group(4).strip()
+        if label in text_to_uri:
+            s = re.sub(whole_match, '<' + text_to_uri[label] + '>', s)
+        elif prefix_label in text_to_uri:
+            s = re.sub(whole_match, '<' + text_to_uri[prefix_label] + '>', s)
+    s = uri_to_prefix(s)
+    return s
+
+
+
