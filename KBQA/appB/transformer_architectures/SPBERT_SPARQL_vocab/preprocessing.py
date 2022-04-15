@@ -702,9 +702,6 @@ def generate_label_decoding(match):
     Returns:
         string: Some "<prefix:><path>" if a uri is found. Else an empty string "".
     """
-    print(match.group(0))
-    print(match.group(1))
-    print(match.group(2))
     prefix = match.group(1)
     label = match.group(2).strip()
     uri = None
@@ -718,15 +715,14 @@ def generate_label_decoding(match):
     SPARQL_WRAPPER.setQuery(query)
     try:
         response = SPARQL_WRAPPER.queryAndConvert()
-    except Exception:
-        traceback.print_exc()
-        print(f"The corresponding query is:\n{query}")
-    else:
-        bindings = response["results"]["bindings"]
-        if len(bindings) > 0:
-            uri = bindings[0]["uri"]["value"]
+    except BaseException:
+        print(f"An exception occurred at query:\n{query}")
+        raise
+    bindings = response["results"]["bindings"]
+    if len(bindings) > 0:
+        uri = bindings[0]["uri"]["value"]
 
     if uri is None:
         return ""
-    prefix_uri = uri_to_prefix(uri)
+    prefix_uri = uri_to_prefix("<" + uri + ">")
     return prefix_uri
