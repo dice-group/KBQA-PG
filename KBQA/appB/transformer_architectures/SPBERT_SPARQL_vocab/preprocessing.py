@@ -6,6 +6,7 @@ import re
 import traceback
 from tqdm import tqdm
 from pathlib import Path
+import distance
 
 from typing import Union
 from typing import Callable
@@ -49,9 +50,9 @@ PREFIX_SUBSTITUTION = [
     ["http://purl.org/dc/terms/", "https://purl.org/dc/terms/", "dct:"],
     ["http://purl.org/dc/elements/1.1/", "https://purl.org/dc/elements/1.1/", "dc:"],
     ["http://www.georss.org/georss/", "https://www.georss.org/georss/", "georss:"],
-    ["http://www.opengis.net/ont/geosparql#", "https://www.opengis.net/ont/geosparql#", "geo:"],
-    ["http://www.opengis.net/def/function/geosparql/", "https://www.opengis.net/def/function/geosparql/", "geof:"],
-    ["http://purl.org/voc/vrank#", "https://purl.org/voc/vrank#", "vrank:"],
+    ["http://www.opengis.net/ont/geosparql#", "https://www.opengis.net/ont/geosparql#", "ogcgs:"],
+    ["http://www.opengis.net/def/function/geosparql/", "https://www.opengis.net/def/function/geosparql/", "ogcgsf:"],
+    # ["http://purl.org/voc/vrank#", "https://purl.org/voc/vrank#", "vrank:"], # not included in dbpedia namespace
     ["http://www.openlinksw.com/schemas/bif#", "https://www.openlinksw.com/schemas/bif#", "bif:"],
     ["http://xmlns.com/foaf/0.1/", "https://xmlns.com/foaf/0.1/", "foaf:"],
     ["http://www.w3.org/2002/07/owl#", "https://www.w3.org/2002/07/owl#", "owl:"],
@@ -258,12 +259,12 @@ def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
 
 def filter_triples(triples: list) -> list:
     """
-    Filter out triples containing \\n character.
+    Filter triples containing \\n character and change them to commas, as they are listings.
 
     :param triples: list of triples
     :return: list of filtered triples
     """
-    return [triple for triple in triples if "\n" not in triple]
+    return [triple.replace("\n", ", ") for triple in triples]
 
 
 def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
@@ -293,17 +294,16 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     natural_language_file_path = output_folder_path / input_file_path.with_suffix(".en").name
     triples_file_path = output_folder_path / input_file_path.with_suffix(".triple").name
     sparql_file_path = output_folder_path / input_file_path.with_suffix(".sparql").name
-    en_file = open(natural_language_file_path, "w")
-    triple_file = open(triples_file_path, "w")
-    sparql_file = open(sparql_file_path, "w")
-    input_file = open(input_file_path, "r")
+    en_file = open(natural_language_file_path, "w", encoding="utf-8")
+    triple_file = open(triples_file_path, "w", encoding="utf-8")
+    sparql_file = open(sparql_file_path, "w", encoding="utf-8")
+    input_file = open(input_file_path, "r", encoding="utf-8")
     data_json = json.load(input_file)
     for element in data_json["questions"]:
         en_file.write(element["question"] + "\n")
         sparql_file.write(element["query"] + "\n")
         triple_file.write(
             " . ".join(filter_triples(element["triples"])) + " .\n")
-        # TODO: Filter should change and not delete triple.
     en_file.close()
     sparql_file.close()
     triple_file.close()
@@ -344,12 +344,12 @@ def preprocess_file(preprocessing_function: Callable[[str], str], input_file_pat
     output_file_checkpoint_data_path = output_file_path.parent / (output_file_path.name + ".checkpoint_data")
     output_file_checkpoint_state_path = output_file_path.parent / (output_file_path.name + ".checkpoint_state")
     if output_file_checkpoint_state_path.exists():
-        with open(output_file_checkpoint_state_path, "rb") as state_file:
+        with open(output_file_checkpoint_state_path, "rb", encoding="utf-8") as state_file:
             num_stored_examples = pickle.load(state_file)
     else:
         num_stored_examples = 0
-    with open(input_file_path, "r") as input_file:
-        with open(output_file_checkpoint_data_path, "a") as checkpoint_file:
+    with open(input_file_path, "r", encoding="utf-8") as input_file:
+        with open(output_file_checkpoint_data_path, "a", encoding="utf-8") as checkpoint_file:
             for _ in range(num_stored_examples):
                 input_file.readline()
             if num_stored_examples == 0:
@@ -504,7 +504,9 @@ def encode(sparql):
     """
     s = sparql
     s = do_replacements(s, ENCODING_REPLACEMENTS)
-    s = encode_datatype(s)  # TODO: Can we get rid of xsd:? Test if xsd: is the datatype always.
+    s = encode_datatype(s)  # xsd: is not always the datatype prefix
+
+    # test_label_encoding(s)
     # s = encode_uri_by_label(s)
     return s
 
@@ -515,13 +517,15 @@ def decode(encoded_sparql):
     # s = decode_label_by_uri(s)
     s = decode_datatype(s)
     s = revert_replacements(s, ENCODING_REPLACEMENTS)
-    # TODO: Inline prefixes
     return s
 
 
 def decode_file(file):
     """Decode a file of encoded SPARQLs."""
-    # TODO:
+    with open(file) as f:
+        encoded_sparqls = [decode(line) for line in f]
+
+    return encoded_sparqls
 
 
 def uri_to_prefix(s):
@@ -632,7 +636,6 @@ def encode_uri_by_label(s):
     ":end_label" should be part of the tokenizer vocabulary.
     Excluded prefixes are: "xsd:".
     """
-    # TODO: Test encoding -> decoding performance for labels overall.
     excluded = ["xsd:"]
     prefixes = list(PREFIXES.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
@@ -640,6 +643,20 @@ def encode_uri_by_label(s):
         s = re.sub(f"(\\b{prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_label_encoding, s)
     s = re.sub(r" +", " ", s)
     return s
+
+
+def test_label_encoding(sparql):
+    encoded = encode_uri_by_label(sparql).strip()
+    decoded = decode_label_by_uri(encoded).strip()
+    lev = distance.levenshtein(sparql, decoded)
+    if lev > 1:
+        print(lev)
+        print(sparql)
+        print(decoded)
+        print(encoded)
+        print("")
+
+    # assert decoded == sparql
 
 
 def generate_label_encoding(match):
@@ -779,6 +796,3 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
             s = re.sub(whole_match, '<' + text_to_uri[prefix_label] + '>', s)
     s = uri_to_prefix(s)
     return s
-
-
-
