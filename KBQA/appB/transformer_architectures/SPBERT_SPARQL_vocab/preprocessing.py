@@ -181,17 +181,15 @@ VALID_SPARQL_REPLACEMENTS = [
 ENCODING_REPLACEMENTS = [
     ['?', " variable: ", " ?"],
     [" * ", " all variables ", " * "],
-    # TODO: Having spaces around comparison operators is no necessity from SPARQL. SPBERT still used it. This holds on
-    #       the QA training data still. As soon as we acquire the SPARQL training data, check if this also holds.
     [" <= ", " less equal ", " <= "],
     [" >= ", " greater equal ", " >= "],
     [" != ", " not equal ", " != "],
-    [" = ", " equal ", " = "],  # Necessarily after <=, >=, !=
-    [" < ", " less than ", " < "],  # Necessarily after <=, >=
-    [" > ", " greater than ", " > "],  # Necessarily after <=, >=
+    [" = ", " equal ", " = "],
+    [" < ", " less than ", " < "],
+    [" > ", " greater than ", " > "],
     ["||", " logical or ", " || "],
     ["&&", " logical and ", " && "],
-    [" ! ", " logical not ", " ! "],  # Necessarily after !=
+    [" ! ", " logical not ", " ! "],
     ["@en", " language English ", "@en "],  # For now, we are only considering english literals.
     ["{", " bracket open", " { "],  # No space after " bracket open" to enable successive occurrences.
     ["}", " bracket close", " } "],
