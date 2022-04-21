@@ -175,6 +175,8 @@ SPARQL_KEYWORDS = {
 VALID_SPARQL_REPLACEMENTS = [
     ["rdf:type", 'a', 'a'],
     ['$', '?', '?'],  # Normalize to one variable symbol
+    ['{', " { ", " { "],
+    ['}', " } ", " } "],
 ]
 ENCODING_REPLACEMENTS = [
     ['?', " variable: ", " ?"],
