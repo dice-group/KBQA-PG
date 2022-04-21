@@ -3,7 +3,6 @@ import json
 import os
 import pickle
 import re
-import traceback
 from tqdm import tqdm
 from pathlib import Path
 import distance
@@ -32,7 +31,6 @@ PREFIXES = {
     "georss:": "http://www.georss.org/georss/",
     "geo:": "http://www.opengis.net/ont/geosparql#",
     "geof:": "http://www.opengis.net/def/function/geosparql/",
-    "vrank:": "http://purl.org/voc/vrank#",
     "bif:": "http://www.openlinksw.com/schemas/bif#",
     "foaf:": "http://xmlns.com/foaf/0.1/",
     "owl:": "http://www.w3.org/2002/07/owl#",
@@ -52,7 +50,6 @@ PREFIX_SUBSTITUTION = [
     ["http://www.georss.org/georss/", "https://www.georss.org/georss/", "georss:"],
     ["http://www.opengis.net/ont/geosparql#", "https://www.opengis.net/ont/geosparql#", "ogcgs:"],
     ["http://www.opengis.net/def/function/geosparql/", "https://www.opengis.net/def/function/geosparql/", "ogcgsf:"],
-    # ["http://purl.org/voc/vrank#", "https://purl.org/voc/vrank#", "vrank:"], # not included in dbpedia namespace
     ["http://www.openlinksw.com/schemas/bif#", "https://www.openlinksw.com/schemas/bif#", "bif:"],
     ["http://xmlns.com/foaf/0.1/", "https://xmlns.com/foaf/0.1/", "foaf:"],
     ["http://www.w3.org/2002/07/owl#", "https://www.w3.org/2002/07/owl#", "owl:"],
@@ -504,9 +501,7 @@ def encode(sparql):
     """
     s = sparql
     s = do_replacements(s, ENCODING_REPLACEMENTS)
-    s = encode_datatype(s)  # xsd: is not always the datatype prefix
-
-    # test_label_encoding(s)
+    s = encode_datatype(s)
     # s = encode_uri_by_label(s)
     return s
 

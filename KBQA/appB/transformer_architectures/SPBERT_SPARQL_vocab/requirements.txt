@@ -2,3 +2,4 @@ transformers
 sentencepiece
 sparqlwrapper
 tqdm
+distance
