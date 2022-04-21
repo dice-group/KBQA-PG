@@ -409,8 +409,6 @@ def preprocess_natural_language_file(input_file_path: Union[str, os.PathLike, Pa
 
 
 def preprocess_natural_language_sentence(w):
-    # creating a space between a word and the punctuation following it.
-    w = re.sub(r"([?.!,¿])", r" \1 ", w)
     w = re.sub(r" +", " ", w)
     w = w.strip()
     return w
