@@ -440,11 +440,7 @@ def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
 
 
 def preprocess_sparql(s):
-    # Substitute prefix by URI
-    for pre_name, pre_url in re.findall(r"PREFIX\s([^:]*):\s<([^>]+)>", s):
-        s = re.sub(f"\\b{pre_name}:([^\\s]+)", f"<{pre_url}\\1>", s)
-    # Remove prefixes
-    s = re.sub(r"PREFIX\s[^\s]*\s[^\s]*", "", s)
+    s = inline_and_remove_prefixes(s)
 
     # replace single quote to double quote
     s = re.sub(r"(\B')", '"', s)
@@ -460,6 +456,31 @@ def preprocess_sparql(s):
     s = encode(s)
     s = s.strip()
     s = re.sub(r" +", " ", s)
+    return s
+
+
+def inline_and_remove_prefixes(s: str) -> str:
+    """Inline the prefixes of the SPARQL s and remove them.
+
+    Args:
+        s: SPARQL string.
+    Returns:
+        String with inlined and removed prefixes.
+    """
+    empty_prefix_name = False
+    empty_prefix_uri = ""
+    for pre_name, pre_url in re.findall(r"PREFIX\s([^:]*):\s<([^>]+)>", s):
+        s = re.sub(f"PREFIX\\s{pre_name}:\\s<{pre_url}>", "", s)  # Remove prefix.
+        if pre_name == "":
+            empty_prefix_name = True
+            empty_prefix_uri = pre_url
+        else:
+            s = re.sub(f"\\b{pre_name}:(\\S+)", f"<{pre_url}\\1>", s)  # Inline prefix.
+        s = s.lstrip()
+    if empty_prefix_name:
+        # Empty prefix ':<something>' is replaced by its URI if it is preceded by a whitespace or a SPARQL term
+        # delimiter ('.', ',', ';').
+        s = re.sub(f"([.,;\\s]):(\\S+)", f"\\1<{empty_prefix_uri}\\2>", s)
     return s
 
 
