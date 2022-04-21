@@ -299,8 +299,11 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     for element in data_json["questions"]:
         en_file.write(element["question"] + "\n")
         sparql_file.write(element["query"] + "\n")
-        triple_file.write(
-            " . ".join(filter_triples(element["triples"])) + " .\n")
+        if len(element["triples"]) == 0:
+            triple_file.write('\n')
+        else:
+            triple_file.write(
+                " . ".join(filter_triples(element["triples"])) + " .\n")
     en_file.close()
     sparql_file.close()
     triple_file.close()
@@ -361,7 +364,7 @@ def preprocess_file(preprocessing_function: Callable[[str], str], input_file_pat
                 preprocessed_examples += "\n"
                 num_preprocessed_examples += 1
                 if num_preprocessed_examples % checkpointing_period == 0:
-                    preprocessed_examples = preprocessed_examples.rstrip("\n")
+                    preprocessed_examples = preprocessed_examples.removesuffix("\n")
                     checkpoint_file.write(preprocessed_examples)
                     checkpoint_file.flush()
                     num_stored_examples += num_preprocessed_examples
@@ -486,6 +489,8 @@ def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
 
 
 def preprocess_triples(triples_example):
+    if triples_example == "":
+        return ""
     triples_example = triples_example.rstrip(" .")
     triples = triples_example.split(" . ")
     preprocessed_triples = [preprocess_sparql(triple) for triple in triples]
