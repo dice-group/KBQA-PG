@@ -254,16 +254,6 @@ def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     return preprocessed_natural_language_file_path, preprocessed_triples_file_path, preprocessed_sparql_file_path
 
 
-def filter_triples(triples: list) -> list:
-    """
-    Filter triples containing \\n character and change them to commas, as they are listings.
-
-    :param triples: list of triples
-    :return: list of filtered triples
-    """
-    return [triple.replace("\n", ", ") for triple in triples]
-
-
 def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
                       output_folder_path: Union[str, os.PathLike, Path] = "separated_data_files") \
         -> tuple[Path, Path, Path]:
@@ -303,12 +293,24 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
             triple_file.write('\n')
         else:
             triple_file.write(
-                " . ".join(filter_triples(element["triples"])) + " .\n")
+                " . ".join(encode_new_line(element["triples"])) + " .\n")
     en_file.close()
     sparql_file.close()
     triple_file.close()
     input_file.close()
     return natural_language_file_path, triples_file_path, sparql_file_path
+
+
+def encode_new_line(triples: list) -> list:
+    """
+    If a triple in triples has a '\n' character, replace it by ", ".
+
+    Args:
+        triples: list of triples.
+    Returns:
+        List of encoded triples.
+    """
+    return [triple.replace("\n", ", ") for triple in triples]
 
 
 def preprocess_file(preprocessing_function: Callable[[str], str], input_file_path: Union[str, os.PathLike, Path],
