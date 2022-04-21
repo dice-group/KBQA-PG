@@ -442,22 +442,58 @@ def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
 
 
 def preprocess_sparql(s):
-    s = inline_and_remove_prefixes(s)
-
-    # replace single quote to double quote
-    s = re.sub(r"(\B')", '"', s)
-    s = re.sub(r"'([^_A-Za-z])", r'"\1', s)
-
-    # remove timezone 0
-    s = re.sub(r"(\d{4}-\d{2}-\d{2})T00:00:00Z", r"\1", s)
-
-    s = sparql_keyword_to_lower_case(s)
-    s = uri_to_prefix(s)
-    s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # Normalize English language tag.
-    s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
+    s = do_valid_preprocessing(s)
     s = encode(s)
     s = s.strip()
     s = re.sub(r" +", " ", s)
+    return s
+
+
+def do_valid_preprocessing(s: str) -> str:
+    """Preprocessing part which keeps the SPARQL s a valid sparql.
+
+    Args:
+        s: String which the preprocessing is done in.
+
+    Returns:
+        Preprocessed SPARQL with the same semantic as s.
+    """
+    s = inline_and_remove_prefixes(s)
+    s = replace_single_to_double_quote(s)
+    s = remove_zero_timezone(s)
+    s = sparql_keyword_to_lower_case(s)
+    s = uri_to_prefix(s)
+    s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # English language tag to lower case.
+    s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
+    return s
+
+
+def replace_single_to_double_quote(s: str) -> str:
+    """Replace single with double quote.
+
+    Args:
+        s: String which the replacement is done on.
+
+    Returns:
+        The string with replacements.
+    """
+    s = re.sub(r"(\B')", '"', s)
+    s = re.sub(r"'([^_A-Za-z])", r'"\1', s)
+    return s
+
+
+def remove_zero_timezone(s: str) -> str:
+    """Remove timezones with T00:00:00Z time.
+
+    The SPBERT paper does it. It is not clear where such timezones occur, but it can not be harmful.
+
+    Args:
+        s: String where the removal is done.
+
+    Returns:
+        String with removed zero-timezone.
+    """
+    s = re.sub(r"(\d{4}-\d{2}-\d{2})T00:00:00Z", r"\1", s)
     return s
 
 
