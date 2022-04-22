@@ -180,7 +180,6 @@ VALID_SPARQL_REPLACEMENTS = [
 ]
 ENCODING_REPLACEMENTS = [
     ['?', " variable: ", " ?"],
-    [" * ", " all variables ", " * "],
     [" <= ", " less equal ", " <= "],
     [" >= ", " greater equal ", " >= "],
     [" != ", " not equal ", " != "],
@@ -194,6 +193,7 @@ ENCODING_REPLACEMENTS = [
     ["{", " bracket open", " { "],  # No space after " bracket open" to enable successive occurrences.
     ["}", " bracket close", " } "],
 ]
+IRI_SCHEMES = ["http", "https", "ftp", "mailto", "file", "data", "irc"]
 
 
 def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
@@ -456,6 +456,7 @@ def do_valid_preprocessing(s: str) -> str:
     Returns:
         Preprocessed SPARQL with the same semantic as s.
     """
+    s = inline_and_remove_base(s)
     s = inline_and_remove_prefixes(s)
     s = replace_single_to_double_quote(s)
     s = remove_zero_timezone(s)
@@ -495,6 +496,27 @@ def remove_zero_timezone(s: str) -> str:
     return s
 
 
+def inline_and_remove_base(s: str) -> str:
+    """Inline the BASE IRI of the SPARQL s and remove it.
+
+    If the IRI of a "<IRI>" occurrence does not start with any scheme in IRI_SCHEME, the BASE-IRI is added as prefix if
+    it exists.
+
+    Args:
+        s: SPARQL string.
+    Returns:
+        String with inlined and removed BASE.
+    """
+    match = re.match(r"\s*BASE\s*<([^>]*)>", s)
+    if match is not None:
+        base_iri = match.group(1)
+        s = re.sub(r"\s*BASE\s*<([^>]*)>", "", s)  # Remove BASE.
+        s = s.lstrip()
+        schemes_regex = '|'.join(IRI_SCHEMES)
+        s = re.sub(f"<(?!({schemes_regex}):)([^>]*)>", f"<{base_iri}\\2>", s)
+    return s
+
+
 def inline_and_remove_prefixes(s: str) -> str:
     """Inline the prefixes of the SPARQL s and remove them.
 
@@ -505,8 +527,8 @@ def inline_and_remove_prefixes(s: str) -> str:
     """
     empty_prefix_name = False
     empty_prefix_uri = ""
-    for pre_name, pre_url in re.findall(r"PREFIX\s([^:]*):\s<([^>]+)>", s):
-        s = re.sub(f"PREFIX\\s{pre_name}:\\s<{pre_url}>", "", s)  # Remove prefix.
+    for pre_name, pre_url in re.findall(r"PREFIX\s*([^:]*):\s*<([^>]*)>", s):
+        s = re.sub(f"PREFIX\\s*{pre_name}:\\s*<{pre_url}>", "", s)  # Remove prefix.
         if pre_name == "":
             empty_prefix_name = True
             empty_prefix_uri = pre_url
@@ -589,6 +611,7 @@ def encode(sparql):
     """
     s = sparql
     s = do_replacements(s, ENCODING_REPLACEMENTS)
+    s = encode_asterisk(s)
     s = encode_datatype(s)
     # s = encode_uri_by_label(s)
     return s
@@ -599,6 +622,7 @@ def decode(encoded_sparql):
     s = encoded_sparql
     # s = decode_label_by_uri(s)
     s = decode_datatype(s)
+    s = decode_asterisk(s)
     s = revert_replacements(s, ENCODING_REPLACEMENTS)
     return s
 
@@ -671,6 +695,34 @@ def do_replacements(sparql, replacements, remove_successive_whitespaces=True):
             s = s.replace(original, encoding)
     if remove_successive_whitespaces:
         s = re.sub(r" +", " ", s)
+    return s
+
+
+def encode_asterisk(s: str) -> str:
+    """Replaces '*' by " all variables " when it is used for selecting all variables.
+
+    Args:
+        s: The string where the replacement is done.
+
+    Returns:
+        The string with replacements.
+    """
+    s = re.sub(r"((SELECT\s*(DISTINCT|REDUCED)?)|DESCRIBE)\s*\*", r"\1 all variables ", s, flags=re.IGNORECASE)
+    s = re.sub(r" +", " ", s)
+    return s
+
+
+def decode_asterisk(s: str) -> str:
+    """Replaces " all variables " by ' * ' when it is used for selecting all variables.
+
+    Args:
+        s: The string where the replacement is done.
+
+    Returns:
+        The string with replacements.
+    """
+    s = re.sub(r"((SELECT\s*(DISTINCT|REDUCED)?)|DESCRIBE)\s*all variables", r"\1 * ", s, flags=re.IGNORECASE)
+    s = re.sub(r" +", " ", s)
     return s
 
 
