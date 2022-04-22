@@ -17,3 +17,7 @@ foaf:
 owl:
 yago:
 skos:
+sioc:
+sioct:
+freebase:
+vcard:

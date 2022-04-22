@@ -37,6 +37,10 @@ PREFIXES = {
     "owl:": "http://www.w3.org/2002/07/owl#",
     "yago:": "http://dbpedia.org/class/yago/",
     "skos:": "http://www.w3.org/2004/02/skos/core#",
+    "sioc:": "http://rdfs.org/sioc/ns#",
+    "sioct:": "http://rdfs.org/sioc/types#",
+    "freebase:": "http://rdf.freebase.com/ns/",
+    "vcard:": "http://www.w3.org/2001/vcard-rdf/3.0#",
 }
 PREFIX_SUBSTITUTION = [
     ["onto:", "http://dbpedia.org/ontology/", "https://dbpedia.org/ontology/", "dbo:"],
@@ -50,13 +54,17 @@ PREFIX_SUBSTITUTION = [
     ["http://purl.org/dc/elements/1.1/", "https://purl.org/dc/elements/1.1/", "dc:"],
     ["http://www.georss.org/georss/", "https://www.georss.org/georss/", "georss:"],
     ["http://www.w3.org/2003/01/geo/wgs84_pos#", "https://www.w3.org/2003/01/geo/wgs84_pos#", "geo:"],
-    ["http://www.opengis.net/ont/geosparql#", "https://www.opengis.net/ont/geosparql#", "ogcgs"],
+    ["http://www.opengis.net/ont/geosparql#", "https://www.opengis.net/ont/geosparql#", "ogcgs:"],
     ["http://www.opengis.net/def/function/geosparql/", "https://www.opengis.net/def/function/geosparql/", "ogcgsf:"],
     ["http://www.openlinksw.com/schemas/bif#", "https://www.openlinksw.com/schemas/bif#", "bif:"],
     ["http://xmlns.com/foaf/0.1/", "https://xmlns.com/foaf/0.1/", "foaf:"],
     ["http://www.w3.org/2002/07/owl#", "https://www.w3.org/2002/07/owl#", "owl:"],
     ["http://dbpedia.org/class/yago/", "https://dbpedia.org/class/yago/", "yago:"],
-    ["http://www.w3.org/2004/02/skos/core#", "https://www.w3.org/2004/02/skos/core#", "skos:"]
+    ["http://www.w3.org/2004/02/skos/core#", "https://www.w3.org/2004/02/skos/core#", "skos:"],
+    ["http://rdfs.org/sioc/ns#", "https://rdfs.org/sioc/ns#", "sioc:"],
+    ["http://rdfs.org/sioc/types#", "https://rdfs.org/sioc/types#", "sioct:"],
+    ["http://rdf.freebase.com/ns/", "https://rdf.freebase.com/ns/", "freebase:"],
+    ["http://www.w3.org/2001/vcard-rdf/3.0#", "https://www.w3.org/2001/vcard-rdf/3.0#", "vcard:"],
 ]
 SPARQL_KEYWORDS = {
     "PREFIX",
