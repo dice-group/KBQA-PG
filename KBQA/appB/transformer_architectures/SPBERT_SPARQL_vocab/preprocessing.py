@@ -18,53 +18,9 @@ from entity_linking import query_dbspotlight
 SPARQL_WRAPPER = SPARQLWrapper("http://dbpedia.org/sparql")
 SPARQL_WRAPPER.setReturnFormat(JSON)
 
-PREFIXES = {
-    "dbo:": "http://dbpedia.org/ontology/",
-    "dbp:": "http://dbpedia.org/property/",
-    "dbc:": "http://dbpedia.org/resource/Category:",
-    "dbr:": "http://dbpedia.org/resource/",
-    "rdf:": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "rdfs:": "http://www.w3.org/2000/01/rdf-schema#",
-    "xsd:": "http://www.w3.org/2001/XMLSchema#",
-    "dct:": "http://purl.org/dc/terms/",
-    "dc:": "http://purl.org/dc/elements/1.1/",
-    "georss:": "http://www.georss.org/georss/",
-    "geo:": "http://www.w3.org/2003/01/geo/wgs84_pos#",
-    "ogcgs:": "http://www.opengis.net/ont/geosparql#",
-    "ogcgsf:": "http://www.opengis.net/def/function/geosparql/",
-    "bif:": "http://www.openlinksw.com/schemas/bif#",
-    "foaf:": "http://xmlns.com/foaf/0.1/",
-    "owl:": "http://www.w3.org/2002/07/owl#",
-    "yago:": "http://dbpedia.org/class/yago/",
-    "skos:": "http://www.w3.org/2004/02/skos/core#",
-    "sioc:": "http://rdfs.org/sioc/ns#",
-    "sioct:": "http://rdfs.org/sioc/types#",
-    "freebase:": "http://rdf.freebase.com/ns/",
-    "vcard:": "http://www.w3.org/2001/vcard-rdf/3.0#",
-}
-PREFIX_SUBSTITUTION = [
-    ["onto:", "http://dbpedia.org/ontology/", "https://dbpedia.org/ontology/", "dbo:"],
-    ["http://dbpedia.org/property/", "https://dbpedia.org/property/", "dbp:"],
-    ["http://dbpedia.org/resource/Category:", "https://dbpedia.org/resource/Category:", "dbc:"],
-    ["res:", "http://dbpedia.org/resource/", "https://dbpedia.org/resource/", "dbr:"],
-    ["http://www.w3.org/1999/02/22-rdf-syntax-ns#", "https://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:"],
-    ["http://www.w3.org/2000/01/rdf-schema#", "https://www.w3.org/2000/01/rdf-schema#", "rdfs:"],
-    ["http://www.w3.org/2001/XMLSchema#", "https://www.w3.org/2001/XMLSchema#", "xsd:"],
-    ["http://purl.org/dc/terms/", "https://purl.org/dc/terms/", "dct:"],
-    ["http://purl.org/dc/elements/1.1/", "https://purl.org/dc/elements/1.1/", "dc:"],
-    ["http://www.georss.org/georss/", "https://www.georss.org/georss/", "georss:"],
-    ["http://www.w3.org/2003/01/geo/wgs84_pos#", "https://www.w3.org/2003/01/geo/wgs84_pos#", "geo:"],
-    ["http://www.opengis.net/ont/geosparql#", "https://www.opengis.net/ont/geosparql#", "ogcgs:"],
-    ["http://www.opengis.net/def/function/geosparql/", "https://www.opengis.net/def/function/geosparql/", "ogcgsf:"],
-    ["http://www.openlinksw.com/schemas/bif#", "https://www.openlinksw.com/schemas/bif#", "bif:"],
-    ["http://xmlns.com/foaf/0.1/", "https://xmlns.com/foaf/0.1/", "foaf:"],
-    ["http://www.w3.org/2002/07/owl#", "https://www.w3.org/2002/07/owl#", "owl:"],
-    ["http://dbpedia.org/class/yago/", "https://dbpedia.org/class/yago/", "yago:"],
-    ["http://www.w3.org/2004/02/skos/core#", "https://www.w3.org/2004/02/skos/core#", "skos:"],
-    ["http://rdfs.org/sioc/ns#", "https://rdfs.org/sioc/ns#", "sioc:"],
-    ["http://rdfs.org/sioc/types#", "https://rdfs.org/sioc/types#", "sioct:"],
-    ["http://rdf.freebase.com/ns/", "https://rdf.freebase.com/ns/", "freebase:"],
-    ["http://www.w3.org/2001/vcard-rdf/3.0#", "https://www.w3.org/2001/vcard-rdf/3.0#", "vcard:"],
+PREFIX_EQUIVALENTS = [
+    ["onto:", "dbo:"],
+    ["res:", "dbr:"],
 ]
 SPARQL_KEYWORDS = {
     "PREFIX",
@@ -215,6 +171,37 @@ IRI_SCHEMES = ["http",
                ]
 
 
+def load_prefixes() -> tuple[dict[str, str], dict[str, str]]:
+    """Load the predefined DBpedia prefixes from prefixes/prefixes.txt or prefixes/prefixes.pickle if it exists.
+
+    Returns:
+        A tuple. The first element is a map from prefix to the corresponding uri. The second a map from uri to prefix.
+    """
+    path = Path("prefixes/prefixes.txt")
+    pickle_path = path.with_suffix(".pickle")
+    if pickle_path.exists():
+        with open(pickle_path, 'rb') as file:
+            prefix_to_uri_, uri_to_prefix_ = pickle.load(file)
+        return prefix_to_uri_, uri_to_prefix_
+    if not path.exists():
+        return dict(), dict()
+    with open(path, 'r', encoding="utf-8") as file:
+        prefix_to_uri_ = dict()
+        uri_to_prefix_ = dict()
+        for line in file:
+            line = line.strip()
+            prefix, uri = line.split()
+            prefix += ':'
+            prefix_to_uri_[prefix] = uri
+            uri_to_prefix_[uri] = prefix
+    with open(pickle_path, 'wb') as file:
+        pickle.dump((prefix_to_uri_, uri_to_prefix_), file)
+    return prefix_to_uri_, uri_to_prefix_
+
+
+PREFIX_TO_URI, URI_TO_PREFIX = load_prefixes()
+
+
 def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
                         output_folder_path: Union[str, os.PathLike, Path] = Path("preprocessed_data_files"),
                         keep_separated_input_file: bool = False,
@@ -300,23 +287,19 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     natural_language_file_path = output_folder_path / input_file_path.with_suffix(".en").name
     triples_file_path = output_folder_path / input_file_path.with_suffix(".triple").name
     sparql_file_path = output_folder_path / input_file_path.with_suffix(".sparql").name
-    en_file = open(natural_language_file_path, "w", encoding="utf-8")
-    triple_file = open(triples_file_path, "w", encoding="utf-8")
-    sparql_file = open(sparql_file_path, "w", encoding="utf-8")
-    input_file = open(input_file_path, "r", encoding="utf-8")
-    data_json = json.load(input_file)
-    for element in data_json["questions"]:
-        en_file.write(element["question"] + "\n")
-        sparql_file.write(element["query"] + "\n")
-        if len(element["triples"]) == 0:
-            triple_file.write('\n')
-        else:
-            triple_file.write(
-                " . ".join(encode_new_line(element["triples"])) + " .\n")
-    en_file.close()
-    sparql_file.close()
-    triple_file.close()
-    input_file.close()
+    with open(natural_language_file_path, "w", encoding="utf-8") as en_file,\
+            open(triples_file_path, "w", encoding="utf-8") as triple_file,\
+            open(sparql_file_path, "w", encoding="utf-8") as sparql_file,\
+            open(input_file_path, "r", encoding="utf-8") as input_file:
+        data_json = json.load(input_file)
+        for element in data_json["questions"]:
+            en_file.write(element["question"] + "\n")
+            sparql_file.write(element["query"] + "\n")
+            if len(element["triples"]) == 0:
+                triple_file.write('\n')
+            else:
+                triple_file.write(
+                    " . ".join(encode_new_line(element["triples"])) + " .\n")
     return natural_language_file_path, triples_file_path, sparql_file_path
 
 
@@ -369,8 +352,8 @@ def preprocess_file(preprocessing_function: Callable[[str], str], input_file_pat
             num_stored_examples = pickle.load(state_file)
     else:
         num_stored_examples = 0
-    with open(input_file_path, "r", encoding="utf-8") as input_file:
-        with open(output_file_checkpoint_data_path, "a", encoding="utf-8") as checkpoint_file:
+    with open(input_file_path, "r", encoding="utf-8") as input_file, \
+         open(output_file_checkpoint_data_path, "a", encoding="utf-8") as checkpoint_file:
             for _ in range(num_stored_examples):
                 input_file.readline()
             if num_stored_examples == 0:
@@ -484,6 +467,7 @@ def do_valid_preprocessing(s: str) -> str:
     s = inline_and_remove_prefixes(s)
     s = remove_zero_timezone(s)
     s = uri_to_prefix(s)
+    s = normalize_prefixes(s)
     s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     return s
 
@@ -560,6 +544,24 @@ def inline_and_remove_prefixes(s: str) -> str:
         # Empty prefix ':<something>' is replaced by its URI if it is preceded by a whitespace or a SPARQL term
         # delimiter ('.', ',', ';').
         s = re.sub(f"([.,;\\s]):(\\S+)", f"\\1<{empty_prefix_uri}\\2>", s)
+    return s
+
+
+def normalize_prefixes(s: str) -> str:
+    """Replace some prefixes with equivalent ones defined in PREFIX_EQUIVALENTS.
+
+    All entries in one row are replaced by the last row element.
+
+    Args:
+        s: The string where the replacing is done
+
+    Returns:
+        The string with replacements.
+    """
+    for row in PREFIX_EQUIVALENTS:
+        encoding = row[-1]
+        for elem in row[:-1]:
+            s = re.sub(elem, encoding, s)
     return s
 
 
@@ -659,28 +661,25 @@ def decode_file(file):
 def uri_to_prefix(s):
     """Substitute the default SPARQL URIs with their prefixes.
 
-    PREFIX_SUBSTITUTION defines the substitutions to be done. For one row, all column entries are substituted by the
-    last column entry.
+    PREFIX_TO_URI defines the substitutions to be done.
 
     Args:
         s: string where the substitution is made.
     """
-    for row in PREFIX_SUBSTITUTION:
-        encoding = row[-1]
-        for original in row[:-1]:
-            s = re.sub(f"<{original}([^>]*)>", f"{encoding}\\1", s)
+    for prefix, uri in PREFIX_TO_URI.items():
+        s = re.sub(f"<{uri}([^>]*)>", f"{prefix}\\1", s)
     return s
 
 
 def prefix_to_uri(s):
     """Substitute the default SPARQL URIs into their corresponding prefix.
 
-    PREFIXES defines the substitutions to be done. The key is substituted by the value and chevrons are put around.
+    PREFIX_TO_URI defines the substitutions to be done. The key is substituted by the value and chevrons are put around.
 
     Args:
         s: string where the substitution is made.
     """
-    for prefix, substitute in PREFIXES.items():
+    for prefix, substitute in PREFIX_TO_URI.items():
         s = re.sub(f"\\b{prefix}(([^\\s.,;]|(\\.[^\\s,;]))+)", f"<{substitute}\\1>", s)
     return s
 
@@ -793,7 +792,7 @@ def encode_uri_by_label(s):
     Excluded prefixes are: "xsd:".
     """
     excluded = ["xsd:"]
-    prefixes = list(PREFIXES.keys())
+    prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     for prefix in prefixes:
         s = re.sub(f"(\\b{prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_label_encoding, s)
@@ -830,7 +829,7 @@ def generate_label_encoding(match):
     path = match.group(2)
     label = None
 
-    uri = '<' + PREFIXES[prefix] + path + '>'
+    uri = '<' + PREFIX_TO_URI[prefix] + path + '>'
     query = f"""SELECT DISTINCT ?label WHERE
         {{
             {uri} rdfs:label ?label
@@ -874,7 +873,7 @@ def decode_label_with_mapping(s: str) -> str:
     Returns:
         A string with decoded labels if some were found.
     """
-    prefixes = list(PREFIXES.keys())
+    prefixes = list(PREFIX_TO_URI.keys())
     prefixes_regex = '|'.join(prefixes)
     s = re.sub(f"\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
                generate_label_decoding, s)
@@ -940,7 +939,7 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
     for linked_entity in resources:
         if "@URI" in linked_entity and "@surfaceForm" in linked_entity:
             text_to_uri[linked_entity["@surfaceForm"]] = linked_entity["@URI"]
-    prefixes = list(PREFIXES.keys())
+    prefixes = list(PREFIX_TO_URI.keys())
     prefixes_regex = '|'.join(prefixes)
     for match in re.finditer(f"\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label", s):
         whole_match = match.group(0)
