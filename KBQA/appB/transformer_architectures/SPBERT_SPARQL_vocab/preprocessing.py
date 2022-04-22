@@ -546,14 +546,40 @@ def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
 
 
 def preprocess_triples(triples_example):
-    if triples_example == "":
-        return ""
-    triples_example = triples_example.rstrip(" .")
-    triples = triples_example.split(" . ")
-    preprocessed_triples = [preprocess_sparql(triple) for triple in triples]
-    preprocessed_example = " . ".join(preprocessed_triples)
-    preprocessed_example += " ."
-    return preprocessed_example
+    s = triples_example
+    s = upper_bound_literal(s, max_literal_length=60)  # Max six long words.
+    s = preprocess_sparql(s)
+    return s
+
+
+def upper_bound_literal(triples_example: str, max_literal_length: int) -> str:
+    """If a literal exceeds the max_literal_length, it is truncated at this length.
+
+    Args:
+        triples_example: The triples where literals are truncated.
+        max_literal_length: The number of chars at which literals are truncated.
+
+    Returns:
+        String with truncated literals.
+    """
+    def truncate_match(match: re.Match) -> str:
+        """Function to be called on each occurrence of a literal.
+
+        Args:
+            match: The Match found by re.sub.
+
+        Returns:
+            The replacement string.
+        """
+        literal = match.group(1)
+        if len(literal) > max_literal_length:
+            return '"' + literal[:max_literal_length] + '"'
+        whole_match = match.group(0)
+        return whole_match
+    s = triples_example
+    s = replace_single_to_double_quote(s)
+    s = re.sub(r'"([^"]*)"', truncate_match, s)
+    return s
 
 
 def encode(sparql):
@@ -777,7 +803,7 @@ def decode_label_with_mapping(s: str) -> str:
     """
     prefixes = list(PREFIXES.keys())
     prefixes_regex = '|'.join(prefixes)
-    s = re.sub(f"(\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label)",
+    s = re.sub(f"\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
                generate_label_decoding, s)
     return s
 
@@ -792,8 +818,8 @@ def generate_label_decoding(match):
     Returns:
         string: Some "<prefix:><path>" if a uri is found. Else an empty string "".
     """
-    prefix = match.group(2)
-    label = match.group(3).strip()
+    prefix = match.group(1)
+    label = match.group(2).strip()
     uri = None
 
     query = f"""SELECT DISTINCT ?uri WHERE
@@ -813,7 +839,7 @@ def generate_label_decoding(match):
         uri = bindings[0]["uri"]["value"]
 
     if uri is None:
-        whole_match = match.group(1)
+        whole_match = match.group(0)
         return whole_match
     prefix_uri = uri_to_prefix("<" + uri + ">")
     return prefix_uri
@@ -843,10 +869,10 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
             text_to_uri[linked_entity["@surfaceForm"]] = linked_entity["@URI"]
     prefixes = list(PREFIXES.keys())
     prefixes_regex = '|'.join(prefixes)
-    for match in re.finditer(f"(\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label)", s):
-        whole_match = match.group(1)
-        prefix_label = match.group(2).strip()
-        label = match.group(4).strip()
+    for match in re.finditer(f"\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label", s):
+        whole_match = match.group(0)
+        prefix_label = match.group(1).strip()
+        label = match.group(3).strip()
         if label in text_to_uri:
             s = re.sub(whole_match, '<' + text_to_uri[label] + '>', s)
         elif prefix_label in text_to_uri:
