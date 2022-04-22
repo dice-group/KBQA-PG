@@ -10,8 +10,8 @@ dct:
 dc:
 georss:
 geo:
-geof:
-vrank:
+ogcgs:
+ogcgsf:
 bif:
 foaf:
 owl:
