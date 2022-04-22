@@ -193,7 +193,15 @@ ENCODING_REPLACEMENTS = [
     ["{", " bracket open", " { "],  # No space after " bracket open" to enable successive occurrences.
     ["}", " bracket close", " } "],
 ]
-IRI_SCHEMES = ["http", "https", "ftp", "mailto", "file", "data", "irc"]
+IRI_SCHEMES = ["http",
+               "https",
+               "ftp",
+               "mailto",
+               "file",
+               "data",
+               "irc",
+               "bif",  # The "bif" prefix seems to also be recognized as schema from DBpedia (and Virtuoso in general).
+               ]
 
 
 def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
@@ -456,6 +464,9 @@ def do_valid_preprocessing(s: str) -> str:
     Returns:
         Preprocessed SPARQL with the same semantic as s.
     """
+    # bif:contains can be used as whole IRI or prefixed IRI. Normalize to prefix.
+    s = re.sub(r"<bif:contains>", "bif:contains", s)
+
     s = inline_and_remove_base(s)
     s = inline_and_remove_prefixes(s)
     s = replace_single_to_double_quote(s)
