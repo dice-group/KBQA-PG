@@ -59,6 +59,7 @@ PREFIX_SUBSTITUTION = [
     ["http://www.w3.org/2004/02/skos/core#", "https://www.w3.org/2004/02/skos/core#", "skos:"]
 ]
 SPARQL_KEYWORDS = {
+    "PREFIX",
     "SELECT",
     "CONSTRUCT",
     "ASK",
@@ -466,16 +467,15 @@ def do_valid_preprocessing(s: str) -> str:
     Returns:
         Preprocessed SPARQL with the same semantic as s.
     """
+    s = sparql_keyword_to_lower_case(s)
+    s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # English language tag to lower case.
+    s = replace_single_to_double_quote(s)
     # bif:contains can be used as whole IRI or prefixed IRI. Normalize to prefix.
     s = re.sub(r"<bif:contains>", "bif:contains", s)
-
     s = inline_and_remove_base(s)
     s = inline_and_remove_prefixes(s)
-    s = replace_single_to_double_quote(s)
     s = remove_zero_timezone(s)
-    s = sparql_keyword_to_lower_case(s)
     s = uri_to_prefix(s)
-    s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # English language tag to lower case.
     s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     return s
 
@@ -520,10 +520,10 @@ def inline_and_remove_base(s: str) -> str:
     Returns:
         String with inlined and removed BASE.
     """
-    match = re.match(r"\s*BASE\s*<([^>]*)>", s)
+    match = re.match(r"\s*BASE\s*<([^>]*)>", s, flags=re.IGNORECASE)
     if match is not None:
         base_iri = match.group(1)
-        s = re.sub(r"\s*BASE\s*<([^>]*)>", "", s)  # Remove BASE.
+        s = re.sub(r"\s*BASE\s*<([^>]*)>", "", s, flags=re.IGNORECASE)  # Remove BASE.
         s = s.lstrip()
         schemes_regex = '|'.join(IRI_SCHEMES)
         s = re.sub(f"<(?!({schemes_regex}):)([^>]*)>", f"<{base_iri}\\2>", s)
@@ -540,8 +540,8 @@ def inline_and_remove_prefixes(s: str) -> str:
     """
     empty_prefix_name = False
     empty_prefix_uri = ""
-    for pre_name, pre_url in re.findall(r"PREFIX\s*([^:]*):\s*<([^>]*)>", s):
-        s = re.sub(f"PREFIX\\s*{pre_name}:\\s*<{pre_url}>", "", s)  # Remove prefix.
+    for pre_name, pre_url in re.findall(r"PREFIX\s*([^:]*):\s*<([^>]*)>", s, flags=re.IGNORECASE):
+        s = re.sub(f"PREFIX\\s*{pre_name}:\\s*<{pre_url}>", "", s, flags=re.IGNORECASE)  # Remove prefix.
         if pre_name == "":
             empty_prefix_name = True
             empty_prefix_uri = pre_url
