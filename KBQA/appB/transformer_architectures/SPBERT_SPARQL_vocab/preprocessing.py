@@ -160,46 +160,56 @@ ENCODING_REPLACEMENTS = [
     ["{", " bracket open", " { "],  # No space after " bracket open" to enable successive occurrences.
     ["}", " bracket close", " } "],
 ]
-IRI_SCHEMES = ["http",
-               "https",
-               "ftp",
-               "mailto",
-               "file",
-               "data",
-               "irc",
-               "bif",  # The "bif" prefix seems to also be recognized as schema from DBpedia (and Virtuoso in general).
+IRI_SCHEMES = ["http:",
+               "https:",
+               "ftp:",
+               "mailto:",
+               "file:",
+               "data:",
+               "irc:",
+               "bif:",  # The "bif" prefix seems to also be recognized as schema from DBpedia (and Virtuoso in general).
+               "sql:",  # See bif.
+               "urn:yahoo:maps",  # See bif.
                ]
+PREFIX_EXCEPTIONS = [["bif:", "bif:"],
+                     ["sql:", "sql:"],
+                     ["y:", "urn:yahoo:maps"]]
 
 
-def load_prefixes() -> tuple[dict[str, str], dict[str, str]]:
+def load_prefixes() -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
     """Load the predefined DBpedia prefixes from prefixes/prefixes.txt or prefixes/prefixes.pickle if it exists.
 
-    Returns:
-        A tuple. The first element is a map from prefix to the corresponding uri. The second a map from uri to prefix.
+    Returns: A tuple of three dicts.
+        - The first element is a map from prefix to the corresponding uri.
+        - The second a map from uri to prefix.
+        - The third is equivalent to the second with the URIs changed to "https://" instead of "http://".
     """
     path = Path("prefixes/prefixes.txt")
     pickle_path = path.with_suffix(".pickle")
     if pickle_path.exists():
         with open(pickle_path, 'rb') as file:
-            prefix_to_uri_, uri_to_prefix_ = pickle.load(file)
-        return prefix_to_uri_, uri_to_prefix_
+            prefix_to_uri_, uri_to_prefix_, https_uri_to_prefix_ = pickle.load(file)
+        return prefix_to_uri_, uri_to_prefix_, https_uri_to_prefix_
     if not path.exists():
-        return dict(), dict()
+        return dict(), dict(), dict()
     with open(path, 'r', encoding="utf-8") as file:
         prefix_to_uri_ = dict()
         uri_to_prefix_ = dict()
+        https_uri_to_prefix_ = dict()
         for line in file:
             line = line.strip()
             prefix, uri = line.split()
             prefix += ':'
+            https_uri = re.sub("^http", "https", uri)
             prefix_to_uri_[prefix] = uri
             uri_to_prefix_[uri] = prefix
+            https_uri_to_prefix_[https_uri] = prefix
     with open(pickle_path, 'wb') as file:
-        pickle.dump((prefix_to_uri_, uri_to_prefix_), file)
-    return prefix_to_uri_, uri_to_prefix_
+        pickle.dump((prefix_to_uri_, uri_to_prefix_, https_uri_to_prefix_), file)
+    return prefix_to_uri_, uri_to_prefix_, https_uri_to_prefix_
 
 
-PREFIX_TO_URI, URI_TO_PREFIX = load_prefixes()
+PREFIX_TO_URI, URI_TO_PREFIX, HTTPS_URI_TO_PREFIX = load_prefixes()
 
 
 def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
@@ -287,9 +297,9 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     natural_language_file_path = output_folder_path / input_file_path.with_suffix(".en").name
     triples_file_path = output_folder_path / input_file_path.with_suffix(".triple").name
     sparql_file_path = output_folder_path / input_file_path.with_suffix(".sparql").name
-    with open(natural_language_file_path, "w", encoding="utf-8") as en_file,\
-            open(triples_file_path, "w", encoding="utf-8") as triple_file,\
-            open(sparql_file_path, "w", encoding="utf-8") as sparql_file,\
+    with open(natural_language_file_path, "w", encoding="utf-8") as en_file, \
+            open(triples_file_path, "w", encoding="utf-8") as triple_file, \
+            open(sparql_file_path, "w", encoding="utf-8") as sparql_file, \
             open(input_file_path, "r", encoding="utf-8") as input_file:
         data_json = json.load(input_file)
         for element in data_json["questions"]:
@@ -348,37 +358,37 @@ def preprocess_file(preprocessing_function: Callable[[str], str], input_file_pat
     output_file_checkpoint_data_path = output_file_path.parent / (output_file_path.name + ".checkpoint_data")
     output_file_checkpoint_state_path = output_file_path.parent / (output_file_path.name + ".checkpoint_state")
     if output_file_checkpoint_state_path.exists():
-        with open(output_file_checkpoint_state_path, "rb", encoding="utf-8") as state_file:
+        with open(output_file_checkpoint_state_path, "rb") as state_file:
             num_stored_examples = pickle.load(state_file)
     else:
         num_stored_examples = 0
     with open(input_file_path, "r", encoding="utf-8") as input_file, \
-         open(output_file_checkpoint_data_path, "a", encoding="utf-8") as checkpoint_file:
-            for _ in range(num_stored_examples):
-                input_file.readline()
-            if num_stored_examples == 0:
-                preprocessed_examples = ""
-            else:
+            open(output_file_checkpoint_data_path, "a", encoding="utf-8") as checkpoint_file:
+        for _ in range(num_stored_examples):
+            input_file.readline()
+        if num_stored_examples == 0:
+            preprocessed_examples = ""
+        else:
+            preprocessed_examples = "\n"
+        num_preprocessed_examples = 0
+        for example in tqdm(input_file, desc=progress_bar_description, unit=progress_bar_unit,
+                            initial=num_stored_examples):
+            example = example.rstrip("\n")
+            preprocessed_examples += preprocessing_function(example)
+            preprocessed_examples += "\n"
+            num_preprocessed_examples += 1
+            if num_preprocessed_examples % checkpointing_period == 0:
+                preprocessed_examples = preprocessed_examples.removesuffix("\n")
+                checkpoint_file.write(preprocessed_examples)
+                checkpoint_file.flush()
+                num_stored_examples += num_preprocessed_examples
+                with open(output_file_checkpoint_state_path, "wb") as state_file:
+                    pickle.dump(obj=num_stored_examples, file=state_file)
                 preprocessed_examples = "\n"
-            num_preprocessed_examples = 0
-            for example in tqdm(input_file, desc=progress_bar_description, unit=progress_bar_unit,
-                                initial=num_stored_examples):
-                example = example.rstrip("\n")
-                preprocessed_examples += preprocessing_function(example)
-                preprocessed_examples += "\n"
-                num_preprocessed_examples += 1
-                if num_preprocessed_examples % checkpointing_period == 0:
-                    preprocessed_examples = preprocessed_examples.removesuffix("\n")
-                    checkpoint_file.write(preprocessed_examples)
-                    checkpoint_file.flush()
-                    num_stored_examples += num_preprocessed_examples
-                    with open(output_file_checkpoint_state_path, "wb") as state_file:
-                        pickle.dump(obj=num_stored_examples, file=state_file)
-                    preprocessed_examples = "\n"
-                    num_preprocessed_examples = 0
-            preprocessed_examples = preprocessed_examples.rstrip("\n")
-            checkpoint_file.write(preprocessed_examples)
-            checkpoint_file.flush()
+                num_preprocessed_examples = 0
+        preprocessed_examples = preprocessed_examples.rstrip("\n")
+        checkpoint_file.write(preprocessed_examples)
+        checkpoint_file.flush()
     output_file_checkpoint_data_path.replace(output_file_path)
     output_file_checkpoint_state_path.unlink(missing_ok=True)
     return output_file_path
@@ -458,6 +468,7 @@ def do_valid_preprocessing(s: str) -> str:
     Returns:
         Preprocessed SPARQL with the same semantic as s.
     """
+    s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     s = sparql_keyword_to_lower_case(s)
     s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # English language tag to lower case.
     s = replace_single_to_double_quote(s)
@@ -468,7 +479,6 @@ def do_valid_preprocessing(s: str) -> str:
     s = remove_zero_timezone(s)
     s = uri_to_prefix(s)
     s = normalize_prefixes(s)
-    s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     return s
 
 
@@ -518,7 +528,7 @@ def inline_and_remove_base(s: str) -> str:
         s = re.sub(r"\s*BASE\s*<([^>]*)>", "", s, flags=re.IGNORECASE)  # Remove BASE.
         s = s.lstrip()
         schemes_regex = '|'.join(IRI_SCHEMES)
-        s = re.sub(f"<(?!({schemes_regex}):)([^>]*)>", f"<{base_iri}\\2>", s)
+        s = re.sub(f"<(?!({schemes_regex}))([^>]*)>", f"<{base_iri}\\2>", s)
     return s
 
 
@@ -532,18 +542,23 @@ def inline_and_remove_prefixes(s: str) -> str:
     """
     empty_prefix_name = False
     empty_prefix_uri = ""
+    # We store all found prefixes in a map to keep the last found URL for some prefix only and replace it afterwards.
+    prefix_url_dict = dict()
     for pre_name, pre_url in re.findall(r"PREFIX\s*([^:]*):\s*<([^>]*)>", s, flags=re.IGNORECASE):
         s = re.sub(f"PREFIX\\s*{pre_name}:\\s*<{pre_url}>", "", s, flags=re.IGNORECASE)  # Remove prefix.
+        s = s.lstrip()
+        prefix_url_dict[pre_name] = pre_url
+    for pre_name, pre_url in prefix_url_dict.items():
         if pre_name == "":
             empty_prefix_name = True
             empty_prefix_uri = pre_url
         else:
-            s = re.sub(f"\\b{pre_name}:(\\S+)", f"<{pre_url}\\1>", s)  # Inline prefix.
-        s = s.lstrip()
+            # Inline prefix.
+            s = re.sub(f"(?!(<))\\b{pre_name}:([^\\s.,;]*)", f"<{pre_url}\\2>", s)
     if empty_prefix_name:
         # Empty prefix ':<something>' is replaced by its URI if it is preceded by a whitespace or a SPARQL term
         # delimiter ('.', ',', ';').
-        s = re.sub(f"([.,;\\s]):(\\S+)", f"\\1<{empty_prefix_uri}\\2>", s)
+        s = re.sub(f"([.,;\\s]):(\\S*)", f"\\1<{empty_prefix_uri}\\2>", s)
     return s
 
 
@@ -607,6 +622,7 @@ def upper_bound_literal(triples_example: str, max_literal_length: int) -> str:
     Returns:
         String with truncated literals.
     """
+
     def truncate_match(match: re.Match) -> str:
         """Function to be called on each occurrence of a literal.
 
@@ -621,6 +637,7 @@ def upper_bound_literal(triples_example: str, max_literal_length: int) -> str:
             return '"' + literal[:max_literal_length] + '"'
         whole_match = match.group(0)
         return whole_match
+
     s = triples_example
     s = replace_single_to_double_quote(s)
     s = re.sub(r'"([^"]*)"', truncate_match, s)
@@ -659,15 +676,25 @@ def decode_file(file):
 
 
 def uri_to_prefix(s):
-    """Substitute the default SPARQL URIs with their prefixes.
+    """Substitute the default SPARQL URIs and the "https://" versions with their prefixes.
 
-    PREFIX_TO_URI defines the substitutions to be done.
+    PREFIX_TO_URI defines the substitutions to be done. Each URI with a prefix "http://" is also considered with the
+    prefix "https://".
 
     Args:
         s: string where the substitution is made.
+
+    Returns:
+        The string with substituted URIs.
+
+    Note: If we find a substitution for some URI prefix but the remainder still includes a '/', we do not substitute
+          because this is wrong in many cases. SPARQL still allows it.
     """
     for prefix, uri in PREFIX_TO_URI.items():
-        s = re.sub(f"<{uri}([^>]*)>", f"{prefix}\\1", s)
+        s = re.sub(f"<{uri}([^/>\"{{}}|^`\\\\]*)>", f"{prefix}\\1", s)
+
+    for https_uri, prefix in HTTPS_URI_TO_PREFIX.items():
+        s = re.sub(f"<{https_uri}([^/>\"{{}}|^`\\\\]*)>", f"{prefix}\\1", s)
     return s
 
 
@@ -678,14 +705,22 @@ def prefix_to_uri(s):
 
     Args:
         s: string where the substitution is made.
+
+    Returns:
+        The string with prefixes substituted by URIs.
+
+    Note: We do not substitute prefixes if they follow a '<' because these could be schemas e.g. "bif:".
     """
     for prefix, substitute in PREFIX_TO_URI.items():
-        s = re.sub(f"\\b{prefix}(([^\\s.,;]|(\\.[^\\s,;]))+)", f"<{substitute}\\1>", s)
+        s = re.sub(f"(?!(<))\\b{prefix}(([^\\s.,;]|(\\.[^\\s,;]))+)", f"<{substitute}\\2>", s)
     return s
 
 
 def sparql_keyword_to_lower_case(sparql):
-    """Convert all SPARQL keywords in sparql to lower case."""
+    """Convert all SPARQL keywords in sparql to lower case.
+
+    This implementation is not overhauled.
+    """
     normalize_s = []
     for token in sparql.split():
         beginning_subtoken = re.search(r"^\w+", token)
@@ -789,13 +824,22 @@ def encode_uri_by_label(s):
     """Replace "<prefix:><path>" by "<prefix:> <label_of_the_corresponding_URI> :end_label".
 
     ":end_label" should be part of the tokenizer vocabulary.
-    Excluded prefixes are: "xsd:".
+    Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
+
+    Args:
+        s: String where the encoding is done.
+
+    Returns:
+        String after encoding.
     """
     excluded = ["xsd:"]
+    for row in PREFIX_EXCEPTIONS:
+        exception = row[0]
+        excluded.append(exception)
     prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     for prefix in prefixes:
-        s = re.sub(f"(\\b{prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_label_encoding, s)
+        s = re.sub(f"(?!(<))\\b({prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_label_encoding, s)
     s = re.sub(r" +", " ", s)
     return s
 
@@ -825,8 +869,8 @@ def generate_label_encoding(match):
         string: "<prefix:> <label_of_the_corresponding_URI> :end_label" if a label was found.
                 "<prefix:><path>" else.
     """
-    prefix = match.group(1)
-    path = match.group(2)
+    prefix = match.group(2)
+    path = match.group(3)
     label = None
 
     uri = '<' + PREFIX_TO_URI[prefix] + path + '>'
@@ -866,6 +910,7 @@ def decode_label_with_mapping(s: str) -> str:
     """Replace a label with a uri from mapping the label back to the corresponding entity in DBpedia.
 
     Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+    Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
 
     Args:
         s: The string where labels should be decoded.
@@ -873,9 +918,14 @@ def decode_label_with_mapping(s: str) -> str:
     Returns:
         A string with decoded labels if some were found.
     """
+    excluded = ["xsd:"]
+    for row in PREFIX_EXCEPTIONS:
+        exception = row[0]
+        excluded.append(exception)
     prefixes = list(PREFIX_TO_URI.keys())
+    prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
-    s = re.sub(f"\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
+    s = re.sub(f"(?!(<))\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
                generate_label_decoding, s)
     return s
 
@@ -890,8 +940,8 @@ def generate_label_decoding(match):
     Returns:
         string: Some "<prefix:><path>" if a uri is found. Else an empty string "".
     """
-    prefix = match.group(1)
-    label = match.group(2).strip()
+    prefix = match.group(2)
+    label = match.group(3).strip()
     uri = None
 
     query = f"""SELECT DISTINCT ?uri WHERE
@@ -921,6 +971,7 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
     """Replace a label with a uri found by entity recognition on the label.
 
     Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+    Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
 
     Args:
         s: The string where labels should be decoded.
@@ -930,6 +981,10 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
     Returns:
         A string with decoded labels if some were found.
     """
+    excluded = ["xsd:"]
+    for row in PREFIX_EXCEPTIONS:
+        exception = row[0]
+        excluded.append(exception)
     response = query_dbspotlight(context, confidence=0.1)
     if "Resources" not in response:
         resources = list()
@@ -940,11 +995,13 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
         if "@URI" in linked_entity and "@surfaceForm" in linked_entity:
             text_to_uri[linked_entity["@surfaceForm"]] = linked_entity["@URI"]
     prefixes = list(PREFIX_TO_URI.keys())
+    prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
-    for match in re.finditer(f"\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label", s):
+    for match in \
+            re.finditer(f"(?!(<))\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label", s):
         whole_match = match.group(0)
-        prefix_label = match.group(1).strip()
-        label = match.group(3).strip()
+        prefix_label = match.group(2).strip()
+        label = match.group(4).strip()
         if label in text_to_uri:
             s = re.sub(whole_match, '<' + text_to_uri[label] + '>', s)
         elif prefix_label in text_to_uri:
