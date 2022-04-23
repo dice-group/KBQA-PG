@@ -1,4 +1,4 @@
-"""Preprocess data."""
+"""Preprocess questions, SPARQLs and triples with labeling approach and decode correspondingly."""
 import json
 import math
 import os
@@ -33,15 +33,9 @@ from KBQA.appB.preprocessing.utils import decode_datatype
 from KBQA.appB.preprocessing.utils import uri_to_prefix
 
 SPARQL_WRAPPER = utils.SPARQL_WRAPPER
-PREFIX_EQUIVALENTS = utils.PREFIX_EQUIVALENTS
-SPARQL_KEYWORDS = utils.SPARQL_KEYWORDS
-VALID_SPARQL_REPLACEMENTS = utils.VALID_SPARQL_REPLACEMENTS
 ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
-IRI_SCHEMES = utils.IRI_SCHEMES
 PREFIX_EXCEPTIONS = utils.PREFIX_EXCEPTIONS
 PREFIX_TO_URI = utils.PREFIX_TO_URI
-URI_TO_PREFIX = utils.URI_TO_PREFIX
-HTTPS_URI_TO_PREFIX = utils.HTTPS_URI_TO_PREFIX
 
 
 def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],

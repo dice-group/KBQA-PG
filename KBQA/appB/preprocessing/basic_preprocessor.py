@@ -2,6 +2,7 @@
 import math
 import os
 import re
+from tqdm import tqdm
 from pathlib import Path
 import distance
 from difflib import ndiff
@@ -22,16 +23,7 @@ from KBQA.appB.preprocessing.utils import decode_asterisk
 from KBQA.appB.preprocessing.utils import encode_datatype
 from KBQA.appB.preprocessing.utils import decode_datatype
 
-SPARQL_WRAPPER = utils.SPARQL_WRAPPER
-PREFIX_EQUIVALENTS = utils.PREFIX_EQUIVALENTS
-SPARQL_KEYWORDS = utils.SPARQL_KEYWORDS
-VALID_SPARQL_REPLACEMENTS = utils.VALID_SPARQL_REPLACEMENTS
 ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
-IRI_SCHEMES = utils.IRI_SCHEMES
-PREFIX_EXCEPTIONS = utils.PREFIX_EXCEPTIONS
-PREFIX_TO_URI = utils.PREFIX_TO_URI
-URI_TO_PREFIX = utils.URI_TO_PREFIX
-HTTPS_URI_TO_PREFIX = utils.HTTPS_URI_TO_PREFIX
 
 
 def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
