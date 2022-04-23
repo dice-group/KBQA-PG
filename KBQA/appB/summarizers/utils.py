@@ -12,24 +12,21 @@ from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
 
 
-def entity_recognition_dbspotlight(
-    question: str, confidence: float = 0.5, include_conf: bool = False
-) -> List[URIRef]:
-    """Entity recognition using DB-Spotlight.
+def query_dbspotlight(question: str, confidence: float = 0.5) -> Dict[str, Any]:
+    """Query the endpoint of DBspotlight for entity recognition.
 
     Parameters
     ----------
     question : str
         Natural language question.
     confidence : float, optional
-        Confidence of the recognized entity (default: 0.5).
-    include_conf : bool, optional
-        Include the confidence score for each recognized entity (default: False).
+        Lower bound for the confidence of recognized entities (default: 0.5).
 
     Returns
     -------
-    entities : list
-        List of recognized entities as URIRefs.
+    response : dict
+        Response of the DBspotlight endpoint without any processing
+        as JSON dict.
     """
     endpoint = "https://api.dbpedia-spotlight.org/en/annotate/"
 
@@ -42,44 +39,92 @@ def entity_recognition_dbspotlight(
     except JSONDecodeError:
         print("It was not possible to parse the answer.")
 
-        return list()
+        return dict()
+
+    return response
+
+
+def entity_recognition_dbspotlight(
+    question: str, confidence: float = 0.5
+) -> List[URIRef]:
+    """Entity recognition using DB-Spotlight.
+
+    Parameters
+    ----------
+    question : str
+        Natural language question.
+    confidence : float, optional
+        Lower bound for the confidence of recognized entities (default: 0.5).
+
+    Returns
+    -------
+    entities : list
+        List of recognized entities as URIRefs.
+    """
+    response = query_dbspotlight(question, confidence)
 
     if "Resources" not in response:
         return list()
 
     entities = list()
 
-    if include_conf:
-        for resource in response["Resources"]:
-            entity = (URIRef(resource["@URI"]), float(resource["@similarityScore"]))
-
-            entities.append(entity)
-    else:
-        for resource in response["Resources"]:
-            entities.append(URIRef(resource["@URI"]))
+    for resource in response["Resources"]:
+        entities.append(URIRef(resource["@URI"]))
 
     return entities
 
 
-def entity_recognition_tagme(
-    question: str, conf: float = 0.5
+def entity_recognition_dbspotlight_confidence(
+    question: str, confidence: float = 0.5
 ) -> List[Tuple[URIRef, float]]:
-    """Enttiy recognition using the TagMe API.
+    """Entity recognition using DBspotlight.
+
+    Compared to the function entity_recognition_dbspotlight this
+    function will return the recognized entities and their
+    confidence score computed by DBspotlight.
 
     Parameters
     ----------
     question : str
         Natural language question.
-    conf : float
-        Lower bound for the confidence score. Exclude all entities with a lower
-        confidence score.
+    confidence : float, optional
+        Lower bound for the confidence of recognized entities (default: 0.5).
 
     Returns
     -------
-    list
-        List containing objects of the form (entity, confidence), where entity
-        is the URIRef of a recognized entity and confidence the corresponding
-        confidence score.
+    entities : list
+        List of tuples of the form (entity, confidence), where entity is
+        a recognized entity as URIRef and confidence is the confidence
+        score computed by DBspotlight.
+    """
+    response = query_dbspotlight(question, confidence)
+
+    if "Resources" not in response:
+        return list()
+
+    entities = list()
+
+    for resource in response["Resources"]:
+        entity = (URIRef(resource["@URI"]), float(resource["@similarityScore"]))
+
+        entities.append(entity)
+
+    return entities
+
+
+def query_tagme(question: str) -> Dict[str, Any]:
+    """Query the endpoint of the TagMe API.
+
+    Parameters
+    ----------
+    question : str
+        Natural language question.
+
+    Returns
+    -------
+    response : dict
+        Response of the TagMe endpoint without any processing
+        as JSON dict.
     """
     endpoint = "https://tagme.d4science.org/tagme/tag"
 
@@ -91,7 +136,31 @@ def entity_recognition_tagme(
 
     response = requests.post(endpoint, data=data)
 
-    annotations = response.json()["annotations"]
+    return response.json()
+
+
+def entity_recognition_tagme(
+    question: str, conf: float = 0.5
+) -> List[Tuple[URIRef, float]]:
+    """Enttiy recognition using the TagMe API.
+
+    Parameters
+    ----------
+    question : str
+        Natural language question.
+    conf : float, optional
+        Lower bound for the confidence score. Exclude all entities with a lower
+        confidence score.
+
+    Returns
+    -------
+    list
+        List containing objects of the form (entity, confidence), where entity
+        is the URIRef of a recognized entity and confidence the corresponding
+        confidence score.
+    """
+    response = query_tagme(question)
+    annotations = response["annotations"]
 
     entities = list()
 
