@@ -711,21 +711,28 @@ def prefix_to_uri(s):
     return s
 
 
-def sparql_keyword_to_lower_case(sparql):
-    """Convert all SPARQL keywords in sparql to lower case.
+def sparql_keyword_to_lower_case(s):
+    """Convert all SPARQL keywords from SPARQL_KEYWORDS in s to lower case.
 
-    This implementation is not overhauled.
+    Args:
+        s: The string where keywords are converted.
+
+    Returns:
+        The string with converted keywords.
     """
+    keyword_regex = '|'.join(SPARQL_KEYWORDS)
+    s = re.sub(f"\\s*\\b({keyword_regex})\\b\\s*", r" \1 ", s)  # Put one space around each found upper case keyword.
+    
     normalize_s = []
-    for token in sparql.split():
+    for token in s.split():
         beginning_subtoken = re.search(r"^\w+", token)
         if beginning_subtoken is not None:
             beginning_subtoken = beginning_subtoken.group()
             if beginning_subtoken.upper() in SPARQL_KEYWORDS:
                 token = re.sub(r"^\w+", beginning_subtoken.lower(), token)
         normalize_s.append(token)
-    sparql = " ".join(normalize_s)
-    return sparql
+    s = " ".join(normalize_s)
+    return s
 
 
 def do_replacements(sparql, replacements, remove_successive_whitespaces=True):
