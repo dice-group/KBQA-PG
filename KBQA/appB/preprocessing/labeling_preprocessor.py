@@ -15,8 +15,7 @@ from typing import Callable
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper import JSON
 
-from ..summarizers.utils import query_
-from entity_linking import query_dbspotlight
+from KBQA.appB.summarizers.utils import query_dbspotlight
 
 SPARQL_WRAPPER = SPARQLWrapper("http://dbpedia.org/sparql")
 SPARQL_WRAPPER.setReturnFormat(JSON)

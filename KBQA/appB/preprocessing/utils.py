@@ -15,7 +15,7 @@ from typing import Callable
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper import JSON
 
-from entity_linking import query_dbspotlight
+from KBQA.appB.summarizers.utils import query_dbspotlight
 
 SPARQL_WRAPPER = SPARQLWrapper("http://dbpedia.org/sparql")
 SPARQL_WRAPPER.setReturnFormat(JSON)
@@ -186,7 +186,8 @@ def load_prefixes() -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
         - The second a map from uri to prefix.
         - The third is equivalent to the second with the URIs changed to "https://" instead of "http://".
     """
-    path = Path("prefixes/prefixes.txt")
+    pwd = Path(os.path.dirname(__file__))
+    path = pwd / "prefixes/prefixes.txt"
     pickle_path = path.with_suffix(".pickle")
     if pickle_path.exists():
         with open(pickle_path, 'rb') as file:
