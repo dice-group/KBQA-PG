@@ -312,11 +312,11 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
                 triple_file.write('\n')
             else:
                 triple_file.write(
-                    " . ".join(encode_new_line(element["triples"])) + " .\n")
+                    " . ".join(replace_new_line_char_by_comma(element["triples"])) + " .\n")
     return natural_language_file_path, triples_file_path, sparql_file_path
 
 
-def encode_new_line(triples: list) -> list:
+def replace_new_line_char_by_comma(triples: list) -> list:
     """
     If a triple in triples has a '\n' character, replace it by ", ".
 

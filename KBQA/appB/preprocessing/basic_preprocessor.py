@@ -21,7 +21,6 @@ from KBQA.appB.preprocessing.utils import encode_asterisk
 from KBQA.appB.preprocessing.utils import decode_asterisk
 from KBQA.appB.preprocessing.utils import encode_datatype
 from KBQA.appB.preprocessing.utils import decode_datatype
-from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_on_file
 
 SPARQL_WRAPPER = utils.SPARQL_WRAPPER
 PREFIX_EQUIVALENTS = utils.PREFIX_EQUIVALENTS
@@ -191,7 +190,45 @@ def decode_file(file):
     return encoded_sparqls
 
 
+def sparql_encoder_levenshtein_dist_on_file(input_file_path: Union[str, os.PathLike, Path],
+                                            log_lower_bound: float = math.inf) -> float:
+    """Preprocess the given data and then calculate the Levenshtein distance between encoding and decoding it.
+
+    The SPARQL preprocessing part is applied for preprocessing.
+
+    Args:
+        input_file_path: A path-like object to the file with the SPARQLs.
+        log_lower_bound: Print logging information to stdout for each example which has an equal or higher Levenshtein
+                         distance than log_lower_bound.
+
+    Returns:
+        The mean Levenshtein distance.
+    """
+    input_file_path = Path(input_file_path)
+    cumulative_dist = 0
+    amount = 0
+    with open(input_file_path, "r", encoding="utf-8") as file:
+        for sparql in tqdm(file, desc="Amount of scored SPARQLs", unit="SPARQL"):
+            dist = sparql_encoder_levenshtein_dist(sparql.strip(), log_lower_bound=log_lower_bound)
+            cumulative_dist += dist
+            amount += 1
+    mean_dist = cumulative_dist / amount
+    return mean_dist
+
+
 def sparql_encoder_levenshtein_dist(sparql: str, log_lower_bound: float = math.inf) -> float:
+    """Preprocess sparql and then calculate the Levenshtein distance between encoding and decoding it.
+
+    The SPARQL preprocessing part is applied for preprocessing.
+
+    Args:
+        sparql: A SPARQL string.
+        log_lower_bound: Print logging information to stdout for each example which has an equal or higher Levenshtein
+                         distance than log_lower_bound.
+
+    Returns:
+        The Levenshtein distance.
+    """
     preprocessed = do_valid_preprocessing(sparql)
     encoded = encode(preprocessed)
     decoded = decode(encoded)
