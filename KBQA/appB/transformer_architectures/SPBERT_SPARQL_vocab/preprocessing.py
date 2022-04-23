@@ -1,11 +1,13 @@
 """Preprocess data."""
 import json
+import math
 import os
 import pickle
 import re
 from tqdm import tqdm
 from pathlib import Path
 import distance
+from difflib import ndiff
 
 from typing import Union
 from typing import Callable
@@ -155,7 +157,7 @@ ENCODING_REPLACEMENTS = [
     [" >", " greater than ", " > "],
     ["||", " logical or ", " || "],
     ["&&", " logical and ", " && "],
-    ["!", " logical not ", " ! "],
+    [" !", " logical not ", " ! "],
     ["@en", " language English ", "@en "],  # For now, we are only considering english literals.
     ["{", " bracket open", " { "],  # No space after " bracket open" to enable successive occurrences.
     ["}", " bracket close", " } "],
@@ -649,6 +651,8 @@ def encode(sparql):
     s = encode_asterisk(s)
     s = encode_datatype(s)
     # s = encode_uri_by_label(s)
+    s = s.strip()
+    s = re.sub(r" +", " ", s)
     return s
 
 
@@ -658,7 +662,9 @@ def decode(encoded_sparql):
     # s = decode_label_by_uri(s)
     s = decode_datatype(s)
     s = decode_asterisk(s)
-    s = revert_replacements(s, ENCODING_REPLACEMENTS)
+    s = revert_replacements(s, ENCODING_REPLACEMENTS, remove_successive_whitespaces=False)
+    s = s.strip()
+    s = re.sub(r" +", " ", s)
     return s
 
 
@@ -850,20 +856,6 @@ def encode_uri_by_label(s):
     return s
 
 
-def test_label_encoding(sparql):
-    encoded = encode_uri_by_label(sparql).strip()
-    decoded = decode_label_by_uri(encoded).strip()
-    lev = distance.levenshtein(sparql, decoded)
-    if lev > 1:
-        print(lev)
-        print(sparql)
-        print(decoded)
-        print(encoded)
-        print("")
-
-    # assert decoded == sparql
-
-
 def generate_label_encoding(match):
     """Generates the string for "<prefix:><path>"  which is "<prefix:> <label_of_the_corresponding_URI> :end_label".
 
@@ -1014,3 +1006,36 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
             s = re.sub(whole_match, '<' + text_to_uri[prefix_label] + '>', s)
     s = uri_to_prefix(s)
     return s
+
+
+def sparql_encoder_levenshtein_dist_on_file(input_file_path: Union[str, os.PathLike, Path],
+                                            log_lower_bound: float = math.inf) -> float:
+    input_file_path = Path(input_file_path)
+    cumulative_dist = 0
+    amount = 0
+    with open(input_file_path, "r", encoding="utf-8") as file:
+        for sparql in tqdm(file, desc="Amount of scored SPARQLs", unit="SPARQL"):
+            dist = sparql_encoder_levenshtein_dist(sparql.strip(), log_lower_bound=log_lower_bound)
+            cumulative_dist += dist
+            amount += 1
+    mean_dist = cumulative_dist / amount
+    return mean_dist
+
+
+def sparql_encoder_levenshtein_dist(sparql: str, log_lower_bound: float = math.inf) -> float:
+    preprocessed = do_valid_preprocessing(sparql)
+    encoded = encode(preprocessed)
+    decoded = decode(encoded)
+    dist = distance.levenshtein(preprocessed, decoded)
+    if dist >= log_lower_bound:
+        print("\n--------------------------------------------------")
+        print(f"SPARQL: {sparql}")
+        print(f"\nPreprocessed: {preprocessed}")
+        print(f"\nEncoded: {encoded}")
+        print(f"\nDecoded: {decoded}")
+        print(f"\nDifference:\n")
+        diff = ndiff(preprocessed.split(), decoded.split())
+        print('\n'.join(diff))
+        print(f"\nDistance: {dist}")
+        print("----------------------------------------------------")
+    return dist
