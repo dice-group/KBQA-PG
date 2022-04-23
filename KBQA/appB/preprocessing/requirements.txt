@@ -1,5 +1,4 @@
-transformers
-sentencepiece
-sparqlwrapper
 tqdm
+SPARQLWrapper
 distance
+requests
