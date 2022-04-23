@@ -147,15 +147,15 @@ VALID_SPARQL_REPLACEMENTS = [
 ]
 ENCODING_REPLACEMENTS = [
     ['?', " variable: ", " ?"],
-    [" <= ", " less equal ", " <= "],
-    [" >= ", " greater equal ", " >= "],
-    [" != ", " not equal ", " != "],
-    [" = ", " equal ", " = "],
-    [" < ", " less than ", " < "],
-    [" > ", " greater than ", " > "],
+    ["<=", " less equal ", " <= "],
+    [">=", " greater equal ", " >= "],
+    ["!=", " not equal ", " != "],
+    ["=", " equal ", " = "],
+    ["< ", " less than ", " < "],
+    [" >", " greater than ", " > "],
     ["||", " logical or ", " || "],
     ["&&", " logical and ", " && "],
-    [" ! ", " logical not ", " ! "],
+    ["!", " logical not ", " ! "],
     ["@en", " language English ", "@en "],  # For now, we are only considering english literals.
     ["{", " bracket open", " { "],  # No space after " bracket open" to enable successive occurrences.
     ["}", " bracket close", " } "],
@@ -471,7 +471,6 @@ def do_valid_preprocessing(s: str) -> str:
     s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     s = sparql_keyword_to_lower_case(s)
     s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # English language tag to lower case.
-    s = replace_single_to_double_quote(s)
     # bif:contains can be used as whole IRI or prefixed IRI. Normalize to prefix.
     s = re.sub(r"<bif:contains>", "bif:contains", s)
     s = inline_and_remove_base(s)
@@ -482,24 +481,8 @@ def do_valid_preprocessing(s: str) -> str:
     return s
 
 
-def replace_single_to_double_quote(s: str) -> str:
-    """Replace single with double quote.
-
-    Args:
-        s: String which the replacement is done on.
-
-    Returns:
-        The string with replacements.
-    """
-    s = re.sub(r"(\B')", '"', s)
-    s = re.sub(r"'([^_A-Za-z])", r'"\1', s)
-    return s
-
-
 def remove_zero_timezone(s: str) -> str:
     """Remove timezones with T00:00:00Z time.
-
-    The SPBERT paper does it. It is not clear where such timezones occur, but it can not be harmful.
 
     Args:
         s: String where the removal is done.
@@ -558,7 +541,7 @@ def inline_and_remove_prefixes(s: str) -> str:
     if empty_prefix_name:
         # Empty prefix ':<something>' is replaced by its URI if it is preceded by a whitespace or a SPARQL term
         # delimiter ('.', ',', ';').
-        s = re.sub(f"([.,;\\s]):(\\S*)", f"\\1<{empty_prefix_uri}\\2>", s)
+        s = re.sub(f"([.,;\\s]):([^\\s.,;]*)", f"\\1<{empty_prefix_uri}\\2>", s)
     return s
 
 
@@ -607,22 +590,22 @@ def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
 
 def preprocess_triples(triples_example):
     s = triples_example
-    s = upper_bound_literal(s, max_literal_length=60)  # Max six long words.
+    s = upper_bound_literal(s)  # Max six long words.
     s = preprocess_sparql(s)
     return s
 
 
-def upper_bound_literal(triples_example: str, max_literal_length: int) -> str:
+def upper_bound_literal(triples_example: str, max_literal_length: int = 60) -> str:
     """If a literal exceeds the max_literal_length, it is truncated at this length.
 
     Args:
         triples_example: The triples where literals are truncated.
-        max_literal_length: The number of chars at which literals are truncated.
+        max_literal_length: The number of chars at which literals are truncated. Defaults to 60 which are six long
+                            words.
 
     Returns:
         String with truncated literals.
     """
-
     def truncate_match(match: re.Match) -> str:
         """Function to be called on each occurrence of a literal.
 
@@ -632,15 +615,27 @@ def upper_bound_literal(triples_example: str, max_literal_length: int) -> str:
         Returns:
             The replacement string.
         """
-        literal = match.group(1)
+        if match.group(1) is not None:
+            literal = match.group(1)
+            quotation = '"""'
+        elif match.group(3) is not None:
+            literal = match.group(3)
+            quotation = "'''"
+        elif match.group(5) is not None:
+            literal = match.group(5)
+            quotation = '"'
+        else:  # match.group(6) is not None.
+            literal = match.group(6)
+            quotation = "'"
         if len(literal) > max_literal_length:
-            return '"' + literal[:max_literal_length] + '"'
+            return quotation + literal[:max_literal_length] + quotation
         whole_match = match.group(0)
         return whole_match
-
     s = triples_example
-    s = replace_single_to_double_quote(s)
-    s = re.sub(r'"([^"]*)"', truncate_match, s)
+    s = re.sub(r"\"\"\"((?!\"\"\")|(.(?!\"\"\"))*?.)\"\"\"|"
+               r"\'\'\'((?!\'\'\')|(.(?!\'\'\'))*?.)\'\'\'|"
+               r"\"([^\"]*)\"|"
+               r"\'([^\']*)\'", truncate_match, s)
     return s
 
 
@@ -712,7 +707,7 @@ def prefix_to_uri(s):
     Note: We do not substitute prefixes if they follow a '<' because these could be schemas e.g. "bif:".
     """
     for prefix, substitute in PREFIX_TO_URI.items():
-        s = re.sub(f"(?!(<))\\b{prefix}(([^\\s.,;]|(\\.[^\\s,;]))+)", f"<{substitute}\\2>", s)
+        s = re.sub(f"(?!(<))\\b{prefix}(([^\\s.,;]|(\\.[^\\s,;]))*)", f"<{substitute}\\2>", s)
     return s
 
 
@@ -814,9 +809,13 @@ def decode_datatype(encoded_sparql):
     The SPARQL keyword DATATYPE can also be written in lowercase, so we have two kinds of datatype in our encoded 
     sparql.
 
-    We assume all single quotes ' to be replaces by double quotes " beforehand."""
+    Args:
+        encoded_sparql: The string where datatypes should be decoded.
+    Returns:
+        The decoded string.
+    """
     s = encoded_sparql
-    s = re.sub(r"(\") datatype ", r"\1^^", s)
+    s = re.sub(r"(\"\"\"|\'\'\'|\"|\') datatype ", r"\1^^", s)
     return s
 
 
@@ -839,7 +838,7 @@ def encode_uri_by_label(s):
     prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     for prefix in prefixes:
-        s = re.sub(f"(?!(<))\\b({prefix})(([^\\s.,;]|(\\.[^\\s,;]))+)", generate_label_encoding, s)
+        s = re.sub(f"(?!(<))\\b({prefix})(([^\\s.,;]|(\\.[^\\s,;]))*)", generate_label_encoding, s)
     s = re.sub(r" +", " ", s)
     return s
 
