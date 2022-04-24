@@ -3,6 +3,8 @@ name: Deployment
 on:
   push:
     branches: [develop, master]
+  workflow_dispatch:
+    branches: [develop, master]
 
 concurrency:
   group: ${{ github.ref }}
@@ -23,7 +25,7 @@ jobs:
         run: docker-compose -p kbqa-dev down --remove-orphan
         continue-on-error: true
       - name: Get new version
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build and start webservice
         working-directory: KBQA/kbqa
         run: docker-compose -p kbqa-dev up -d --build
@@ -42,7 +44,7 @@ jobs:
         run: docker-compose -p kbqa-release down --remove-orphan
         continue-on-error: true
       - name: Get new version
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build and start webservice
         working-directory: KBQA/kbqa
         run: docker-compose -p kbqa-release up -d --build
