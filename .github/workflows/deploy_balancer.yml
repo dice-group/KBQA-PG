@@ -3,8 +3,6 @@ name: Deployment
 on:
   push:
     branches: [develop, master, feature/master-deployment]
-    paths:
-      - "KBQA/kbqa/routing/**"
   workflow_dispatch:
     branches: [develop, master, feature/master-deployment]
 
