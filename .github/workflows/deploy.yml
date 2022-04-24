@@ -18,6 +18,7 @@ jobs:
     env:
       RESOURCE_PATH: /home/kbqa_mngr/develop/resources
       APP_PORT: 8081
+      BRANCH: dev
 
     steps:
       - name: Stop running webservice
@@ -37,6 +38,7 @@ jobs:
     env:
       RESOURCE_PATH: /home/kbqa_mngr/master/resources
       APP_PORT: 8080
+      BRANCH: master
 
     steps:
       - name: Stop running webservice
