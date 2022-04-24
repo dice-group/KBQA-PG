@@ -2,9 +2,9 @@ name: Deployment
 
 on:
   push:
-    branches: [develop, master]
+    branches: [develop, master, feature/master-deployment]
   workflow_dispatch:
-    branches: [develop, master]
+    branches: [develop, master, feature/master-deployment]
 
 concurrency:
   group: ${{ github.ref }}
