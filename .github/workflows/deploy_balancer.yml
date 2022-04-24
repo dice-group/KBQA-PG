@@ -7,8 +7,6 @@ on:
       - "KBQA/kbqa/routing/**"
   workflow_dispatch:
     branches: [develop, master, feature/master-deployment]
-    paths:
-      - "KBQA/kbqa/routing/**"
 
 concurrency:
   group: ${{ github.ref }}
@@ -16,7 +14,7 @@ concurrency:
 
 jobs:
   deploy-routing:
-    runs-on: [self-hosted, kbqa-pg-general]
+    #runs-on: [self-hosted, kbqa-pg-general]
     timeout-minutes: 10080
 
     steps:
