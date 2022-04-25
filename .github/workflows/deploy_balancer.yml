@@ -7,7 +7,7 @@ on:
     branches: [develop, master, feature/master-deployment]
 
 concurrency:
-  group: ${{ github.ref }}
+  group: balancer
   cancel-in-progress: true
 
 jobs:

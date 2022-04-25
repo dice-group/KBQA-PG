@@ -26,14 +26,14 @@ def index() -> str:
     switch_url = ""
     branch = "local"
     try:
-        branch = os.environ["GITHUB_REF_NAME"]
+        branch = os.environ["BRANCH"]
     except KeyError:
         pass
 
     if branch == "master":
         switch_text = "Check out our development version!"
         switch_url = "/dev/"
-    elif branch == "develop":
+    elif branch == "dev":
         switch_text = "Go to our release!"
         switch_url = "/"
     else:
