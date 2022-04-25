@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10080
     #if: github.ref == 'refs/heads/develop'
     env:
-      RESOURCE_PATH: /home/kbqa_mngr/develop/resources
+      RESOURCE_PATH: /home/kbqa_mngr/resources
       APP_PORT: 8081
       BRANCH: dev
 
@@ -36,7 +36,7 @@ jobs:
     timeout-minutes: 10080
     #if: github.ref == 'refs/heads/master'
     env:
-      RESOURCE_PATH: /home/kbqa_mngr/master/resources
+      RESOURCE_PATH: /home/kbqa_mngr/resources
       APP_PORT: 8080
       BRANCH: master
 
