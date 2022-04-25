@@ -2,11 +2,11 @@ name: Balancer Deployment
 
 on:
   push:
-    branches: [develop, master, feature/master-deployment]
+    branches: [develop, master]
     paths:
       - "KBQA/kbqa/routing/**"
   workflow_dispatch:
-    branches: [develop, master, feature/master-deployment]
+    branches: [develop, master]
 
 concurrency:
   group: balancer

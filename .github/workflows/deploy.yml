@@ -2,9 +2,9 @@ name: Deployment
 
 on:
   push:
-    branches: [develop, master, feature/master-deployment]
+    branches: [develop, master]
   workflow_dispatch:
-    branches: [develop, master, feature/master-deployment]
+    branches: [develop, master]
 
 concurrency:
   group: ${{ github.ref }}
@@ -14,7 +14,7 @@ jobs:
   deploy-dev:
     runs-on: [self-hosted, kbqa-pg]
     timeout-minutes: 10080
-    #if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop'
     env:
       RESOURCE_PATH: /home/kbqa_mngr/resources
       APP_PORT: 8081
@@ -34,7 +34,7 @@ jobs:
   deploy-release:
     runs-on: [self-hosted, kbqa-pg-master]
     timeout-minutes: 10080
-    #if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     env:
       RESOURCE_PATH: /home/kbqa_mngr/resources
       APP_PORT: 8080
