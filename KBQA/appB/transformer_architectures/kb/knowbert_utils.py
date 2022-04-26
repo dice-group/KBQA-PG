@@ -2,7 +2,7 @@
 from typing import Union, List
 
 from allennlp.common import Params
-from allennlp.data import Instance, DataIterator, Vocabulary
+from allennlp.data import Instance, Vocabulary
 from allennlp.common.file_utils import cached_path
 
 from KBQA.appB.transformer_architectures.kb.bert_tokenizer_and_candidate_generator import TokenizerAndCandidateGenerator
@@ -70,10 +70,10 @@ class KnowBertBatchifier:
             vocab_params = config['vocabulary']
         self.vocab = Vocabulary.from_params(vocab_params)
 
-        self.iterator = DataIterator.from_params(
-            Params({"type": "basic", "batch_size": batch_size})
-        )
-        self.iterator.index_with(self.vocab)
+        # self.iterator = DataIterator.from_params(
+        #     Params({"type": "basic", "batch_size": batch_size})
+        # )
+        # self.iterator.index_with(self.vocab)
 
     def _replace_mask(self, s):
         return s.replace('[MASK]', ' [MASK] ')
@@ -126,6 +126,5 @@ class KnowBertBatchifier:
                 convert_tokens_candidates_to_fields(tokens_candidates)
 
             instances.append(Instance(fields))
-
-        for batch in self.iterator(instances, num_epochs=1, shuffle=False):
-            yield batch
+            print(instances)
+        yield None

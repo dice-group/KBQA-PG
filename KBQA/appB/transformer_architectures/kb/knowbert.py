@@ -12,8 +12,7 @@ from allennlp.modules.token_embedders import Embedding
 from allennlp.nn.util import device_mapping
 from allennlp.common.file_utils import cached_path
 
-from pytorch_pretrained_bert.modeling import BertForPreTraining, BertConfig, BertEncoder
-
+from pytorch_pretrained_bert.modeling import BertForPreTraining, BertConfig, BertEncoder, BertLayerNorm
 import torch
 import numpy as np
 
@@ -410,6 +409,7 @@ class EntityDisambiguator(BaseEntityDisambiguator, torch.nn.Module):
                 num_attention_heads=span_encoder_config['num_attention_heads'],
                 intermediate_size=span_encoder_config['intermediate_size']
             )
+            print("Init Bert Encoder")
             self.span_encoder = BertEncoder(config)
             init_bert_weights(self.span_encoder, initializer_range)
 

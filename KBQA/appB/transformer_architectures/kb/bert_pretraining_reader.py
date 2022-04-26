@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from typing import List, Tuple
+from typing import List, Tuple, Iterable
 
 from overrides import overrides
 
@@ -242,7 +242,7 @@ class BertPreTrainingReader(DatasetReader):
         )
 
     @overrides
-    def _read(self, file_path: str):
+    def _read(self, file_path: str) -> Iterable[Instance]:
         # if `file_path` is a URL, redirect to the cache
         with open(cached_path(file_path), 'r') as fin:
             for line in fin:

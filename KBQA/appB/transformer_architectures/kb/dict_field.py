@@ -51,14 +51,14 @@ class DictField(Field):
         return ret
 
     @overrides
-    def empty_field(self):
+    def empty_field(self) -> Field:
         return DictField({key: field.empty_field() for key, field in self.field_dict.items()})
 
     @overrides
-    def batch_tensors(self, tensor_list_of_dict):
+    def batch_tensors(self, tensor_list):
         ret = {}
         for key, field in self.field_dict.items():
-            ret[key] = field.batch_tensors([t[key] for t in tensor_list_of_dict])
+            ret[key] = field.batch_tensors([t[key] for t in tensor_list])
         return ret
 
     def __str__(self) -> str:

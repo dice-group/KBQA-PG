@@ -5,7 +5,7 @@ import torch
 
 from pytorch_pretrained_bert.modeling import \
     BertLayer, BertAttention, BertSelfAttention, BertSelfOutput, \
-    BertOutput, BertIntermediate, BertEncoder
+    BertOutput, BertIntermediate, BertEncoder, BertLayerNorm
 
 from allennlp.common.registrable import Registrable
 from allennlp.training.metrics.metric import Metric
@@ -49,7 +49,7 @@ def no_filter_func(x):
     return True
 
 
-@Metric.register("f1_set")
+@Metric.register("f1_set_gold")
 class F1Metric(Metric):
     """
     A generic set based F1 metric.
@@ -157,6 +157,9 @@ def init_bert_weights(module, initializer_range, extra_modules_without_weights=(
         elif isinstance(m, torch.nn.LayerNorm):
             m.bias.data.zero_()
             m.weight.data.fill_(1.0)
+        elif isinstance(m, BertLayerNorm):
+            m.bias.data.zero_()
+            m.weight.data.fill_(1.0)
         elif isinstance(m, modules_without_weights):
             pass
         else:
@@ -166,6 +169,7 @@ def init_bert_weights(module, initializer_range, extra_modules_without_weights=(
             m.bias.data.zero_()
 
     for mm in module.modules():
+        print(mm)
         _do_init(mm)
 
 

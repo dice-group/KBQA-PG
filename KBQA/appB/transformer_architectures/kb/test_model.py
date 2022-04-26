@@ -13,7 +13,8 @@ def load_entity_linking_wiki(vocab):
         pretrained_file="https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wiki_entity_linking/entities_glove_format.gz",
         sparse=False,
         trainable=False,
-        vocab_namespace="entity_wiki"
+        vocab_namespace="entity_wiki",
+        vocab=vocab
     )
     print("Loaded wiki embedding")
     span_encoder_config = {
@@ -91,7 +92,8 @@ def load_soldered_kg_wordnet(vocab):
 
 
 def load_model():
-    vocab = Vocabulary.from_params(Params({"directory_path": "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz"}))
+    #vocab = Vocabulary.from_params(Params({"directory_path": "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz"}))
+    vocab = Vocabulary.from_files(directory="https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz")
     print("Loaded Vocabulary")
     print(vocab)
     wiki_soldered_kg = load_soldered_kg_wiki(vocab)
