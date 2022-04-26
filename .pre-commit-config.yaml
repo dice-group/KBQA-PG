@@ -24,7 +24,7 @@ repos:
         name: zimports - reformat python imports
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.13.5
+    rev: v2.13.7
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
