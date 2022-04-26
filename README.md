@@ -1,7 +1,14 @@
 # Knowledge Base Question Answering
 
+[develop](../../tree/develop) branch:&nbsp;
 ![Deployment develop](https://github.com/dice-group/KBQA-PG/actions/workflows/deploy.yml/badge.svg?branch=develop)
 ![Testing develop](https://github.com/dice-group/KBQA-PG/actions/workflows/lint.yml/badge.svg?branch=develop)
+![Gerbil develop](<https://img.shields.io/badge/dynamic/xml?color=informational&label=Gerbil%20F1&query=(//tr[1]/td[13]/text()[1])[1]&suffix=%&url=http://kbqa-pg.cs.upb.de/gerbil/&link=http://kbqa-pg.cs.upb.de/gerbil/>)
+
+[master](../../tree/master) branch:&nbsp;
+![Deployment master](https://github.com/dice-group/KBQA-PG/actions/workflows/deploy.yml/badge.svg?branch=master)
+![Testing master](https://github.com/dice-group/KBQA-PG/actions/workflows/lint.yml/badge.svg?branch=master)
+![Gerbil master](<https://img.shields.io/badge/dynamic/xml?color=informational&label=Gerbil%20F1&query=(//tr[1]/td[13]/text()[1])[1]&suffix=%&url=http://kbqa-pg.cs.upb.de/dev/gerbil/&link=http://kbqa-pg.cs.upb.de/dev/gerbil/>)
 
 <!-- [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/dice-group/KBQA-PG/develop.svg)](https://results.pre-commit.ci/latest/github/dice-group/KBQA-PG/develop) -->
 

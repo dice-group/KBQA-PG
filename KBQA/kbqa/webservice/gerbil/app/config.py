@@ -79,7 +79,7 @@ gerbil_datasets = [
     "QALD9 Train Multilingual",
 ]  # "DBpedia Entity INEX","DBpedia Entity QALD2","DBpedia Entity SemSearch","DBpedia Entity TREC Entity" can not be loaded
 
-# all_datasets = ["QALD9 Test Multilingual"] # DEBUG
+# gerbil_datasets = ["QALD9 Test Multilingual"] # DEBUG
 
 
 def decode_experiment_filename(filename: str) -> Tuple[str, int, str, str]:

@@ -1,4 +1,5 @@
 """API for the website server."""
+import os
 from typing import Dict
 
 from app.handler import process_question
@@ -20,7 +21,28 @@ def index() -> str:
     website : str
         HTML home website.
     """
-    return render_template("index.html")
+
+    switch_text = ""
+    switch_url = ""
+    branch = "local"
+    try:
+        branch = os.environ["BRANCH"]
+    except KeyError:
+        pass
+
+    if branch == "master":
+        switch_text = "Check out our development version!"
+        switch_url = "/dev/"
+    elif branch == "dev":
+        switch_text = "Go to our release!"
+        switch_url = "/"
+    else:
+        switch_text = "Local deployment!"
+        switch_url = "/"
+
+    return render_template(
+        "index.html", branch=branch, switch_text=switch_text, switch_url=switch_url
+    )
 
 
 @application.route("/", methods=["POST"])

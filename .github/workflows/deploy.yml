@@ -1,29 +1,52 @@
-name: Webservice CD
+name: Deployment
 
 on:
   push:
-    branches: [develop]
+    branches: [develop, master]
+  workflow_dispatch:
+    branches: [develop, master]
 
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  RESOURCE_PATH: /home/kbqa_mngr/resources
-
 jobs:
-  deploy:
+  deploy-dev:
     runs-on: [self-hosted, kbqa-pg]
-
     timeout-minutes: 10080
+    if: github.ref == 'refs/heads/develop'
+    env:
+      RESOURCE_PATH: /home/kbqa_mngr/resources
+      APP_PORT: 8081
+      BRANCH: dev
 
     steps:
       - name: Stop running webservice
         working-directory: KBQA/kbqa
-        run: docker-compose -p kbqa down --remove-orphan
+        run: docker-compose -p kbqa-dev down --remove-orphan
         continue-on-error: true
       - name: Get new version
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build and start webservice
         working-directory: KBQA/kbqa
-        run: docker-compose -p kbqa up --build
+        run: docker-compose -p kbqa-dev up -d --build
+
+  deploy-release:
+    runs-on: [self-hosted, kbqa-pg-master]
+    timeout-minutes: 10080
+    if: github.ref == 'refs/heads/master'
+    env:
+      RESOURCE_PATH: /home/kbqa_mngr/resources
+      APP_PORT: 8080
+      BRANCH: master
+
+    steps:
+      - name: Stop running webservice
+        working-directory: KBQA/kbqa
+        run: docker-compose -p kbqa-release down --remove-orphan
+        continue-on-error: true
+      - name: Get new version
+        uses: actions/checkout@v3
+      - name: Build and start webservice
+        working-directory: KBQA/kbqa
+        run: docker-compose -p kbqa-release up -d --build

@@ -3,7 +3,7 @@ version: "3.7"
 services:
   approach_a:
     build: ./webservice/appA
-    container_name: approach_a
+    container_name: ${BRANCH}_approach_a
     restart: always
     volumes:
       # This volume is used for the VM. Comment this line if you are deploying the
@@ -19,7 +19,7 @@ services:
 
   approach_b:
     build: ./webservice/appB
-    container_name: approach_b
+    container_name: ${BRANCH}_approach_b
     restart: always
     volumes:
       # This volume is used for the VM. Comment this line if you are deploying the
@@ -35,14 +35,14 @@ services:
 
   website_server:
     build: ./webservice/website_server
-    container_name: website_server
+    container_name: ${BRANCH}_website_server
     restart: always
     expose:
       - 24803
 
   embedding_server:
     build: ./webservice/embedding_server
-    container_name: embedding_server
+    container_name: ${BRANCH}_embedding_server
     restart: always
     volumes:
       # This volume is used for the VM. Comment this line if you are deploying the
@@ -58,7 +58,7 @@ services:
 
   gerbil:
     build: ./webservice/gerbil
-    container_name: gerbil
+    container_name: ${BRANCH}_gerbil
     restart: always
     volumes:
       # This volume is used for the VM. Comment this line if you are deploying the
@@ -74,7 +74,7 @@ services:
 
   nginx:
     build: ./webservice/nginx
-    container_name: nginx
+    container_name: ${BRANCH}_nginx
     restart: always
     ports:
-      - "80:80"
+      - "${APP_PORT}:80"
