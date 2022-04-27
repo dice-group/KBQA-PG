@@ -3,3 +3,6 @@
 KBQA/kbqa/resources/*
 kbqa_pg.egg-info/*
 build/**
+
+# PyCharm
+.idea/

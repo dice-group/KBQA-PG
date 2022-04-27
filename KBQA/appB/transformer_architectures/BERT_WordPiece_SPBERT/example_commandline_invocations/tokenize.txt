@@ -1,0 +1,1 @@
+python tokenize_data.py --model_name_or_path bert-base-cased --filename ./data_with_triples/QALD_9/output/qald_9_train.en --max_number_tokens 64
