@@ -387,22 +387,8 @@ def do_valid_preprocessing(s: str) -> str:
     s = re.sub(r"<bif:contains>", "bif:contains", s)
     s = inline_and_remove_base(s)
     s = inline_and_remove_prefixes(s)
-    s = remove_zero_timezone(s)
     s = uri_to_prefix(s)
     s = normalize_prefixes(s)
-    return s
-
-
-def remove_zero_timezone(s: str) -> str:
-    """Remove timezones with T00:00:00Z time.
-
-    Args:
-        s: String where the removal is done.
-
-    Returns:
-        String with removed zero-timezone.
-    """
-    s = re.sub(r"(\d{4}-\d{2}-\d{2})T00:00:00Z", r"\1", s)
     return s
 
 
