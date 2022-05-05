@@ -39,14 +39,16 @@ def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     Store the preprocessed triples in <output_folder_path>/<file_name without_json>.triple.
     Store the preprocessed SPARQL queries in <output_folder_path>/<file_name_without_json>.sparql.
 
-    Also applies filter_triples() on the triples of the qtq-file.
+    Also replaces '\n' by ',' on the triples of the qtq-file.
 
     Args:
         input_file_path: The qtq-file-path. Must be a valid JSON with suffix ".json".
-        output_folder_path: The folder-path where the preprocessed files are stored.
+        output_folder_path: The folder-path where the preprocessed files are stored. Defaults to
+                            "preprocessed_data_files".
         keep_separated_input_file: If True, store the separated qtq-file in separated_input_files_folder_path.
         separated_input_files_folder_path: The input-file is separated into questions, triples and SPARQLs before
                                            preprocessing. This is folder-path where these intermediate files are stored.
+                                           Defaults to "separated_data_files".
         checkpointing_period: For every checkpointing_period of processed examples, the examples are stored in
                               <output_file_path>.checkpoint_data and the algorithm state in
                               <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
