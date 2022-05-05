@@ -33,29 +33,25 @@ def postprocess_query(query, entities):
 
 
 def process_question(question):
-    finaltrans = "input qurey: \n"
-    finaltrans += question
+    # finaltrans = "input qurey: \n" +question
 
     question_ph, entities = preprocess_question(question)
 
-    finaltrans += "\n\n\ninput query with placeholder:\n"
-    finaltrans += question_ph
+    finaltrans += "\n\n\ninput query with placeholder:\n" + question_ph
 
-    finaltrans += "\n\n\nentities:\n"
-    for placeholder, (entity, uri) in entities.items():
-        finaltrans += "{},  {},  {}".format(placeholder, entity, uri)
+    # finaltrans += "\n\n\nentities:\n"
+    # for placeholder, (entity, uri) in entities.items():
+    #     finaltrans += "{},  {},  {}".format(placeholder, entity, uri)
 
 
-    finaltrans += "\n\n\noutput qurey with placeholder:\n"
     output_query = summarizer(question_ph)[0]['summary_text']
-    finaltrans += output_query
+
+    # finaltrans += "\n\n\noutput qurey with placeholder:\n" + output_query
 
     output_query = postprocess_query(output_query, entities)
-    finaltrans += "\n\n\noutput qurey:\n"
-    finaltrans += output_query
+    
+    # finaltrans += "\n\n\noutput qurey:\n" + output_query
 
-    print(finaltrans)
+    # print(finaltrans)
 
     return output_query
-
-process_question("Name the alma mater of Barack Obama?")
