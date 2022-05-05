@@ -225,11 +225,12 @@ def separate_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     Store the triples in <output_folder_path>/<file_name without_json>.triple.
     Store the SPARQL queries in <output_folder_path>/<file_name_without_json>.sparql.
 
-    Also applies filter_triples() on the triples of the qtq-file.
+    Also replaces '\n' by ',' on the triples of the qtq-file.
 
     Args:
         input_file_path: The path to the input file. Suffix must be ".json".
-        output_folder_path: The path where the separated qtq-file parts should be stored.
+        output_folder_path: The path where the separated qtq-file parts should be stored. Defaults to
+                            "separated_data_files".
 
     Returns:
         Tuple of (natural_language_file_path, triples_file_path, sparql_file_path).
