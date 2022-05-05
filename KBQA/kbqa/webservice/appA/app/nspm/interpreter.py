@@ -1,20 +1,18 @@
 import os
 
-# from app.nspm.generator_utils import decode, fix_URI
-# from app.nspm.spotlight import *
+from app.nspm.generator_utils import decode, fix_URI
+from app.nspm.spotlight import *
 
-from generator_utils import decode, fix_URI
-from spotlight import *
 from transformers import pipeline
 
 
 # checkpoint_path = "output_model/checkpoint"
 
 # for local test
-checkpoint_path = os.path.dirname(__file__) + '/../../../../resources/approach_a/data/checkpoint-1000'
+# checkpoint_path = os.path.dirname(__file__) + '/../../../../resources/approach_a/data/checkpoint'
 
 # for docker
-# checkpoint_path = "/data/checkpoint-1000"
+checkpoint_path = "/data/checkpoint"
 
 def init_summarizer():
     summarizer = pipeline("summarization", model=checkpoint_path)
