@@ -244,4 +244,3 @@ def sparql_encoder_levenshtein_dist(sparql: str, log_lower_bound: float = math.i
         The Levenshtein distance.
     """
     return sparql_encoder_levenshtein_dist_base(sparql, log_lower_bound, encoder=encode, decoder=decode)
-
