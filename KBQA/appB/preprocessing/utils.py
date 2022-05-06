@@ -533,15 +533,16 @@ def preprocess_triples_base(triples_example: str, *, encoder: Callable[[str], st
     return s
 
 
-def do_valid_preprocessing(s: str) -> str:
-    """Preprocessing part which keeps the SPARQL s a valid sparql.
+def do_valid_preprocessing(sparql: str) -> str:
+    """Preprocessing part which keeps the SPARQL sparql a valid SPARQL.
 
     Args:
-        s: String which the preprocessing is done in.
+        sparql: String which the preprocessing is done on.
 
     Returns:
-        Preprocessed SPARQL with the same semantic as s.
+        Preprocessed SPARQL with the same semantic as sparql.
     """
+    s = sparql
     s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     s = sparql_keyword_to_lower_case(s)
     s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # English language tag to lower case.
@@ -908,3 +909,71 @@ def sparql_encoder_levenshtein_dist_base(sparql: str,
         print(f"\nDistance: {dist}")
         print("----------------------------------------------------")
     return dist
+
+
+def test_do_valid_preprocessing_on_file(input_file_path: Union[str, os.PathLike, Path]) -> tuple[float, int]:
+    """Test the function do_valid_preprocessing on SPARQLs in input_file_path.
+
+    Args:
+        input_file_path: A path-like object to the file with the SPARQLs.
+
+    Returns: Tuple of 2 elements:
+        - The ratio of valid preprocessed SPARQLs to all SPARQLs which were valid before preprocessing.
+        - The number of not valid unprocessed SPARQLs.
+    """
+    input_file_path = Path(input_file_path)
+    num_not_valid = 0
+    num_unprocessed_not_valid = 0
+    num_valid = 0
+    with open(input_file_path, "r", encoding="utf-8") as file:
+        for sparql in tqdm(file, desc="Amount of tested SPARQLs", unit="SPARQL"):
+            ret = test_do_valid_preprocessing(sparql)
+            if ret == 1:
+                num_valid += 1
+            elif ret == 0:
+                num_not_valid += 1
+            elif ret == -1:
+                num_unprocessed_not_valid += 1
+    ratio = num_valid / (num_valid + num_not_valid)
+    print(f"Number of valid preprocessed SPARQLs: {num_valid}")
+    print(f"Number of not valid preprocessed SPARQLs: {num_not_valid}")
+    print(f"Number of not valid SPARQLs before preprocessing: {num_unprocessed_not_valid}")
+    print(f"Ratio between valid and all SPARQLs which were valid before preprocessing: {ratio}")
+    return ratio, num_unprocessed_not_valid
+
+
+def test_do_valid_preprocessing(sparql: str) -> int:
+    """Test the function do_valid_preprocessing on SPARQL sparql.
+
+    Args:
+        sparql: SPARQL on which the preprocessing is done in.
+
+    Returns:
+        1, if the preprocessing is valid. 0, if it is not valid. -1, if the unprocessed SPARQL is not valid.
+    """
+    preprocessed_sparql = do_valid_preprocessing(sparql)
+
+    # Query SPARQL
+    SPARQL_WRAPPER.setQuery(sparql)
+    try:
+        answer = SPARQL_WRAPPER.queryAndConvert()
+    except BaseException as excepion:
+        print("\n--------------------------------------------------")
+        print(f"An exception occurred at unprocessed SPARQL:\n{sparql}")
+        print(f"Exception:\n{excepion}")
+        print("----------------------------------------------------")
+        return -1
+
+    # Query Preprocessed SPARQL
+    SPARQL_WRAPPER.setQuery(preprocessed_sparql)
+    try:
+        answer = SPARQL_WRAPPER.queryAndConvert()
+    except BaseException as excepion:
+        print("\n--------------------------------------------------")
+        print(f"An exception occurred at preprocessed SPARQL:\n{preprocessed_sparql}")
+        print(f"Exception:\n{excepion}")
+        print(f"The corresponding unprocessed SPARQL is:\n{sparql}")
+        print("----------------------------------------------------")
+        return 0
+
+    return 1
