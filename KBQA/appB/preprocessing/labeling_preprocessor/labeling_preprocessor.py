@@ -321,6 +321,8 @@ def generate_label_decoding(match):
     """Generates the string for "<prefix:> <label_of_the_corresponding_URI> :end_label" which is "<prefix:><path>".
 
     Only supports english labels, i.e. "<label>"@en.
+    We might have multiple results like e.g. http://dbpedia.org/resource/Category:Skype and
+    http://dbpedia.org/resource/Skype. We decide on using the shortest in these cases.
 
     Args:
         match: A re.Match object.
@@ -345,7 +347,9 @@ def generate_label_decoding(match):
         raise
     bindings = response["results"]["bindings"]
     if len(bindings) > 0:
-        uri = bindings[0]["uri"]["value"]
+        uris = [binding["uri"]["value"] for binding in bindings]
+        uris.sort(key=len)
+        uri = uris[0]
 
     if uri is None:
         whole_match = match.group(0)
