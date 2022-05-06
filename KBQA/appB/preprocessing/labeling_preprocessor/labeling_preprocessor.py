@@ -18,19 +18,24 @@ from SPARQLWrapper import JSON
 from KBQA.appB.summarizers.utils import query_dbspotlight
 
 from KBQA.appB.preprocessing import utils
-from KBQA.appB.preprocessing.utils import separate_qtq_file
-from KBQA.appB.preprocessing.utils import preprocess_file
-from KBQA.appB.preprocessing.utils import preprocess_natural_language_file
-from KBQA.appB.preprocessing.utils import preprocess_natural_language_sentence
-from KBQA.appB.preprocessing.utils import do_valid_preprocessing
-from KBQA.appB.preprocessing.utils import upper_bound_literal
+from KBQA.appB.preprocessing.utils import preprocess_qtq_file_base
+from KBQA.appB.preprocessing.utils import preprocess_natural_language_file as preprocess_natural_language_file_
+from KBQA.appB.preprocessing.utils import preprocess_natural_language_sentence as preprocess_natural_language_sentence_
+from KBQA.appB.preprocessing.utils import preprocess_sparql_file_base
+from KBQA.appB.preprocessing.utils import preprocess_sparql_base
+from KBQA.appB.preprocessing.utils import preprocess_triples_file_base
+from KBQA.appB.preprocessing.utils import preprocess_triples_base
 from KBQA.appB.preprocessing.utils import do_replacements
 from KBQA.appB.preprocessing.utils import revert_replacements
+from KBQA.appB.preprocessing.utils import uri_to_prefix
 from KBQA.appB.preprocessing.utils import encode_asterisk
 from KBQA.appB.preprocessing.utils import decode_asterisk
 from KBQA.appB.preprocessing.utils import encode_datatype
 from KBQA.appB.preprocessing.utils import decode_datatype
-from KBQA.appB.preprocessing.utils import uri_to_prefix
+from KBQA.appB.preprocessing.utils import decode_file_base
+from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_on_file_base
+from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_base
+from KBQA.appB.preprocessing.utils import prefix_to_uri
 
 SPARQL_WRAPPER = utils.SPARQL_WRAPPER
 ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
@@ -69,33 +74,39 @@ def preprocess_qtq_file(input_file_path: Union[str, os.PathLike, Path],
     Note:
         Checkpointing is not applied on the data-separation step.
     """
-    input_file_path = Path(input_file_path)
-    output_folder_path = Path(output_folder_path)
-    separated_input_files_folder_path = Path(separated_input_files_folder_path)
-    if input_file_path.suffix != ".json":
-        raise ValueError("input_file_path should be ending with \".json\"")
-    output_folder_path.mkdir(parents=True, exist_ok=True)
-    natural_language_file_path, triples_file_path, sparql_file_path = separate_qtq_file(
-        input_file_path=input_file_path, output_folder_path=separated_input_files_folder_path)
-    preprocessed_natural_language_file_path = output_folder_path / input_file_path.with_suffix(".en").name
-    preprocessed_triples_file_path = output_folder_path / input_file_path.with_suffix(".triple").name
-    preprocessed_sparql_file_path = output_folder_path / input_file_path.with_suffix(".sparql").name
-    preprocessed_natural_language_file_path = preprocess_natural_language_file(
-        input_file_path=natural_language_file_path, output_file_path=preprocessed_natural_language_file_path,
-        checkpointing_period=checkpointing_period)
-    preprocessed_triples_file_path = preprocess_triples_file(input_file_path=triples_file_path,
-                                                             output_file_path=preprocessed_triples_file_path,
-                                                             checkpointing_period=checkpointing_period)
-    preprocessed_sparql_file_path = preprocess_sparql_file(input_file_path=sparql_file_path,
-                                                           output_file_path=preprocessed_sparql_file_path,
-                                                           checkpointing_period=checkpointing_period)
-    if not keep_separated_input_file:
-        natural_language_file_path.unlink()
-        triples_file_path.unlink()
-        sparql_file_path.unlink()
-        if not any(separated_input_files_folder_path.iterdir()):
-            separated_input_files_folder_path.rmdir()
-    return preprocessed_natural_language_file_path, preprocessed_triples_file_path, preprocessed_sparql_file_path
+    return preprocess_qtq_file_base(input_file_path,
+                                    output_folder_path,
+                                    keep_separated_input_file,
+                                    separated_input_files_folder_path,
+                                    checkpointing_period,
+                                    encoder=encode)
+
+
+def preprocess_natural_language_file(input_file_path: Union[str, os.PathLike, Path],
+                                     output_file_path: Union[str, os.PathLike, Path, None] = None,
+                                     checkpointing_period: int = 10) -> Path:
+    """Preprocess a natural language file.
+
+    Args:
+        input_file_path: The path of the file to preprocess.
+        output_file_path: The path of the final preprocessed file. The file is created if it does not exist or
+                          overwritten if it already exists. If None, defaults to
+                          "preprocessed_data_files/<input_file_name>" where <input_file_name> is the name of the
+                          input-file.
+        checkpointing_period: For every checkpointing_period of processed examples, the examples are stored in
+                              <output_file_path>.checkpoint_data and the algorithm state in
+                              <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
+                              from the checkpoint by calling it with the same arguments.
+    Returns:
+        The path of the preprocessed file.
+    """
+    return preprocess_natural_language_file_(input_file_path,
+                                             output_file_path,
+                                             checkpointing_period)
+
+
+def preprocess_natural_language_sentence(w):
+    return preprocess_natural_language_sentence_(w)
 
 
 def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
@@ -116,19 +127,22 @@ def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
     Returns:
         The path of the preprocessed file.
     """
-    output_file_path = preprocess_file(preprocessing_function=preprocess_sparql, input_file_path=input_file_path,
-                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period,
-                                       progress_bar_description="Amount of preprocessed SPARQLs",
-                                       progress_bar_unit="SPARQL")
-    return output_file_path
+    return preprocess_sparql_file_base(input_file_path,
+                                       output_file_path,
+                                       checkpointing_period,
+                                       encoder = encode)
 
 
-def preprocess_sparql(s):
-    s = do_valid_preprocessing(s)
-    s = encode(s)
-    s = s.strip()
-    s = re.sub(r" +", " ", s)
-    return s
+def preprocess_sparql(s: str) -> str:
+    """Preprocess a SPARQL string.
+
+    Args:
+        s: The string to be preprocessed.
+
+    Returns:
+        The preprocessed string.
+    """
+    return preprocess_sparql_base(s, encoder=encode)
 
 
 def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
@@ -149,18 +163,24 @@ def preprocess_triples_file(input_file_path: Union[str, os.PathLike, Path],
     Returns:
         The path of the preprocessed file.
     """
-    output_file_path = preprocess_file(preprocessing_function=preprocess_triples, input_file_path=input_file_path,
-                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period,
-                                       progress_bar_description="Amount of preprocessed triple-sets",
-                                       progress_bar_unit="triple-set")
-    return output_file_path
+    return preprocess_triples_file_base(input_file_path,
+                                        output_file_path,
+                                        checkpointing_period,
+                                        encoder=encode)
 
 
 def preprocess_triples(triples_example):
-    s = triples_example
-    s = upper_bound_literal(s)  # Max six long words.
-    s = preprocess_sparql(s)
-    return s
+    """Preprocess a string of triples.
+
+    The string should not contain new line characters.
+
+    Args:
+        triples_example: The string of triples to be preprocessed.
+
+    Returns:
+        The preprocessed triples string.
+    """
+    return preprocess_triples_base(triples_example, encoder=encode)
 
 
 def encode(sparql):
@@ -185,17 +205,22 @@ def decode(encoded_sparql):
     s = decode_datatype(s)
     s = decode_asterisk(s)
     s = revert_replacements(s, ENCODING_REPLACEMENTS, remove_successive_whitespaces=False)
+    s = prefix_to_uri(s)
     s = s.strip()
     s = re.sub(r" +", " ", s)
     return s
 
 
-def decode_file(file):
-    """Decode a file of encoded SPARQLs."""
-    with open(file) as f:
-        encoded_sparqls = [decode(line) for line in f]
+def decode_file(file_path: Union[str, os.PathLike, Path]) -> list[str]:
+    """Decode a file of encoded SPARQLs.
 
-    return encoded_sparqls
+    Args:
+        file_path: The path to the file of encoded SPARQLs.
+
+    Returns:
+        A list of the decoded SPARQLs.
+    """
+    return decode_file_base(file_path, decoder=decode)
 
 
 def encode_uri_by_label(s):
@@ -260,7 +285,7 @@ def generate_label_encoding(match):
 
 
 def decode_label_by_uri(s):
-    """Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+    """Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
 
     ":end_label" should be part of the tokenizer vocabulary.
     """
@@ -273,7 +298,7 @@ def decode_label_by_uri(s):
 def decode_label_with_mapping(s: str) -> str:
     """Replace a label with a uri from mapping the label back to the corresponding entity in DBpedia.
 
-    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
     Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
 
     Args:
@@ -295,14 +320,17 @@ def decode_label_with_mapping(s: str) -> str:
 
 
 def generate_label_decoding(match):
-    """Generates the string for "<prefix:> <label_of_the_corresponding_URI> :end_label" which is "<prefix:><path>".
+    """Generates the string for "<prefix:> <label_of_the_corresponding_URI> :end_label" which is
+    "'<'<corresponding_uri>'>'".
 
     Only supports english labels, i.e. "<label>"@en.
+    We might have multiple results like e.g. http://dbpedia.org/resource/Category:Skype and
+    http://dbpedia.org/resource/Skype. We decide on using the shortest in these cases.
 
     Args:
         match: A re.Match object.
     Returns:
-        string: Some "<prefix:><path>" if a uri is found. Else an empty string "".
+        string: Some "'<'<corresponding_uri>'>'" if a uri is found. Else an empty string "".
     """
     prefix = match.group(2)
     label = match.group(3).strip()
@@ -322,19 +350,20 @@ def generate_label_decoding(match):
         raise
     bindings = response["results"]["bindings"]
     if len(bindings) > 0:
-        uri = bindings[0]["uri"]["value"]
+        uris = [binding["uri"]["value"] for binding in bindings]
+        uris.sort(key=len)
+        uri = uris[0]
 
     if uri is None:
         whole_match = match.group(0)
         return whole_match
-    prefix_uri = uri_to_prefix("<" + uri + ">")
-    return prefix_uri
+    return "<" + uri + ">"
 
 
 def decode_label_with_entity_linking(s: str, context: str) -> str:
     """Replace a label with a uri found by entity recognition on the label.
 
-    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
     Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
 
     Args:
@@ -370,7 +399,6 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
             s = re.sub(whole_match, '<' + text_to_uri[label] + '>', s)
         elif prefix_label in text_to_uri:
             s = re.sub(whole_match, '<' + text_to_uri[prefix_label] + '>', s)
-    s = uri_to_prefix(s)
     return s
 
 
@@ -388,16 +416,10 @@ def sparql_encoder_levenshtein_dist_on_file(input_file_path: Union[str, os.PathL
     Returns:
         The mean Levenshtein distance.
     """
-    input_file_path = Path(input_file_path)
-    cumulative_dist = 0
-    amount = 0
-    with open(input_file_path, "r", encoding="utf-8") as file:
-        for sparql in tqdm(file, desc="Amount of scored SPARQLs", unit="SPARQL"):
-            dist = sparql_encoder_levenshtein_dist(sparql.strip(), log_lower_bound=log_lower_bound)
-            cumulative_dist += dist
-            amount += 1
-    mean_dist = cumulative_dist / amount
-    return mean_dist
+    return sparql_encoder_levenshtein_dist_on_file_base(input_file_path,
+                                                        log_lower_bound,
+                                                        encoder=encode,
+                                                        decoder=decode)
 
 
 def sparql_encoder_levenshtein_dist(sparql: str, log_lower_bound: float = math.inf) -> float:
@@ -413,19 +435,4 @@ def sparql_encoder_levenshtein_dist(sparql: str, log_lower_bound: float = math.i
     Returns:
         The Levenshtein distance.
     """
-    preprocessed = do_valid_preprocessing(sparql)
-    encoded = encode(preprocessed)
-    decoded = decode(encoded)
-    dist = distance.levenshtein(preprocessed, decoded)
-    if dist >= log_lower_bound:
-        print("\n--------------------------------------------------")
-        print(f"SPARQL: {sparql}")
-        print(f"\nPreprocessed: {preprocessed}")
-        print(f"\nEncoded: {encoded}")
-        print(f"\nDecoded: {decoded}")
-        print(f"\nDifference:\n")
-        diff = ndiff(preprocessed.split(), decoded.split())
-        print('\n'.join(diff))
-        print(f"\nDistance: {dist}")
-        print("----------------------------------------------------")
-    return dist
+    return sparql_encoder_levenshtein_dist_base(sparql, log_lower_bound, encoder=encode, decoder=decode)
