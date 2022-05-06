@@ -692,7 +692,7 @@ def uri_to_prefix(s):
 
 
 def prefix_to_uri(s):
-    """Substitute the default SPARQL URIs into their corresponding prefix.
+    """Substitute default DBpedia prefixes by their URI.
 
     PREFIX_TO_URI defines the substitutions to be done. The key is substituted by the value and chevrons are put around.
 
@@ -894,17 +894,19 @@ def sparql_encoder_levenshtein_dist_base(sparql: str,
         The Levenshtein distance.
     """
     preprocessed = do_valid_preprocessing(sparql)
+    preprocessed_without_prefix = prefix_to_uri(preprocessed)
     encoded = encoder(preprocessed)
     decoded = decoder(encoded)
-    dist = distance.levenshtein(preprocessed, decoded)
+    dist = distance.levenshtein(preprocessed_without_prefix, decoded)
     if dist >= log_lower_bound:
         print("\n--------------------------------------------------")
-        print(f"SPARQL: {sparql}")
-        print(f"\nPreprocessed: {preprocessed}")
-        print(f"\nEncoded: {encoded}")
-        print(f"\nDecoded: {decoded}")
+        print(f"SPARQL:\n{sparql}")
+        print(f"\nPreprocessed:\n{preprocessed}")
+        print(f"\nPreprocessed without prefixes:\n{preprocessed_without_prefix}")
+        print(f"\nEncoded:\n{encoded}")
+        print(f"\nDecoded:\n{decoded}")
         print(f"\nDifference:\n")
-        diff = ndiff(preprocessed.split(), decoded.split())
+        diff = ndiff(preprocessed_without_prefix.split(), decoded.split())
         print('\n'.join(diff))
         print(f"\nDistance: {dist}")
         print("----------------------------------------------------")

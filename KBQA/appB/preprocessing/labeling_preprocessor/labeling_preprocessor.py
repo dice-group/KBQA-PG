@@ -35,6 +35,7 @@ from KBQA.appB.preprocessing.utils import decode_datatype
 from KBQA.appB.preprocessing.utils import decode_file_base
 from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_on_file_base
 from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_base
+from KBQA.appB.preprocessing.utils import prefix_to_uri
 
 SPARQL_WRAPPER = utils.SPARQL_WRAPPER
 ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
@@ -204,6 +205,7 @@ def decode(encoded_sparql):
     s = decode_datatype(s)
     s = decode_asterisk(s)
     s = revert_replacements(s, ENCODING_REPLACEMENTS, remove_successive_whitespaces=False)
+    s = prefix_to_uri(s)
     s = s.strip()
     s = re.sub(r" +", " ", s)
     return s
@@ -283,7 +285,7 @@ def generate_label_encoding(match):
 
 
 def decode_label_by_uri(s):
-    """Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+    """Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
 
     ":end_label" should be part of the tokenizer vocabulary.
     """
@@ -296,7 +298,7 @@ def decode_label_by_uri(s):
 def decode_label_with_mapping(s: str) -> str:
     """Replace a label with a uri from mapping the label back to the corresponding entity in DBpedia.
 
-    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
     Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
 
     Args:
@@ -318,7 +320,8 @@ def decode_label_with_mapping(s: str) -> str:
 
 
 def generate_label_decoding(match):
-    """Generates the string for "<prefix:> <label_of_the_corresponding_URI> :end_label" which is "<prefix:><path>".
+    """Generates the string for "<prefix:> <label_of_the_corresponding_URI> :end_label" which is
+    "'<'<corresponding_uri>'>'".
 
     Only supports english labels, i.e. "<label>"@en.
     We might have multiple results like e.g. http://dbpedia.org/resource/Category:Skype and
@@ -327,7 +330,7 @@ def generate_label_decoding(match):
     Args:
         match: A re.Match object.
     Returns:
-        string: Some "<prefix:><path>" if a uri is found. Else an empty string "".
+        string: Some "'<'<corresponding_uri>'>'" if a uri is found. Else an empty string "".
     """
     prefix = match.group(2)
     label = match.group(3).strip()
@@ -354,14 +357,13 @@ def generate_label_decoding(match):
     if uri is None:
         whole_match = match.group(0)
         return whole_match
-    prefix_uri = uri_to_prefix("<" + uri + ">")
-    return prefix_uri
+    return "<" + uri + ">"
 
 
 def decode_label_with_entity_linking(s: str, context: str) -> str:
     """Replace a label with a uri found by entity recognition on the label.
 
-    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "<prefix:><path>".
+    Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
     Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
 
     Args:
@@ -397,7 +399,6 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
             s = re.sub(whole_match, '<' + text_to_uri[label] + '>', s)
         elif prefix_label in text_to_uri:
             s = re.sub(whole_match, '<' + text_to_uri[prefix_label] + '>', s)
-    s = uri_to_prefix(s)
     return s
 
 

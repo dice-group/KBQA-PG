@@ -27,6 +27,7 @@ from KBQA.appB.preprocessing.utils import decode_datatype
 from KBQA.appB.preprocessing.utils import decode_file_base
 from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_on_file_base
 from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_base
+from KBQA.appB.preprocessing.utils import prefix_to_uri
 
 ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
 
@@ -191,6 +192,7 @@ def decode(encoded_sparql):
     s = decode_datatype(s)
     s = decode_asterisk(s)
     s = revert_replacements(s, ENCODING_REPLACEMENTS, remove_successive_whitespaces=False)
+    s = prefix_to_uri(s)
     s = s.strip()
     s = re.sub(r" +", " ", s)
     return s
