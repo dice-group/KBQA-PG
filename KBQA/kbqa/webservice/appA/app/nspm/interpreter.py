@@ -37,12 +37,11 @@ def process_question(question):
 
     question_ph, entities = preprocess_question(question)
 
-    finaltrans += "\n\n\ninput query with placeholder:\n" + question_ph
+    # finaltrans += "\n\n\ninput query with placeholder:\n" + question_ph
 
     # finaltrans += "\n\n\nentities:\n"
     # for placeholder, (entity, uri) in entities.items():
     #     finaltrans += "{},  {},  {}".format(placeholder, entity, uri)
-
 
     output_query = summarizer(question_ph)[0]['summary_text']
 
