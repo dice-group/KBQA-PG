@@ -46,7 +46,7 @@ class WordNetSpacyPreprocessor:
     return a new list of Token
     """
     def __init__(self, whitespace_tokenize_only: bool = False):
-        self.nlp = spacy.load('en_core_web_sm', disable=['tagger', 'parser', 'ner', 'textcat'])
+        self.nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner', 'textcat'])
         if whitespace_tokenize_only:
             self.nlp.tokenizer = WhitespaceTokenizer(self.nlp.vocab)
 
@@ -58,7 +58,6 @@ class WordNetSpacyPreprocessor:
 
     def __call__(self, text: str) -> List[Token]:
         spacy_doc = self.nlp(text)
-
         # create allennlp tokens
         normalized_tokens = [
             Token(
@@ -372,6 +371,7 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
              'candidate_entity_priors': List[List[float]]
         }
         """
+
         if whitespace_tokenize:
             tokenized = self._raw_data_processor_whitespace(text)
         else:
