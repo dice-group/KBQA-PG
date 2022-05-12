@@ -4,10 +4,11 @@ from typing import Dict
 from typing import Tuple
 
 from app.nspm.interpreter import process_question
+from app.qald_builder import qald_builder_ask_answer
 from app.qald_builder import qald_builder_empty_answer
 from app.qald_builder import qald_builder_select_answer
-from app.qald_builder import qald_builder_ask_answer
-from SPARQLWrapper import JSON, SPARQLWrapper
+from SPARQLWrapper import JSON
+from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper.SPARQLExceptions import SPARQLWrapperException
 
 
@@ -35,7 +36,6 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     answer_qald = ask_dbpedia(query, sparql_query, lang)
 
     return answer_qald
-
 
 def interprete(question: str) -> Tuple[Dict, str]:
     """Interprete an asked question using the Neural SPARQL Machine.
