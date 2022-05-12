@@ -28,6 +28,8 @@ from KBQA.appB.preprocessing.utils import decode_file_base
 from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_on_file_base
 from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_base
 from KBQA.appB.preprocessing.utils import prefix_to_uri
+from KBQA.appB.preprocessing.utils import uri_to_prefix
+from KBQA.appB.preprocessing.utils import normalize_prefixes
 
 ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
 
@@ -178,6 +180,8 @@ def encode(sparql):
     sparql will not be a valid SPARQL query afterwards and has to be decoded by decode() to make it valid again.
     """
     s = sparql
+    s = uri_to_prefix(s)
+    s = normalize_prefixes(s)
     s = do_replacements(s, ENCODING_REPLACEMENTS)
     s = encode_asterisk(s)
     s = encode_datatype(s)
