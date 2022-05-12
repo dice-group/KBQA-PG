@@ -137,17 +137,12 @@ class OneHopRankSummarizer(BaseSummarizer):
         # timeout
         time.sleep(self.timeout)
 
-        if self.limit > -1:
-            cur_limit = self.limit - len(graph_triples)
-        else:
-            cur_limit = 9999999
-
         # ------------------------------ ranking ------------------------------
         dataset = os.path.join(
             os.path.dirname(__file__), f"pickle_objects/{self.datasets}.pickle"
         )
         ranked_triples = triples_for_predicates_all_datasets(
-            question.text, dataset, self.filtering, number_of_triples=cur_limit
+            question.text, dataset, self.filtering, number_of_triples=9999999
         )
         # ------------------------------ ranking ------------------------------
 
@@ -156,7 +151,12 @@ class OneHopRankSummarizer(BaseSummarizer):
         filtered_triples = self._filter_triples(all_triples)
         aggregated_triples = self._aggregate_triples(filtered_triples)
 
-        return aggregated_triples
+        if self.limit > -1:
+            limited_triples = self._limit_triples(aggregated_triples)
+        else:
+            limited_triples = aggregated_triples
+
+        return limited_triples
 
     def _get_graph_triples(
         self, question: str
@@ -226,6 +226,20 @@ class OneHopRankSummarizer(BaseSummarizer):
                 updated_triples.append(triple)
 
         return updated_triples
+
+    def _limit_triples(
+        self, triples: List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]
+    ) -> List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]:
+        result = list()
+        counter = 0
+
+        for triple in triples:
+            if counter < self.limit:
+                result.append(triple)
+
+                counter += 1
+
+        return result
 
     def _format_triples(
         self, triples: List[Tuple[Tuple[URIRef, URIRef, URIRef], float, float]]
