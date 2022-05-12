@@ -12,7 +12,7 @@ from transformers import pipeline
 # for docker
 checkpoint_path = "/data/checkpoint"
 
-def init_summarizer():
+def init_summarizer() -> pipeline.Pipeline:
     """Initialize the summarizer pipeline
 
     initialize the summarizer pipeline with the checkpoint file in checkpoint_path. 
@@ -52,7 +52,7 @@ def preprocess_question(question : str) -> Tuple[str, Dict[str, Tuple[str, str]]
     question_ph = replace_entities(question, entities)
     return question_ph, entities
 
-def postprocess_query(query, entities):
+def postprocess_query(query: str, entities: dict) -> str:
     """Postprocess the query
     
     Postprocess the query by replacing the placeholders with the entities, 
@@ -77,7 +77,7 @@ def postprocess_query(query, entities):
     return query
 
 
-def process_question(question):
+def process_question(question: str) -> str:
     """Process the question
     
     Process the question by extracting the entities,  
