@@ -1,4 +1,4 @@
-from ast import Dict, Tuple
+from typing import Dict, Tuple
 import os
 
 from app.nspm.generator_utils import decode, fix_URI
@@ -12,7 +12,7 @@ from transformers import pipeline
 # for docker
 checkpoint_path = "/data/checkpoint"
 
-def init_summarizer() -> pipeline.Pipeline:
+def init_summarizer():
     """Initialize the summarizer pipeline
 
     initialize the summarizer pipeline with the checkpoint file in checkpoint_path. 
@@ -31,7 +31,7 @@ def init_summarizer() -> pipeline.Pipeline:
 
 summarizer = init_summarizer()
 
-def preprocess_question(question : str) -> Tuple[str, Dict[str, Tuple[str, str]]]:
+def preprocess_question(question : str) -> Tuple:
     """Preprocess the question
     
     preprocess the question by extracting the entities and replacing the placeholders with the entities. 

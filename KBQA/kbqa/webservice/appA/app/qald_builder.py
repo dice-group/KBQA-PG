@@ -1,5 +1,5 @@
 """Module to create a QALD json string for given inputs."""
-from typing import Any
+from typing import Any, Dict
 from typing import Dict
 
 
