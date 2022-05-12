@@ -1,13 +1,18 @@
-from transformers import BertTokenizer, BertForMaskedLM
+#from transformers import BertTokenizer, BertForMaskedLM
+from transformers import BertTokenizer
+from bert_LM import BertForMaskedLM
 import torch
 from transformers import AdamW
 from tqdm import tqdm 
 from transformers import TrainingArguments
 from transformers import Trainer
+from transformers.models.bert.modeling_bert import BertConfig
 
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased')
+#config = BertConfig.from_json_file('out/config.json')
+#model = BertForMaskedLM(config)
 
 with open('qtq-qald-9-train-small.triple', 'r') as fp :
     text = fp.read().split('\n')
@@ -75,3 +80,5 @@ trainer = Trainer(
 )
 
 trainer.train()
+
+model.save_pretrained("out/")
