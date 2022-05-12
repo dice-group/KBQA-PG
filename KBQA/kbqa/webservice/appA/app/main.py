@@ -34,8 +34,8 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
 
     sparql_query = interprete(query)
     answer_qald = ask_dbpedia(query, sparql_query, lang)
-
     return answer_qald
+
 
 def interprete(question: str) -> Tuple[Dict, str]:
     """Interprete an asked question using the Neural SPARQL Machine.
@@ -63,6 +63,7 @@ def interprete(question: str) -> Tuple[Dict, str]:
 
     print("Predicted SPARQL-Query:", sparql_query)
     return sparql_query
+
 
 def ask_dbpedia(question: str, sparql_query: str, lang: str) -> Dict[str, Any]:
     """Send a SPARQL-query to DBpedia and return a formated QALD-string containing the answers.

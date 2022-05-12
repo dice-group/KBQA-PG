@@ -174,3 +174,4 @@ def convert_dbpedia_answer_to_gerbil_format(answer: Dict) -> Dict[str, Dict[str,
     converted_answer = {"head": {"vars": variables}, "results": {"bindings": bindings}}
 
     return converted_answer
+    

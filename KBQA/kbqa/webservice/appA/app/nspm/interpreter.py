@@ -29,7 +29,9 @@ def init_summarizer():
     summarizer = pipeline("summarization", model=checkpoint_path)
     return summarizer
 
+
 summarizer = init_summarizer()
+
 
 def preprocess_question(question : str) -> Tuple:
     """Preprocess the question
@@ -51,6 +53,7 @@ def preprocess_question(question : str) -> Tuple:
     entities = find_entity(question)
     question_ph = replace_entities(question, entities)
     return question_ph, entities
+
 
 def postprocess_query(query: str, entities: dict) -> str:
     """Postprocess the query
@@ -101,3 +104,4 @@ def process_question(question: str) -> str:
     output_query = postprocess_query(summarizer(question_ph)[0]['summary_text'], entities)
 
     return output_query
+    
