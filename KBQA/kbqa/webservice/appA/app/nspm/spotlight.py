@@ -1,5 +1,6 @@
 
-from typing import Dict, Tuple
+from typing import Dict
+from typing import Tuple
 import spacy_dbpedia_spotlight
 
 

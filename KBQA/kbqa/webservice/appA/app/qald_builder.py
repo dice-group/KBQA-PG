@@ -1,5 +1,5 @@
 """Module to create a QALD json string for given inputs."""
-from typing import Any, Dict
+from typing import Any
 from typing import Dict
 
 
@@ -174,3 +174,5 @@ def convert_dbpedia_answer_to_gerbil_format(answer: Dict) -> Dict[str, Dict[str,
     converted_answer = {"head": {"vars": variables}, "results": {"bindings": bindings}}
 
     return converted_answer
+
+
