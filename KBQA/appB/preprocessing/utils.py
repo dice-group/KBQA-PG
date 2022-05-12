@@ -680,14 +680,14 @@ def uri_to_prefix(s):
     Returns:
         The string with substituted URIs.
 
-    Note: If we find a substitution for some URI prefix but the remainder still includes a '/', we do not substitute
-          because this is wrong in many cases. SPARQL still allows it.
+    Note: DBpedia does not allow prefixes to be used while the remainder of the URI still carries a '/'. SPARQL allows
+          it and we benefit also from allowing it.
     """
     for prefix, uri in PREFIX_TO_URI.items():
-        s = re.sub(f"<{uri}([^/>\"{{}}|^`\\\\]*)>", f"{prefix}\\1", s)
+        s = re.sub(f"<{uri}([^>]*)>", f"{prefix}\\1", s)
 
     for https_uri, prefix in HTTPS_URI_TO_PREFIX.items():
-        s = re.sub(f"<{https_uri}([^/>\"{{}}|^`\\\\]*)>", f"{prefix}\\1", s)
+        s = re.sub(f"<{https_uri}([^>]*)>", f"{prefix}\\1", s)
     return s
 
 
@@ -894,19 +894,21 @@ def sparql_encoder_levenshtein_dist_base(sparql: str,
         The Levenshtein distance.
     """
     preprocessed = do_valid_preprocessing(sparql)
-    preprocessed_without_prefix = prefix_to_uri(preprocessed)
+    preprocessed_normalized = uri_to_prefix(preprocessed)
+    preprocessed_normalized = normalize_prefixes(preprocessed_normalized)
+    preprocessed_normalized = prefix_to_uri(preprocessed_normalized)
     encoded = encoder(preprocessed)
     decoded = decoder(encoded)
-    dist = distance.levenshtein(preprocessed_without_prefix, decoded)
+    dist = distance.levenshtein(preprocessed_normalized, decoded)
     if dist >= log_lower_bound:
         print("\n--------------------------------------------------")
         print(f"SPARQL:\n{sparql}")
         print(f"\nPreprocessed:\n{preprocessed}")
-        print(f"\nPreprocessed without prefixes:\n{preprocessed_without_prefix}")
+        print(f"\nPreprocessed Normalized:\n{preprocessed_normalized}")
         print(f"\nEncoded:\n{encoded}")
         print(f"\nDecoded:\n{decoded}")
         print(f"\nDifference:\n")
-        diff = ndiff(preprocessed_without_prefix.split(), decoded.split())
+        diff = ndiff(preprocessed_normalized.split(), decoded.split())
         print('\n'.join(diff))
         print(f"\nDistance: {dist}")
         print("----------------------------------------------------")
@@ -977,5 +979,4 @@ def test_do_valid_preprocessing(sparql: str) -> int:
         print(f"The corresponding unprocessed SPARQL is:\n{sparql}")
         print("----------------------------------------------------")
         return 0
-
     return 1
