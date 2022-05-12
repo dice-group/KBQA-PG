@@ -71,9 +71,9 @@ def postprocess_query(query: str, entities: dict) -> str:
     query : str
         Query with the placeholders replaced with the entities.
     """
-    query = restore_entity(query, entities)
-    query = decode(query)
-    query = fix_URI(query)
+    # query = restore_entity(query, entities)
+    # query = decode(restore_entity(query, entities))
+    query = fix_URI(decode(restore_entity(query, entities)))
     return query
 
 
@@ -95,24 +95,9 @@ def process_question(question: str) -> str:
     query : str
         Sparql Query with the placeholders replaced with the entities.
     """
-    # finaltrans = "input qurey: \n" +question
 
     question_ph, entities = preprocess_question(question)
-
-    # finaltrans += "\n\n\ninput query with placeholder:\n" + question_ph
-
-    # finaltrans += "\n\n\nentities:\n"
-    # for placeholder, (entity, uri) in entities.items():
-    #     finaltrans += "{},  {},  {}".format(placeholder, entity, uri)
-
-    output_query = summarizer(question_ph)[0]['summary_text']
-
-    # finaltrans += "\n\n\noutput qurey with placeholder:\n" + output_query
-
-    output_query = postprocess_query(output_query, entities)
-    
-    # finaltrans += "\n\n\noutput qurey:\n" + output_query
-
-    # print(finaltrans)
+    # output_query = summarizer(question_ph)[0]['summary_text']
+    output_query = postprocess_query(summarizer(question_ph)[0]['summary_text'], entities)
 
     return output_query
