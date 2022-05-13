@@ -78,20 +78,24 @@ def extract_bindings_from_qald(qald: Dict) -> Tuple[List[Tuple[str, str]], str]:
         print("Question:", question)
         print("Query:", query)
 
+        # TODO: add variant to handle true/false questions
         for answer in answers:
-            variables = answer["head"]["vars"]
+            try:
+                variables = answer["head"]["vars"]
 
-            bindings = answer["results"]["bindings"]
+                bindings = answer["results"]["bindings"]
 
-            for var in variables:
-                for binding in bindings:
-                    result_type = binding[var]["type"]
-                    result_value = binding[var]["value"]
+                for var in variables:
+                    for binding in bindings:
+                        result_type = binding[var]["type"]
+                        result_value = binding[var]["value"]
 
-                    result = (result_type, result_value)
+                        result = (result_type, result_value)
 
-                    results.append(result)
+                        results.append(result)
 
+            except KeyError:
+                results.append(("", answer["boolean"]))
     return results, query["sparql"]
 
 
