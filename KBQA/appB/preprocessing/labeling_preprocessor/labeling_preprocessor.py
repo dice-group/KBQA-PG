@@ -17,6 +17,7 @@ from SPARQLWrapper import JSON
 
 from KBQA.appB.summarizers.utils import query_dbspotlight
 from KBQA.appB.summarizers.utils import query_tagme
+from KBQA.appB.summarizers.utils import query_dbpedia
 
 from KBQA.appB.preprocessing import utils
 from KBQA.appB.preprocessing.utils import preprocess_qtq_file_base
@@ -387,18 +388,12 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
     for row in PREFIX_EXCEPTIONS:
         exception = row[0]
         excluded.append(exception)
-    response = query_dbspotlight(context, confidence=0.1)
-    if "Resources" not in response:
-        resources = list()
-    else:
-        resources = response["Resources"]
+
     text_to_uri = dict()
-    for linked_entity in resources:
-        if "@URI" in linked_entity and "@surfaceForm" in linked_entity and "@similarityScore" in linked_entity:
-            text = linked_entity["@surfaceForm"]
-            if text not in text_to_uri:
-                text_to_uri[text] = list()
-            text_to_uri[text].append((linked_entity["@URI"], float(linked_entity["@similarityScore"])))
+    confidence = 0.1
+    text_to_uri = _get_uri_from_dbpedia_spotlight(context=context, confidence=confidence, text_to_uri=text_to_uri)
+    text_to_uri = _get_uri_from_tagme(context=context, confidence=confidence, text_to_uri=text_to_uri)
+
     prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
@@ -416,6 +411,85 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
             uri, _ = text_to_uri[label][0]
             s = re.sub(whole_match, '<' + uri + '>', s)
     return s
+
+
+def _get_uri_from_dbpedia_spotlight(context: str, confidence: float, text_to_uri: dict[tuple[str, float]] = dict()) \
+        -> dict[tuple[str, float]]:
+    """Link entities in context using DBpedia-Spotlight and fill text_to_uri with it.
+
+    Args:
+        context: The text where entities are linked.
+        confidence: The minimal confidence of linked entities.
+        text_to_uri: A prior map of the text mapped to a tuple with the linked URI and a similarity score.
+
+    Returns:
+          The prior map text_to_uri extended by the found linked entities.
+    """
+    response = query_dbspotlight(context, confidence=confidence)
+    if "Resources" not in response:
+        resources = list()
+    else:
+        resources = response["Resources"]
+    for linked_entity in resources:
+        if "@URI" in linked_entity and "@surfaceForm" in linked_entity and "@similarityScore" in linked_entity:
+            text = linked_entity["@surfaceForm"]
+            uri = linked_entity["@URI"]
+            similarity_score = linked_entity["@similarityScore"]
+            if text not in text_to_uri:
+                text_to_uri[text] = list()
+            text_to_uri[text].append((uri, float(similarity_score)))
+    return text_to_uri
+
+
+def _get_uri_from_tagme(context: str, confidence: float, text_to_uri: dict[tuple[str, float]] = dict()) \
+        -> dict[tuple[str, float]]:
+    """Link entities in context using TagMe and fill text_to_uri with it.
+
+    Args:
+        context: The text where entities are linked.
+        confidence: The minimal confidence of linked entities.
+        text_to_uri: A prior map of the text mapped to a tuple with the linked URI and a similarity score.
+
+    Returns:
+          The prior map text_to_uri extended by the found linked entities.
+    """
+    response = query_tagme(context)
+    annotations = response["annotations"]
+    for annotation in annotations:
+        ann_id = annotation["id"]
+        ann_conf = float(annotation["rho"])
+        text = annotation["spot"]
+        similarity_score = float(annotation["link_probability"])
+        uri = None
+        if ann_conf >= confidence:
+            uri = _get_uri_for_annotation_id(ann_id)
+        if uri != None:
+            if text not in text_to_uri:
+                text_to_uri[text] = list()
+            text_to_uri[text].append((uri, float(similarity_score)))
+    return text_to_uri
+
+
+def _get_uri_for_annotation_id(annotation_id: int) -> Union[str, None]:
+    """Query DBpedia for the uri corresponding to the wikiPageID annotation_id.
+
+    Args:
+        annotation_id: The annotation ID of some DBpedia page.
+
+    Returns:
+        The corresponding URI.
+    """
+    uri = None
+    query = f"""SELECT ?uri WHERE {{
+                    ?uri dbo:wikiPageID ?id
+                    FILTER( ?id = {annotation_id} )
+                }}
+                """
+    answer = query_dbpedia(query)
+    bindings = answer["results"]["bindings"]
+    for binding in bindings:
+        uri = binding["uri"]["value"]
+    return uri
 
 
 def sparql_encoder_levenshtein_dist_on_file(input_file_path: Union[str, os.PathLike, Path],
