@@ -170,9 +170,9 @@ def entity_recognition_tagme(
 
         if confidence >= conf:
 
-	    query = f"""SELECT ?uri WHERE {{
-			?uri dbo:wikiPageID "{ann_id}"^^xsd:integer .
-			}}"""
+            query = f"""SELECT ?uri WHERE {{
+                ?uri dbo:wikiPageID "{ann_id}"^^xsd:integer .
+                }}"""
             answer = query_dbpedia(query)
 
             bindings = answer["results"]["bindings"]
