@@ -528,7 +528,7 @@ def preprocess_triples_base(triples_example: str, *, encoder: Callable[[str], st
         The preprocessed triples string.
     """
     s = triples_example
-    s = upper_bound_literal(s)  # Max six long words.
+    s = upper_bound_literal(s)
     s = preprocess_sparql_base(s, encoder=encoder)
     return s
 
@@ -644,27 +644,31 @@ def upper_bound_literal(triples_example: str, max_literal_length: int = 60) -> s
         Returns:
             The replacement string.
         """
+        whole_match = match.group(0)
         if match.group(1) is not None:
             literal = match.group(1)
             quotation = '"""'
+        elif match.group(2) is not None:
+            literal = match.group(2)
+            quotation = "'''"
         elif match.group(3) is not None:
             literal = match.group(3)
-            quotation = "'''"
-        elif match.group(5) is not None:
-            literal = match.group(5)
             quotation = '"'
-        else:  # match.group(6) is not None.
-            literal = match.group(6)
+        elif match.group(4) is not None:
+            literal = match.group(4)
             quotation = "'"
+        else:  # Escape through <>.
+            return whole_match
         if len(literal) > max_literal_length:
             return quotation + literal[:max_literal_length] + quotation
-        whole_match = match.group(0)
         return whole_match
     s = triples_example
-    s = re.sub(r"\"\"\"((?!\"\"\")|(.(?!\"\"\"))*?.)\"\"\"|"
-               r"\'\'\'((?!\'\'\')|(.(?!\'\'\'))*?.)\'\'\'|"
-               r"\"([^\"]*)\"|"
-               r"\'([^\']*)\'", truncate_match, s)
+    # <> escapes quotation marks.
+    s = re.sub(r"<[^<>]*>|"
+               r'"""(.*?)"""|'
+               r"'''(.*?)'''|"
+               r'"((?:\\.|[^"\\])*)"|'
+               r"'((?:\\.|[^'\\])*)'", truncate_match, s)
     return s
 
 
