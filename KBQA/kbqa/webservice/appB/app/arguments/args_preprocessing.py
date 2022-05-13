@@ -4,21 +4,21 @@ from types import SimpleNamespace
 SEPERATE_QTQ = SimpleNamespace(
     **{
         # --data, dest="data_dir", required=True
-        "data_dir": "app/data/input",
+        "data_dir": "app/data",
         # --subset, dest="subset", required=True
         "subset": "question",
         # --output, dest="output_dir", required=True
-        "output_dir": "app/data/sep",
+        "output_dir": "app/data",
     }
 )
 
 PREPROCESSING_QTQ = SimpleNamespace(
     **{
         # --data, dest="data_dir", required=True
-        "data_dir": "app/data/sep",
+        "data_dir": "app/data",
         # --subset, dest="subset", required=True
         "subset": "question",
         # --output, dest="output_dir", required=True
-        "output_dir": "app/data/output",
+        "output_dir": "app/data",
     }
 )
