@@ -16,6 +16,7 @@ from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper import JSON
 
 from KBQA.appB.summarizers.utils import query_dbspotlight
+from KBQA.appB.summarizers.utils import query_tagme
 
 from KBQA.appB.preprocessing import utils
 from KBQA.appB.preprocessing.utils import preprocess_qtq_file_base
@@ -231,7 +232,8 @@ def encode_uri_by_label(s):
     """Replace "<prefix:><path>" by "<prefix:> <label_of_the_corresponding_URI> :end_label".
 
     ":end_label" should be part of the tokenizer vocabulary.
-    Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
+    Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS. "xsd:" usually provides labels but these are less natural
+    language related. PREFIX_EXCEPTIONS
 
     Args:
         s: String where the encoding is done.
@@ -258,6 +260,7 @@ def generate_label_encoding(match):
 
     Args:
         match: A re.Match object.
+
     Returns:
         string: "<prefix:> <label_of_the_corresponding_URI> :end_label" if a label was found.
                 "<prefix:><path>" else.
@@ -369,6 +372,8 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
 
     Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
     Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
+    If multiple entities are found by DBpedia-Spotlight for one label, the one with the highest similarity score is
+    chosen.
 
     Args:
         s: The string where labels should be decoded.
@@ -389,8 +394,11 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
         resources = response["Resources"]
     text_to_uri = dict()
     for linked_entity in resources:
-        if "@URI" in linked_entity and "@surfaceForm" in linked_entity:
-            text_to_uri[linked_entity["@surfaceForm"]] = linked_entity["@URI"]
+        if "@URI" in linked_entity and "@surfaceForm" in linked_entity and "@similarityScore" in linked_entity:
+            text = linked_entity["@surfaceForm"]
+            if text not in text_to_uri:
+                text_to_uri[text] = list()
+            text_to_uri[text].append((linked_entity["@URI"], float(linked_entity["@similarityScore"])))
     prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
@@ -399,10 +407,14 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
         whole_match = match.group(0)
         prefix_label = match.group(2).strip()
         label = match.group(4).strip()
-        if label in text_to_uri:
-            s = re.sub(whole_match, '<' + text_to_uri[label] + '>', s)
-        elif prefix_label in text_to_uri:
-            s = re.sub(whole_match, '<' + text_to_uri[prefix_label] + '>', s)
+        if prefix_label in text_to_uri:
+            text_to_uri[prefix_label].sort(key=lambda elem: elem[1], reverse=True)
+            uri, _ = text_to_uri[prefix_label][0]
+            s = re.sub(whole_match, '<' + uri + '>', s)
+        elif label in text_to_uri:
+            text_to_uri[label].sort(key=lambda elem: elem[1], reverse=True)
+            uri, _ = text_to_uri[label][0]
+            s = re.sub(whole_match, '<' + uri + '>', s)
     return s
 
 
