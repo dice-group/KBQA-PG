@@ -481,10 +481,8 @@ def _get_uri_for_annotation_id(annotation_id: int) -> Union[str, None]:
     """
     uri = None
     query = f"""SELECT ?uri WHERE {{
-                    ?uri dbo:wikiPageID ?id
-                    FILTER( ?id = {annotation_id} )
-                }}
-                """
+                ?uri dbo:wikiPageID "{annotation_id}"^^xsd:integer .
+                }}"""
     answer = query_dbpedia(query)
     bindings = answer["results"]["bindings"]
     for binding in bindings:
