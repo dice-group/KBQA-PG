@@ -1,5 +1,6 @@
 """Module to seperate a QTQ dataset into an en, sparql and triple file."""
 import json
+import os
 from typing import List
 
 from app.arguments.args_preprocessing import SEPERATE_QTQ
@@ -30,12 +31,16 @@ def seperate_qtq() -> None:
     output_dir = args.output_dir
 
     data_dir = data_dir.rstrip("/")
-    output_dir = output_dir.rstrip("/")
+    sep_dir = output_dir.rstrip("/")
 
-    with open(f"{output_dir}/{subset}.en", "w", encoding="utf-8") as en_file, open(
-        f"{output_dir}/{subset}.sparql", "w", encoding="utf-8"
+    # create sep directory to store seperated files
+    if os.path.exists(sep_dir) is False:
+        os.makedirs(sep_dir)
+
+    with open(f"{sep_dir}/{subset}.en", "w", encoding="utf-8") as en_file, open(
+        f"{sep_dir}/{subset}.sparql", "w", encoding="utf-8"
     ) as sparql_file, open(
-        f"{output_dir}/{subset}.triple", "w", encoding="utf-8"
+        f"{sep_dir}/{subset}.triple", "w", encoding="utf-8"
     ) as triple_file, open(
         f"{data_dir}/{subset}.json", "r", encoding="utf-8"
     ) as data_file:

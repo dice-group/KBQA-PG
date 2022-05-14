@@ -23,7 +23,7 @@ BERT_WORDPIECE_SPBERT = SimpleNamespace(
         "model_architecture": "bert2bert",
         # --output_dir, default="./output/", type=str,
         # help="The output directory where the model predictions and checkpoints will be written."
-        "output_dir": "app/data/",
+        "output_dir": "app/output/",
         # --train_filename, default=None, type=str,
         # help="The train filename. Should contain the .jsonl files for this task."
         "train_filename": None,
@@ -35,7 +35,7 @@ BERT_WORDPIECE_SPBERT = SimpleNamespace(
         "test_filename": None,
         # --predict_filename, default=None, type=str,
         # help="The prediction filename."
-        "predict_filename": "app/data/question",  # "./data/output/qald_9_test",
+        "predict_filename": "app/data/output/question",  # "./data/output/qald_9_test",
         # --source, default="en", type=str,
         # help="The source language (for file extension)"
         "source": "en",
