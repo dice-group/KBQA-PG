@@ -1,9 +1,8 @@
-from typing import Dict, Tuple
-import os
+from typing import Tuple
 
-from app.nspm.generator_utils import decode, fix_URI
+from app.nspm.generator_utils import decode
+from app.nspm.generator_utils import fix_URI
 from app.nspm.spotlight import *
-
 from transformers import pipeline
 
 # for local test
@@ -12,10 +11,11 @@ from transformers import pipeline
 # for docker
 checkpoint_path = "/data/checkpoint"
 
+
 def init_summarizer():
     """Initialize the summarizer pipeline
 
-    initialize the summarizer pipeline with the checkpoint file in checkpoint_path. 
+    initialize the summarizer pipeline with the checkpoint file in checkpoint_path.
 
     Parameters
     ----------
@@ -33,16 +33,16 @@ def init_summarizer():
 summarizer = init_summarizer()
 
 
-def preprocess_question(question : str) -> Tuple:
+def preprocess_question(question: str) -> Tuple:
     """Preprocess the question
-    
-    preprocess the question by extracting the entities and replacing the placeholders with the entities. 
+
+    preprocess the question by extracting the entities and replacing the placeholders with the entities.
 
     Parameters
     ----------
     question : str
         Natural language question asked by an enduser.
-    
+
     Returns
     -------
     question_ph : str
@@ -57,18 +57,18 @@ def preprocess_question(question : str) -> Tuple:
 
 def postprocess_query(query: str, entities: dict) -> str:
     """Postprocess the query
-    
-    Postprocess the query by replacing the placeholders with the entities, 
-    convert to normal sparql query with punctuation and 
-    fix URIs. 
+
+    Postprocess the query by replacing the placeholders with the entities,
+    convert to normal sparql query with punctuation and
+    fix URIs.
 
     Parameters
     ----------
     query : str
-        Query with the placeholders from transformer. 
+        Query with the placeholders from transformer.
     entities : dict
         Dictionary with the placeholders as keys and the entities as values.
-    
+
     Returns
     -------
     query : str
@@ -82,9 +82,9 @@ def postprocess_query(query: str, entities: dict) -> str:
 
 def process_question(question: str) -> str:
     """Process the question
-    
-    Process the question by extracting the entities,  
-    replacing the placeholders with the entities, 
+
+    Process the question by extracting the entities,
+    replacing the placeholders with the entities,
     summarize to a sparql query and
     postprocess the query.
 
@@ -92,7 +92,7 @@ def process_question(question: str) -> str:
     ----------
     question : str
         Natural language question asked by an enduser.
-    
+
     Returns
     -------
     query : str
@@ -101,7 +101,8 @@ def process_question(question: str) -> str:
 
     question_ph, entities = preprocess_question(question)
     # output_query = summarizer(question_ph)[0]['summary_text']
-    output_query = postprocess_query(summarizer(question_ph)[0]['summary_text'], entities)
+    output_query = postprocess_query(
+        summarizer(question_ph)[0]["summary_text"], entities
+    )
 
     return output_query
-    
