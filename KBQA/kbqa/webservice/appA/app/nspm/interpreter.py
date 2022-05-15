@@ -16,7 +16,7 @@ checkpoint_path = "/data/checkpoint"
 
 
 def init_summarizer():
-    """Initialize the summarizer pipeline
+    """Initialize the summarizer pipeline.
 
     initialize the summarizer pipeline with the checkpoint file in checkpoint_path.
 
@@ -37,7 +37,7 @@ summarizer = init_summarizer()
 
 
 def preprocess_question(question: str) -> Tuple:
-    """Preprocess the question
+    """Preprocess the question.
 
     preprocess the question by extracting the entities and replacing the placeholders with the entities.
 
@@ -59,7 +59,7 @@ def preprocess_question(question: str) -> Tuple:
 
 
 def postprocess_query(query: str, entities: dict) -> str:
-    """Postprocess the query
+    """Postprocess the query.
 
     Postprocess the query by replacing the placeholders with the entities,
     convert to normal sparql query with punctuation and
@@ -84,7 +84,7 @@ def postprocess_query(query: str, entities: dict) -> str:
 
 
 def process_question(question: str) -> str:
-    """Process the question
+    """Process the question.
 
     Process the question by extracting the entities,
     replacing the placeholders with the entities,
