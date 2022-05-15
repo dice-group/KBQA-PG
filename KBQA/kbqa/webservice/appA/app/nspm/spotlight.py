@@ -1,3 +1,4 @@
+"""DBpedia spotlight service for app A"""
 from typing import Dict
 from typing import Tuple
 
@@ -29,7 +30,7 @@ def find_entity(sentence: str) -> Dict[str, Tuple[str, str]]:
     return entities
 
 
-def replace_entities(sentence: str, entities: Dict[str, Tuple[str, str]]) -> str:
+def replace_entity(sentence: str, entities: Dict[str, Tuple[str, str]]) -> str:
     """Replace the entities in the sentence.
 
     Replace the entities in the sentence with the placeholders.

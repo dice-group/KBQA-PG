@@ -3,7 +3,9 @@ from typing import Tuple
 
 from app.nspm.generator_utils import decode
 from app.nspm.generator_utils import fix_URI
-from app.nspm.spotlight import *
+from app.nspm.spotlight import find_entity
+from app.nspm.spotlight import replace_entity
+from app.nspm.spotlight import restore_entity
 from transformers import pipeline
 
 # for local test
@@ -52,7 +54,7 @@ def preprocess_question(question: str) -> Tuple:
         Dictionary with the placeholders as keys and the entities as values.
     """
     entities = find_entity(question)
-    question_ph = replace_entities(question, entities)
+    question_ph = replace_entity(question, entities)
     return question_ph, entities
 
 
