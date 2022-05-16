@@ -1,4 +1,6 @@
 """Interperter module for translate english to sparql query."""
+# pylint: disable=E0401
+# pylint: disable=W0621
 from typing import Tuple
 
 from app.nspm.generator_utils import decode
@@ -6,6 +8,7 @@ from app.nspm.generator_utils import fix_URI
 from app.nspm.spotlight import find_entity
 from app.nspm.spotlight import replace_entity
 from app.nspm.spotlight import restore_entity
+from transformers import Pipeline
 from transformers import pipeline
 
 # for local test
@@ -15,7 +18,7 @@ from transformers import pipeline
 checkpoint_path = "/data/checkpoint"
 
 
-def init_summarizer():
+def init_summarizer() -> Pipeline:
     """Initialize the summarizer pipeline.
 
     initialize the summarizer pipeline with the checkpoint file in checkpoint_path.
@@ -31,9 +34,6 @@ def init_summarizer():
     """
     summarizer = pipeline("summarization", model=checkpoint_path)
     return summarizer
-
-
-summarizer = init_summarizer()
 
 
 def preprocess_question(question: str) -> Tuple:
@@ -101,7 +101,6 @@ def process_question(question: str) -> str:
     query : str
         Sparql Query with the placeholders replaced with the entities.
     """
-
     question_ph, entities = preprocess_question(question)
     # output_query = summarizer(question_ph)[0]['summary_text']
     output_query = postprocess_query(
@@ -109,3 +108,6 @@ def process_question(question: str) -> str:
     )
 
     return output_query
+
+
+summarizer = init_summarizer()
