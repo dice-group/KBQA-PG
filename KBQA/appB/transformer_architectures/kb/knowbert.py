@@ -482,15 +482,14 @@ class EntityDisambiguator(BaseEntityDisambiguator, torch.nn.Module):
         candidate_entity_prior = (batch_size, max_num_spans, max_entity_ids)
             with prior probability of each candidate entity.
             0 <= candidate_entity_prior <= 1 and candidate_entity_prior.sum(dim=-1) == 1
-
-        Returns:
-            linking sccore to each entity in each span
-                (batch_size, max_num_spans, max_entity_ids)
+entity_embeddings_entity_ids)
             masked with -10000 for invalid links
         """
         # get the candidate entity embeddings
         # (batch_size, num_spans, num_candidates, entity_embedding_dim)
+        print(f"candidate_entities: {candidate_entities}")
         candidate_entity_embeddings = self.entity_embeddings(candidate_entities)
+        print(f"candidate_entity_embeddings: {candidate_entity_embeddings}")
         candidate_entity_embeddings = self.kg_layer_norm(candidate_entity_embeddings.contiguous())
 
         # project to entity embedding dim
@@ -877,12 +876,21 @@ class KnowBert(BertPretrainedMetricsLoss):
 
     def forward(self, tokens=None, segment_ids=None, candidates=None,
                 lm_label_ids=None, next_sentence_label=None, **kwargs):
+        #tokens = tokens['tokens']
+        print("In forward")
+        print(f"tokens {tokens}")
+        print(f"candidates {candidates}")
+        print(segment_ids)
+        print(lm_label_ids)
+        print(kwargs)
 
         assert candidates.keys() == self.soldered_kgs.keys()
 
         mask = tokens['tokens'] > 0
         attention_mask = extend_attention_mask_for_bert(mask, get_dtype_for_module(self))
         contextual_embeddings = self.pretrained_bert.bert.embeddings(tokens['tokens'], segment_ids)
+        print(f"Bert input: {contextual_embeddings}")
+
 
         output = {}
         start_layer_index = 0
@@ -896,6 +904,7 @@ class KnowBert(BertPretrainedMetricsLoss):
                 # run bert from start to end layers
                 for layer in self.pretrained_bert.bert.encoder.layer[start_layer_index:end_layer_index]:
                     contextual_embeddings = layer(contextual_embeddings, attention_mask)
+                    print(f"Bert Layer: {contextual_embeddings}")
             start_layer_index = end_layer_index
 
             # run the SolderedKG component
@@ -915,6 +924,7 @@ class KnowBert(BertPretrainedMetricsLoss):
                     loss = loss + kg_output['loss']
 
                 contextual_embeddings = kg_output['contextual_embeddings']
+                print(f"KG Layer: {contextual_embeddings}")
                 output[soldered_kg_key] = {}
                 for key in kg_output.keys():
                     if key != 'loss' and key != 'contextual_embeddings':

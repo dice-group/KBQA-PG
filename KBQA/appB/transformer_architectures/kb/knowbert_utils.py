@@ -2,11 +2,16 @@
 from typing import Union, List
 
 from allennlp.common import Params
-from allennlp.data import Instance, Vocabulary
+from allennlp.data import Instance, Vocabulary, Batch
+from allennlp.data.tokenizers.whitespace_tokenizer import WhitespaceTokenizer
 from allennlp.common.file_utils import cached_path
+from transformers import CharacterTokenizer
 
-from KBQA.appB.transformer_architectures.kb.bert_tokenizer_and_candidate_generator import TokenizerAndCandidateGenerator
+from KBQA.appB.transformer_architectures.kb.bert_tokenizer_and_candidate_generator import TokenizerAndCandidateGenerator, BertTokenizerAndCandidateGenerator
 from KBQA.appB.transformer_architectures.kb.bert_pretraining_reader import replace_candidates_with_mask_entity
+from KBQA.appB.transformer_architectures.kb.wiki_linking_util import WikiCandidateMentionGenerator
+from KBQA.appB.transformer_architectures.kb.wordnet import WordNetCandidateMentionGenerator
+from KBQA.appB.transformer_architectures.kb.entity_linking import TokenCharactersIndexerTokenizer
 
 
 def _extract_config_from_archive(model_archive):
@@ -34,6 +39,41 @@ def _find_key(d, key):
     return val
 
 
+def build_tokenizer_and_candidate_generator():
+
+    wiki_tokenizer_params = {
+        "namespace": "entity_wiki",
+        "tokenizer": {"type": "just_spaces"}
+    }
+    wiki_tokenizer = TokenCharactersIndexerTokenizer.from_params(Params(wiki_tokenizer_params))
+
+    wordnet_tokenizer_params = {
+        "namespace": "entity_wordnet",
+        "tokenizer": {"type": "just_spaces"}
+    }
+    wordnet_tokenizer = TokenCharactersIndexerTokenizer.from_params(Params(wordnet_tokenizer_params))
+
+    entity_indexers = {
+        "wiki": wiki_tokenizer,
+        "wordnet": wordnet_tokenizer
+    }
+    print("Building Generators")
+    entity_candidate_generators = {
+        "wiki": WikiCandidateMentionGenerator(),
+        "wordnet": WordNetCandidateMentionGenerator(entity_file='https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wordnet/entities.jsonl')
+    }
+    #entity_candidate_generators = {}
+    #entity_indexers = {}
+    print("Build Generators")
+
+    return BertTokenizerAndCandidateGenerator(
+        entity_candidate_generators=entity_candidate_generators,
+        entity_indexers=entity_indexers,
+        bert_model_type="bert-base-uncased",
+        do_lower_case=True
+    )
+
+
 class KnowBertBatchifier:
     """
     Takes a list of sentence strings and returns a tensor dict usable with
@@ -55,9 +95,23 @@ class KnowBertBatchifier:
 
         if wordnet_entity_file is not None:
             candidate_generator_params['entity_candidate_generators']['wordnet']['entity_file'] = wordnet_entity_file
+        candidate_generator_params['entity_indexers']['wiki']['tokenizer'] = {'type': 'just_spaces'}
+        candidate_generator_params['entity_indexers']['wordnet']['tokenizer'] = {'type': 'just_spaces'}
 
-        self.tokenizer_and_candidate_generator = TokenizerAndCandidateGenerator.\
-            from_params(Params(candidate_generator_params))
+        self.tokenizer_and_candidate_generator = build_tokenizer_and_candidate_generator()
+        print("Done building")
+        # self.tokenizer_and_candidate_generator = TokenizerAndCandidateGenerator.\
+        #     from_params(Params(candidate_generator_params))
+
+
+            
+        #self.tokenizer_and_candidate_generator = BertTokenizerAndCandidateGenerator(
+        #    entity_candidate_generators=,
+        #    entity_indexers=,
+        #    bert_model_type='bert-base-uncased',
+        #    do_lower_case=True,
+        #    whitespace_tokenize=
+        #)
         self.tokenizer_and_candidate_generator.whitespace_tokenize = False
 
         assert masking_strategy is None or masking_strategy == 'full_mask'
@@ -68,7 +122,10 @@ class KnowBertBatchifier:
             vocab_params = Params({"directory_path": vocab_dir})
         else:
             vocab_params = config['vocabulary']
-        self.vocab = Vocabulary.from_params(vocab_params)
+        self.entity_vocab = Vocabulary.from_files(directory="https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz")
+        self.vocab = Vocabulary.from_pretrained_transformer(model_name="bert-base-uncased")
+        self.vocab.extend_from_vocab(self.entity_vocab)
+        #self.vocab = Vocabulary.from_params(vocab_params)
 
         # self.iterator = DataIterator.from_params(
         #     Params({"type": "basic", "batch_size": batch_size})
@@ -93,6 +150,8 @@ class KnowBertBatchifier:
                 tokens_candidates = self.tokenizer_and_candidate_generator.\
                     tokenize_and_generate_candidates(self._replace_mask(sentence_or_sentence_pair))
 
+            print(f"token_candidates: {tokens_candidates}")
+
             if verbose:
                 print(self._replace_mask(sentence_or_sentence_pair))
                 print(tokens_candidates['tokens'])
@@ -107,7 +166,7 @@ class KnowBertBatchifier:
                     tokens_candidates['candidates'], spans_to_mask
                 )
 
-                # now make sure the spans are actually masked
+                # now mbert_vocabke sure the spans are actually masked
                 for key in tokens_candidates['candidates'].keys():
                     for span_to_mask in spans_to_mask:
                         found = False
@@ -124,7 +183,15 @@ class KnowBertBatchifier:
 
             fields = self.tokenizer_and_candidate_generator.\
                 convert_tokens_candidates_to_fields(tokens_candidates)
-
+            #fields['tokens'].index(self.bert_vocab)
+            print(fields)
+            print(fields['tokens'])
             instances.append(Instance(fields))
-            print(instances)
-        yield None
+
+            print(instances[-1])
+
+            #instances[-1].index_fields(self.vocab)
+            #print(instances[-1].as_tensor_dict())
+        batch = Batch(instances)
+        batch.index_instances(self.vocab)
+        yield batch.as_tensor_dict()

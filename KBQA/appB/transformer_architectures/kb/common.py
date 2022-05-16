@@ -169,7 +169,6 @@ def init_bert_weights(module, initializer_range, extra_modules_without_weights=(
             m.bias.data.zero_()
 
     for mm in module.modules():
-        print(mm)
         _do_init(mm)
 
 

@@ -6,7 +6,11 @@ import numpy as np
 from allennlp.data.fields import Field, TextField, ListField, SpanField, ArrayField
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 from allennlp.data import Token
-from pytorch_pretrained_bert.tokenization import BertTokenizer, BasicTokenizer
+from allennlp.data import Instance
+from allennlp.data import Vocabulary
+from allennlp.data.tokenizers import PretrainedTransformerTokenizer
+from prometheus_client import instance_ip_grouping_key
+from pytorch_pretrained_bert.tokenization import  BasicTokenizer
 
 from KBQA.appB.transformer_architectures.kb.dict_field import DictField
 from allennlp.common.registrable import Registrable
@@ -50,10 +54,9 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         """
         # load BertTokenizer from huggingface
         self.candidate_generators = entity_candidate_generators
-        self.bert_tokenizer = BertTokenizer.from_pretrained(
-            bert_model_type, do_lower_case=do_lower_case
-        )
+        self.bert_tokenizer = PretrainedTransformerTokenizer(bert_model_type)
         self.bert_word_tokenizer = BasicTokenizer(do_lower_case=False)
+        print(self.bert_tokenizer.__dict__)
         # Target length should include start and end token
         self.max_word_piece_sequence_length = max_word_piece_sequence_length
 
@@ -61,15 +64,15 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         # for bert, we'll give an empty token indexer with empty name space
         # and do the indexing directly with the bert vocab to bypass
         # indexing in the indexer
-        self._bert_single_id_indexer = {'tokens': SingleIdTokenIndexer('__bert__')}
+        self._bert_single_id_indexer = {'tokens': SingleIdTokenIndexer()}
         self.do_lowercase = do_lower_case
         self.whitespace_tokenize = whitespace_tokenize
         self.dtype = np.float32
 
     def _word_to_word_pieces(self, word):
-        if self.do_lowercase and word not in self.bert_tokenizer.basic_tokenizer.never_split:
+        if self.do_lowercase and word not in list(self.bert_tokenizer.tokenizer.special_tokens_map.values()):
             word = word.lower()
-        return self.bert_tokenizer.wordpiece_tokenizer.tokenize(word)
+        return self.bert_tokenizer.tokenize(word)[1:-1] #exclude [CLS] and [SEP] at beginning and end
 
     def tokenize_and_generate_candidates(self, text_a: str, text_b: str = None):
         """
@@ -206,8 +209,13 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         for token in tokens:
             word_pieces = self._word_to_word_pieces(token)
             offsets.append(offsets[-1] + len(word_pieces))
-            word_piece_tokens.append(word_pieces)
+            word_piece_tokens.append([word_piece.text for word_piece in word_pieces])
         del offsets[0]
+
+        print(f"offsets: {offsets}")
+        print(f"word_piece_tokens: {word_piece_tokens}")
+        print(f"tokens: {tokens}")
+
         return offsets, word_piece_tokens, tokens
 
     def _generate_sentence_entity_candidates(self, tokens, offsets):
@@ -225,6 +233,8 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         assert len(tokens) == len(offsets), f'Length of tokens {len(tokens)} must equal that of offsets {len(offsets)}.'
         entity_instances = {}
         for name, mention_generator in self.candidate_generators.items():
+            print(f"name {name}")
+            print(f"mention_generator {mention_generator}")
             entity_instances[name] = mention_generator.get_mentions_raw_text(' '.join(tokens), whitespace_tokenize=True)
 
         for name, entities in entity_instances.items():
@@ -249,10 +259,17 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         fields = {}
 
         fields['tokens'] = TextField(
-            [Token(t, text_id=self.bert_tokenizer.vocab[t])
-                for t in tokens_and_candidates['tokens']],
+            [Token(t) for t in tokens_and_candidates['tokens']],
             token_indexers=self._bert_single_id_indexer
         )
+
+        print(fields)
+        i = Instance(fields)
+        print(i)
+        empty_vocab = Vocabulary.from_pretrained_transformer('bert-base-uncased')
+        print(empty_vocab)
+        i.index_fields(vocab=empty_vocab)
+        print(i.as_tensor_dict())
 
         fields['segment_ids'] = ArrayField(
             np.array(tokens_and_candidates['segment_ids']), dtype=np.int

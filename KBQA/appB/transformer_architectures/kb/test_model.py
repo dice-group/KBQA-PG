@@ -91,14 +91,15 @@ def load_soldered_kg_wordnet(vocab):
     )
 
 
-def load_model():
-    #vocab = Vocabulary.from_params(Params({"directory_path": "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz"}))
-    vocab = Vocabulary.from_files(directory="https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz")
+def load_model(preloaded_wiki_soldered_kg=None, preloaded_wordnet_soldered_kg=None, preloaded_vocab=None):
+    # vocab = Vocabulary.from_params(Params({"directory_path": "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz"}))
+    vocab = preloaded_vocab if preloaded_vocab else \
+            Vocabulary.from_files(directory="https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz")
     print("Loaded Vocabulary")
     print(vocab)
-    wiki_soldered_kg = load_soldered_kg_wiki(vocab)
+    wiki_soldered_kg = preloaded_wiki_soldered_kg if preloaded_wiki_soldered_kg else load_soldered_kg_wiki(vocab)
     print("Loaded wiki soldered KG")
-    wordnet_soldered_kg = load_soldered_kg_wordnet(vocab)
+    wordnet_soldered_kg = preloaded_wordnet_soldered_kg if preloaded_wordnet_soldered_kg else load_soldered_kg_wordnet(vocab)
     print("Loaded wordnet soldered KG")
     return KnowBert(
         vocab=vocab,
@@ -108,23 +109,24 @@ def load_model():
         model_archive="/home/jmenzel/Downloads/knowbert_wiki_wordnet_model.tar.gz"
     )
 
+if __name__ == "__main__":
+    # a pretrained model, e.g. for Wordnet+Wikipedia
+    archive_file = 'https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz'
 
-# a pretrained model, e.g. for Wordnet+Wikipedia
-archive_file = 'https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz'
+    # load model and batcher
+    params = Params({"archive_file": archive_file})
+    print("Loading Model")
+    model = load_model()  # ModelArchiveFromParams.from_params(params=params)
+    print("Loaded Knowbert")
+    print("Loading Batchifier")
+    batcher = KnowBertBatchifier(archive_file)
 
-# load model and batcher
-params = Params({"archive_file": archive_file})
-print("Loading Model")
-model = load_model()  # ModelArchiveFromParams.from_params(params=params)
-print("Loaded Knowbert")
-print("Loading Batchifier")
-batcher = KnowBertBatchifier(archive_file)
+    sentences = ["Paris is located in France.", "KnowBert is a knowledge enhanced BERT"]
 
-sentences = ["Paris is located in France.", "KnowBert is a knowledge enhanced BERT"]
-
-# batcher takes raw untokenized sentences
-# and yields batches of tensors needed to run KnowBert
-for batch in batcher.iter_batches(sentences, verbose=True):
-    # model_output['contextual_embeddings'] is (batch_size, seq_len, embed_dim) tensor of top layer activations
-    model_output = model(**batch)
-    print(model_output)
+    # batcher takes raw untokenized sentences
+    # and yields batches of tensors needed to run KnowBert
+    for batch in batcher.iter_batches(sentences, verbose=True):
+        # model_output['contextual_embeddings'] is (batch_size, seq_len, embed_dim) tensor of top layer activations
+        print(batch)
+        model_output = model(**batch)
+        print(model_output)
