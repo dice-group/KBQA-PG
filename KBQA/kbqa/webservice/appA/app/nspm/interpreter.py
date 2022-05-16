@@ -1,6 +1,5 @@
 """Interperter module for translate english to sparql query."""
 # pylint: disable=E0401
-# pylint: disable=W0621
 from typing import Tuple
 
 from app.nspm.generator_utils import decode
@@ -103,11 +102,9 @@ def process_question(question: str) -> str:
     """
     question_ph, entities = preprocess_question(question)
     # output_query = summarizer(question_ph)[0]['summary_text']
-    output_query = postprocess_query(
-        summarizer(question_ph)[0]["summary_text"], entities
-    )
+    output_query = postprocess_query(smrzr(question_ph)[0]["summary_text"], entities)
 
     return output_query
 
 
-summarizer = init_summarizer()
+smrzr = init_summarizer()
