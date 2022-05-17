@@ -4,6 +4,7 @@ from typing import Dict
 from typing import Tuple
 
 from app.nspm.interpreter import process_question
+from app.qald_builder import qald_builder_ask_answer
 from app.qald_builder import qald_builder_empty_answer
 from app.qald_builder import qald_builder_select_answer
 from SPARQLWrapper import JSON
@@ -29,13 +30,10 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     answer_qald : dict
         Answers for the given question formatted in the QALD-format.
     """
-    answer, sparql_query = interprete(query)
+    print("Question:", query.encode("utf-8"))
 
-    if sparql_query == "":
-        answer_qald = qald_builder_empty_answer(sparql_query, query, lang)
-    else:
-        answer_qald = qald_builder_select_answer(sparql_query, answer, query, lang)
-
+    sparql_query = interprete(query)
+    answer_qald = ask_dbpedia(query, sparql_query, lang)
     return answer_qald
 
 
@@ -61,10 +59,30 @@ def interprete(question: str) -> Tuple[Dict, str]:
         sparql_query = process_question(question)
     except TypeError as type_error:
         print("Type Error", type_error)
-
         return {}, ""
 
     print("Predicted SPARQL-Query:", sparql_query)
+    return sparql_query
+
+
+def ask_dbpedia(question: str, sparql_query: str, lang: str) -> Dict[str, Any]:
+    """Send a SPARQL-query to DBpedia and return a formated QALD-string containing the answers.
+
+    Parameters
+    ----------
+    question : str
+        Natural language question asked by an enduser.
+    sparql_query : str
+        SPARQL-query to be sent to DBpedia. Should correspond to the question.
+    lang : str
+        Language tag for the question (should always be "en").
+
+    Returns
+    -------
+    qald_answer : str
+        Formated string in the QALD-format containing the answers for the sparql_query.
+    """
+    print("SPARQL-Query:", sparql_query.encode("utf-8"))
 
     try:
         sparql = SPARQLWrapper("http://dbpedia.org/sparql/")
@@ -72,9 +90,23 @@ def interprete(question: str) -> Tuple[Dict, str]:
         sparql.setQuery(sparql_query)
         answer = sparql.query().convert()
     except SPARQLWrapperException as exception:
-        # Unfortunately, the NSPM does not always return a valid SPARQL query.
         print("SPARQLWrapperException", exception)
+        qald_answer = qald_builder_empty_answer("", question, lang)
+        return qald_answer
 
-        return {}, ""
+    if "results" in dict(answer):
+        # SELECT queries
+        if len(answer["results"]["bindings"]) == 0:
+            qald_answer = qald_builder_empty_answer(sparql_query, question, lang)
+        else:
+            qald_answer = qald_builder_select_answer(
+                sparql_query, answer, question, lang
+            )
+    elif "boolean" in dict(answer):
+        # ASK queries
+        qald_answer = qald_builder_ask_answer(sparql_query, answer, question, lang)
+    else:
+        print("No results and boolean found.")
+        qald_answer = qald_builder_empty_answer("", question, lang)
 
-    return answer, sparql_query
+    return qald_answer

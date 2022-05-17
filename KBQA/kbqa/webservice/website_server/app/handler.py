@@ -66,8 +66,6 @@ def extract_bindings_from_qald(qald: Dict) -> Tuple[List[Tuple[str, str]], str]:
     query : str
         Generated SPARQL-query used to find the answers.
     """
-    results = []
-
     questions = qald["questions"]
 
     for quest in questions:
@@ -78,21 +76,60 @@ def extract_bindings_from_qald(qald: Dict) -> Tuple[List[Tuple[str, str]], str]:
         print("Question:", question)
         print("Query:", query)
 
+        # TODO: add variant to handle true/false questions
         for answer in answers:
-            variables = answer["head"]["vars"]
-
-            bindings = answer["results"]["bindings"]
-
-            for var in variables:
-                for binding in bindings:
-                    result_type = binding[var]["type"]
-                    result_value = binding[var]["value"]
-
-                    result = (result_type, result_value)
-
-                    results.append(result)
+            if answer["boolean"] == "true":
+                results = extract_results_from_boolean(answer)
+            else:
+                results = extract_results_from_variable(answer)
 
     return results, query["sparql"]
+
+
+def extract_results_from_boolean(answer: Dict) -> List[Tuple[str, str]]:
+    """Extract the results from a boolean answer.
+
+    Parameters
+    ----------
+    answer : dict
+        The answer as a dict.
+
+    Returns
+    -------
+    answers : list
+        List of answers. An answer is described by a tuple.
+    """
+    return [("", answer["boolean"])]
+
+
+def extract_results_from_variable(answer: Dict) -> List[Tuple[str, str]]:
+    """Extract the results from a variable answer.
+
+    Parameters
+    ----------
+    answer : dict
+        The answer as a dict.
+
+    Returns
+    -------
+    answers : list
+        List of answers. An answer is described by a tuple (type, value).
+    """
+    results = []
+
+    variables = answer["head"]["vars"]
+
+    bindings = answer["results"]["bindings"]
+
+    for var in variables:
+        for binding in bindings:
+            result_type = binding[var]["type"]
+            result_value = binding[var]["value"]
+
+            result = (result_type, result_value)
+
+            results.append(result)
+    return results
 
 
 def format_bindings(bindings: List[Tuple[str, str]]) -> List[str]:
