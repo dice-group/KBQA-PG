@@ -1,5 +1,4 @@
 """Interperter module for translate english to sparql query."""
-# pylint: disable=E0401
 from typing import Tuple
 
 from app.nspm.generator_utils import decode
