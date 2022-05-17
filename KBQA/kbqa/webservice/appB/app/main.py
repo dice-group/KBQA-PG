@@ -1,9 +1,11 @@
 """Main module for the application logic of approach B."""
 import json
+import os
 from typing import Any
 from typing import Dict
 from typing import List
 
+from app.arguments.args_preprocessing import SEPERATE_QTQ
 from app.arguments.args_summarizer import ONE_HOP_RANK_SUMMARIZER
 from app.bert_wordpiece_spbert.run import run
 from app.postprocessing.postprocessing import postprocessing
@@ -165,7 +167,13 @@ def save_summarized_result(question: str, sparql: str, triples: str) -> None:
     triples : str
         List of triples in the format <subject> <predicate> <object>.
     """
-    path = "app/data/input/question.json"
+    data_dir = SEPERATE_QTQ.data_dir
+
+    # create input directory to store QTQ dataset for preprocessing
+    if os.path.exists(data_dir) is False:
+        os.makedirs(data_dir)
+
+    filename = f"{SEPERATE_QTQ.subset}.json"
 
     dataset: Dict[str, List[Dict]] = {"questions": list()}
 
@@ -175,5 +183,5 @@ def save_summarized_result(question: str, sparql: str, triples: str) -> None:
     qtq["triples"] = triples
     dataset["questions"].append(qtq)
 
-    with open(path, "w", encoding="utf-8") as file:
+    with open(f"{data_dir}/{filename}", "w", encoding="utf-8") as file:
         json.dump(dataset, file, indent=4, separators=(",", ": "))
