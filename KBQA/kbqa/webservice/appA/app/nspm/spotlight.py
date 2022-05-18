@@ -1,4 +1,4 @@
-"""DBpedia spotlight service for app A"""
+"""DBpedia spotlight service for app A."""
 from typing import Dict
 from typing import Tuple
 
