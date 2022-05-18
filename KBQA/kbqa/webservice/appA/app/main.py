@@ -1,7 +1,6 @@
 """Main module for the application logic of approach A."""
 from typing import Any
 from typing import Dict
-from typing import Tuple
 
 from app.nspm.interpreter import process_question
 from app.qald_builder import qald_builder_ask_answer
@@ -37,7 +36,7 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     return answer_qald
 
 
-def interprete(question: str) -> Tuple[Dict, str]:
+def interprete(question: str) -> str:
     """Interprete an asked question using the Neural SPARQL Machine.
 
     Parameters
@@ -59,9 +58,8 @@ def interprete(question: str) -> Tuple[Dict, str]:
         sparql_query = process_question(question)
     except TypeError as type_error:
         print("Type Error", type_error)
-        return {}, ""
+        return ""
 
-    print("Predicted SPARQL-Query:", sparql_query)
     return sparql_query
 
 

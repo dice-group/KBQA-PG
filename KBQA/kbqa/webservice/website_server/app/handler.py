@@ -69,16 +69,11 @@ def extract_bindings_from_qald(qald: Dict) -> Tuple[List[Tuple[str, str]], str]:
     questions = qald["questions"]
 
     for quest in questions:
-        question = quest["question"]
         query = quest["query"]
         answers = quest["answers"]
 
-        print("Question:", question)
-        print("Query:", query)
-
-        # TODO: add variant to handle true/false questions
         for answer in answers:
-            if answer["boolean"] == "true":
+            if "boolean" in answer.keys():
                 results = extract_results_from_boolean(answer)
             else:
                 results = extract_results_from_variable(answer)

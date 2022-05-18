@@ -46,6 +46,7 @@ repos:
             requests==2.26.0,
             SPARQLWrapper==1.8.5,
             transformers==4.5.1,
+            spacy_dbpedia_spotlight==0.2.2,
           ]
       - id: pylint
         name: Pylint (appB)
