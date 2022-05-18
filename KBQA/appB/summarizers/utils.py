@@ -45,6 +45,35 @@ def query_dbspotlight(question: str, confidence: float = 0.5) -> Dict[str, Any]:
     return response
 
 
+def query_falcon(question: str) -> Dict[str, Any]:
+    """Query the endpoint of Falcon 2.0 for entity recognition.
+
+    Parameters
+    ----------
+    question : str
+        Natural language question.
+
+    Returns
+    -------
+    response : dict
+        Response of the Falcon 2.0 endpoint without any processing
+        as JSON dict.
+    """
+    endpoint = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1"
+
+    try:
+        response = requests.post(
+            endpoint,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps({"text": question}),
+        ).json()
+    except JSONDecodeError:
+        print("It was not possible to parse the response.")
+
+        return dict()
+    return response
+
+
 def entity_recognition_dbspotlight(
     question: str, confidence: float = 0.5
 ) -> List[URIRef]:
@@ -218,17 +247,8 @@ def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRe
     relations : list
         List of all recognized relations as URIRef.
     """
-    endpoint = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1"
-
-    try:
-        response = requests.post(
-            endpoint,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps({"text": question}),
-        ).json()
-    except JSONDecodeError:
-        print("It was not possible to parse the response.")
-
+    response = query_falcon(question=question)
+    if "entities_dbpedia" not in response or "relations_dbpedia" not in response:
         return list(), list()
 
     dbpedia_entities = response["entities_dbpedia"]
