@@ -18,6 +18,7 @@ from SPARQLWrapper import JSON
 from KBQA.appB.summarizers.utils import query_dbspotlight
 from KBQA.appB.summarizers.utils import query_tagme
 from KBQA.appB.summarizers.utils import query_dbpedia
+from KBQA.appB.summarizers.utils import query_falcon
 from KBQA.appB.summarizers.utils import get_uri_for_wiki_page_id
 
 from KBQA.appB.preprocessing import utils
@@ -307,7 +308,7 @@ def decode_label_by_uri(s):
     ":end_label" should be part of the tokenizer vocabulary.
     """
     initial_s = s
-    s = decode_label_with_mapping(s)
+    # s = decode_label_with_mapping(s)
     s = decode_label_with_entity_linking(s, context=initial_s)
     return s
 
@@ -391,9 +392,10 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
         A string with decoded labels if some were found.
     """
     excluded = ["xsd:"]
+    confidence = 0.1  # 0.1 finds even pretty unsimilar ones. In the end, we take the best we found still.
 
     text_to_uri = dict()
-    confidence = 0.1  # 0.1 finds even pretty unsimilar ones. In the end, we take the best we found still.
+    text_to_uri = _get_uri_from_falcon(context=context, confidence=confidence, text_to_uri=text_to_uri)
     text_to_uri = _get_uri_from_dbpedia_spotlight(context=context, confidence=confidence, text_to_uri=text_to_uri)
     text_to_uri = _get_uri_from_tagme(context=context, confidence=confidence, text_to_uri=text_to_uri)
 
@@ -405,13 +407,13 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
         whole_match = match.group(0)
         prefix_label = match.group(1).strip()
         label = match.group(3).strip()
-        if prefix_label in text_to_uri:
-            text_to_uri[prefix_label].sort(key=lambda elem: elem[1], reverse=True)
-            uri, _ = text_to_uri[prefix_label][0]
-            s = re.sub(whole_match, '<' + uri + '>', s)
-        elif label in text_to_uri:
+        if label in text_to_uri:
             text_to_uri[label].sort(key=lambda elem: elem[1], reverse=True)
             uri, _ = text_to_uri[label][0]
+            s = re.sub(whole_match, '<' + uri + '>', s)
+        elif prefix_label in text_to_uri:
+            text_to_uri[prefix_label].sort(key=lambda elem: elem[1], reverse=True)
+            uri, _ = text_to_uri[prefix_label][0]
             s = re.sub(whole_match, '<' + uri + '>', s)
     return s
 
@@ -470,6 +472,52 @@ def _get_uri_from_tagme(context: str, confidence: float, text_to_uri: dict[tuple
             if text not in text_to_uri:
                 text_to_uri[text] = list()
             text_to_uri[text].append((uri, float(similarity_score)))
+    return text_to_uri
+
+
+def _get_uri_from_falcon(context: str, confidence: float = 0.1, text_to_uri: dict[tuple[str, float]] = dict())\
+        -> dict[tuple[str, float]]:
+    """Link relations in context using Falcon 2.0 and fill text_to_uri with it.
+
+    The found relations of Falcon 2.0 are added with score 1.0. The found entities with 0.1. This is, because Falcon
+    does not provide any scores. But if we find a relation, we consider it most important. If we find entities,
+    we score them low because of the uncertainty.
+
+    Args:
+        context: The text where entities are linked.
+        confidence: The score found entities get assigned.
+        text_to_uri: A prior map of the text mapped to a tuple with the linked URI and a similarity score.
+
+    Returns:
+          The prior map text_to_uri extended by the found linked entities.
+    """
+    entity_score = confidence
+    relation_score = 1
+
+    response = query_falcon(context)
+    if "entities_dbpedia" not in response or "relations_dbpedia" not in response:
+        return text_to_uri
+    entities = response["entities_dbpedia"]
+    relations = response["relations_dbpedia"]
+
+    # Add entities
+    for entity in entities:
+        if len(entity) >= 2:
+            uri = entity[0]
+            text = entity[1]
+            if text not in text_to_uri:
+                text_to_uri[text] = list()
+            text_to_uri[text].append((uri, float(entity_score)))
+
+    # Add entities
+    for relation in relations:
+        if len(relation) >= 2:
+            uri = relation[0]
+            text = relation[1]
+            if text not in text_to_uri:
+                text_to_uri[text] = list()
+            text_to_uri[text].append((uri, float(relation_score)))
+
     return text_to_uri
 
 
