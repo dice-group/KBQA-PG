@@ -170,7 +170,7 @@ def entity_recognition_tagme(
         confidence = float(annotation["rho"])
 
         if confidence >= conf:
-            entity = get_uri_for_wiki_page_id(ann_id)
+            entity = URIRef(get_uri_for_wiki_page_id(ann_id))
             entities.append((entity, confidence))
 
     return entities
