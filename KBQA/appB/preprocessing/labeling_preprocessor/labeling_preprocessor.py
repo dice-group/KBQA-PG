@@ -18,6 +18,7 @@ from SPARQLWrapper import JSON
 from KBQA.appB.summarizers.utils import query_dbspotlight
 from KBQA.appB.summarizers.utils import query_tagme
 from KBQA.appB.summarizers.utils import query_dbpedia
+from KBQA.appB.summarizers.utils import get_uri_for_wiki_page_id
 
 from KBQA.appB.preprocessing import utils
 from KBQA.appB.preprocessing.utils import preprocess_qtq_file_base
@@ -464,32 +465,12 @@ def _get_uri_from_tagme(context: str, confidence: float, text_to_uri: dict[tuple
         similarity_score = float(annotation["link_probability"])
         uri = None
         if ann_conf >= confidence:
-            uri = _get_uri_for_annotation_id(ann_id)
+            uri = get_uri_for_wiki_page_id(ann_id)
         if uri != None:
             if text not in text_to_uri:
                 text_to_uri[text] = list()
             text_to_uri[text].append((uri, float(similarity_score)))
     return text_to_uri
-
-
-def _get_uri_for_annotation_id(annotation_id: int) -> Union[str, None]:
-    """Query DBpedia for the uri corresponding to the wikiPageID annotation_id.
-
-    Args:
-        annotation_id: The annotation ID of some DBpedia page.
-
-    Returns:
-        The corresponding URI.
-    """
-    uri = None
-    query = f"""SELECT ?uri WHERE {{
-                ?uri dbo:wikiPageID "{annotation_id}"^^xsd:integer .
-                }}"""
-    answer = query_dbpedia(query)
-    bindings = answer["results"]["bindings"]
-    for binding in bindings:
-        uri = binding["uri"]["value"]
-    return uri
 
 
 def sparql_encoder_levenshtein_dist_on_file(input_file_path: Union[str, os.PathLike, Path],

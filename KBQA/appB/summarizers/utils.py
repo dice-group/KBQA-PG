@@ -5,6 +5,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Union
 
 from rdflib import URIRef
 import requests
@@ -169,20 +170,34 @@ def entity_recognition_tagme(
         confidence = float(annotation["rho"])
 
         if confidence >= conf:
-
-            query = f"""SELECT ?uri WHERE {{
-                ?uri dbo:wikiPageID "{ann_id}"^^xsd:integer .
-                }}"""
-            answer = query_dbpedia(query)
-
-            bindings = answer["results"]["bindings"]
-
-            for binding in bindings:
-                entity = URIRef(binding["uri"]["value"])
-
-                entities.append((entity, confidence))
+            entity = get_uri_for_wiki_page_id(ann_id)
+            entities.append((entity, confidence))
 
     return entities
+
+
+def get_uri_for_wiki_page_id(wiki_page_id: int) -> Union[str, None]:
+    """Query DBpedia for the URI corresponding to the wikiPageID wiki_page_id.
+
+    Parameters
+    ----------
+    wiki_page_id : int
+        The wikiPageID of some DBpedia page.
+
+    Returns
+    -------
+    str or None
+        The corresponding URI. None, if no URI was found.
+    """
+    uri = None
+    query = f"""SELECT ?uri WHERE {{
+                ?uri dbo:wikiPageID "{wiki_page_id}"^^xsd:integer .
+                }}"""
+    answer = query_dbpedia(query)
+    bindings = answer["results"]["bindings"]
+    for binding in bindings:
+        uri = binding["uri"]["value"]
+    return uri
 
 
 def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRef]]:
