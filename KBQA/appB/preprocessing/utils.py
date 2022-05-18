@@ -174,9 +174,6 @@ IRI_SCHEMES = ["http:",
                "sql:",  # See bif.
                "urn:yahoo:maps",  # See bif.
                ]
-PREFIX_EXCEPTIONS = [["bif:", "bif:"],
-                     ["sql:", "sql:"],
-                     ["y:", "urn:yahoo:maps"]]
 
 
 def load_prefixes() -> tuple[dict[str, str], dict[str, str], dict[str, str]]:

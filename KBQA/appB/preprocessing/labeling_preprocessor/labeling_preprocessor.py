@@ -43,7 +43,6 @@ from KBQA.appB.preprocessing.utils import normalize_prefixes
 
 SPARQL_WRAPPER = utils.SPARQL_WRAPPER
 ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
-PREFIX_EXCEPTIONS = utils.PREFIX_EXCEPTIONS
 PREFIX_TO_URI = utils.PREFIX_TO_URI
 
 
@@ -229,12 +228,11 @@ def decode_file(file_path: Union[str, os.PathLike, Path]) -> list[str]:
     return decode_file_base(file_path, decoder=decode)
 
 
-def encode_uri_by_label(s):
+def encode_uri_by_label(s: str) -> str:
     """Replace "<prefix:><path>" by "<prefix:> <label_of_the_corresponding_URI> :end_label".
 
     ":end_label" should be part of the tokenizer vocabulary.
-    Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS. "xsd:" usually provides labels but these are less natural
-    language related. PREFIX_EXCEPTIONS
+    Excluded prefixes are: "xsd:". "xsd:" usually provides labels but these are less natural language related.
 
     Args:
         s: String where the encoding is done.
@@ -243,13 +241,10 @@ def encode_uri_by_label(s):
         String after encoding.
     """
     excluded = ["xsd:"]
-    for row in PREFIX_EXCEPTIONS:
-        exception = row[0]
-        excluded.append(exception)
     prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     for prefix in prefixes:
-        s = re.sub(f"(?!(<))\\b({prefix})(([^\\s.,;]|(\\.[^\\s,;]))*)", generate_label_encoding, s)
+        s = re.sub(f"\\b({prefix})(([^\\s.,;]|(\\.[^\\s,;]))*)", generate_label_encoding, s)
     s = re.sub(r" +", " ", s)
     return s
 
@@ -266,8 +261,8 @@ def generate_label_encoding(match):
         string: "<prefix:> <label_of_the_corresponding_URI> :end_label" if a label was found.
                 "<prefix:><path>" else.
     """
-    prefix = match.group(2)
-    path = match.group(3)
+    prefix = match.group(1)
+    path = match.group(2)
     label = None
 
     uri = '<' + PREFIX_TO_URI[prefix] + path + '>'
@@ -307,7 +302,7 @@ def decode_label_with_mapping(s: str) -> str:
     """Replace a label with a uri from mapping the label back to the corresponding entity in DBpedia.
 
     Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
-    Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
+    Excluded prefixes are: "xsd:". This holds for encoding respectively.
 
     Args:
         s: The string where labels should be decoded.
@@ -316,13 +311,10 @@ def decode_label_with_mapping(s: str) -> str:
         A string with decoded labels if some were found.
     """
     excluded = ["xsd:"]
-    for row in PREFIX_EXCEPTIONS:
-        exception = row[0]
-        excluded.append(exception)
     prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
-    s = re.sub(f"(?!(<))\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
+    s = re.sub(f"\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
                generate_label_decoding, s)
     return s
 
@@ -340,8 +332,8 @@ def generate_label_decoding(match):
     Returns:
         string: Some "'<'<corresponding_uri>'>'" if a uri is found. Else an empty string "".
     """
-    prefix = match.group(2)
-    label = match.group(3).strip()
+    prefix = match.group(1)
+    label = match.group(2).strip()
     uri = None
 
     query = f"""SELECT DISTINCT ?uri WHERE
@@ -372,8 +364,8 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
     """Replace a label with a uri found by entity recognition on the label.
 
     Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
-    Excluded prefixes are: "xsd:" and PREFIX_EXCEPTIONS.
-    If multiple entities are found by DBpedia-Spotlight for one label, the one with the highest similarity score is
+    Excluded prefixes are: "xsd:". This holds for encoding respectively.
+    If multiple entities are found for one label by DBpedia-Spotlight, the one with the highest similarity score is
     chosen.
 
     Args:
@@ -385,12 +377,9 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
         A string with decoded labels if some were found.
     """
     excluded = ["xsd:"]
-    for row in PREFIX_EXCEPTIONS:
-        exception = row[0]
-        excluded.append(exception)
 
     text_to_uri = dict()
-    confidence = 0.1
+    confidence = 0.1  # 0.1 finds even pretty unsimilar ones. In the end, we take the best we found still.
     text_to_uri = _get_uri_from_dbpedia_spotlight(context=context, confidence=confidence, text_to_uri=text_to_uri)
     text_to_uri = _get_uri_from_tagme(context=context, confidence=confidence, text_to_uri=text_to_uri)
 
@@ -398,10 +387,10 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
     prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
     for match in \
-            re.finditer(f"(?!(<))\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label", s):
+            re.finditer(f"\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label", s):
         whole_match = match.group(0)
-        prefix_label = match.group(2).strip()
-        label = match.group(4).strip()
+        prefix_label = match.group(1).strip()
+        label = match.group(3).strip()
         if prefix_label in text_to_uri:
             text_to_uri[prefix_label].sort(key=lambda elem: elem[1], reverse=True)
             uri, _ = text_to_uri[prefix_label][0]
