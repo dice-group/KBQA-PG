@@ -821,20 +821,38 @@ def decode_datatype(encoded_sparql):
     return s
 
 
-def decode_file_base(file_path: Union[str, os.PathLike, Path], *, decoder: Callable[[str], str]) -> list[str]:
+def decode_file_base(input_file_path: Union[str, os.PathLike, Path],
+                     output_file_path: Union[str, os.PathLike, Path, None] = None,
+                     checkpointing_period: int = 10,
+                     *,
+                     decoder: Callable[[str], str]) -> Path:
     """Decode a file of encoded SPARQLs.
 
     Args:
-        file_path: The path to the file of encoded SPARQLs.
+        input_file_path: The path to the file of encoded SPARQLs.
+        output_file_path: The path of the decoded SPARQLs. The file is created if it does not exist or
+                          overwritten if it already exists. If None, defaults to
+                          "decoded_files/<input_file_name>" where <input_file_name> is the name of the
+                          input-file.
+        checkpointing_period: For every checkpointing_period of decoded examples, the examples are stored in
+                              <output_file_path>.checkpoint_data and the algorithm state in
+                              <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
+                              from the checkpoint by calling it with the same arguments.
         decoder: The decoding function.
 
     Returns:
-        A list of the decoded SPARQLs.
+        The path of the decoded file.
     """
-    file_path = Path(file_path)
-    with open(file_path, mode='r', encoding="utf-8") as f:
-        decoded_sparqls = [decoder(encoded_sparql) for encoded_sparql in f]
-    return decoded_sparqls
+    input_file_path = Path(input_file_path)
+    if output_file_path is None:
+        output_file_path = Path("decoded_files") / input_file_path.name
+    else:
+        output_file_path = Path(output_file_path)
+    output_file_path = preprocess_file(preprocessing_function=decoder, input_file_path=input_file_path,
+                                       output_file_path=output_file_path, checkpointing_period=checkpointing_period,
+                                       progress_bar_description="Amount of decoded SPARQLs",
+                                       progress_bar_unit="SPARQL")
+    return output_file_path
 
 
 def sparql_encoder_levenshtein_dist_on_file_base(input_file_path: Union[str, os.PathLike, Path],

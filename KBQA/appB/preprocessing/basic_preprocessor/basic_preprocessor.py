@@ -202,16 +202,29 @@ def decode(encoded_sparql):
     return s
 
 
-def decode_file(file_path: Union[str, os.PathLike, Path]) -> list[str]:
+def decode_file(input_file_path: Union[str, os.PathLike, Path],
+               output_file_path: Union[str, os.PathLike, Path, None] = None,
+               checkpointing_period: int = 10) -> Path:
     """Decode a file of encoded SPARQLs.
 
     Args:
-        file_path: The path to the file of encoded SPARQLs.
+        input_file_path: The path to the file of encoded SPARQLs.
+        output_file_path: The path of the decoded SPARQLs. The file is created if it does not exist or
+                          overwritten if it already exists. If None, defaults to
+                          "decoded_files/<input_file_name>" where <input_file_name> is the name of the
+                          input-file.
+        checkpointing_period: For every checkpointing_period of decoded examples, the examples are stored in
+                              <output_file_path>.checkpoint_data and the algorithm state in
+                              <checkpoint_data>.checkpoint_state. If the algorithm is interrupted, it can be resumed
+                              from the checkpoint by calling it with the same arguments.
 
     Returns:
-        A list of the decoded SPARQLs.
+        The path of the decoded file.
     """
-    return decode_file_base(file_path, decoder=decode)
+    return decode_file_base(input_file_path=input_file_path,
+                            output_file_path=output_file_path,
+                            checkpointing_period=checkpointing_period,
+                            decoder=decode)
 
 
 def sparql_encoder_levenshtein_dist_on_file(input_file_path: Union[str, os.PathLike, Path],
