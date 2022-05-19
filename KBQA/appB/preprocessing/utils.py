@@ -536,13 +536,14 @@ def do_valid_preprocessing(sparql: str) -> str:
 
     Returns:
         Preprocessed SPARQL with the same semantic as sparql.
+
+    Todo:
+        uri_to_prefix is no safe SPARQL function. I.e. it might invalidate some SPARQLs or change semantics.
     """
     s = sparql
     s = do_replacements(s, VALID_SPARQL_REPLACEMENTS)
     s = sparql_keyword_to_lower_case(s)
     s = re.sub(r"@en", r"@en", s, flags=re.IGNORECASE)  # English language tag to lower case.
-    # bif:contains can be used as whole IRI or prefixed IRI. Normalize to prefix.
-    s = re.sub(r"<bif:contains>", "bif:contains", s)
     s = inline_and_remove_base(s)
     s = inline_and_remove_prefixes(s)
     s = uri_to_prefix(s)
@@ -553,37 +554,46 @@ def do_valid_preprocessing(sparql: str) -> str:
 def inline_and_remove_base(s: str) -> str:
     """Inline the BASE IRI of the SPARQL s and remove it.
 
-    If the IRI of a "<IRI>" occurrence does not start with any scheme in IRI_SCHEME, the BASE-IRI is added as prefix if
-    it exists.
+    Assuming a BASE-IRI is provided. If the IRI of a "<IRI>" occurrence does not start with any scheme in IRI_SCHEME,
+    the BASE-IRI is added as prefix.
 
     Args:
         s: SPARQL string.
+
     Returns:
         String with inlined and removed BASE.
     """
-    match = re.match(r"\s*BASE\s*<([^>]*)>", s, flags=re.IGNORECASE)
+    match = re.match(r"\s*BASE\s*<([^>]*)>", s, flags=re.IGNORECASE)  # Find BASE-IRI.
     if match is not None:
         base_iri = match.group(1)
         s = re.sub(r"\s*BASE\s*<([^>]*)>", "", s, flags=re.IGNORECASE)  # Remove BASE.
         s = s.lstrip()
         schemes_regex = '|'.join(IRI_SCHEMES)
-        s = re.sub(f"<(?!({schemes_regex}))([^>]*)>", f"<{base_iri}\\2>", s)
+        s = re.sub(f"<(?!({schemes_regex}))([^<>]*)>", f"<{base_iri}\\2>", s)
     return s
 
 
 def inline_and_remove_prefixes(s: str) -> str:
     """Inline the prefixes of the SPARQL s and remove them.
 
+    If multiple URLs are defined for one prefix, inline the last one.
+
+
     Args:
         s: SPARQL string.
+
     Returns:
         String with inlined and removed prefixes.
+
+    Note:
+        - We do not substitute prefixes if they follow a '<' because these could be schemas e.g. "bif:".
+        - We recognize '.' in prefix-form URIs if they are followed by anything except [\\s,;] e.g. dbr:file.txt. Else,
+          the '.' is recognized as "end of triple"-symbol and hence not part of the prefix-form URI.
     """
     empty_prefix_name = False
     empty_prefix_uri = ""
-    # We store all found prefixes in a map to keep the last found URL for some prefix only and replace it afterwards.
     prefix_url_dict = dict()
-    for pre_name, pre_url in re.findall(r"PREFIX\s*([^:]*):\s*<([^>]*)>", s, flags=re.IGNORECASE):
+    for pre_name, pre_url in re.findall(r"PREFIX\s*([^:]*):\s*<([^>]*)>", s, flags=re.IGNORECASE):  # Find prefix.
         s = re.sub(f"PREFIX\\s*{pre_name}:\\s*<{pre_url}>", "", s, flags=re.IGNORECASE)  # Remove prefix.
         s = s.lstrip()
         prefix_url_dict[pre_name] = pre_url
@@ -592,12 +602,11 @@ def inline_and_remove_prefixes(s: str) -> str:
             empty_prefix_name = True
             empty_prefix_uri = pre_url
         else:
-            # Inline prefix.
-            s = re.sub(f"(?!(<))\\b{pre_name}:([^\\s.,;]*)", f"<{pre_url}\\2>", s)
+            s = re.sub(f"(?<!<)\\b{pre_name}:((?:[^\\s.,;]|(\\.[^\\s,;]))*)", f"<{pre_url}\\1>", s)  # Inline prefix.
     if empty_prefix_name:
         # Empty prefix ':<something>' is replaced by its URI if it is preceded by a whitespace or a SPARQL term
         # delimiter ('.', ',', ';').
-        s = re.sub(f"([.,;\\s]):([^\\s.,;]*)", f"\\1<{empty_prefix_uri}\\2>", s)
+        s = re.sub(f"([.,;\\s]):((?:[^\\s.,;]|(\\.[^\\s,;]))*)", f"\\1<{empty_prefix_uri}\\2>", s)
     return s
 
 
@@ -679,8 +688,11 @@ def uri_to_prefix(s):
     Returns:
         The string with substituted URIs.
 
-    Note: DBpedia does not allow prefixes to be used while the remainder of the URI still carries a '/'. SPARQL allows
+    Note:
+        - DBpedia does not allow prefixes to be used while the remainder of the URI still carries a '/'. SPARQL allows
           it, and we benefit also from allowing it.
+        - We do allow special characters like '(', ')', '&', '|', '.' in the prefix-form URI to make it shorter. This
+          is not allowed by SPARQL. So this function might invalidate the SPARQL or change semantics.
     """
     for prefix, uri in PREFIX_TO_URI.items():
         s = re.sub(f"<{uri}([^>]*)>", f"{prefix}\\1", s)
@@ -701,10 +713,13 @@ def prefix_to_uri(s):
     Returns:
         The string with prefixes substituted by URIs.
 
-    Note: We do not substitute prefixes if they follow a '<' because these could be schemas e.g. "bif:".
+    Note:
+        - We do not substitute prefixes if they follow a '<' because these could be schemas e.g. "bif:".
+        - We recognize '.' in prefix-form URIs if they are followed by anything except [\\s,;] e.g. dbr:file.txt. Else,
+          the '.' is recognized as "end of triple"-symbol and hence not part of the prefix-form URI.
     """
     for prefix, substitute in PREFIX_TO_URI.items():
-        s = re.sub(f"(?!(<))\\b{prefix}(([^\\s.,;]|(\\.[^\\s,;]))*)", f"<{substitute}\\2>", s)
+        s = re.sub(f"(?<!<)\\b{prefix}((?:[^\\s.,;]|(\\.[^\\s,;]))*)", f"<{substitute}\\1>", s)
     return s
 
 
