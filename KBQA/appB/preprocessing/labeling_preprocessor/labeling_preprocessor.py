@@ -1,23 +1,13 @@
 """Preprocess questions, SPARQLs and triples with labeling approach and decode correspondingly."""
-import json
 import math
 import os
-import pickle
 import re
-from tqdm import tqdm
 from pathlib import Path
-import distance
-from difflib import ndiff
 
 from typing import Union
-from typing import Callable
-
-from SPARQLWrapper import SPARQLWrapper
-from SPARQLWrapper import JSON
 
 from KBQA.appB.summarizers.utils import query_dbspotlight
 from KBQA.appB.summarizers.utils import query_tagme
-from KBQA.appB.summarizers.utils import query_dbpedia
 from KBQA.appB.summarizers.utils import query_falcon
 from KBQA.appB.summarizers.utils import get_uri_for_wiki_page_id
 
@@ -32,6 +22,8 @@ from KBQA.appB.preprocessing.utils import preprocess_triples_base
 from KBQA.appB.preprocessing.utils import do_replacements
 from KBQA.appB.preprocessing.utils import revert_replacements
 from KBQA.appB.preprocessing.utils import uri_to_prefix
+from KBQA.appB.preprocessing.utils import prefix_to_uri
+from KBQA.appB.preprocessing.utils import normalize_prefixes
 from KBQA.appB.preprocessing.utils import encode_asterisk
 from KBQA.appB.preprocessing.utils import decode_asterisk
 from KBQA.appB.preprocessing.utils import encode_datatype
@@ -39,9 +31,6 @@ from KBQA.appB.preprocessing.utils import decode_datatype
 from KBQA.appB.preprocessing.utils import decode_file_base
 from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_on_file_base
 from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_base
-from KBQA.appB.preprocessing.utils import prefix_to_uri
-from KBQA.appB.preprocessing.utils import uri_to_prefix
-from KBQA.appB.preprocessing.utils import normalize_prefixes
 
 SPARQL_WRAPPER = utils.SPARQL_WRAPPER
 ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
@@ -308,7 +297,7 @@ def decode_label_by_uri(s):
     ":end_label" should be part of the tokenizer vocabulary.
     """
     initial_s = s
-    # s = decode_label_with_mapping(s)
+    s = decode_label_with_mapping(s)
     s = decode_label_with_entity_linking(s, context=initial_s)
     return s
 
@@ -375,24 +364,34 @@ def generate_label_decoding(match):
     return "<" + uri + ">"
 
 
-def decode_label_with_entity_linking(s: str, context: str) -> str:
-    """Replace a label with a uri found by entity recognition on the label.
+def decode_label_with_entity_linking(s: str, context: str, *, confidence: float = 0.1) -> str:
+    """Replace a label with a uri found by entity- or relation-linking.
 
     Replace "<prefix:> <label_of_the_corresponding_URI> :end_label" by "'<'<corresponding_uri>'>'".
     Excluded prefixes are: "xsd:". This holds for encoding respectively.
-    If multiple entities are found for one label by DBpedia-Spotlight, the one with the highest similarity score is
-    chosen.
+    We might find URIs for the label string only or the string consisting of prefix and label. We also get scores
+    for each found URI. We prioritize the found ones in the following order.
+    1. Found for label, and the URI has the same prefix as the one preceding our label.
+    2. Found for prefix and label, and the URI has the same prefix as the one preceding our label.
+    3. Found for label.
+    4. Found for prefix and label.
+    If multiple URIs fulfill some point, the one with the highest score is chosen.
+    We suggest a confidence of 0.1 as it finds as much as it can. The algorithm then chooses the best found one still.
+
+    The found relations of Falcon 2.0 are added with score 1.0 (maximum score). The found entities with 0.1. This is,
+    because Falcon does not provide any scores. But if we find a relation, we consider it most important. If we find
+    entities, we score them low because of the uncertainty.
 
     Args:
         s: The string where labels should be decoded.
-        context: The string where entities are recognized and then linked to some uri. If a recognized entity is
-                 the same as a label in s, it is replaced by the corresponding uri.
+        context: The string where entities and relations are linked and then linked to some uri.
+        confidence: The confidence for entity- and relation-linking. Defaults to 0.1. We propose 0.1 as it finds
+                    as much as it can. The algorithm then chooses the best found one still.
 
     Returns:
         A string with decoded labels if some were found.
     """
     excluded = ["xsd:"]
-    confidence = 0.1  # 0.1 finds even pretty unsimilar ones. In the end, we take the best we found still.
 
     text_to_uri = dict()
     text_to_uri = _get_uri_from_falcon(context=context, confidence=confidence, text_to_uri=text_to_uri)
@@ -405,15 +404,40 @@ def decode_label_with_entity_linking(s: str, context: str) -> str:
     for match in \
             re.finditer(f"\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label", s):
         whole_match = match.group(0)
-        prefix_label = match.group(1).strip()
+        prefix_and_label = match.group(1).strip()
+        prefix = match.group(2)
         label = match.group(3).strip()
+        prefix_uri = PREFIX_TO_URI[prefix]
+
+        label_in_text_to_uri = False
         if label in text_to_uri:
-            text_to_uri[label].sort(key=lambda elem: elem[1], reverse=True)
-            uri, _ = text_to_uri[label][0]
+            label_in_text_to_uri = True
+            label_uris = text_to_uri[label]
+            label_uris.sort(key=lambda elem: elem[1], reverse=True)
+        prefix_and_label_in_text_to_uri = False
+        if prefix_and_label in text_to_uri:
+            prefix_and_label_in_text_to_uri = True
+            prefix_and_label_uris = text_to_uri[prefix_and_label]
+            prefix_and_label_uris.sort(key=lambda elem: elem[1], reverse=True)
+        found = False
+        # Choose the first one with same prefix.
+        if not found and label_in_text_to_uri:
+            for uri, _ in label_uris:
+                if uri.startswith(prefix_uri):
+                    s = re.sub(whole_match, '<' + uri + '>', s)
+                    found = True
+        if not found and prefix_and_label_in_text_to_uri:
+            for uri, _ in prefix_and_label_uris:
+                if uri.startswith(prefix_uri):
+                    s = re.sub(whole_match, '<' + uri + '>', s)
+                    found = True
+        # If none with same prefix was found, choose the one with the highest score.
+        if not found and label_in_text_to_uri:
+            uri, _ = label_uris[0]
             s = re.sub(whole_match, '<' + uri + '>', s)
-        elif prefix_label in text_to_uri:
-            text_to_uri[prefix_label].sort(key=lambda elem: elem[1], reverse=True)
-            uri, _ = text_to_uri[prefix_label][0]
+            found = True
+        if not found and prefix_and_label_in_text_to_uri:
+            uri, _ = prefix_and_label_uris[0]
             s = re.sub(whole_match, '<' + uri + '>', s)
     return s
 
