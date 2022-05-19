@@ -16,8 +16,6 @@ from typing import Callable
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper import JSON
 
-from KBQA.appB.summarizers.utils import query_dbspotlight
-
 SPARQL_WRAPPER = SPARQLWrapper("http://dbpedia.org/sparql")
 SPARQL_WRAPPER.setReturnFormat(JSON)
 
@@ -678,7 +676,7 @@ def uri_to_prefix(s):
         The string with substituted URIs.
 
     Note: DBpedia does not allow prefixes to be used while the remainder of the URI still carries a '/'. SPARQL allows
-          it and we benefit also from allowing it.
+          it, and we benefit also from allowing it.
     """
     for prefix, uri in PREFIX_TO_URI.items():
         s = re.sub(f"<{uri}([^>]*)>", f"{prefix}\\1", s)
@@ -738,7 +736,7 @@ def do_replacements(sparql, replacements, remove_successive_whitespaces=True):
     Args:
         sparql: some string.
         replacements: A list of lists.
-        remove_successive_whitespaces: If true, remove successive whitespaces in ourput.
+        remove_successive_whitespaces: If true, remove successive whitespaces in output.
     """
     s = sparql
     for r in replacements:
@@ -786,7 +784,7 @@ def revert_replacements(decoded_sparql, replacements, remove_successive_whitespa
     Args:
         decoded_sparql: some string.
         replacements: A list of lists.
-        remove_successive_whitespaces: If true, remove successive whitespaces in ourput.
+        remove_successive_whitespaces: If true, remove successive whitespaces in output.
     """
     s = decoded_sparql
     for r in replacements:
@@ -975,22 +973,22 @@ def test_do_valid_preprocessing(sparql: str) -> int:
     # Query SPARQL
     SPARQL_WRAPPER.setQuery(sparql)
     try:
-        answer = SPARQL_WRAPPER.queryAndConvert()
-    except BaseException as excepion:
+        SPARQL_WRAPPER.queryAndConvert()
+    except BaseException as exception:
         print("\n--------------------------------------------------")
         print(f"An exception occurred at unprocessed SPARQL:\n{sparql}")
-        print(f"Exception:\n{excepion}")
+        print(f"Exception:\n{exception}")
         print("----------------------------------------------------")
         return -1
 
     # Query Preprocessed SPARQL
     SPARQL_WRAPPER.setQuery(preprocessed_sparql)
     try:
-        answer = SPARQL_WRAPPER.queryAndConvert()
-    except BaseException as excepion:
+        SPARQL_WRAPPER.queryAndConvert()
+    except BaseException as exception:
         print("\n--------------------------------------------------")
         print(f"An exception occurred at preprocessed SPARQL:\n{preprocessed_sparql}")
-        print(f"Exception:\n{excepion}")
+        print(f"Exception:\n{exception}")
         print(f"The corresponding unprocessed SPARQL is:\n{sparql}")
         print("----------------------------------------------------")
         return 0

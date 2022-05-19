@@ -124,7 +124,7 @@ def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
     return preprocess_sparql_file_base(input_file_path,
                                        output_file_path,
                                        checkpointing_period,
-                                       encoder = encode)
+                                       encoder=encode)
 
 
 def preprocess_sparql(s: str) -> str:
@@ -208,8 +208,8 @@ def decode(encoded_sparql):
 
 
 def decode_file(input_file_path: Union[str, os.PathLike, Path],
-               output_file_path: Union[str, os.PathLike, Path, None] = None,
-               checkpointing_period: int = 10) -> Path:
+                output_file_path: Union[str, os.PathLike, Path, None] = None,
+                checkpointing_period: int = 10) -> Path:
     """Decode a file of encoded SPARQLs.
 
     Args:
@@ -442,18 +442,23 @@ def decode_label_with_entity_linking(s: str, context: str, *, confidence: float 
     return s
 
 
-def _get_uri_from_dbpedia_spotlight(context: str, confidence: float, text_to_uri: dict[tuple[str, float]] = dict()) \
-        -> dict[tuple[str, float]]:
+def _get_uri_from_dbpedia_spotlight(context: str, confidence: float,
+                                    text_to_uri: Union[dict[str, tuple[str, float]], None] = None) \
+        -> dict[str, tuple[str, float]]:
     """Link entities in context using DBpedia-Spotlight and fill text_to_uri with it.
 
     Args:
         context: The text where entities are linked.
         confidence: The minimal confidence of linked entities.
-        text_to_uri: A prior map of the text mapped to a tuple with the linked URI and a similarity score.
+        text_to_uri: A prior map of the text mapped to a tuple with the linked URI and a similarity score. If none is
+                     provided, an empty dictionary is created.
 
     Returns:
           The prior map text_to_uri extended by the found linked entities.
     """
+    if text_to_uri is None:
+        text_to_uri = dict()
+
     response = query_dbspotlight(context, confidence=confidence)
     if "Resources" not in response:
         resources = list()
@@ -470,8 +475,9 @@ def _get_uri_from_dbpedia_spotlight(context: str, confidence: float, text_to_uri
     return text_to_uri
 
 
-def _get_uri_from_tagme(context: str, confidence: float, text_to_uri: dict[tuple[str, float]] = dict()) \
-        -> dict[tuple[str, float]]:
+def _get_uri_from_tagme(context: str, confidence: float,
+                        text_to_uri: Union[dict[str, tuple[str, float]], None] = None) \
+        -> dict[str, tuple[str, float]]:
     """Link entities in context using TagMe and fill text_to_uri with it.
 
     Args:
@@ -482,6 +488,9 @@ def _get_uri_from_tagme(context: str, confidence: float, text_to_uri: dict[tuple
     Returns:
           The prior map text_to_uri extended by the found linked entities.
     """
+    if text_to_uri is None:
+        text_to_uri = dict()
+
     response = query_tagme(context)
     annotations = response["annotations"]
     for annotation in annotations:
@@ -492,15 +501,16 @@ def _get_uri_from_tagme(context: str, confidence: float, text_to_uri: dict[tuple
         uri = None
         if ann_conf >= confidence:
             uri = get_uri_for_wiki_page_id(ann_id)
-        if uri != None:
+        if uri is not None:
             if text not in text_to_uri:
                 text_to_uri[text] = list()
             text_to_uri[text].append((uri, float(similarity_score)))
     return text_to_uri
 
 
-def _get_uri_from_falcon(context: str, confidence: float = 0.1, text_to_uri: dict[tuple[str, float]] = dict())\
-        -> dict[tuple[str, float]]:
+def _get_uri_from_falcon(context: str, confidence: float = 0.1,
+                         text_to_uri: Union[dict[str, tuple[str, float]], None] = None) \
+        -> dict[str, tuple[str, float]]:
     """Link relations in context using Falcon 2.0 and fill text_to_uri with it.
 
     The found relations of Falcon 2.0 are added with score 1.0. The found entities with 0.1. This is, because Falcon
@@ -515,6 +525,9 @@ def _get_uri_from_falcon(context: str, confidence: float = 0.1, text_to_uri: dic
     Returns:
           The prior map text_to_uri extended by the found linked entities.
     """
+    if text_to_uri is None:
+        text_to_uri = dict()
+
     entity_score = confidence
     relation_score = 1
 

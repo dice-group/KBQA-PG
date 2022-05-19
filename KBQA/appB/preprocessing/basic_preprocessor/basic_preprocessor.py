@@ -1,12 +1,8 @@
 """Preprocess questions, SPARQLs and triples and decode predicted SPARQLs with the overhauled preprocessor."""
-import functools
 import math
 import os
 import re
-from tqdm import tqdm
 from pathlib import Path
-import distance
-from difflib import ndiff
 
 from typing import Union
 
@@ -121,7 +117,7 @@ def preprocess_sparql_file(input_file_path: Union[str, os.PathLike, Path],
     return preprocess_sparql_file_base(input_file_path,
                                        output_file_path,
                                        checkpointing_period,
-                                       encoder = encode)
+                                       encoder=encode)
 
 
 def preprocess_sparql(s: str) -> str:
@@ -203,8 +199,8 @@ def decode(encoded_sparql):
 
 
 def decode_file(input_file_path: Union[str, os.PathLike, Path],
-               output_file_path: Union[str, os.PathLike, Path, None] = None,
-               checkpointing_period: int = 10) -> Path:
+                output_file_path: Union[str, os.PathLike, Path, None] = None,
+                checkpointing_period: int = 10) -> Path:
     """Decode a file of encoded SPARQLs.
 
     Args:

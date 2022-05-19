@@ -172,7 +172,7 @@ def query_tagme(question: str) -> Dict[str, Any]:
 def entity_recognition_tagme(
     question: str, conf: float = 0.5
 ) -> List[Tuple[URIRef, float]]:
-    """Enttiy recognition using the TagMe API.
+    """Entity recognition using the TagMe API.
 
     Parameters
     ----------
@@ -288,7 +288,7 @@ def build_sparql_query_for_one_hop_predicates(entity: str, predicates: List) -> 
     Returns
     -------
     str
-        The formated SPARQL-query.
+        The formatted SPARQL-query.
     """
     predicate_str = ""
 
@@ -317,7 +317,7 @@ def build_sparql_query_for_two_hop_predicates(entity: str, predicates: List) -> 
     Returns
     -------
     str
-        The formated SPARQL-query.
+        The formatted SPARQL-query.
     """
     const_str = ""
     where_str = ""
