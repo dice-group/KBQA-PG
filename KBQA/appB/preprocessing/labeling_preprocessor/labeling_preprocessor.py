@@ -318,7 +318,7 @@ def decode_label_with_mapping(s: str) -> str:
     prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
-    s = re.sub(f"\\b({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?):end_label",
+    s = re.sub(f"\\b({prefixes_regex})(?!{prefixes_regex})((?:.(?!\\b({prefixes_regex})))*?):end_label",
                generate_label_decoding, s)
     return s
 
@@ -402,7 +402,7 @@ def decode_label_with_entity_linking(s: str, context: str, *, confidence: float 
     prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
     for match in \
-            re.finditer(f"\\b(({prefixes_regex})((?!{prefixes_regex})|(.(?!{prefixes_regex}))*?)):end_label", s):
+            re.finditer(f"\\b(({prefixes_regex})(?!{prefixes_regex})((?:.(?!\\b({prefixes_regex})))*?)):end_label", s):
         whole_match = match.group(0)
         prefix_and_label = match.group(1).strip()
         prefix = match.group(2)
