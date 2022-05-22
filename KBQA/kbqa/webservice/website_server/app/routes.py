@@ -1,12 +1,15 @@
 """API for the website server."""
 import os
 from typing import Dict
+from typing import Tuple
 
 from app.handler import process_question
+from flask import abort
 from flask import Flask
 from flask import jsonify
 from flask import render_template
 from flask import request
+from werkzeug.exceptions import HTTPException
 
 
 application = Flask(__name__)
@@ -21,14 +24,13 @@ def index() -> str:
     website : str
         HTML home website.
     """
-
     switch_text = ""
     switch_url = ""
     branch = "local"
     try:
         branch = os.environ["BRANCH"]
     except KeyError:
-        pass
+        branch = ""
 
     if branch == "master":
         switch_text = "Check out our development version!"
@@ -46,7 +48,7 @@ def index() -> str:
 
 
 @application.route("/", methods=["POST"])
-def query_fun() -> Dict:
+def query_fun() -> Dict[str, str]:
     """Request an answer to some question.
 
     Returns
@@ -55,27 +57,54 @@ def query_fun() -> Dict:
         JSON dict, which contains the asked question, the answers for this questions
         and the generated query.
     """
-    question = request.form["question"]
-    chosen_app = request.form["approach"]
+    question = request.form.get("question")
+    chosen_app = request.form.get("approach")
+
+    if question is None:
+        abort(400, description="Missing parameter 'question'")
+
+    if chosen_app is None:
+        abort(400, description="Missing parameter 'approach'")
+
+    if chosen_app not in ["A", "B"]:
+        abort(400, description="Approach should be 'A' or 'B'")
+
     answers, query = process_question(question, chosen_app)
 
-    return jsonify({"question": question, "answers": answers, "query": query})
+    return jsonify(
+        {"status": "200", "question": question, "answers": answers, "query": query}
+    )
 
 
-@application.errorhandler(500)
-def internal_error(error: str) -> str:
-    """If something happens internally, return an HTML with error 500.
+@application.errorhandler(400)
+def bad_request(error: HTTPException) -> Tuple[Dict[str, str], int]:
+    """Error handler for wrong requests (Bad Request).
 
     Parameters
     ----------
-    error : str
-        error object thrown by the actual exception.
+    error : HTTPException
+        HTTPException with status code 400.
 
     Returns
     -------
-    error_page : str
-        HTML with error 500.
+    dict
+        Dictionary containing the information with the wrong parameter.
     """
-    print(error)
+    return jsonify({"status": "400", "msg": str(error)}), 400
 
-    return render_template("500.html")
+
+@application.errorhandler(500)
+def internal_error(error: HTTPException) -> Tuple[Dict[str, str], int]:
+    """Error handler for internal error from the app.
+
+    Parameters
+    ----------
+    error : HTTPException
+        HTTPException with status code 500.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the information that an internal error occured.
+    """
+    return jsonify({"status": "500", "msg": str(error)}), 500
