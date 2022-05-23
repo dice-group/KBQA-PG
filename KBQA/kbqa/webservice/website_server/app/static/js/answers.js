@@ -70,3 +70,27 @@ function load_answer_area(data) {
 
   answer_area.style.display = "block";
 }
+
+function show_error_msg(error_msg) {
+  var error_area = document.getElementById("error_area");
+  error_area.innerHTML = error_msg;
+}
+
+function show_loading_area() {
+  var loading_area = document.getElementById("loading_area");
+  loading_area.innerHTML = "";
+
+  // Most parts are copied from https://www.w3schools.com/howto/howto_css_loader.asp
+  var loader = document.createElement("div");
+  loader.className = "loader";
+
+  loading_area.appendChild(loader);
+}
+
+function clear_error_loading_area() {
+  var error_area = document.getElementById("error_area");
+  error_area.innerHTML = "";
+
+  var loading_area = document.getElementById("loading_area");
+  loading_area.innerHTML = "";
+}

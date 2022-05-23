@@ -95,7 +95,7 @@ def bad_request(error: HTTPException) -> Tuple[Dict[str, str], int]:
 
 @application.errorhandler(500)
 def internal_error(error: HTTPException) -> Tuple[Dict[str, str], int]:
-    """Error handler for internal error from the app.
+    """Error handler for internal errors.
 
     Parameters
     ----------
@@ -108,3 +108,37 @@ def internal_error(error: HTTPException) -> Tuple[Dict[str, str], int]:
         Dictionary containing the information that an internal error occured.
     """
     return jsonify({"status": "500", "msg": str(error)}), 500
+
+
+@application.errorhandler(502)
+def bad_gateway(error: HTTPException) -> Tuple[Dict[str, str], int]:
+    """Error handler for bad gateway errors.
+
+    Parameters
+    ----------
+    error : HTTPException
+        HTTPException with status code 502.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the information that a bad gateway error occured.
+    """
+    return jsonify({"status": "502", "msg": str(error)}), 502
+
+
+@application.errorhandler(504)
+def gateway_timeout(error: HTTPException) -> Tuple[Dict[str, str], int]:
+    """Error handler for gateway timeouts.
+
+    Parameters
+    ----------
+    error : HTTPException
+        HTTPException with status code 504.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the information that an gateway timeout error occured.
+    """
+    return jsonify({"status": "504", "msg": str(error)}), 504
