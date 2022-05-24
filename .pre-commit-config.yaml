@@ -18,13 +18,13 @@ repos:
         name: Black - format python code
 
   - repo: https://github.com/sqlalchemyorg/zimports
-    rev: v0.5.0
+    rev: v0.6.0
     hooks:
       - id: zimports
         name: zimports - reformat python imports
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.13.8
+    rev: v2.13.9
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
