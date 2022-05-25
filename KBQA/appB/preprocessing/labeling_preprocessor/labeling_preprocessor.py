@@ -318,26 +318,35 @@ def decode_label_with_mapping(s: str) -> str:
     prefixes = list(PREFIX_TO_URI.keys())
     prefixes = [elem for elem in prefixes if elem not in excluded]
     prefixes_regex = '|'.join(prefixes)
-    s = re.sub(f"\\b({prefixes_regex})(?!{prefixes_regex})((?:.(?!\\b({prefixes_regex})))*?):end_label",
+    s = re.sub(f"((?:a )?)\\b({prefixes_regex})(?!{prefixes_regex})((?:.(?!\\b({prefixes_regex})))*?):end_label",
                generate_label_decoding, s)
     return s
 
 
 def generate_label_decoding(match):
-    """Generates the string for "<prefix:> <label_of_the_corresponding_URI> :end_label" which is
+    """Generate the string for "<prefix:> <label_of_the_corresponding_URI> :end_label" which is
     "'<'<corresponding_uri>'>'".
 
     Only supports english labels, i.e. "<label>"@en.
-    We might have multiple results like e.g. http://dbpedia.org/resource/Category:Skype and
+    We might have multiple results e.g. http://dbpedia.org/resource/Category:Skype and
     http://dbpedia.org/resource/Skype. We decide on using the shortest in these cases.
+    We might have multiple results e.g. http://dbpedia.org/ontology/Publisher or http://dbpedia.org/ontology/publisher.
+    We always choose the lower case suffix here, which is "publisher" in this case. An exception for this rule is, if
+    the URI is preceded by a prior "a". Then we choose the upper case, "Publisher" in our example. This is, because
+    upper case usually correspond to a class and "a" indicates that a class is needed.
+    Sometimes, the suffix of a URI contains no ASCII e.g. for the label "writer" we get URIs with suffixes "Writer",
+    "writer" and "<something in non ASCII chars>". If at least one URI with a suffix which contains ASCII exists, we
+    will choose this one over each URI where the suffix does not contain any ASCII.
 
     Args:
         match: A re.Match object.
+
     Returns:
         string: Some "'<'<corresponding_uri>'>'" if a uri is found. Else an empty string "".
     """
-    prefix = match.group(1)
-    label = match.group(2).strip()
+    has_prior_a = match.group(1) == "a "
+    prefix = match.group(2)
+    label = match.group(3).strip()
     uri = None
 
     query = f"""SELECT DISTINCT ?uri WHERE
@@ -356,13 +365,17 @@ def generate_label_decoding(match):
     if len(bindings) > 0:
         uris = [binding["uri"]["value"] for binding in bindings]
         uris = _remove_uris_with_no_ascii_in_suffix(uris=uris)
+        if has_prior_a:
+            uris.sort(reverse=False)  # If we have a type URI, upper case first.
+        else:
+            uris.sort(reverse=True)  # Lower case first.
         uris.sort(key=len)
         uri = uris[0]
 
     if uri is None:
         whole_match = match.group(0)
         return whole_match
-    return "<" + uri + ">"
+    return match.group(1) + "<" + uri + ">"
 
 
 def _remove_uris_with_no_ascii_in_suffix(uris: list[str]) -> list[str]:
