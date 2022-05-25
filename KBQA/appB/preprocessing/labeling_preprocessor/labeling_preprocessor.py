@@ -355,6 +355,7 @@ def generate_label_decoding(match):
     bindings = response["results"]["bindings"]
     if len(bindings) > 0:
         uris = [binding["uri"]["value"] for binding in bindings]
+        uris = _remove_uris_with_no_ascii_in_suffix(uris=uris)
         uris.sort(key=len)
         uri = uris[0]
 
@@ -362,6 +363,47 @@ def generate_label_decoding(match):
         whole_match = match.group(0)
         return whole_match
     return "<" + uri + ">"
+
+
+def _remove_uris_with_no_ascii_in_suffix(uris: list[str]) -> list[str]:
+    """Remove URIs from uris where the suffix does not contain any ASCII.
+
+    Sometimes, the suffix of a URI contains no ASCII e.g. for the label "writer" we get URIs with suffixes "Writer",
+    "writer" and "<something in non ASCII chars>". This function sorts the last on out.
+
+    Parameters
+    ----------
+    uris : list of str
+        The URIs.
+
+    Returns
+    -------
+    list of str
+        The URIs without ones which have no ASCII
+
+    Note
+    ----
+        Only remove URIs, if at least one URI with an ASCII in the suffix exists.
+    """
+    no_ascii = list()
+    at_least_one_ascii = False
+    for uri in uris:
+        suffix = uri.rsplit(sep='/', maxsplit=1)[-1]
+        match = re.search(pattern=r"\w", string=suffix, flags=re.ASCII)
+        if len(suffix) == 0:
+            no_ascii.append(False)
+            at_least_one_ascii = True
+        elif match is None:
+            no_ascii.append(True)
+        else:
+            no_ascii.append(False)
+            at_least_one_ascii = True
+    new_uris = list()
+    if at_least_one_ascii:
+        for uri, no_ascii_in_uri in zip(uris, no_ascii):
+            if not no_ascii_in_uri:
+                new_uris.append(uri)
+    return new_uris
 
 
 def decode_label_with_entity_linking(s: str, context: str, *, confidence: float = 0.1) -> str:
