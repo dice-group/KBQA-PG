@@ -125,7 +125,10 @@ class Dataset:
 
             if len(results) > 0:
                 for question_results in results["bindings"]:
-                    if len(question_results) > 0:
+                    if (
+                        len(question_results) > 0
+                        and "value" in list(question_results.values())[0]
+                    ):
                         answers.append(list(question_results.values())[0]["value"])
 
             self.questions.append(Question(nl_question, sparql_query, answers))
