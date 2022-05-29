@@ -2,6 +2,8 @@ function load_answer_area(data) {
   var question = data["question"];
   var answers = data["answers"];
   var query = data["query"];
+
+  query = format_sparql_query(query);
   query = query.replace(/</g, "&lt;");
   query = query.replace(/>/g, "&gt;");
 
@@ -59,10 +61,9 @@ function load_answer_area(data) {
   query_content.className = "query";
 
   var pre = document.createElement("pre");
-  var code = document.createElement("code");
-  code.innerHTML = query;
+  pre.className = "query_display";
+  pre.innerHTML = query;
 
-  pre.appendChild(code);
   query_content.appendChild(pre);
   query_div.appendChild(query_btn);
   query_div.appendChild(query_content);
@@ -93,4 +94,91 @@ function clear_error_loading_area() {
 
   var loading_area = document.getElementById("loading_area");
   loading_area.innerHTML = "";
+}
+
+function format_sparql_query(query) {
+  keywords = [
+    "SELECT",
+    "DISTINCT",
+    "WHERE",
+    "ASK",
+    "UNION",
+    "FILTER",
+    "CONSTRUCT",
+    "LIMIT",
+    "OFFSET",
+    "COUNT",
+    "GROUP",
+    "BY",
+    "OFFSET",
+  ];
+
+  // replace keywords with upper case keywords
+  for (const keyword of keywords) {
+    query = query.replace(keyword.toLowerCase(), keyword);
+  }
+
+  var open_pattern = /( )*\{( )*/g;
+  query = query.replace(open_pattern, "{\n");
+
+  var close_pattern = /( )*\}( )*/g;
+  query = query.replace(close_pattern, "\n} ");
+
+  var point_pattern = /( )+\.|\.( )+/g;
+  query = query.replace(point_pattern, " .\n");
+
+  var semicolon_pattern = /( )+\;|\;( )+/g;
+  query = query.replace(semicolon_pattern, " ;\n     ");
+
+  // format keywords
+  var where_pattern = /( )*WHERE( )*/g;
+  query = query.replace(where_pattern, "\nWHERE ");
+
+  var union_pattern = /( )*UNION( )*/g;
+  query = query.replace(union_pattern, " UNION ");
+
+  var limit_pattern = /( )*LIMIT( )*/g;
+  query = query.replace(limit_pattern, "\nLIMIT ");
+
+  var order_pattern = /( )*ORDER BY( )*/g;
+  query = query.replace(order_pattern, "\nORDER BY ");
+
+  var group_pattern = /( )*GROUP BY( )*/g;
+  query = query.replace(group_pattern, "\nGROUP BY ");
+
+  var having_pattern = /( )*HAVING( )*/g;
+  query = query.replace(having_pattern, "\nHAVING ");
+
+  var offset_pattern = /( )*OFFSET( )*/g;
+  query = query.replace(offset_pattern, "\nOFFSET ");
+
+  // add indents
+  var indents = 0;
+  var formated_query = "";
+
+  for (var i = 0; i < query.length; i++) {
+    if (query.charAt(i) == "\n") {
+      if (query.charAt(i - 1) == "{") {
+        indents++;
+
+        formated_query += "\n" + "    ".repeat(indents);
+      } else if (query.charAt(i + 1) == "}") {
+        indents--;
+
+        if (indents >= 0) {
+          formated_query += "\n" + "    ".repeat(indents);
+        }
+      } else {
+        formated_query += "\n" + "    ".repeat(indents);
+      }
+    } else {
+      formated_query += query.charAt(i);
+    }
+  }
+
+  // remove empty lines
+  var empty_line_pattern = /^\s*[\r\n]/gm;
+  formated_query = formated_query.replace(empty_line_pattern, "");
+
+  return formated_query;
 }
