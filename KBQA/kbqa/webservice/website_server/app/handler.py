@@ -4,6 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
+from flask import abort
 import requests
 
 
@@ -42,6 +43,15 @@ def process_question(question: str, app: str) -> Tuple[List[str], str]:
         )
     else:
         raise ValueError("Approach should be A or B.")
+
+    if response.status_code == 500:
+        abort(500, description="There seems to be a problem in the endpoint")
+
+    if response.status_code == 502:
+        abort(502, description="The endpoint is not reachable for the moment")
+
+    if response.status_code == 504:
+        abort(504, description="The endpoint is taking too long to find an answer")
 
     response_json = json.loads(response.text)
     bindings, query = extract_bindings_from_qald(response_json)
