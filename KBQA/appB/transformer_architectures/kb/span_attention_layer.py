@@ -3,7 +3,7 @@ import torch
 import math
 
 from pytorch_pretrained_bert.modeling import BertIntermediate, BertOutput, BertSelfOutput
-from kb.common import get_dtype_for_module, extend_attention_mask_for_bert, init_bert_weights
+from KBQA.appB.transformer_architectures.kb.common import get_dtype_for_module, extend_attention_mask_for_bert, init_bert_weights
 
 
 class SpanWordAttention(torch.nn.Module):

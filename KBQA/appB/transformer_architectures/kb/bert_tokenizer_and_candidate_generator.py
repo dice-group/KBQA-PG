@@ -9,7 +9,6 @@ from allennlp.data import Token
 from allennlp.data import Instance
 from allennlp.data import Vocabulary
 from allennlp.data.tokenizers import PretrainedTransformerTokenizer
-from prometheus_client import instance_ip_grouping_key
 from pytorch_pretrained_bert.tokenization import  BasicTokenizer
 
 from KBQA.appB.transformer_architectures.kb.dict_field import DictField

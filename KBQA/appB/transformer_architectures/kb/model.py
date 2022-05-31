@@ -79,19 +79,20 @@ class BertSeq2Seq(nn.Module):
         Export to TorchScript can't handle parameter sharing so we are cloning them instead.
         """
         self._tie_or_clone_weights(
-            self.lm_head, self.encoder.embeddings.word_embeddings
+            self.lm_head, self.encoder.pretrained_bert.bert.embeddings.word_embeddings
         )
 
     def forward(
         self,
         source_ids=None,
         source_mask=None,
+        source_candidates=None,
         triples_ids=None,
         triples_mask=None,
         target_ids=None,
         target_mask=None,
     ):
-        outputs = self.encoder(source_ids, attention_mask=source_mask)
+        outputs = self.encoder(tokens=source_ids, segment_ids=source_mask, candidates=source_candidates)
         question_encoder_output = outputs[0]
         outputs = self.triple_encoder(triples_ids, attention_mask=triples_mask)
         triple_encoder_output = outputs[0]

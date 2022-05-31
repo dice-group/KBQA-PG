@@ -133,7 +133,7 @@ class InputFeatures:
         self.target_mask = target_mask
 
 def replace_mask(text):
-    return ext.replace('[MASK]', ' [MASK] ')
+    return text.replace('[MASK]', ' [MASK] ')
 def convert_examples_to_features_and_candidates(examples, tokenizer, tokenizer_and_candidate_generator, args, stage=None):
     features = []
     for example_index, example in enumerate(examples):

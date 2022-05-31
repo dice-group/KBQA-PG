@@ -4,7 +4,7 @@ from KBQA.appB.transformer_architectures.kb.wordnet import WordNetAllEmbedding
 from allennlp.common import Params
 from allennlp.modules.token_embedders import Embedding
 from allennlp.data import Vocabulary
-
+import torch
 
 def load_entity_linking_wiki(vocab):
     entity_embedding = Embedding(
@@ -117,6 +117,7 @@ if __name__ == "__main__":
     params = Params({"archive_file": archive_file})
     print("Loading Model")
     model = load_model()  # ModelArchiveFromParams.from_params(params=params)
+    model.eval()
     print("Loaded Knowbert")
     print("Loading Batchifier")
     batcher = KnowBertBatchifier(archive_file)
@@ -126,6 +127,20 @@ if __name__ == "__main__":
     # batcher takes raw untokenized sentences
     # and yields batches of tensors needed to run KnowBert
     for batch in batcher.iter_batches(sentences, verbose=True):
+
+        batch['tokens']['tokens'] = batch['tokens']['tokens']['tokens']
+        batch['candidates']['wiki']['candidate_entities']['ids'] = \
+            batch['candidates']['wiki']['candidate_entities']['ids']['token_characters']
+
+        candidate_mask = (batch['candidates']['wiki']['candidate_entities']['ids'] > 0).type(torch.uint8)
+        batch['candidates']['wiki']['candidate_entities']['ids'] -= candidate_mask
+        print(candidate_mask)
+
+        batch['candidates']['wordnet']['candidate_entities']['ids'] = \
+           batch['candidates']['wordnet']['candidate_entities']['ids']['token_characters']
+
+        candidate_mask = (batch['candidates']['wordnet']['candidate_entities']['ids'] > 0).type(torch.uint8)
+        batch['candidates']['wordnet']['candidate_entities']['ids'] -= candidate_mask
         # model_output['contextual_embeddings'] is (batch_size, seq_len, embed_dim) tensor of top layer activations
         print(batch)
         model_output = model(**batch)

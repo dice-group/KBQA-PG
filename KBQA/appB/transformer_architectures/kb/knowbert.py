@@ -902,9 +902,11 @@ class KnowBert(BertPretrainedMetricsLoss):
             end_layer_index = layer_num + 1
             if end_layer_index > start_layer_index:
                 # run bert from start to end layers
+                layer_idx = 0
                 for layer in self.pretrained_bert.bert.encoder.layer[start_layer_index:end_layer_index]:
                     contextual_embeddings = layer(contextual_embeddings, attention_mask)
-                    print(f"Bert Layer: {contextual_embeddings}")
+                    print(f"Bert Layer{layer_num},{layer_idx}: {contextual_embeddings}")
+                    layer_idx += 1
             start_layer_index = end_layer_index
 
             # run the SolderedKG component
