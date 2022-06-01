@@ -26,6 +26,7 @@ import logging
 import os
 import random
 import re
+from pathlib import Path
 
 from model import BertSeq2Seq
 from model import Seq2Seq
@@ -427,6 +428,20 @@ def main():
     parser.add_argument(
         "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
     )
+    parser.add_argument(
+        "--load_bleu_file",
+        default="No",
+        type=str,
+        choices=["Yes", "No"],
+        help='Should an old bleu file from bleu_file_path be loaded. Defaults to "No".',
+    )
+    parser.add_argument(
+        "--bleu_file_path",
+        default="./output/bleu.csv",
+        type=str,
+        help='Path of file for storing bleu scores. Enable loading from this file with "--load_bleu_file Yes". Defaults'
+             ' to "./output/bleu.csv".',
+    )
     # print arguments
     args = parser.parse_args()
     logger.info(args)
@@ -527,6 +542,11 @@ def main():
         logger.info("reload model from {}".format(args.load_model_path))
         model.load_state_dict(torch.load(args.load_model_path))
 
+    # Create new bleu.csv file.
+    bleu_file_path = Path(args.bleu_file_path)
+    if args.load_bleu_file == "No":
+        if bleu_file_path.exists():
+            bleu_file_path.unlink()
     model.to(device)
     if args.local_rank != -1:
         # Distributed training
@@ -775,6 +795,11 @@ def main():
                         f1.write(str(gold.idx) + "\t" + gold.target + "\n")
 
                 bl_score = corpus_bleu(label_str, pred_str) * 100
+                with open(bleu_file_path, "a") as file:
+                    if file.tell() == 0:
+                        file.write(f"{bl_score}")
+                    else:
+                        file.write(f"\n{bl_score}")
 
                 logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
                 logger.info("  " + "*" * 20)
