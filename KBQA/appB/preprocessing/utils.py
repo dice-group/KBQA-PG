@@ -6,6 +6,7 @@ import math
 import os
 from pathlib import Path
 import pickle
+import random
 import re
 from typing import Callable
 from typing import Union
@@ -1316,3 +1317,56 @@ def test_do_valid_preprocessing(sparql: str) -> int:
         print("----------------------------------------------------")
         return 0
     return 1
+
+
+def split_qtq_uniformly(
+    input_file_path: Union[str, os.PathLike, Path],
+    output_folder_path: Union[str, os.PathLike, Path] = "split_data_files",
+    validation_set_portion: float = 0.2,
+) -> tuple[Path, Path]:
+    r"""Split a qtq-file into a training and validation file.
+
+    The validation file has the size of the input file times the validation_set_portion. The training file the
+    respective remainder.
+    Let <input_file_name>.json be the input file. Then we store the validation file in
+    <output_folder_path>/<input_file_name>.val.json and the training file in
+    <output_folder_path>/<input_file_name>.train.json.
+
+    Parameters
+    ----------
+    input_file_path : str, os.PathLike or Path
+        The path to the input file. Suffix must be ".json".
+    output_folder_path: str, os.PathLike or Path, optional
+        The path where the split qtq-file parts should be stored. Defaults to "split_data_files".
+    validation_set_portion: float, optional
+        The portion of the input_file which is stored in the validation file. Defaults to 0.2.
+
+    Returns
+    -------
+    tuple of Path, Path with elements:
+        - Path to the validation file.
+        - Path to the training file.
+    """
+    input_file_path = Path(input_file_path)
+    output_folder_path = Path(output_folder_path)
+    if input_file_path.suffix != ".json":
+        raise ValueError('input_file_path should be ending with ".json"')
+    output_folder_path.mkdir(parents=True, exist_ok=True)
+    val_file_path = output_folder_path / input_file_path.with_suffix(".val.json").name
+    train_file_path = (
+        output_folder_path / input_file_path.with_suffix(".train.json").name
+    )
+    with open(val_file_path, "w", encoding="utf-8") as val_file, open(
+        train_file_path, "w", encoding="utf-8"
+    ) as train_file, open(input_file_path, "r", encoding="utf-8") as input_file:
+        data_json = json.load(input_file)
+        questions = data_json["questions"]
+        random.shuffle(questions)
+        val_set_size = math.floor(validation_set_portion * len(questions))
+        val_questions = questions[:val_set_size]
+        train_questions = questions[val_set_size:]
+        val_dict = {"questions": val_questions}
+        train_dict = {"questions": train_questions}
+        json.dump(obj=val_dict, fp=val_file)
+        json.dump(obj=train_dict, fp=train_file)
+    return val_file_path, train_file_path
