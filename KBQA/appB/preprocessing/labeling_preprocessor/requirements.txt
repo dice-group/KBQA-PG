@@ -2,3 +2,4 @@ tqdm
 SPARQLWrapper
 distance
 requests
+rdflib
