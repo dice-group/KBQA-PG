@@ -1,0 +1,401 @@
+Welche anderen Waffen hat der Erfinder der <A> entwickelt?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Weapon ; dbp_designer var_x sep_dot <A> dbp_designer var_x FILTER ( var_uri != <A> ) brack_close
+Welcher Staat in den USA hat die höchste Bevölkerungsdichte?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type yago:WikicatStatesOfTheUnitedStates ; dbp_densityrank var_rank brack_close ORDER BY ASC(var_rank) LIMIT 1
+Welche Monarchen waren mit jemand deutschem verheiratet?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Monarch ; dbo_spouse var_spouse brack_open var_spouse dbo_birthPlace dbr_Germany brack_close UNION brack_open var_spouse dbo_birthPlace var_p sep_dot var_p dbo_country dbr_Germany brack_close brack_close
+Welche Zustand von das Vereinigt Zustände von Amerika hat das höchste Dichte? ,SELECT var_uri WHERE brack_open var_uri dbp_densityrank var_density brack_close ORDER BY ASC(var_density) LIMIT 1
+Mit wem ist die Tochter von <A> verheiratet?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_child var_child sep_dot var_child dbp_spouse var_uri brack_close
+"Zeig mir eine Liste der Fußballvereine, die in der <A> spielen.",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_SoccerClub ; dbo_league <A> brack_close
+"Gib mir die Haupstädte aller Länder, über die sich der <A> erstreckt.",SELECT DISTINCT var_uri WHERE brack_open <A> dbo_country var_country sep_dot var_country dbo_capital var_uri brack_close
+Welches Land hat die meisten Amtssprachen?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Country sep_dot var_uri dbp_officialLanguages var_language sep_dot brack_close ORDER BY DESC(COUNT(var_language)) OFFSET 0 LIMIT 1
+Wie schwer ist Jupiters leichtester Mond?,SELECT DISTINCT var_n WHERE brack_open var_uri dbp_satelliteOf dbr_Jupiter ; dbo_mass var_n brack_close ORDER BY ASC(var_n) OFFSET 0 LIMIT 1
+Welche Regierungsform hat Südafrika?,SELECT var_uri WHERE brack_open dbr:South_Africa dbo_governmentType var_uri brack_close
+Haben Urdu und Persisch gemeinsame Wurzeln?,ASK WHERE brack_open dbr:Urdu dbo_languageFamily var_uri sep_dot dbr:Persian_language dbo_languageFamily var_uri brack_close
+Wer spielt alles in spanischen Filmen produziert von <A> mit? ,SELECT DISTINCT var_uri WHERE brack_open var_film rdf_type dbo_Film ; dbo_country dbr_Spain ; dbo_producer <A> ; dbo_starring var_uri sep_dot var_uri rdf_type dbo_Person brack_close
+Ist der Baikalsee größer als der Große Bärensee?,ASK WHERE brack_open dbr_Lake_Baikal dbo_areaTotal var_a1 sep_dot dbr_Great_Bear_Lake dbo_areaTotal var_a2 FILTER ( var_a1  var_a2 ) brack_close
+Zeig mir alle Bücher in Asimovs Foundation-Serie.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_series dbr_Foundation_series brack_close
+Wo wurde <A> geboren?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_birthPlace var_uri brack_close
+Welche Stadt hat die älteste funktionierende U-Bahn?,SELECT var_loc WHERE brack_open var_uri dbo_type dbr:Rapid_transit ; dbo_openingYear var_date ; dbo_location var_loc sep_dot var_loc rdf_type dbo_City brack_close ORDER BY ASC(var_date) LIMIT 1
+Wer hat die <A> entworfen?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_architect var_uri brack_close
+Wie viele Menschen leben in Eurasien?,SELECT DISTINCT var_population WHERE brack_open dbr_Eurasia dbo_populationTotal var_population brack_close
+Wer moderiert die <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_presenter var_uri brack_close
+Was ist die Gesamteinwohnerzahl von <A>?,SELECT var_uri WHERE brack_open <A> dbo_populationTotal var_uri brack_close
+In welchem Land ist der <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_locatedInArea var_uri sep_dot var_uri rdf_type dbo_Country brack_close
+Welcher Stilrichtung gehörte der Maler der Drei Tänzer an?,SELECT DISTINCT var_uri WHERE brack_open dbr_The_Three_Dancers dbo_author var_person sep_dot var_person dbo_movement var_uri brack_close
+Liste alle Brettspiele von GMT. ,SELECT var_uri WHERE brack_open var_uri dbo_publisher dbr_GMT_Games brack_close
+Wer entwickelt <A>? ,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_developer var_uri brack_close
+Welche Menschen wurden geboren im <A>? ,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type onto:Person ; onto:birthPlace <A> brack_close
+Wer ist der Bürgermeister von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_leaderName var_uri brack_close
+In welchen Ländern gibt es Orte mit mehr als zwei Höhlen?,SELECT DISTINCT var_uri WHERE brack_open var_cave rdf_type dbo_Cave ; dbo_location var_uri sep_dot var_uri rdf_type dbo_Country brack_close GROUP BY var_uri HAVING ( COUNT(var_cave)  2 )
+Wo starb <A> Lincoln?,SELECT DISTINCT var_uri WHERE brack_open <A>>_Lincoln dbo_deathPlace var_uri brack_close
+Welche Flughäfen fliegt <A> an?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_targetAirport var_uri brack_close
+"Gib mir alle Schauspieler von Filmen, in denen <A> sowohl Regie geführt als auch selber mitgespielt hat.",SELECT DISTINCT var_uri WHERE brack_open var_x dbo_director <A> ; dbo_starring <A> brack_open var_x dbo_starring var_uri brack_close UNION brack_open var_x dbp_starring var_uri brack_close brack_close
+Gib mir alle dänischen Filme.,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Film ; dbo_country dbr_Denmark brack_close
+Gib mir die Enkel von <A>.,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_child var_child sep_dot var_child dbp_children var_uri brack_close
+Wem gehören die <A>?,SELECT DISTINCT var_uri WHERE brack_open dbr_Universal_Studios dbo_owner var_uri brack_close brack_open <A> dbo_parentCompany var_owner. brack_close
+Wer hat Pluto entdeckt?,SELECT var_uri WHERE brack_open dbr:Pluto dbo_discoverer var_uri brack_close
+"Gib mir alle Schauspieler, die in <A> mitgespielt haben.",SELECT DISTINCT var_uri WHERE brack_open <A> dbo_starring var_uri brack_close
+Was war der letzte Film mit Alec <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Film ; dbo_starring <A> ; dbo_releaseDate var_date brack_close ORDER BY DESC(var_date) LIMIT 1
+Was war der erste Name der Band <A> of the Stone Age?,SELECT DISTINCT var_name WHERE brack_open <A>>_of_the_Stone_Age dbo_alias var_name brack_close
+Was war das erste Queen-Album?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Album ; dbp_artist dbr_Queen_(band) ; dbo_releaseDate var_d. brack_close ORDER BY ASC(var_d) OFFSET 0 LIMIT 1
+Welches Museum in <A> hat die meisten Besucher?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Museum ; dbo_location <A> ; dbo_numberOfVisitors var_num brack_close ORDER BY DESC(var_num) OFFSET 0 LIMIT 1
+Welcher von Tim Burtons Filmen hatte das höchste Budget?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_director dbr_Tim_Burton ; dbo_budget var_b brack_close ORDER BY var_b OFFSET 0 LIMIT 1
+In welchen Ländern wird Japanisch gesprochen?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Country ; dbo_language dbr_Japanese_language brack_close
+Wer hat <A> gegründet?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_founder var_uri brack_close
+Wer hat das Titellied für <A> of Thrones geschrieben?,SELECT DISTINCT var_uri WHERE brack_open <A>>_of_Thrones dbo_composer var_uri brack_close
+Wer ist der Präsident von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_leaderName var_uri brack_close
+In welcher Stadt ist John F. <A> gestorben?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_deathPlace var_uri sep_dot var_uri rdf_type dbo_City brack_close
+Was ist der höchste Berg in Australien?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Mountain ; dbo_locatedInArea dbr_Australia; dbo_elevation var_elevation brack_close ORDER BY DESC(var_elevation) LIMIT 1
+Wer schreibt das Farmes' Almanac?,SELECT var_uri WHERE brack_open dbr_Farmers'_Almanac dbp_editor var_uri brack_close
+Zeig mir die Währung in <A> an.,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_currency var_uri brack_close
+In welcher Stadt ist das Hauptquartier der Vereinten Nationen?,SELECT DISTINCT var_uri WHERE brack_open dbr_Headquarters_of_the_United_Nations dbo_location var_uri sep_dot var_uri rdf_type dbo_City brack_close
+Ist <A> die Ehefrau von <A>?,ASK WHERE brack_open <A> dbo_spouse <A> brack_close
+Was ist die Währung der Tschechischen Republik?,SELECT DISTINCT var_uri WHERE brack_open dbr_Czech_Republic dbo_currency var_uri brack_close
+Wo in <A> wird Schaumwein hergestellt?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_wineProduced dbr_Sparkling_wine ; dbo_location <A> brack_close
+Wann hat <A> seine aktive Karriere beendet?,SELECT DISTINCT var_d WHERE brack_open <A> dbo_activeYearsEndDate var_d brack_close
+"Bei welchen Filmen, in denen <A> mitspielt, hat <A> Regie geführt?",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Film ; dbo_starring <A> ; dbo_director <A> brack_close
+In welchen Filmen spielen sowohl <A> als auch <A> mit?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Film ; dbo_starring <A> ; dbo_starring <A> brack_close
+Zeig mir Hemmingways Autobiographie.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_author dbr_Ernest_Hemingway ; dbo_literaryGenre dbr_Autobiography brack_close
+Was sind die fünf Stadtteile von New York?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_governmentType dbr_Boroughs_of_New_York_City brack_close
+Gib mir alle kanadischen Grunge-Plattenfirmen.,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_RecordLabel ; dbo_genre dbr_Grunge ; dbo_country dbr_Canada brack_close
+In welchem Land entspringt der Ganges?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_river dbr_Ganges brack_close
+Ist <A> die Ehefrau von <A>?,ASK WHERE brack_open <A> dbo_spouse <A> brack_close
+Welche Bücher von Kerouac wurden von <A> verlegt?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Book ; dbo_publisher <A> ; dbo_author dbr_Jack_Kerouac brack_close
+Wer hat das Lied <A> geschrieben?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_writer var_uri brack_close
+Was ist die Hauptstadt von Kanada?,SELECT DISTINCT var_uri WHERE brack_open dbr_Canada dbo_capital var_uri brack_close
+Welche Regierungsform hat <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_governmentType var_uri brack_close
+"Zeig mir das Buch, das <A> geschrieben hat.",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Book ; dbo_author <A> brack_close
+Wer hat als erstes den <A> bestiegen?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_firstAscentPerson var_uri brack_close
+Wieviele Sprachen werden in Kolumbien gesprochen?,SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open var_uri dbo_spokenIn dbr_Colombia brack_close
+In welcher Stadt hört die <A> auf?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_routeEnd var_uri brack_close
+Gib mir die Enkel von <A> Presley.,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_child var_child sep_dot var_child dbo_child var_uri brack_close
+Wann endete die Ming-Dynastie?,SELECT DISTINCT var_date WHERE brack_open dbr_Ming_dynasty dbp_yearEnd var_date brack_close
+An welchen militärischen Auseinandersetzungen war Lawrence von Arabien beteiligt?,SELECT DISTINCT var_uri WHERE brack_open dbr_T._E._Lawrence dbo_battle var_uri brack_close
+In welcher Zeitzone liegt <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_timeZone var_uri brack_close
+Gib mir alle Bücher von <A> mit mehr als 300 Seiten.,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Book ; dbo_author <A> ; dbo_numberOfPages var_x FILTER ( var_x  300 ) brack_close
+Hat <A> Lincolns Sterbeort eine Webseite?,ASK WHERE brack_open <A> dbo_deathPlace var_p sep_dot var_p dbo_website var_w brack_close
+Wann wurde die <A> durchgeführt?,SELECT DISTINCT var_d WHERE brack_open <A> dbo_date var_d brack_close
+"Gibt es ein Videospiel, das Battle Chess heißt?","ASK WHERE brack_open var_uri rdf_type dbo_VideoGame ; rdfs:label ""Battle Chess""@en brack_close"
+Hat Ford eine Frabik in Malaysia?,ASK WHERE brack_open var_uri dbo_assembly dbr:Malaysia ; dbo_manufacturer dbr:Ford_Motor_Company brack_close
+Hat <A> <A> beeinflusst?,ASK WHERE brack_open <A> dbo_influencedBy <A> brack_close
+Wieviele Kinder hatte <A>?,SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open <A> dbo_child var_uri brack_close
+Wie groß ist <A>?,SELECT DISTINCT var_num WHERE brack_open <A> dbo_height var_num brack_close
+In welcher Stadt im Vereinigten Königreich ist das Hauptquartier des <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_headquarter var_uri sep_dot var_uri dbo_country dbr_United_Kingdom brack_close
+Wer hat sich <A> ausgedacht?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_creator var_uri brack_close
+Hatte <A> Presley Kinder?,ASK WHERE brack_open <A> dbo_child var_uri brack_close
+Wieviele Sprachen werden in <A> gesprochen?,SELECT (COUNT(DISTINCT var_x) AS var_c) WHERE brack_open var_x dbo_spokenIn <A> brack_close
+Hatte Che <A> Kinder?,ASK WHERE brack_open <A> dbo_child var_uri brack_close
+Hat Kaurismäki jemals den Großen Preis der Jury in Cannes gewonnen?,ASK WHERE brack_open dbr_Aki_Kaurismäki dbo_award dbr_Grand_Prix_(Cannes_Film_Festival) brack_close
+Welcher Partei gehört die Bürgermeisterin von <A> an?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_mayor var_x sep_dot var_x dbo_party var_uri brack_close
+Wer ist der Formel-1-Fahrer mit den meisten Rennen?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_FormulaOneRacer ; dbo_races var_x brack_close ORDER BY DESC(var_x) OFFSET 0 LIMIT 1
+Aus welchem Land kommt <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_locationCountry var_uri brack_close
+Gib mir den Geburtsort von <A>.,SELECT DISTINCT var_place WHERE brack_open <A> dbo_birthPlace var_place brack_close
+Spielt <A> in <A> mit?,ASK WHERE brack_open <A> dbo_starring <A> brack_close
+Wer ist der Sohn von Sonny und <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_parent <A> ; dbo_parent dbr_Sonny_Bono brack_close
+Wieviele ethnische Gruppen leben in Slovenien?,SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open dbr_Slovenia dbo_ethnicGroup var_uri brack_close
+Was ist die Hauptstadt von Kamerun?,SELECT DISTINCT var_uri WHERE brack_open dbr_Cameroon dbo_capital var_uri brack_close
+Wurde <A> in den Vereinigten Staaten geboren?,ASK WHERE brack_open <A> dbo_birthPlace var_city sep_dot var_city dbo_country dbr_United_States brack_close
+Wieviele Seiten hat Krieg und Frieden?,SELECT DISTINCT var_n WHERE brack_open dbr_War_and_Peace dbo_numberOfPages var_n brack_close
+Wer ist das älteste Kind von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_child var_uri sep_dot var_uri dbo_birthDate var_d brack_close ORDER BY ASC(var_d) OFFSET 0 LIMIT 1
+Welche Fernsehserien hat <A> Disney entworfen?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_TelevisionShow ; dbo_creator <A> brack_close
+Welche Traubenarten wachsen in <A>?,SELECT DISTINCT var_uri WHERE brack_open <A>>_wine dbo_growingGrape var_uri brack_close
+War US-Präsident Jackson in einen Krieg verwickelt?,ASK WHERE brack_open dbr_Andrew_Jackson dbp_battles var_battle brack_close
+Wann wurde die Titanic fertiggestellt?,SELECT DISTINCT var_date WHERE brack_open dbr_Titanic dbo_completionDate var_date brack_close
+Hat <A> den Nobelpreis für Physik gewonnen?,ASK WHERE brack_open <A> dbo_award dbr_Nobel_Prize_in_Physics brack_close
+Wie viele Staaten gibt es in Mexiko?,SELECT (COUNT(var_uri) AS var_count) WHERE brack_open var_uri dbp_settlementType dbr:List_of_states_of_Mexico brack_close
+Welcher Wissenschaftler ist bekannt für das Manhattan-Projekt und den Friedensnobelpreis?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_knownFor dbr_Manhattan_Project ; rdf_type dbo_Scientist ; dbo_award dbr_Nobel_Peace_Prize brack_close
+Wieviel hat der Legofilm gekostet?,SELECT DISTINCT var_n WHERE brack_open dbr_The_Lego_Movie dbo_budget var_n brack_close
+Wer hat die Musik für Harold und Maude komponiert?,SELECT DISTINCT var_uri WHERE brack_open dbr_Harold_and_Maude dbp_music var_uri brack_close
+Liste alle Episoden der ersten Staffel der HBO-Fernsehserie Die Sopranos auf.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_series dbr_The_Sopranos ; dbp_season 1 brack_close
+Welche Stadt hat die wenigsten Einwohner?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_City ; dbo_populationTotal var_pop brack_close ORDER BY ASC(var_pop) OFFSET 0 LIMIT 1
+Wo liegt <A> begraben?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_restingPlace var_uri brack_close
+Spielt <A> für Real Madrid?,ASK WHERE brack_open <A> dbo_team dbr_Real_Madrid_C.F. brack_close
+Wer schrieb das Buch Die Säulen der Erde?,SELECT DISTINCT var_uri WHERE brack_open dbr_The_Pillars_of_the_Earth dbo_author var_uri brack_close
+Haben Prinz Harry und Prinz William dieselben Eltern?,"ASK WHERE brack_open dbr_Prince_William,_Duke_of_Cambridge dbo_parent var_x sep_dot dbr_Prince_Harry,_Duke_of_Sussex dbo_parent var_x brack_close"
+Wer war der Doktorvater von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_doctoralAdvisor var_uri brack_close
+Hat <A> mehr Episoden als <A> of Thrones?,ASK WHERE brack_open <A> dbo_numberOfEpisodes var_x sep_dot <A>>_of_Thrones dbo_numberOfEpisodes var_y FILTER ( var_x  var_y ) brack_close
+Wer hat Vincent van Gogh inspiriert?,SELECT DISTINCT var_uri WHERE brack_open dbr:Vincent_van_Gogh dbp_training var_uri brack_close
+Wieviel hat <A> gekostet?,SELECT DISTINCT var_n WHERE brack_open <A> dbo_budget var_n brack_close
+Ist Proinsulin ein Protein?,ASK WHERE brack_open dbr_Proinsulin rdf_type dbo_Protein brack_close
+Welche Unternehmen wurden 1950 gegründet?,"SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Organisation brack_open var_uri dbo_formationYear var_date brack_close UNION brack_open var_uri dbo_foundingYear var_date brack_close UNION brack_open var_uri dbp_foundation var_date brack_close UNION brack_open var_uri dbp_formation var_date brack_close FILTER regex(var_date, ""^1950"") brack_close"
+Wer hat den Comic <A> erfunden?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_creator var_uri brack_close
+Gib mir alle <A>-14-Astronauten.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_mission <A>>_14 brack_close
+Wer schrieb das Buch Das Säulen von das Erde? ,SELECT DISTINCT var_uri WHERE brack_open dbr_The_Pillars_of_the_Earth dbo_author var_uri brack_close
+Welche Raumflüge sind von <A> gestartet?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_launchPad <A>>_Cosmodrome brack_close
+"Gib mit eine Liste aller Trompeter, die <A> waren.",SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_occupation <A> ; dbo_instrument dbr_Trumpet brack_close
+Welche US-Bundesstaaten liegen in derselben Zeitzone wie <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_timezone var_x sep_dot var_uri rdf_type yago:WikicatStatesOfTheUnitedStates ; dbp_timezone var_x FILTER ( var_uri != <A> ) brack_close
+In welchen US-Staaten gibt es Goldvorkommen?,"SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type yago:WikicatStatesOfTheUnitedStates ; dbp_mineral var_mineral FILTER regex(var_mineral, ""gold"", ""i"") brack_close"
+Wer ist das Strom Bundes Minister von Finanzen im Deutschland? ,SELECT var_leader WHERE brack_open dbr_Federal_Ministry_of_Finance_(Germany) dbo_leader var_leader brack_close
+In welchem Land liegt <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_country var_uri brack_close
+Wer hat <A> in Breaking Bad gespielt?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_portrayer var_uri brack_close
+In welchem Land entspringt der Nil?,SELECT DISTINCT var_uri WHERE brack_open dbr_Nile dbo_mouthPlace var_uri brack_close
+Im welche Zustand Penn Zustand Universität ist gelegen? ,SELECT var_s WHERE brack_open dbr:Pennsylvania_State_University dbo_state var_s brack_close
+Was ist das größte Stadion in Spanien?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Stadium ; dbo_location dbr_Spain ; dbo_seatingCapacity var_n brack_close ORDER BY DESC(var_n) OFFSET 0 LIMIT 1
+Wer ist der Trainer von Ankaras Eishockeymannschaft?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_city dbr_Ankara ; dbo_league dbr_Turkish_Ice_Hockey_First_League ; dbo_coach var_uri brack_close
+Wie groß ist das Bereich von VEREINIGTES KÖNIGREICH? ,SELECT var_area WHERE brack_open dbr:United_Kingdom dbo_area var_area brack_close
+Wer hat <A> erfunden?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_creator var_uri brack_close
+War Sigmund Freud verheiratet?,ASK WHERE brack_open dbr:Sigmund_Freud dbo_spouse var_uri brack_close
+Wer sind die Entwickler von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_developer var_uri brack_close
+"Gib mir alle Filme, bei denen <A> Regie geführt hat.",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Film ; dbo_director <A> brack_close
+Sind Laubfrösche Amphibien?,ASK WHERE brack_open dbr_Hylidae dbo_class dbr_Amphibian brack_close
+Wo ist der Westminster-Palast?,SELECT var_uri WHERE brack_open dbr_Palace_of_Westminster dbo_location var_uri brack_close
+Wie viel ist das Elevation von Düsseldorf Flughafen ? ,SELECT var_ele WHERE brack_open dbr:Düsseldorf_Airport dbo_elevation var_ele brack_close LIMIT 1
+Wie viel ist das Population von Mexiko Stadt ? ,SELECT var_Mexico_City WHERE brack_open dbr:Mexico_City dbo_populationTotal var_Mexico_City brack_close
+Wer war der erste König von England?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Royalty ; rdf_type yago:WikicatEnglishMonarchs ; dbo_activeYearsStartYear var_date brack_close ORDER BY ASC(var_date) OFFSET 0 LIMIT 1
+Wer ist der Herausgeber von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_editor var_uri brack_close
+Welche Preise hat <A> gewonnen?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_award var_uri brack_close
+Wer ist der jüngste Dartspieler?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_DartsPlayer ; dbo_birthDate var_date brack_close ORDER BY DESC(var_date) OFFSET 0 LIMIT 1
+Ist Pferderennen ein Sport,ASK WHERE brack_open dbr:Horse_racing rdf_type dbo_Sport brack_close
+Welchen Fluss überspannt die <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_crosses var_uri brack_close
+Wieviele Menschen leben in Polen?,SELECT DISTINCT var_uri WHERE brack_open dbr_Poland dbo_populationTotal var_uri brack_close
+Wann war das letzte Folge von das Fernseher Serie Freunde ausgestrahlt? ,SELECT var_date WHERE brack_open dbr:Friends dbo_completionDate var_date brack_close
+Heißt die Frau von Präsident <A> Michelle?,"ASK WHERE brack_open <A> dbo_spouse var_spouse sep_dot var_spouse rdfs:label var_name FILTER regex(var_name, ""Michelle"") brack_close"
+Wer ist 8. Präsident von UNS? ,SELECT var_name WHERE brack_open dbr:8th_President_of_the_United_States dbo_wikiPageRedirects var_link sep_dot var_link dbp_name var_name brack_close
+Wie viel ist das gesamt Population von europäisch Union? ,SELECT var_europop WHERE brack_open dbr:European_Union dbo_populationTotal var_europop brack_close
+Gib mir alle von der <A> betriebenen Startrampen.,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_LaunchPad ; dbo_operator <A> brack_close
+Wer hat das Videospiel <A> of Warcraft entwickelt?,SELECT DISTINCT var_uri WHERE brack_open <A>>_of_Warcraft dbo_developer var_uri brack_close
+Was ist das Geburt Name von Adele? ,SELECT var_bn WHERE brack_open dbr:Adele dbo_birthName var_bn brack_close
+Was ist das Population von Kairo? ,SELECT var_pop WHERE brack_open dbr:Cairo dbo_populationTotal var_pop brack_close
+Lebt <A> noch?,ASK WHERE brack_open <A> dbo_deathDate var_date FILTER ( ! bound(var_date) ) brack_close
+Was ist das letzte Arbeit von Und Braun? ,SELECT var_book WHERE brack_open var_book dbo_author dbr:Dan_Brown sep_dot var_book dbp_releaseDate var_date brack_close ORDER BY DESC(xsd:date(var_date)) LIMIT 1
+Woher ist Sungkyunkwan Universität? ,SELECT DISTINCT var_country WHERE brack_open dbr:Sungkyunkwan_University dbo_city var_city ; dbo_country var_country brack_close
+Wer ist das Autor von das Deutung von Träume? ,SELECT var_Author WHERE brack_open dbr:The_Interpretation_of_Dreams dbo_author var_Author brack_close
+Wann war das Tod von Shakespeare? ,SELECT var_x WHERE brack_open dbr:William_Shakespeare dbo_deathDate var_x brack_close LIMIT 1
+Wer hat Slack entwickelt?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_product dbr_Slack_(software) brack_close
+Woher ist das Ursprung von Carolina Sensenmann? ,SELECT var_uri WHERE brack_open dbr:Carolina_Reaper dbo_origin var_uri brack_close
+In welchem Jahr wurde <A> geboren?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_birthYear var_uri brack_close
+Wie oft hat <A> geheiratet?,SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open <A> dbo_spouse var_uri brack_close
+Hieß die Frau von Präsident <A> Mary?,"ASK WHERE brack_open <A> dbo_spouse var_spouse sep_dot var_spouse rdfs:label var_name FILTER regex(var_name, ""Mary"") brack_close"
+Durch welche Städte fließt die <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_subdivisionName var_uri brack_close
+In welcher Programmiersprache wurde <A> geschrieben?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_programmingLanguage var_uri brack_close
+Welche Universiät hat <A> besucht?,SELECT DISTINCT var_university WHERE brack_open <A> dbo_almaMater var_university brack_close
+Liste alle Musicals mit Musik von <A> auf.,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Musical ; dbo_musicBy <A> brack_close
+Wann wurde <A> geboren?,SELECT DISTINCT var_date WHERE brack_open <A> dbo_birthDate var_date brack_close
+Welche Firmen stellen Hovercrafts her?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Company ; dbo_product dbr_Hovercraft brack_close
+Wer war die Frau von US-Präsident <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_spouse var_uri brack_close
+Wieviele Menschen leben in der Hauptstadt Australiens?,SELECT DISTINCT var_num WHERE brack_open dbr_Australia dbo_capital var_x sep_dot var_x dbo_populationTotal var_num brack_close
+In welchem alten Reich konnte man mit Kakaobohnen bezahlen?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_currency dbr_Cocoa_bean brack_close
+Wie viele Theorien hat Albert Einstein formuliert?,SELECT (COUNT(var_uri) AS var_count) WHERE brack_open dbr:Albert_Einstein dbo_knownFor var_uri brack_close
+Wer hat den Soundtrack für Camerons Titanic geschrieben?,SELECT DISTINCT var_uri WHERE brack_open dbr_Titanic_(1997_film) dbo_musicComposer var_uri brack_close
+Gib mir die Laufzeit von <A> Story.,SELECT DISTINCT var_runtime WHERE brack_open <A>>_Story dbo_runtime var_runtime brack_close
+Mit Wie viele Länder Ich rannte hat Grenzen? ,SELECT var_border WHERE brack_open dbr:Geography_of_Iran dbp_borders var_border brack_close LIMIT 8
+Welche Elektronikunternehmen wurden in <A> gegründet?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Company ; dbo_industry dbr_Electronics; dbo_location <A> brack_close
+Wer war der Nachfolger von John F. <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_successor var_uri brack_close
+Wer ist Bürgermeister von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_mayor var_uri brack_close
+Hat <A> eine Universität besucht?,ASK WHERE brack_open <A> dbo_almaMater var_x sep_dot var_x rdf_type dbo_University brack_close
+Ist <A> verheiratet?,ASK WHERE brack_open <A> dbo_spouse var_uri brack_close
+Welches indische Unternehmen hat die meisten Angestellten?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Company ; dbo_location dbr_India ; dbo_numberOfEmployees var_n brack_close ORDER BY DESC(var_n) OFFSET 0 LIMIT 1
+Wer war der Vizepräsident unter John F. <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_vicePresident var_uri brack_close
+Aus welchem Land kommt der Erfinder von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_creator var_x sep_dot var_x dbp_nationality var_uri brack_close
+In welcher Stadt ist die Heinekenbrauerei?,SELECT DISTINCT var_uri WHERE brack_open dbr_Heineken dbo_manufacturer var_x sep_dot var_x dbp_locationCity var_uri brack_close
+Ist <A> ein Demokrat?,ASK WHERE brack_open <A> dbo_party dbr_Democratic_Party_(United_States) brack_close
+Liste die Kinder von <A> auf.,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_child var_uri brack_close
+Aus welcher Region ist der <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_wineRegion var_uri brack_close
+Wie groß ist das gesamt Bereich von Norden Rhein- Westfalen? ,SELECT var_tarea WHERE brack_open dbr:North_Rhine-Westphalia dbo_areaTotal var_tarea brack_close
+Welche Stadt hat die meisten Einwohner?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_City ; dbo_populationTotal var_pop brack_close ORDER BY DESC(var_pop) OFFSET 0 LIMIT 1
+Was ist Donald Trumps Main Geschäft? ,SELECT var_owner WHERE brack_open var_owner dbo_owner dbr:Donald_Trump brack_close
+Wann werden Anfang das Finale Spiel von das Fußball Welt Tasse 2018? ,SELECT var_Date WHERE brack_open dbr:2018_FIFA_World_Cup_Final dbo_date var_Date brack_close
+Bei wievielen Filmen hat <A> Regie geführt?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_director <A> brack_close
+Wie viel ist das Population Irak? ,SELECT var_pIraq WHERE brack_open dbr:Iraq dbo_populationTotal var_pIraq brack_close
+Wieviele Einwohner hat die größte Stadt in Kanada?,SELECT DISTINCT var_num WHERE brack_open dbr_Canada dbo_largestCity var_city sep_dot var_city dbo_populationTotal var_num brack_close
+Wer ist der Bürgermeister der Hauptstadt von Französisch-Polynesien?,SELECT DISTINCT var_uri WHERE brack_open dbr_French_Polynesia dbp_capital var_x sep_dot var_x dbo_mayor var_uri brack_close
+"Gib mir alle Schauspieler von Filmen, in denen <A> Regie geführt hat.",SELECT DISTINCT var_uri WHERE brack_open var_x dbo_director <A> sep_dot var_x dbo_starring var_uri brack_close
+Wie groß ist <A>?,SELECT DISTINCT var_height WHERE brack_open <A> dbo_height var_height brack_close
+Wie viel ist das Population Dichte Rang von Deutschland? ,SELECT var_rank WHERE brack_open dbr:Germany dbp_populationDensityRank var_rank brack_close
+Was ist der höchste Berg in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Mountain ; dbo_locatedInArea <A> ; dbo_elevation var_num brack_close ORDER BY DESC(var_num) OFFSET 0 LIMIT 1
+Liste alle Spiele von GMT auf.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_publisher dbr_GMT_Games brack_close
+Was ist die Amtssprache Von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_officialLanguage var_uri brack_close
+In welcher Stadt ist <A> gestorben?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_deathPlace var_uri sep_dot var_uri rdf_type dbo_City brack_close
+Was ist in <A> drin?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_ingredient var_uri brack_close
+In welchem Land befindet sich der <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_country var_uri brack_close
+Gib mir alle Videospiele von <A>.,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_product var_uri brack_close
+Gib mir alle Bandmitglieder von Prodigy.,SELECT DISTINCT var_uri WHERE brack_open dbr_The_Prodigy dbo_bandMember var_uri brack_close
+In welcher Zeitzone liegt Rom?,SELECT DISTINCT var_uri WHERE brack_open dbr_Rome dbo_timeZone var_uri brack_close
+Wie hoch ist der Leuchtturm in <A>?,SELECT DISTINCT var_num WHERE brack_open <A>>_Lighthouse dbo_height var_num brack_close
+Wer ist der Bürgermeister von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_leaderName var_uri brack_close LIMIT 1
+Was ist die größte Stadt in Australien?,SELECT DISTINCT var_uri WHERE brack_open dbr_Australia dbo_largestCity var_uri brack_close
+Wer war mit Präsident Chirac verheiratet?,SELECT DISTINCT var_uri WHERE brack_open dbr_Jacques_Chirac dbo_spouse var_uri brack_close
+Wie hoch ist der <A>?,SELECT DISTINCT var_num WHERE brack_open <A> dbo_height var_num brack_close
+Wie tief ist Lake Placid?,SELECT DISTINCT var_n WHERE brack_open dbr_Lake_Placid_(Texas) dbo_maximumDepth var_n brack_close
+Zeig mir alle Museen in <A>.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Museum ; dbo_location <A> brack_close
+Welche Höhlen haben mehr als 3 Eingänge?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Cave ; dbp_entranceCount var_entrance FILTER ( var_entrance  3 ) brack_close
+Wer ist der größte Spieler der <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_team <A> ; dbo_height var_h brack_close ORDER BY DESC(var_h) OFFSET 0 LIMIT 1
+Was sind laut IGN die Top-10-Action-Rollenspiele?,SELECT DISTINCT var_uri WHERE brack_open var_uri http://purl.org/dc/terms/subject dbr_Category:Action_role-playing_video_games ; dbp_ign var_score brack_close ORDER BY DESC(var_score) LIMIT 10
+"Gib mir alle Schriftsteller, die den Literaturnobelpreis gewonnen haben.",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Writer ; dbo_award dbr_Nobel_Prize_in_Literature brack_close
+"Zeig mir alle Basketballspieler, die größer als 2 Meter sind.",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_BasketballPlayer ; dbo_height var_n FILTER ( var_n  2.0 ) brack_close
+Wann wurde die Freiheitsstatue erbaut?,SELECT DISTINCT var_date WHERE brack_open dbr_Statue_of_Liberty dbp_beginningDate var_date brack_close
+Welche Staaten grenzen an <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_borderingstates var_uri brack_close
+Wer hat <A> entwickelt?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_developer var_uri brack_close
+Wo ist <A> gestorben?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_deathPlace var_uri brack_close
+In welchen Filmen spielt <A> mit?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Film ; dbo_starring <A> brack_close
+"Zeig mir alle Schwimmer, die in <A> geboren wurden.",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Swimmer ; dbo_birthPlace <A> brack_close
+Gib mir alle Kosmonauten.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Astronaut brack_open var_uri dbo_nationality dbr_Russia brack_close UNION brack_open var_uri dbo_nationality dbr_Soviet_Union brack_close brack_close
+Nenne mir alle Schweizer Nonprofit-Organisationen?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_type dbr_Nonprofit_organization brack_open var_uri dbo_location dbr_Switzerland brack_close UNION brack_open var_uri dbo_location var_x sep_dot var_x dbo_country dbr_Switzerland brack_close brack_close
+Welche Präsidenten wurden 1945 geboren?,"SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_President ; dbo_birthDate var_date FILTER regex(var_date, ""^1945"") brack_close"
+Was für Musik hat <A> gemacht?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_genre var_uri brack_close
+Wo spielen die <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_ballpark var_uri brack_close
+Welche japanischen Vulkane sind seit 2000 ausgebrochen?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Volcano ; dbo_locatedInArea dbr_Japan ; dbo_eruptionYear var_date FILTER ( year(var_date) >= 2000 ) brack_close
+Welche Brücken überqueren die <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Bridge ; dbo_crosses <A> brack_close
+Was ist die offizielle Farbe der Universität Oxford?,SELECT DISTINCT var_string WHERE brack_open dbr_University_of_Oxford dbo_officialSchoolColour var_string brack_close
+Wieviele Filme hat <A> produziert?,SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open var_uri dbo_producer <A> brack_close
+Gib mir alle dänischen Filme.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Film ; dbo_country dbr_Denmark brack_close
+Was ist die häufigste Todesursache?,SELECT DISTINCT var_x WHERE brack_open var_uri dbo_deathCause var_x sep_dot brack_close ORDER BY DESC(COUNT(DISTINCT var_uri)) OFFSET 0 LIMIT 1
+Wer sind die vier jüngsten MVP Baskettballspieler?,"SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_BasketballPlayer ; dbo_birthDate var_date ; dbp_highlights var_h FILTER regex(var_h, ""MVP"") brack_close ORDER BY DESC(var_date) OFFSET 0 LIMIT 4"
+Gib mir alle Unternehmen in <A>.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Company brack_open var_uri dbo_location <A> brack_close UNION brack_open var_uri dbo_headquarter <A> brack_close UNION brack_open var_uri dbo_locationCity <A> brack_close brack_close
+Bei wievielen Filmen hat <A> Regie geführt?,SELECT COUNT(DISTINCT var_uri AS var_uri) WHERE brack_open var_uri dbo_director <A> sep_dot brack_close
+Welche Flüsse fließen in deutsche Seen?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_River sep_dot var_x dbo_inflow var_uri ; a dbo_Lake ; dbo_country dbr_Germany brack_close
+"Gib mir alle Inseln, die zu <A> gehören.",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Island ; dbo_country <A> brack_close
+Wieviele Einwohner hat <A>?,SELECT DISTINCT var_num WHERE brack_open <A> dbo_populationBlank var_num brack_close
+Gib mir alle <A>-14-Astronauten.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_mission <A>>_14 brack_close
+Welche Unternehmen haben mehr als 1 Millionen Angestellte?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Company brack_open var_uri dbo_numberOfEmployees var_n brack_close UNION brack_open var_uri dbp_numEmployees var_n brack_close FILTER ( var_n  1000000 ) brack_close
+"In welchem Filmen, bei denen <A> Regie geführt hat, hat <A> mitgespielt?",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Film ; dbo_starring <A> ; dbo_director <A> brack_close
+Gib mir alle Vereine in der <A>.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_SoccerClub ; dbo_league <A> brack_close
+Was ist die höhchste Stelle des Ural?,SELECT DISTINCT var_uri WHERE brack_open dbr_Ural_Mountains dbp_highest var_uri brack_close
+Wer ist der Gouverneur von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_governor var_uri brack_close
+Wo hat der Architekt des Eiffelturms studiert?,SELECT DISTINCT var_uri WHERE brack_open dbr_Eiffel_Tower dbo_architect var_x sep_dot var_x dbp_almaMater var_uri brack_close
+"Gib mir alle Welterbestätten, die in den vergangenen zwei Jahren aufgenommen wurden.",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_WorldHeritageSite sep_dot brack_open var_uri dbp_year '2020'^^xsd:integer sep_dot brack_close UNION brack_open var_uri dbp_year '2021'^^xsd:integer sep_dot brack_close brack_close
+"Gib mir alle Schauspieler, die nach 1950 in <A> geboren wurden.",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Actor sep_dot var_uri dbo_birthPlace <A> sep_dot var_uri dbo_birthDate var_date sep_dot FILTER ( var_date >= 1950) brack_close
+In welchen Filmen spielen sowohl <A> als auch <A> mit?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_starring <A> ; dbo_starring <A> brack_close
+Gib mir alle gemeinnützigen Organisationen in Australien.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_type dbr_Nonprofit_organization brack_open var_uri dbo_locationCountry dbr_Australia brack_close UNION brack_open var_uri dbo_location var_x sep_dot var_x dbo_country dbr_Australia brack_close brack_close
+Welcher Papst folgte auf Johannes Paul II?,SELECT DISTINCT var_uri WHERE brack_open dbr_Pope_John_Paul_II dbp_successor var_uri brack_close
+Gib mir alle ESA-Astronauten.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Astronaut ; dbp_type dbr_European_Space_Agency brack_close
+Wer war 1978 Präsident von Pakistan?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_title dbr_President_of_Pakistan ; dbp_years 1978 brack_close
+Wem gehört Rolls-Royce?,SELECT DISTINCT var_uri WHERE brack_open dbr_Rolls-Royce_Motors dbo_owner var_uri brack_close
+Wieviele Museen hat <A>?,SELECT (COUNT(DISTINCT var_uri)) WHERE brack_open var_uri a dbo_Museum ; dbo_location <A> brack_close
+Wo wurde JFK ermordet?,SELECT DISTINCT var_uri WHERE brack_open dbr_John_F._Kennedy dbo_deathPlace var_uri brack_close
+Gib mir alle <A>.,"SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Person brack_open var_uri dbo_office ""Chancellor of Germany"" brack_close UNION brack_open var_uri dbp_office <A> brack_close brack_close"
+"Nenne mir alle Personen, die an <A> geboren sind. ",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Person brack_open var_uri dbo_birthDate var_date brack_close UNION brack_open var_uri dbp_birthDate var_date brack_close <A> dbp_date var_date brack_close
+Welches Bier kommt aus Irland?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_type dbr_Beer ; dbo_origin dbr_Ireland brack_close
+Über welche Länder erstreckt sich der <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_country var_uri brack_close
+Wieviele Angestellte hat <A>?,SELECT DISTINCT var_number WHERE brack_open <A> dbo_numberOfEmployees var_number brack_close
+Liste alle Episoden der ersten Staffel der HBO-Fernsehserie Die Sopranos auf.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_series dbr_The_Sopranos ; dbp_season 1 brack_close
+Hat die neue Battlestar-Galactica-Serie mehr Episoden als die alte?,ASK WHERE brack_open dbr_Battlestar_Galactica_%281978_TV_series%29 dbo_numberOfEpisodes var_x sep_dot dbr_Battlestar_Galactica_%282004_TV_series%29 dbo_numberOfEpisodes var_y FILTER ( var_y  var_x ) brack_close
+Gib mir alle Filme des Produzenten <A>.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Film ; dbo_producer <A> brack_close
+Wer hat <A> in Matrix gespielt?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_portrayer var_uri brack_close
+Welche griechischen Parteien sind pro-europäisch?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_PoliticalParty ; dbo_country dbr_Greece ; dbo_ideology dbr_Pro-Europeanism brack_close
+"Gib mir eine Liste aller <A>, die Trompete spielen.",SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_occupation <A> ; dbo_instrument dbr_Trumpet brack_close
+Ist Ägyptens größte Stadt auch seine Hauptstadt?,ASK WHERE brack_open dbr_Egypt dbo_largestCity var_large ; dbo_capital var_capital FILTER ( var_large = var_capital ) brack_close
+Welche Raketen sind von <A> gestartet?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Rocket ; dbo_launchSite <A>>_Cosmodrome brack_close
+"Welche Schachspieler starben am selben Ort, an dem sie geboren wurden?",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_ChessPlayer ; dbo_birthPlace var_x ; dbo_deathPlace var_y FILTER ( var_x = var_y ) brack_close
+Wem gehört <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_founder var_uri brack_close
+Gib mir alle Filme mit <A>.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Film ; dbo_starring <A> brack_close
+In welchem US-Bundesstaat liegt <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_location var_uri sep_dot var_uri dbo_country dbr_United_States brack_close
+"Gib mir alle Städte in <A>, die mehr als 100000 Einwohner haben.",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_City ; dbo_subdivision <A> ; dbo_populationTotal var_inhabitants FILTER ( var_inhabitants  100000 ) brack_close
+Welche Berge sind höher als der <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_elevation var_elevation sep_dot var_uri a dbo_Mountain brack_open var_uri dbo_elevation var_otherelevation brack_close UNION brack_open var_uri dbp_elevationM var_otherelevation brack_close FILTER ( var_otherelevation  var_elevation ) brack_close
+Worauf ist die <A> spezialisiert?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_speciality var_uri brack_close
+Wann wurde <A> erschossen?,SELECT DISTINCT var_date WHERE brack_open <A> dbo_deathDate var_date brack_close
+Gib mir eine Liste aller Könige von Rom.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_title dbr_King_of_Rome brack_close
+"Gib mir alle Personen, die in Wien geboren wurden und in <A> gestorben sind.",SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_birthPlace dbr_Vienna ; dbo_deathPlace <A> brack_close
+Ist <A> Lukes Vater?,ASK WHERE brack_open <A> dbo_child dbr_Luke_Skywalker brack_close
+Zeig mir alle Brauereien in Australien.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Brewery brack_open var_uri dbo_location dbr_Australia brack_close UNION brack_open var_uri dbo_location var_x sep_dot var_x dbo_country dbr_Australia brack_close brack_close
+"Gib mir alle Filme, die von <A> produziert wurden und ein Budget von mindestens 80 Millionen Dollar hatten.",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Film sep_dot var_uri dbo_director <A> sep_dot var_uri dbo_budget var_b sep_dot FILTER( xsd:double(var_b) >= 8.0E7 ) brack_close
+Gib mir alle Fußballvereine in Spanien.,"SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_SoccerClub brack_open var_uri dbo_ground dbr_Spain brack_close UNION brack_open var_uri dbp_ground var_ground FILTER regex(var_ground, ""Spain"") brack_close brack_close"
+"Wer produzierte Filme, in denen <A> mitspielt?",SELECT DISTINCT var_uri WHERE brack_open var_film a dbo_Film ; dbo_starring <A> ; dbo_producer var_uri brack_close
+Gib mir alle Schäferhundrassen.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_breed dbr_German_Shepherd brack_close
+Wer ist der schwerste Spieler der <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Person ; dbo_weight var_num brack_open var_uri dbp_team <A> brack_close UNION brack_open var_uri dbp_draftTeam <A> brack_close UNION brack_open var_uri dbo_draftTeam <A> brack_close brack_close ORDER BY DESC(var_num) OFFSET 0 LIMIT 1
+Welche Sprachen werden in Estland gesprochen?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_spokenIn dbr_Estonia brack_close
+Was ist das größte Land der Welt?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Country ; dbo_area var_n brack_close ORDER BY DESC(var_n) OFFSET 0 LIMIT 1
+Was ist das größten Stadt im Amerika? ,SELECT var_lcity WHERE brack_open dbr:United_States dbo_largestCity var_lcity brack_close
+Welcher Papst hat das Vatikanische Fernsehen gegründet?,SELECT var_uri WHERE brack_open var_uri rdf_type dbo_Pope sep_dot dbr_Vatican_Media dbo_foundedBy var_uri brack_close
+Wer entdeckte <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_discoverer var_uri brack_close
+Wer ist der König der Niederlande?,SELECT DISTINCT var_uri WHERE brack_open dbr_Kingdom_of_the_Netherlands dbp_leaderName var_uri brack_close OFFSET 0 LIMIT 1
+Ist <A> ein Getränk?,ASK WHERE brack_open <A> rdf_type dbo_Beverage brack_close
+Was ist das Alma mater von das Kanzler von Deutschland Angela Merkel? ,SELECT var_Almamater WHERE brack_open dbr:Angela_Merkel dbo_almaMater var_Almamater brack_close
+Wer schrieb das Buch Die Säulen der Erde?,SELECT DISTINCT var_uri WHERE brack_open dbr_The_Pillars_of_the_Earth dbo_author var_uri brack_close
+Welche Flughäfen fliegt <A> an?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_targetAirport var_uri brack_close
+Woher ist das Geburtsort von Goethe? ,SELECT var_Goethe WHERE brack_open dbr:Johann_Wolfgang_von_Goethe dbo_birthPlace var_Goethe brack_close
+War die Kubakrise vor der Schweinebuchtinvasion?,ASK WHERE brack_open dbr_Cuban_Missile_Crisis dbo_date var_x sep_dot dbr_Bay_of_Pigs_Invasion dbo_date var_y FILTER ( var_x  var_y ) brack_close
+Welche Zutaten brauche ich für Möhrenkuchen?,SELECT DISTINCT var_uri WHERE brack_open dbr_Carrot_cake dbo_ingredient var_uri brack_close
+Wer hat <A> gegründet?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_authors var_uri brack_close
+Welche Schauspieler wurden in <A> geboren?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Actor brack_open var_uri dbo_birthPlace <A> brack_close UNION brack_open var_uri dbo_birthPlace var_place sep_dot var_place dbo_country <A> brack_close brack_close
+Wieviele Kohlenhydrate hat Erdnussbutter?,SELECT DISTINCT var_carbs WHERE brack_open dbr_Peanut_butter dbp_carbs var_carbs brack_close
+Wer hat die meisten Filme produziert?,SELECT DISTINCT var_uri WHERE brack_open var_film rdf_type dbo_Film sep_dot var_film dbo_producer var_uri sep_dot brack_close ORDER BY DESC(COUNT(var_film)) OFFSET 0 LIMIT 1
+Wieviele Angestellte hat <A>?,SELECT DISTINCT var_num WHERE brack_open <A> dbo_numberOfEmployees var_num brack_close
+Gib mir alle in <A> geborenenen Schauspieler.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Actor ; dbo_birthPlace <A> brack_close
+Wer hat <A> erfunden?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_creator var_uri brack_close
+Auf welchen Musikalben ist das Lied Last Christmas?,"SELECT DISTINCT var_uri WHERE brack_open var_single dbo_album var_uri ; http://www.w3.org/2000/01/rdf-schema#label ""Last Christmas""@en brack_close"
+Wann wurde die Provinz <A> gegründet?,SELECT DISTINCT var_date WHERE brack_open <A> dbp_admittancedate var_date brack_close
+Gib mir alle Fernsehserien mit Neil Patrick Harris.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_TelevisionShow ; dbo_starring dbr_Neil_Patrick_Harris brack_close
+Wann wurden die <A> gegründet?,SELECT DISTINCT var_date WHERE brack_open <A> dbp_founded var_date brack_close
+Was ist der Nettogewinn von <A>?,SELECT DISTINCT var_ni WHERE brack_open <A> dbo_netIncome var_ni brack_close
+Gib mir alle schwedischen Feiertage.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Holiday ; dbo_country dbr_Sweden brack_close
+In welcher Stadt wurde die ehemalige niederländische Königin <A> beerdigt?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_burialPlace var_uri brack_close
+Liste alle Musicals mit Musik von <A> auf.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Musical ; dbo_musicBy <A> brack_close
+"Gib mir alle Unternehmen, die in der Werbebranche tätig sind.","SELECT DISTINCT var_uri AS var_c WHERE brack_open var_uri a dbo_Company brack_open var_uri dbo_industry dbr_Advertising brack_close UNION brack_open var_uri dbo_industry var_industry FILTER regex(var_industry, ""advertising"", ""i"") brack_close brack_close"
+Was ist das größte Ballungsgebiet im Staat Washington?,SELECT DISTINCT var_uri WHERE brack_open dbr_Washington_(state) dbp_largestmetro var_uri brack_close
+Wer hat John Lennon getötet?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Person ; dbp_conviction dbr_Murder_of_John_Lennon brack_close
+Welche Schriftsteller haben in <A> studiert?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Writer brack_open var_uri dbo_almaMater var_x brack_close UNION brack_open var_uri dbo_education var_x brack_close brack_open var_x dbo_city <A> brack_close UNION brack_open var_x dbp_city <A> brack_close brack_close
+Gib mir alle australischen Metalcore-Bands.,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Band ; dbo_genre dbr_Metalcore brack_open var_uri dbo_hometown dbr_Australia brack_close UNION brack_open var_uri dbo_hometown var_h sep_dot var_h dbo_country dbr_Australia brack_close brack_close
+Welche Länder haben den <A> übernommen?,"SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Country brack_open var_uri dbo_currency <A> brack_close UNION brack_open var_uri dbp_currencyCode ""EUR""@en brack_close brack_close"
+Zeig mir alle Arten von Essstörungen.,SELECT DISTINCT var_uri WHERE brack_open var_uri a http://dbpedia.org/class/yago/WikicatEatingDisorders brack_close
+War <A> ein Jude?,"ASK WHERE brack_open <A> dbp_ethnicity ""Jewish""@en brack_close"
+Was war Brasiliens niedrigste Platzierung in der FIFA-Weltrangliste?,SELECT DISTINCT var_n WHERE brack_open dbr_Brazil_national_football_team dbp_fifaMin var_n brack_close
+In wievielen Filmen hat <A> mitgespielt?,SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open var_uri a dbo_Film ; dbo_starring <A> brack_close
+War <A> Chemikerin?,ASK WHERE brack_open <A> dbo_occupation dbr_Chemist brack_close
+Welche US-Bundesstaaten liegen in derselben Zeitzone wie <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_timezone var_x sep_dot var_uri a http://dbpedia.org/class/yago/WikicatStatesOfTheUnitedStates ; dbp_timezone var_x FILTER ( var_uri != <A> ) brack_close
+"Gib mir alle Bücher, die <A> geschrieben hat.",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Book ; dbo_author <A> brack_close
+Was ist der zweithöchste Berg der Erde?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Mountain ; dbo_elevation var_elevation brack_close ORDER BY DESC(var_elevation) OFFSET 1 LIMIT 1
+Gib mir alle B-Seiten der Ramones.,SELECT DISTINCT var_string WHERE brack_open var_x dbo_musicalArtist dbr_Ramones ; dbo_bSide var_string brack_close
+Was ist das höchste Berg im Sachsen Deutschland? ,SELECT var_m WHERE brack_open var_m dbo_mountainRange dbr:Ore_Mountains ; dbo_elevation var_height brack_close ORDER BY DESC(var_height) LIMIT 1
+wann war das Gründung Datum von Französisch fünfte Republik? ,SELECT var_ff WHERE brack_open dbr:French_Fifth_Republic dbo_foundingDate var_ff brack_close
+Was ist der längste Fluss der Welt?,SELECT var_uri WHERE brack_open var_uri rdf_type dbo_BodyOfWater ; dbo_length var_length brack_close ORDER BY DESC(var_length) LIMIT 1
+Fließt die <A> in einen See?,ASK WHERE brack_open var_x dbo_inflow <A> ; rdf_type dbo_Lake brack_close
+Welche Spezies tut ein Elefant gehören? ,SELECT var_species WHERE brack_open dbr:Elephant dbp_species var_species brack_close
+Wer sind das Schriftsteller von das Mauer Album von Rosa Floyd? ,SELECT var_writers WHERE brack_open dbr:The_Wall dbp_writer var_writers brack_close
+Wieviele Männer und Frauen arbeiten in der New Yorker Berufsfeuerwehr?,SELECT DISTINCT var_num WHERE brack_open dbr_New_York_City_Fire_Department dbp_employees var_num brack_close
+Wer ist der größte Basketballspieler?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_BasketballPlayer ; dbo_height var_num brack_close ORDER BY DESC(var_num) OFFSET 0 LIMIT 1
+Welcher Schauspieler hat <A> gespielt?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_portrayer var_uri brack_close
+"Gib mir alle Bibliotheken, die vor 1400 gegründet worden.",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Library ; dbp_established var_year FILTER ( var_year  1400 ) brack_close
+Welche Programmiersprachen wurden durch <A> beeinflusst?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_ProgrammingLanguage brack_open var_uri dbo_influencedBy <A> brack_close UNION brack_open <A> dbo_influenced var_uri brack_close brack_close
+Welches Gebäude nach dem <A> hat die meisten Etagen?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_floorCount var_burj sep_dot var_uri rdf_type dbo_Building ; dbo_floorCount var_proj FILTER ( var_proj  var_burj ) brack_close ORDER BY DESC(var_proj) LIMIT 1
+Was war das Endergebnis der Rosenkriege?,SELECT DISTINCT var_result WHERE brack_open var_uri dbo_isPartOfMilitaryConflict dbr:Wars_of_the_Roses ; dbo_result var_result ; dbo_date var_date brack_close ORDER BY DESC(var_date) OFFSET 0 LIMIT 1
+In welchem US-Bundesstaat befindet sich der Mount McKinley?,SELECT DISTINCT var_uri WHERE brack_open dbr_Mount_McKinley dbo_wikiPageRedirects var_x sep_dot var_x dbo_locatedInArea var_uri. var_uri rdf_type yago:WikicatStatesOfTheUnitedStates brack_close
+Welche Fluggesellschaften sind Teil der SkyTeam-Allianz?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Airline brack_open var_uri dbo_alliance dbr_SkyTeam brack_close UNION brack_open var_uri dbo_Alliance dbr_SkyTeam brack_close brack_close
+Welche Schiffe wurden nach <A> benannt?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_shipNamesake <A> brack_close
+"Gib mir alle Politiker, die Methodisten sind.",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Politician ; dbo_religion dbr_Methodism brack_close
+Wer ist der Bürgermeister von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_leaderName var_uri brack_close
+Welche anderen Bücher wurden vom Autor von Der Fehler unserer Sterne geschrieben? ,SELECT var_books WHERE brack_open var_books dbo_author dbr_John_Green_(author) brack_close
+Wie groß ist <A>?,SELECT DISTINCT var_height WHERE brack_open <A> dbo_height var_height brack_close
+Gib mir alle in Schweden geborenen Ozeanographen.,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_field dbr_Oceanography ; dbo_birthPlace dbr_Sweden brack_close
+Welche Brücke hat die längste Spannweite?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Bridge ; dbo_mainspan var_s brack_close ORDER BY DESC(var_s) OFFSET 0 LIMIT 1
+Wer wurde in der Cheops-Pyramide begraben?,SELECT var_uri WHERE brack_open var_uri dbo_restingPlace dbr:Great_Pyramid_of_Giza brack_close
+Woran ist <A> gestorben?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_deathCause var_uri brack_close
+Welche Tochtergesellschaft von <A> fliegt sowohl <A> als auch <A> Tegel an?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_subsidiary var_uri sep_dot var_uri dbo_targetAirport <A>>_Airport ; dbo_targetAirport <A>>_Tegel_Airport brack_close
+In welcher Stadt wohnt <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_City sep_dot <A> dbo_residence var_uri brack_close
+Was ist der höchste Berg?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Mountain ; dbo_elevation var_elevation brack_close ORDER BY DESC(var_elevation) OFFSET 0 LIMIT 1
+Welcher Dichter hat die meisten Bücher geschrieben?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_occupation dbr_Poet sep_dot var_x dbo_author var_uri sep_dot var_x rdf_type dbo_Book sep_dot brack_close ORDER BY DESC(COUNT(var_x)) OFFSET 0 LIMIT 1
+Welche Programmiersprachen haben <A> beeinflusst?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_ProgrammingLanguage ; dbo_influenced <A> brack_close
+Welcher Musiker hat die meisten Bücher geschrieben?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_occupation dbr_Musician sep_dot var_x dbo_author var_uri sep_dot var_x rdf_type dbo_Book sep_dot brack_close ORDER BY DESC(COUNT(var_x)) OFFSET 0 LIMIT 1
+Bei welchen Filmen mit <A> hat er selber Regie geführt?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_director <A> ; dbo_starring <A> brack_close
+"Welche Softwareprodukte wurden von Unternehmen entwickelt, die in Kalifornien gegründet wurden?",SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Software sep_dot var_company a dbo_Company sep_dot var_uri dbo_developer var_company sep_dot var_company dbp_foundation dbr_California brack_close
+Welche Instrumente spielt <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_instrument var_uri brack_close
+Wieviele Fluggesellschaften sind in der <A>?,SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open var_uri a dbo_Airline ; dbo_alliance <A> brack_close
+"Gib mir alle Schauspieler, die Baldwin heißen.","SELECT DISTINCT var_uri WHERE brack_open var_uri foaf:surname ""Baldwin""@en brack_open var_uri dbo_occupation dbr_Actor brack_close UNION brack_open var_uri a dbo_Actor brack_close brack_close"
+Wer hat Die Tribute von Panem geschrieben?,SELECT DISTINCT var_uri WHERE brack_open dbr_The_Hunger_Games dbp_author var_uri brack_close
+Welche Plattenfirma hat <A>' erstes Album aufgenommen?,SELECT DISTINCT var_uri WHERE brack_open var_x rdf_type dbo_Album ; dbo_artist <A> ; dbo_releaseDate var_y ; dbo_recordLabel var_uri brack_close ORDER BY ASC(var_y) OFFSET 0 LIMIT 1
+Spielt <A> in <A> mit?,ASK WHERE brack_open <A> dbo_starring <A> brack_close
+Wo wohnt der Premierminister von Spanien?,SELECT DISTINCT var_uri WHERE brack_open dbr_Prime_Minister_of_Spain dbp_residence var_uri brack_close
+Welcher Schauspieler spielte in den meisten Filmen mit?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Actor sep_dot var_f rdf_type dbo_Film sep_dot var_f dbp_starring var_uri sep_dot brack_close ORDER BY DESC(COUNT(DISTINCT(var_f))) OFFSET 0 LIMIT 1
+Welche Länder haben mehr als zwei Amtssprachen?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Country ; dbo_officialLanguage var_language brack_close GROUP BY var_uri HAVING ( COUNT(var_language)  2 )
+In welchen Ländern gibt es mehr als zehn Höhlen?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Country sep_dot var_cave a dbo_Cave brack_open var_cave dbo_location var_uri brack_close UNION brack_open var_cave dbo_location var_loc sep_dot var_loc dbo_country var_uri brack_close brack_close GROUP BY var_uri HAVING ( COUNT(var_cave)  10 )
+"Zeige mir alle Lieder von <A>, die zwischen 1980 und 1990 herausgebracht wurden.",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_MusicalWork sep_dot var_uri dbo_artist <A> sep_dot var_uri dbo_releaseDate var_date sep_dot FILTER (var_date >= '1980-01-01'^^xsd:date && var_date = '1990-12-31'^^xsd:date) brack_close
+Welche Fernsehserien hat <A> entworfen?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_TelevisionShow ; dbo_creator <A> brack_close
+Wann ist Lettland der EU beigetreten?,SELECT DISTINCT var_date WHERE brack_open dbr_Latvia dbp_establishedDate var_date brack_close
+Welche Fußballer wurden auf <A> geboren?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_SoccerPlayer ; dbo_birthPlace <A> brack_close
+Wieviele Politiker haben einen Abschluss von der <A>?,SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open var_uri dbo_profession dbr_Politician ; dbo_almaMater <A> brack_close
+Gib mir die Geburtstage von allen Darstellern der Fernsehserie Charmed.,SELECT DISTINCT var_date WHERE brack_open dbr_Charmed dbo_starring var_actor sep_dot var_actor dbo_birthDate var_date brack_close
+Welche Telekommunikationsunternehmen haben ihren Sitz in <A>?,"SELECT (COUNT(DISTINCT var_uri) AS var_c) WHERE brack_open var_uri a dbo_Organisation brack_open var_uri dbo_industry dbr_Telecommunication brack_close UNION brack_open var_uri dbp_industry var_industry FILTER regex(var_industry, ""Telecommunications"") brack_close brack_open var_uri dbo_location <A> brack_close UNION brack_open var_uri dbp_locationCountry ""Belgium""@en brack_close brack_close"
+Gib mir eine Liste aller Seen in <A>.,SELECT DISTINCT var_uri WHERE brack_open brack_open var_uri a dbo_Lake ; dbo_country <A> brack_close UNION brack_open var_uri a http://dbpedia.org/class/yago/LakesOfDenmark brack_close brack_close
+Wieviele Kinder hat <A>?,SELECT DISTINCT var_n WHERE brack_open <A> dbp_children var_n brack_close
+"Zeige mir alle Gebäude in <A>, die im Stil der englischen Gothik erbaut wurden.",SELECT var_uri WHERE brack_open var_uri a dbo_Building ; dbo_architecturalStyle dbr_English_Gothic_architecture ; dbo_location <A> brack_close
+Wer ist der Manager von <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_manager var_uri brack_close
+In welchen Ländern kann ich mit dem CFA-Franc BCEAO bezahlen?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_currency dbr_West_African_CFA_franc brack_close
+Welche Feiertage werden auf der Welt gefeiert?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Holiday brack_close
+Was ist der längste Fluss?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_River brack_open var_uri dbo_length var_l brack_close UNION brack_open var_uri dbp_length var_l brack_close brack_close ORDER BY DESC(var_l) OFFSET 0 LIMIT 1
+Welche Unternehmen wurden 1930 gegründet?,"SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Organisation brack_open var_uri dbo_formationYear var_date brack_close UNION brack_open var_uri dbo_foundingYear var_date brack_close FILTER regex(var_date, ""^1930"") brack_close"
+Was ist der Geburtsname von <A>?,SELECT DISTINCT var_string WHERE brack_open <A> dbp_birthName var_string brack_close
+Mit wem war <A> verheiratet?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_spouse <A> brack_close
+Welche Waffen hat <A> & Koch entwickelt?,SELECT DISTINCT var_uri WHERE brack_open var_uri a dbo_Weapon ; dbp_designer <A>>_&_Koch brack_close
+Was ist die kleinste Stadt gemessen an der Fläche in Deutschland? ,SELECT var_city WHERE brack_open var_m skos:broader dbc:Cities_in_Germany sep_dot var_city dct:subject var_m ; dbo_areaTotal var_area brack_close ORDER BY var_area LIMIT 1
+Welche Partei regiert in <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_leaderParty var_uri brack_close
+Im welche <A> Zustand ist Bereich 51 gelegen? ,SELECT DISTINCT var_uri WHERE brack_open dbr_Area_51 dbo_location var_uri sep_dot var_uri dbo_country <A> brack_close
+Was sind die Amtssprachen der Philippinen?,SELECT DISTINCT var_uri WHERE brack_open dbr_Philippines dbo_officialLanguage var_uri brack_close
+"Bei welchen Filmen, in denen <A> mitspielt, hat <A> Regie geführt?",SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Film ; dbo_starring <A> ; dbo_director <A> brack_close
