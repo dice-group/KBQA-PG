@@ -1,22 +1,23 @@
+"""Generate csv files for the QALD dataset."""
 import csv
 import json
-import requests
 from json.decoder import JSONDecodeError
 
+import requests
 
 REPLACEMENT = [
-    ['?', 'var_'],
-    [' . ', ' sep_dot '],
-    ['{', 'brack_open'],
-    ['}', 'brack_close'],
-    ['http://dbpedia.org/property/', 'dbp_'],
-    ['http://dbpedia.org/resource/', 'dbr_'],
-    ['http://dbpedia.org/ontology/', 'dbo_'],
-    ['<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>', 'rdf_type'],
-    [' <', ' '],
-    ['> ', ' '],
-    [' <<', ' <'],
-    ['>> ', '> '],
+    ["?", "var_"],
+    [" . ", " sep_dot "],
+    ["{", "brack_open"],
+    ["}", "brack_close"],
+    ["http://dbpedia.org/property/", "dbp_"],
+    ["http://dbpedia.org/resource/", "dbr_"],
+    ["http://dbpedia.org/ontology/", "dbo_"],
+    ["<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", "rdf_type"],
+    [" <", " "],
+    ["> ", " "],
+    [" <<", " <"],
+    [">> ", "> "],
 ]
 
 
@@ -33,12 +34,12 @@ def read_json(file: str) -> dict:
     qald : dict
         Content of the json file as a dict.
     """
-    with open(file, 'r', encoding="utf8") as f:
+    with open(file, "r", encoding="utf8") as f:
         qald = json.load(f)
     return qald
 
 
-def output_csv(file: str, ques_query_list: list) -> None:
+def output_csv(file: str, ques_query_list: list):
     """Outputs a csv file with the question and query.
 
     Parameters
@@ -52,12 +53,12 @@ def output_csv(file: str, ques_query_list: list) -> None:
     -------
     None
     """
-    with open(file, 'w') as f:
+    with open(file, "w", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerows(ques_query_list)
 
 
-def extract_lcqald_question_query(dataset_json: dict, language='en') -> list:
+def extract_lcqald_question_query(dataset_json: dict) -> list:
     """Extracts the question and query from the LCQald dataset.
 
     Parameters
@@ -72,17 +73,19 @@ def extract_lcqald_question_query(dataset_json: dict, language='en') -> list:
     """
     dataset = []
     for questions in dataset_json:
-        dataset.append([questions['corrected_question'], questions['sparql_query']])
+        dataset.append([questions["corrected_question"], questions["sparql_query"]])
     return dataset
 
 
-def extract_qald_question_query(dataset_json: dict, language='en'):
+def extract_qald_question_query(dataset_json: dict, language="en") -> list:
     """Extracts the question and query from the QALD dataset.
 
     Parameters
     ----------
     dataset_json : dict
         Content of the QALD dataset as a dict.
+    language : str
+        Language of the question.
 
     Returns
     -------
@@ -90,19 +93,19 @@ def extract_qald_question_query(dataset_json: dict, language='en'):
         List of tuples with the question and query.
     """
     dataset = []
-    for question in dataset_json['questions']:
-        for q in question['question']:
-            if q['language'] == language:
-                query = question['query']['sparql']
-                query = query.replace('res:', 'http://dbpedia.org/resource/')
-                query = query.replace('dbp:', 'http://dbpedia.org/property/')
-                query = query.replace('dbo:', 'http://dbpedia.org/ontology/')
-                query = query.replace('rdf:type', '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>')
-                dataset.append([q['string'], query])
+    for question in dataset_json["questions"]:
+        for q in question["question"]:
+            if q["language"] == language:
+                query = question["query"]["sparql"]
+                query = query.replace("res:", "http://dbpedia.org/resource/")
+                query = query.replace("dbp:", "http://dbpedia.org/property/")
+                query = query.replace("dbo:", "http://dbpedia.org/ontology/")
+                query = query.replace("rdf:type", "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")
+                dataset.append([q["string"], query])
     return dataset
 
 
-def query_dbspotlight(question: str, language : str = 'en', confidence : float = 0.5):
+def query_dbspotlight(question: str, language : str = "en", confidence : float = 0.5):
     """Query the endpoint of DBspotlight for entity recognition.
 
     Parameters
@@ -120,7 +123,7 @@ def query_dbspotlight(question: str, language : str = 'en', confidence : float =
         Response of the DBspotlight endpoint without any processing
         as JSON dict.
     """
-    endpoint = "https://api.dbpedia-spotlight.org/{}/annotate/".format(language)
+    endpoint = f"https://api.dbpedia-spotlight.org/{language}/annotate/"
 
     try:
         response = requests.post(
@@ -171,14 +174,14 @@ def replace_entities_in_question_and_query_qald(dataset: list) -> list:
     for question, query in dataset:
         entities = query_dbspotlight(question, confidence=0.1)
         question_ph, query_ph = question, query
-        if 'Resources' in entities.keys():
-            for entity in entities['Resources']:
-                uri = entity['@URI']
-                surface = entity['@surfaceForm']
+        if "Resources" in entities.keys():
+            for entity in entities["Resources"]:
+                uri = entity["@URI"]
+                surface = entity["@surfaceForm"]
                 placeholder = 65
                 if uri in query_ph:
-                    query_ph = query_ph.replace(uri, '<<' + chr(placeholder) + '>>')
-                    question_ph = question_ph.replace(surface, '<' + chr(placeholder) + '>')
+                    query_ph = query_ph.replace(uri, "<<" + chr(placeholder) + ">>")
+                    question_ph = question_ph.replace(surface, "<" + chr(placeholder) + ">")
                     placeholder += 1
             query_ph = replace_symbols(query_ph)
             dataset_ph.append([question_ph, query_ph])
@@ -202,14 +205,14 @@ def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
     for question, query in dataset:
         entities = query_dbspotlight(question, confidence=0.1)
         question_ph, query_ph = question, query
-        if 'Resources' in entities.keys():
-            for entity in entities['Resources']:
-                uri = entity['@URI']
-                surface = entity['@surfaceForm']
+        if "Resources" in entities.keys():
+            for entity in entities["Resources"]:
+                uri = entity["@URI"]
+                surface = entity["@surfaceForm"]
                 placeholder = 65
                 if uri in query_ph:
-                    query_ph = query_ph.replace(uri, '<' + chr(placeholder) + '>')
-                    question_ph = question_ph.replace(surface, '<' + chr(placeholder) + '>')
+                    query_ph = query_ph.replace(uri, "<" + chr(placeholder) + ">")
+                    question_ph = question_ph.replace(surface, "<" + chr(placeholder) + ">")
                     placeholder += 1
             query_ph = replace_symbols(query_ph)
             dataset_ph.append([question_ph, query_ph])
@@ -233,14 +236,14 @@ def delete_prefixes(dataset: list) -> list:
     dataset_ = []
     for question, query in dataset:
         try:
-            query = query[query.index('SELECT'):]
+            query = query[query.index("SELECT"):]
         except ValueError:
-            query = query[query.index('ASK'):]
+            query = query[query.index("ASK"):]
         dataset_.append([question, query])
     return dataset_
 
 
-def convert_lcqald(lcqald_path: str, output_file: str) -> None:
+def convert_lcqald(lcqald_path: str, output_file: str):
     """Converts the LCQald dataset to a CSV file.
 
     Parameters
@@ -260,7 +263,7 @@ def convert_lcqald(lcqald_path: str, output_file: str) -> None:
     output_csv(output_file, dataset_ph)
 
 
-def convert_qald(qald_path: str, output_file: str, language='en'):
+def convert_qald(qald_path: str, output_file: str, language="en"):
     """Converts the QALD dataset to a CSV file.
 
     Parameters
@@ -270,7 +273,7 @@ def convert_qald(qald_path: str, output_file: str, language='en'):
     output_file : str
         Path to the output file.
     language : str, optional
-        Language of the dataset (default: 'en').
+        Language of the dataset (default: "en").
 
     Returns
     -------
@@ -283,8 +286,8 @@ def convert_qald(qald_path: str, output_file: str, language='en'):
     output_csv(output_file, qald9_ph)
 
 
-lcqald_path = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/lc-quad-train.json"
-qald9 = '/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/updated-qald-9-train-multilingual.json'
+lcqald_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/lc-quad-train.json"
+qald9_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/updated-qald-9-train-multilingual.json"
 
-# convert_lcqald(lcqald_path, 'lcqald_ph.csv')
-convert_qald(qald9, 'qald9_ph_de.csv', 'de')
+convert_lcqald(lcqald_filepath, "lcqald_ph.csv")
+convert_qald(qald9_filepath, "qald9_ph_de.csv", "de")
