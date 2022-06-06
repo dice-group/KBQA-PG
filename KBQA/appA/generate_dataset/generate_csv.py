@@ -39,7 +39,7 @@ def read_json(file: str) -> dict:
     return qald
 
 
-def output_csv(file: str, ques_query_list: list):
+def output_csv(file: str, ques_query_list: list) -> None:
     """Outputs a csv file with the question and query.
 
     Parameters
@@ -48,10 +48,6 @@ def output_csv(file: str, ques_query_list: list):
         Path to the output file.
     ques_query_list : list
         List of tuples with the question and query.
-
-    Returns
-    -------
-    None
     """
     with open(file, "w", encoding="utf-8") as f:
         writer = csv.writer(f)
@@ -100,12 +96,14 @@ def extract_qald_question_query(dataset_json: dict, language="en") -> list:
                 query = query.replace("res:", "http://dbpedia.org/resource/")
                 query = query.replace("dbp:", "http://dbpedia.org/property/")
                 query = query.replace("dbo:", "http://dbpedia.org/ontology/")
-                query = query.replace("rdf:type", "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")
+                query = query.replace(
+                    "rdf:type", "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"
+                    )
                 dataset.append([q["string"], query])
     return dataset
 
 
-def query_dbspotlight(question: str, language : str = "en", confidence : float = 0.5):
+def query_dbspotlight(question: str, language: str = "en", confidence: float = 0.5) -> dict:
     """Query the endpoint of DBspotlight for entity recognition.
 
     Parameters
@@ -181,7 +179,9 @@ def replace_entities_in_question_and_query_qald(dataset: list) -> list:
                 placeholder = 65
                 if uri in query_ph:
                     query_ph = query_ph.replace(uri, "<<" + chr(placeholder) + ">>")
-                    question_ph = question_ph.replace(surface, "<" + chr(placeholder) + ">")
+                    question_ph = question_ph.replace(
+                        surface, "<" + chr(placeholder) + ">"
+                        )
                     placeholder += 1
             query_ph = replace_symbols(query_ph)
             dataset_ph.append([question_ph, query_ph])
@@ -212,7 +212,9 @@ def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
                 placeholder = 65
                 if uri in query_ph:
                     query_ph = query_ph.replace(uri, "<" + chr(placeholder) + ">")
-                    question_ph = question_ph.replace(surface, "<" + chr(placeholder) + ">")
+                    question_ph = question_ph.replace(
+                        surface, "<" + chr(placeholder) + ">"
+                        )
                     placeholder += 1
             query_ph = replace_symbols(query_ph)
             dataset_ph.append([question_ph, query_ph])
@@ -236,14 +238,14 @@ def delete_prefixes(dataset: list) -> list:
     dataset_ = []
     for question, query in dataset:
         try:
-            query = query[query.index("SELECT"):]
+            query = query[query.index("SELECT") :]
         except ValueError:
-            query = query[query.index("ASK"):]
+            query = query[query.index("ASK") :]
         dataset_.append([question, query])
     return dataset_
 
 
-def convert_lcqald(lcqald_path: str, output_file: str):
+def convert_lcqald(lcqald_path: str, output_file: str) -> None:
     """Converts the LCQald dataset to a CSV file.
 
     Parameters
@@ -252,10 +254,6 @@ def convert_lcqald(lcqald_path: str, output_file: str):
         Path to the LCQald dataset.
     output_file : str
         Path to the output file.
-
-    Returns
-    -------
-    None
     """
     dataset = read_json(lcqald_path)
     dataset = extract_lcqald_question_query(dataset)
@@ -263,7 +261,7 @@ def convert_lcqald(lcqald_path: str, output_file: str):
     output_csv(output_file, dataset_ph)
 
 
-def convert_qald(qald_path: str, output_file: str, language="en"):
+def convert_qald(qald_path: str, output_file: str, language="en") -> None:
     """Converts the QALD dataset to a CSV file.
 
     Parameters
@@ -274,10 +272,6 @@ def convert_qald(qald_path: str, output_file: str, language="en"):
         Path to the output file.
     language : str, optional
         Language of the dataset (default: "en").
-
-    Returns
-    -------
-    None
     """
     qald9 = read_json(qald_path)
     qald9 = extract_qald_question_query(qald9, language)
