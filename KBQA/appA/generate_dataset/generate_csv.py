@@ -2,6 +2,7 @@
 import csv
 import json
 from json.decoder import JSONDecodeError
+from typing import Any
 
 import requests
 
@@ -21,8 +22,8 @@ REPLACEMENT = [
 ]
 
 
-def read_json(file: str) -> dict:
-    """Reads a json file and returns the content as a dict.
+def read_json(file: str) -> Any:
+    """Read a json file and returns the content as a dict.
 
     Parameters
     ----------
@@ -31,8 +32,8 @@ def read_json(file: str) -> dict:
 
     Returns
     -------
-    qald : dict
-        Content of the json file as a dict.
+    qald : Any
+        Content of the json file as a dict or list.
     """
     with open(file, "r", encoding="utf8") as f:
         qald = json.load(f)
@@ -40,7 +41,7 @@ def read_json(file: str) -> dict:
 
 
 def output_csv(file: str, ques_query_list: list) -> None:
-    """Outputs a csv file with the question and query.
+    """Output a csv file with the question and query.
 
     Parameters
     ----------
@@ -55,7 +56,7 @@ def output_csv(file: str, ques_query_list: list) -> None:
 
 
 def extract_lcqald_question_query(dataset_json: dict) -> list:
-    """Extracts the question and query from the LCQald dataset.
+    """Extract the question and query from the LCQald dataset.
 
     Parameters
     ----------
@@ -73,8 +74,8 @@ def extract_lcqald_question_query(dataset_json: dict) -> list:
     return dataset
 
 
-def extract_qald_question_query(dataset_json: dict, language="en") -> list:
-    """Extracts the question and query from the QALD dataset.
+def extract_qald_question_query(dataset_json: dict, language: str = "en") -> list:
+    """Extract the question and query from the QALD dataset.
 
     Parameters
     ----------
@@ -98,12 +99,14 @@ def extract_qald_question_query(dataset_json: dict, language="en") -> list:
                 query = query.replace("dbo:", "http://dbpedia.org/ontology/")
                 query = query.replace(
                     "rdf:type", "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"
-                    )
+                )
                 dataset.append([q["string"], query])
     return dataset
 
 
-def query_dbspotlight(question: str, language: str = "en", confidence: float = 0.5) -> dict:
+def query_dbspotlight(
+    question: str, language: str = "en", confidence: float = 0.5
+) -> dict:
     """Query the endpoint of DBspotlight for entity recognition.
 
     Parameters
@@ -138,7 +141,7 @@ def query_dbspotlight(question: str, language: str = "en", confidence: float = 0
 
 
 def replace_symbols(query: str) -> str:
-    """Replaces symbols in a query.
+    """Replace symbols in a query.
 
     Parameters
     ----------
@@ -156,7 +159,7 @@ def replace_symbols(query: str) -> str:
 
 
 def replace_entities_in_question_and_query_qald(dataset: list) -> list:
-    """Replaces entities in the question and query of the QALD dataset.
+    """Replace entities in the question and query of the QALD dataset.
 
     Parameters
     ----------
@@ -181,7 +184,7 @@ def replace_entities_in_question_and_query_qald(dataset: list) -> list:
                     query_ph = query_ph.replace(uri, "<<" + chr(placeholder) + ">>")
                     question_ph = question_ph.replace(
                         surface, "<" + chr(placeholder) + ">"
-                        )
+                    )
                     placeholder += 1
             query_ph = replace_symbols(query_ph)
             dataset_ph.append([question_ph, query_ph])
@@ -189,7 +192,7 @@ def replace_entities_in_question_and_query_qald(dataset: list) -> list:
 
 
 def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
-    """Replaces entities in the question and query of the LCQald dataset.
+    """Replace entities in the question and query of the LCQald dataset.
 
     Parameters
     ----------
@@ -214,7 +217,7 @@ def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
                     query_ph = query_ph.replace(uri, "<" + chr(placeholder) + ">")
                     question_ph = question_ph.replace(
                         surface, "<" + chr(placeholder) + ">"
-                        )
+                    )
                     placeholder += 1
             query_ph = replace_symbols(query_ph)
             dataset_ph.append([question_ph, query_ph])
@@ -222,7 +225,7 @@ def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
 
 
 def delete_prefixes(dataset: list) -> list:
-    """Deletes prefixes in queries of the QALD dataset.
+    """Delete prefixes in queries of the QALD dataset.
 
     Parameters
     ----------
@@ -246,7 +249,7 @@ def delete_prefixes(dataset: list) -> list:
 
 
 def convert_lcqald(lcqald_path: str, output_file: str) -> None:
-    """Converts the LCQald dataset to a CSV file.
+    """Convert the LCQald dataset to a CSV file.
 
     Parameters
     ----------
@@ -261,8 +264,8 @@ def convert_lcqald(lcqald_path: str, output_file: str) -> None:
     output_csv(output_file, dataset_ph)
 
 
-def convert_qald(qald_path: str, output_file: str, language="en") -> None:
-    """Converts the QALD dataset to a CSV file.
+def convert_qald(qald_path: str, output_file: str, language: str = "en") -> None:
+    """Convert the QALD dataset to a CSV file.
 
     Parameters
     ----------
