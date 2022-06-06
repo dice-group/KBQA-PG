@@ -21,7 +21,7 @@ REPLACEMENT = [
 
 
 def read_json(file: str) -> dict:
-    '''Reads a json file and returns the content as a dict.
+    """Reads a json file and returns the content as a dict.
 
     Parameters
     ----------
@@ -32,14 +32,14 @@ def read_json(file: str) -> dict:
     -------
     qald : dict
         Content of the json file as a dict.
-    '''
+    """
     with open(file, 'r', encoding="utf8") as f:
         qald = json.load(f)
     return qald
 
 
 def output_csv(file: str, ques_query_list: list) -> None:
-    '''Outputs a csv file with the question and query.
+    """Outputs a csv file with the question and query.
 
     Parameters
     ----------
@@ -51,14 +51,14 @@ def output_csv(file: str, ques_query_list: list) -> None:
     Returns
     -------
     None
-    '''
+    """
     with open(file, 'w') as f:
         writer = csv.writer(f)
         writer.writerows(ques_query_list)
 
 
 def extract_lcqald_question_query(dataset_json: dict, language='en') -> list:
-    '''Extracts the question and query from the LCQald dataset.
+    """Extracts the question and query from the LCQald dataset.
 
     Parameters
     ----------
@@ -69,15 +69,15 @@ def extract_lcqald_question_query(dataset_json: dict, language='en') -> list:
     -------
     dataset : list
         List of tuples with the question and query.
-    '''
+    """
     dataset = []
     for questions in dataset_json:
         dataset.append([questions['corrected_question'], questions['sparql_query']])
     return dataset
 
 
-def extract_qald_question_query(dataset_json, language='en'):
-    '''Extracts the question and query from the QALD dataset.
+def extract_qald_question_query(dataset_json: dict, language='en'):
+    """Extracts the question and query from the QALD dataset.
 
     Parameters
     ----------
@@ -88,7 +88,7 @@ def extract_qald_question_query(dataset_json, language='en'):
     -------
     dataset : list
         List of tuples with the question and query.
-    '''
+    """
     dataset = []
     for question in dataset_json['questions']:
         for q in question['question']:
@@ -137,7 +137,7 @@ def query_dbspotlight(question: str, language : str = 'en', confidence : float =
 
 
 def replace_symbols(query: str) -> str:
-    '''Replaces symbols in a query.
+    """Replaces symbols in a query.
 
     Parameters
     ----------
@@ -148,14 +148,14 @@ def replace_symbols(query: str) -> str:
     -------
     query : str
         Query without symbols.
-    '''
+    """
     for symbol, name in REPLACEMENT:
         query = query.replace(symbol, name)
     return query
 
 
 def replace_entities_in_question_and_query_qald(dataset: list) -> list:
-    '''Replaces entities in the question and query of the QALD dataset.
+    """Replaces entities in the question and query of the QALD dataset.
 
     Parameters
     ----------
@@ -166,7 +166,7 @@ def replace_entities_in_question_and_query_qald(dataset: list) -> list:
     -------
     dataset : list
         List of tuples with the question and query with placeholders.
-    '''
+    """
     dataset_ph = []
     for question, query in dataset:
         entities = query_dbspotlight(question, confidence=0.1)
@@ -186,7 +186,7 @@ def replace_entities_in_question_and_query_qald(dataset: list) -> list:
 
 
 def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
-    '''Replaces entities in the question and query of the LCQald dataset.
+    """Replaces entities in the question and query of the LCQald dataset.
 
     Parameters
     ----------
@@ -197,7 +197,7 @@ def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
     -------
     dataset : list
         List of tuples with the question and query with placeholders.
-    '''
+    """
     dataset_ph = []
     for question, query in dataset:
         entities = query_dbspotlight(question, confidence=0.1)
@@ -217,7 +217,7 @@ def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
 
 
 def delete_prefixes(dataset: list) -> list:
-    '''Deletes prefixes in queries of the QALD dataset.
+    """Deletes prefixes in queries of the QALD dataset.
 
     Parameters
     ----------
@@ -229,7 +229,7 @@ def delete_prefixes(dataset: list) -> list:
     dataset : list
         List of tuples with the question and query without prefixes.
 
-    '''
+    """
     dataset_ = []
     for question, query in dataset:
         try:
@@ -241,7 +241,7 @@ def delete_prefixes(dataset: list) -> list:
 
 
 def convert_lcqald(lcqald_path: str, output_file: str) -> None:
-    '''Converts the LCQald dataset to a CSV file.
+    """Converts the LCQald dataset to a CSV file.
 
     Parameters
     ----------
@@ -253,15 +253,15 @@ def convert_lcqald(lcqald_path: str, output_file: str) -> None:
     Returns
     -------
     None
-    '''
+    """
     dataset = read_json(lcqald_path)
     dataset = extract_lcqald_question_query(dataset)
     dataset_ph = replace_entities_in_question_and_query_lcqald(dataset)
     output_csv(output_file, dataset_ph)
 
 
-def convert_qald(qald_path, output_file, language='en'):
-    '''Converts the QALD dataset to a CSV file.
+def convert_qald(qald_path: str, output_file: str, language='en'):
+    """Converts the QALD dataset to a CSV file.
 
     Parameters
     ----------
@@ -275,7 +275,7 @@ def convert_qald(qald_path, output_file, language='en'):
     Returns
     -------
     None
-    '''
+    """
     qald9 = read_json(qald_path)
     qald9 = extract_qald_question_query(qald9, language)
     qald9_ph = replace_entities_in_question_and_query_qald(qald9)
