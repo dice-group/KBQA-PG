@@ -23,7 +23,7 @@ from KBQA.appB.transformer_architectures.kb.common import get_dtype_for_module, 
 from KBQA.appB.transformer_architectures.kb.common import EntityEmbedder, set_requires_grad
 from KBQA.appB.transformer_architectures.kb.evaluation.exponential_average_metric import ExponentialMovingAverage
 from KBQA.appB.transformer_architectures.kb.evaluation.weighted_average import WeightedAverage
-
+from KBQA.appB.transformer_architectures.kb.wordnet import WordNetAllEmbedding
 
 def print_shapes(x, prefix='', raise_on_nan=False):
     if isinstance(x, torch.Tensor):
@@ -848,6 +848,105 @@ class KnowBert(BertPretrainedMetricsLoss):
             if new_embeddings is not None:
                 state_dict['pretrained_bert.bert.embeddings.token_type_embeddings.weight'] = new_embeddings.weight
         super().load_state_dict(state_dict, strict=strict)
+
+    @staticmethod
+    def load_pretrained_model():
+        model_archive = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz"
+        vocab_archive = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz"
+        vocab = Vocabulary.from_files(directory=vocab_archive)
+        print("Loaded Vocabulary")
+        print(vocab)
+        wiki_soldered_kg = KnowBert._load_soldered_kg_wiki(vocab)
+        print("Loaded wiki soldered KG")
+        wordnet_soldered_kg = KnowBert._load_soldered_kg_wordnet(vocab)
+        print("Loaded wordnet soldered KG")
+        return KnowBert(
+            vocab=vocab,
+            bert_model_name="bert-base-uncased",
+            soldered_kgs={"wiki" : wiki_soldered_kg, "wordnet" : wordnet_soldered_kg},
+            soldered_layers={'wiki' : 9, 'wordnet' : 10},
+            model_archive=model_archive
+        )
+
+    @staticmethod
+    def _load_soldered_kg_wiki(vocab):
+        pretrained_embedding_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wiki_entity_linking/entities_glove_format.gz"
+        span_encoder_config = {
+            "hidden_size": 300,
+            "intermediate_size": 1024,
+            "num_attention_heads": 4,
+            "num_hidden_layers": 1
+        }
+        span_attention_config = {
+            "hidden_size": 300,
+            "intermediate_size": 1024,
+            "num_attention_heads": 4,
+            "num_hidden_layers": 1
+        }
+        entity_embedding = Embedding(
+            num_embeddings=vocab.get_vocab_size(namespace="entity_wiki"),
+            embedding_dim=300,
+            pretrained_file=pretrained_embedding_file,
+            sparse=False,
+            trainable=False,
+            vocab_namespace="entity_wiki",
+            vocab=vocab
+        )
+        print("Loaded wiki embedding")
+        entity_linker = EntityLinkingWithCandidateMentions(
+            vocab=vocab,
+            contextual_embedding_dim=768,
+            entity_embedding=entity_embedding,
+            namespace="entity_wiki",
+            span_encoder_config=span_encoder_config
+        )
+        return SolderedKG(
+            vocab=vocab,
+            entity_linker=entity_linker,
+            should_init_kg_to_bert_inverse=False,
+            span_attention_config=span_attention_config
+        )
+
+    @staticmethod
+    def _load_soldered_kg_wordnet(vocab):
+        wordnet_embedding_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wordnet/wordnet_synsets_mask_null_vocab_embeddings_tucker_gensen.hdf5"
+        wordnet_entity_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wordnet/entities.jsonl"
+        wordnet_vocab_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wordnet/wordnet_synsets_mask_null_vocab.txt"
+        span_encoder_config = {
+            "hidden_size": 200,
+            "intermediate_size": 1024,
+            "num_attention_heads": 4,
+            "num_hidden_layers": 1
+        }
+        span_attention_config = {
+            "hidden_size": 200,
+            "intermediate_size": 1024,
+            "num_attention_heads": 4,
+            "num_hidden_layers": 1
+        }
+        concat_entity_embedder = WordNetAllEmbedding(
+            embedding_file=wordnet_embedding_file,
+            entity_dim=200,
+            entity_file=wordnet_entity_file,
+            entity_h5_key="tucker_gensen",
+            vocab_file=wordnet_vocab_file
+        )
+        print("Loaded wordnet embedding")
+        
+        entity_linker = EntityLinkingWithCandidateMentions(
+            vocab=vocab,
+            concat_entity_embedder=concat_entity_embedder,
+            contextual_embedding_dim=768,
+            loss_type="softmax",
+            namespace="entity_wordnet",
+            span_encoder_config=span_encoder_config
+        )
+        return SolderedKG(
+            vocab=vocab,
+            entity_linker=entity_linker,
+            should_init_kg_to_bert_inverse=False,
+            span_attention_config=span_attention_config
+        )
 
     def unfreeze(self):
         if self.mode == 'entity_linking':

@@ -7,6 +7,7 @@ from allennlp.data import Vocabulary
 import torch
 
 def load_entity_linking_wiki(vocab):
+    print("Load wiki embedding")
     entity_embedding = Embedding(
         num_embeddings=vocab.get_vocab_size(namespace="entity_wiki"),
         embedding_dim=300,

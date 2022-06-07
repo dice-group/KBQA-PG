@@ -28,6 +28,8 @@ import random
 import re
 import token
 from KBQA.appB.transformer_architectures.kb.knowbert import KnowBert
+from KBQA.appB.transformer_architectures.kb.test_model import load_model
+from KBQA.appB.transformer_architectures.kb.knowbert_utils import KnowBertBatchifier
 
 from model import BertSeq2Seq
 from model import Seq2Seq
@@ -117,34 +119,69 @@ class InputFeatures:
     def __init__(
         self,
         example_id,
-        source_ids,
         triples_ids,
         target_ids,
-        source_mask,
         triples_mask,
         target_mask,
     ):
         self.example_id = example_id
-        self.source_ids = source_ids
         self.triples_ids = triples_ids
         self.target_ids = target_ids
-        self.source_mask = source_mask
         self.triples_mask = triples_mask
         self.target_mask = target_mask
 
+
 def replace_mask(text):
     return text.replace('[MASK]', ' [MASK] ')
-def convert_examples_to_features_and_candidates(examples, tokenizer, tokenizer_and_candidate_generator, args, stage=None):
+
+
+def convert_examples_to_tensordataset(examples, tokenizer, knowbert_batchifier, args, stage=None):
+    batch = knowbert_batchifier.iter_batches([example.source for example in examples])
+    source_fields = next(batch)
+
+    source_fields['tokens']['tokens'] = source_fields['tokens']['tokens']['tokens']
+    source_fields['candidates']['wiki']['candidate_entities']['ids'] = \
+        source_fields['candidates']['wiki']['candidate_entities']['ids']['token_characters']
+
+    candidate_mask = (source_fields['candidates']['wiki']['candidate_entities']['ids'] > 0).type(torch.uint8)
+    source_fields['candidates']['wiki']['candidate_entities']['ids'] -= candidate_mask
+    print(candidate_mask)
+
+    source_fields['candidates']['wordnet']['candidate_entities']['ids'] = \
+        source_fields['candidates']['wordnet']['candidate_entities']['ids']['token_characters']
+
+    candidate_mask = (source_fields['candidates']['wordnet']['candidate_entities']['ids'] > 0).type(torch.uint8)
+    source_fields['candidates']['wordnet']['candidate_entities']['ids'] -= candidate_mask
+
+    print(source_fields)
+    all_source_ids = source_fields['tokens']['tokens']
+    all_source_segment_ids = source_fields['segment_ids']
+    print(all_source_ids)
+    print(all_source_segment_ids)
+    max_source_length = 32
+    padding_length = max(max_source_length - len(all_source_ids[0]), 0)
+    num_examples = len(all_source_ids)
+    if padding_length > 0:
+        all_source_ids = torch.cat((all_source_ids, torch.full((num_examples, padding_length), fill_value=tokenizer.pad_token_id)), dim=1)
+        all_source_segment_ids = torch.cat((all_source_segment_ids, torch.full((num_examples, padding_length), fill_value=0)), dim=1)
+    all_source_mask = all_source_ids > 0
+
+    print(all_source_ids)
+    print(all_source_mask)
+    print(all_source_segment_ids)
+
+    all_source_wiki_candidate_priors = source_fields['candidates']['wiki']['candidate_entity_priors']
+    all_source_wiki_candidate_ids = source_fields['candidates']['wiki']['candidate_entities']['ids']
+    all_source_wiki_candidate_spans = source_fields['candidates']['wiki']['candidate_spans']
+    all_source_wiki_candidate_segment_ids = source_fields['candidates']['wiki']['candidate_segment_ids']
+
+    all_source_wordnet_candidate_priors = source_fields['candidates']['wordnet']['candidate_entity_priors']
+    all_source_wordnet_candidate_ids = source_fields['candidates']['wordnet']['candidate_entities']['ids']
+    all_source_wordnet_candidate_spans = source_fields['candidates']['wordnet']['candidate_spans']
+    all_source_wordnet_candidate_segment_ids = source_fields['candidates']['wordnet']['candidate_segment_ids']
+
     features = []
     for example_index, example in enumerate(examples):
-        # source
-        source_dict = tokenizer_and_candidate_generator.tokenize_and_generate_candidates(replace_mask(example.source))
-        source_fields = tokenizer_and_candidate_generator.convert_tokens_candidates_to_fields(source_dict)
-
-        source_mask = [1] * (len(source_fields['tokens']))
-        padding_length = args.max_source_length - len(source_ids)
-        source_ids += [tokenizer.pad_token_id] * padding_length
-        source_mask += [0] * padding_length
 
         # triples
         triples_tokens = tokenizer.tokenize(example.triples)[: args.max_triples_length]
@@ -174,14 +211,6 @@ def convert_examples_to_features_and_candidates(examples, tokenizer, tokenizer_a
                 logger.info("idx: {}".format(example.idx))
 
                 logger.info(
-                    "source_tokens: {}".format(
-                        [x.replace("\u0120", "_") for x in source_tokens]
-                    )
-                )
-                logger.info("source_ids: {}".format(" ".join(map(str, source_ids))))
-                logger.info("source_mask: {}".format(" ".join(map(str, source_mask))))
-
-                logger.info(
                     "triples_tokens: {}".format(
                         [x.replace("\u0120", "_") for x in triples_tokens]
                     )
@@ -200,92 +229,43 @@ def convert_examples_to_features_and_candidates(examples, tokenizer, tokenizer_a
         features.append(
             InputFeatures(
                 example_index,
-                source_ids,
                 triples_ids,
                 target_ids,
-                source_mask,
                 triples_mask,
                 target_mask,
             )
         )
-    return features
 
+    all_triples_ids = torch.tensor(
+        [f.triples_ids for f in features], dtype=torch.long
+    )
+    all_triples_mask = torch.tensor(
+        [f.triples_mask for f in features], dtype=torch.long
+    )
+    all_target_ids = torch.tensor(
+        [f.target_ids for f in features], dtype=torch.long
+    )
+    all_target_mask = torch.tensor(
+        [f.target_mask for f in features], dtype=torch.long
+    )
 
-def convert_examples_to_features(examples, tokenizer, args, stage=None):
-    features = []
-    for example_index, example in enumerate(examples):
-        # source
-        source_tokens = tokenizer.tokenize(example.source)[: args.max_source_length - 2]
-        source_tokens = [tokenizer.cls_token] + source_tokens + [tokenizer.sep_token]
-        source_ids = tokenizer.convert_tokens_to_ids(source_tokens)
-        source_mask = [1] * (len(source_tokens))
-        padding_length = args.max_source_length - len(source_ids)
-        source_ids += [tokenizer.pad_token_id] * padding_length
-        source_mask += [0] * padding_length
-
-        # triples
-        triples_tokens = tokenizer.tokenize(example.triples)[: args.max_triples_length]
-        triples_ids = tokenizer.convert_tokens_to_ids(triples_tokens)
-        triples_mask = [1] * (len(triples_tokens))
-        padding_length = args.max_triples_length - len(triples_ids)
-        triples_ids += [tokenizer.pad_token_id] * padding_length
-        triples_mask += [0] * padding_length
-
-        # target
-        if stage == "test" or stage == "predict":
-            target_tokens = tokenizer.tokenize("None")
-        else:
-            target_tokens = tokenizer.tokenize(example.target)[
-                : args.max_target_length - 2
-            ]
-        target_tokens = [tokenizer.cls_token] + target_tokens + [tokenizer.sep_token]
-        target_ids = tokenizer.convert_tokens_to_ids(target_tokens)
-        target_mask = [1] * len(target_ids)
-        padding_length = args.max_target_length - len(target_ids)
-        target_ids += [tokenizer.pad_token_id] * padding_length
-        target_mask += [0] * padding_length
-
-        if example_index < 5:
-            if stage == "train":
-                logger.info("*** Example ***")
-                logger.info("idx: {}".format(example.idx))
-
-                logger.info(
-                    "source_tokens: {}".format(
-                        [x.replace("\u0120", "_") for x in source_tokens]
-                    )
-                )
-                logger.info("source_ids: {}".format(" ".join(map(str, source_ids))))
-                logger.info("source_mask: {}".format(" ".join(map(str, source_mask))))
-
-                logger.info(
-                    "triples_tokens: {}".format(
-                        [x.replace("\u0120", "_") for x in triples_tokens]
-                    )
-                )
-                logger.info("triples_ids: {}".format(" ".join(map(str, triples_ids))))
-                logger.info("triples_mask: {}".format(" ".join(map(str, triples_mask))))
-
-                logger.info(
-                    "target_tokens: {}".format(
-                        [x.replace("\u0120", "_") for x in target_tokens]
-                    )
-                )
-                logger.info("target_ids: {}".format(" ".join(map(str, target_ids))))
-                logger.info("target_mask: {}".format(" ".join(map(str, target_mask))))
-
-        features.append(
-            InputFeatures(
-                example_index,
-                source_ids,
-                triples_ids,
-                target_ids,
-                source_mask,
-                triples_mask,
-                target_mask,
-            )
-        )
-    return features
+    train_data = TensorDataset(
+        all_source_ids,
+        all_source_mask,
+        all_source_wiki_candidate_priors,
+        all_source_wiki_candidate_ids,
+        all_source_wiki_candidate_spans,
+        all_source_wiki_candidate_segment_ids,
+        all_source_wordnet_candidate_priors,
+        all_source_wordnet_candidate_ids,
+        all_source_wordnet_candidate_spans,
+        all_source_wordnet_candidate_segment_ids,
+        all_triples_ids,
+        all_triples_mask,
+        all_target_ids,
+        all_target_mask,
+    )
+    return train_data
 
 
 def set_seed(seed=42):
@@ -551,9 +531,7 @@ def main():
     config = config_class.from_pretrained(
         args.config_name if args.config_name else args.encoder_model_name_or_path
     )
-    encoder = model_class.from_pretrained(
-        args.encoder_model_name_or_path, config=config
-    )
+    encoder = load_model()
 
     # Build triple encoder.
     triple_encoder_config = BertConfig.from_pretrained(args.decoder_model_name_or_path)
@@ -598,8 +576,10 @@ def main():
             eos_id=tokenizer.sep_token_id,
             device=device,
         )
+        archive_file = 'https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz'
+        knowbert_batchifier = KnowBertBatchifier(archive_file)
     elif args.model_architecture == "knowbert2bert":
-
+        pass
     else:
         raise Exception("Model architecture is not valid.")
 
@@ -632,35 +612,8 @@ def main():
             args.train_filename + ".triple",
             args.train_filename + "." + args.target,
         )
-        train_features = convert_examples_to_features(
-            train_examples, tokenizer, args, stage="train"
-        )
-        all_source_ids = torch.tensor(
-            [f.source_ids for f in train_features], dtype=torch.long
-        )
-        all_source_mask = torch.tensor(
-            [f.source_mask for f in train_features], dtype=torch.long
-        )
-        all_triples_ids = torch.tensor(
-            [f.triples_ids for f in train_features], dtype=torch.long
-        )
-        all_triples_mask = torch.tensor(
-            [f.triples_mask for f in train_features], dtype=torch.long
-        )
-        all_target_ids = torch.tensor(
-            [f.target_ids for f in train_features], dtype=torch.long
-        )
-        all_target_mask = torch.tensor(
-            [f.target_mask for f in train_features], dtype=torch.long
-        )
-
-        train_data = TensorDataset(
-            all_source_ids,
-            all_source_mask,
-            all_triples_ids,
-            all_triples_mask,
-            all_target_ids,
-            all_target_mask,
+        train_data = convert_examples_to_tensordataset(
+            train_examples, tokenizer, knowbert_batchifier, args, stage="train"
         )
 
         if args.local_rank == -1:
@@ -730,14 +683,40 @@ def main():
                 (
                     source_ids,
                     source_mask,
+                    source_wiki_candidate_priors,
+                    source_wiki_candidate_ids,
+                    source_wiki_candidate_spans,
+                    source_wiki_candidate_segment_ids,
+                    source_wordnet_candidate_priors,
+                    source_wordnet_candidate_ids,
+                    source_wordnet_candidate_spans,
+                    source_wordnet_candidate_segment_ids,
                     triples_ids,
                     triples_mask,
                     target_ids,
-                    target_mask,
+                    target_mask
                 ) = batch
+
+                source_candidates = {
+                    'wiki' : {
+                        'candidate_entity_priors' : source_wiki_candidate_priors,
+                        'candidate_entities' : {'ids' : source_wiki_candidate_ids},
+                        'candidate_spans' : source_wiki_candidate_spans,
+                        'candidate_segment_ids' : source_wiki_candidate_segment_ids
+                    },
+                    'wordnet' : {
+                        'candidate_entity_priors' : source_wordnet_candidate_priors,
+                        'candidate_entities' : {'ids' : source_wordnet_candidate_ids},
+                        'candidate_spans' : source_wordnet_candidate_spans,
+                        'candidate_segment_ids' : source_wordnet_candidate_segment_ids
+                    }
+                }
+
+
                 loss, _, _ = model(
                     source_ids=source_ids,
                     source_mask=source_mask,
+                    source_candidates=source_candidates,
                     triples_ids=triples_ids,
                     triples_mask=triples_mask,
                     target_ids=target_ids,
