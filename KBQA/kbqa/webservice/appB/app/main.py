@@ -178,8 +178,10 @@ def load_config(path: str) -> Tuple[BaseSummarizer, BasePipeline]:
 
     if architecture_name == "bert_spbert_spbert":
         pline = init_bert_spbert_spbert(parser["bert_spbert_spbert"])
-    # elif architecture_name == "bert_triple-bert_spbert":
-    #     pline = init_bert_triplebert_spbert(parser["bert_triple-bert_spbert"])
+    elif architecture_name == "knowbert_spbert_spbert":
+        pline = init_knowbert_spbert_spbert(parser["knowbert_spbert_spbert"])
+    elif architecture_name == "bert_triple-bert_spbert":
+        pline = init_bert_triplebert_spbert(parser["bert_triple-bert_spbert"])
     else:
         raise ValueError(f"Architecture {architecture_name} is not supported.")
 
@@ -251,8 +253,56 @@ def init_bert_spbert_spbert(section: SectionProxy) -> BasePipeline:
     return bss_pipeline
 
 
-# def init_bert_triplebert_spbert(section):
-#     pass
+def init_knowbert_spbert_spbert(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for KNOWBERT_SPBERT_SPBERT.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertSPBertPipeline
+        Initialized BERT_SPBERT_SPBERT pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import KNOWBERT_SPBERT_SPBERT
+    from app.knowbert_spbert_spbert import KnowBertSPBertSPBertPipeline
+
+    # TODO add updating of dynamic arguments
+    print(section)  # used to make the linters work, can be removed
+
+    kss_pipeline = KnowBertSPBertSPBertPipeline(KNOWBERT_SPBERT_SPBERT)
+
+    return kss_pipeline
+
+
+def init_bert_triplebert_spbert(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for BERT_TRIPLE_BERT.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertSPBertPipeline
+        Initialized BERT_SPBERT_SPBERT pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import BERT_TRIPLEBERT_SPBERT
+    from app.bert_triplebert_spbert import BertTripleBertSPBertPipeline
+
+    # TODO add updating of dynamic arguments
+    print(section)  # used to make the linters work, can be removed
+
+    bts_pipeline = BertTripleBertSPBertPipeline(BERT_TRIPLEBERT_SPBERT)
+
+    return bts_pipeline
 
 
 main_summarizer, main_pipeline = load_config(config_path)

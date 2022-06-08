@@ -114,3 +114,15 @@ BERT_SPBERT_SPBERT = SimpleNamespace(
         "save_interval": 1,
     }
 )
+
+KNOWBERT_SPBERT_SPBERT = SimpleNamespace(
+    **{
+        # TODO add knowbert parameters
+    }
+)
+
+BERT_TRIPLEBERT_SPBERT = SimpleNamespace(
+    **{
+        # TODO add triplebert parameters
+    }
+)
