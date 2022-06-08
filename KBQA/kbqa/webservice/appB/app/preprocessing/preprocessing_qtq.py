@@ -1,11 +1,22 @@
 """Preprocess a seperated QTQ dataset to prepare it for the use of SPBert."""
 import os
 import re
+from types import SimpleNamespace
 from typing import List
 
-from app.arguments.args_preprocessing import PREPROCESSING_QTQ
-from app.bert_wordpiece_spbert.generator_utils import encode
-from app.bert_wordpiece_spbert.generator_utils import SPARQL_KEYWORDS
+from app.bert_spbert_spbert.bert_wordpiece_spbert.generator_utils import encode
+from app.bert_spbert_spbert.bert_wordpiece_spbert.generator_utils import SPARQL_KEYWORDS
+
+PREPROCESSING_QTQ = SimpleNamespace(
+    **{
+        # --data, dest="data_dir", required=True
+        "data_dir": "app/data/sep",
+        # --subset, dest="subset", required=True
+        "subset": "question",
+        # --output, dest="output_dir", required=True
+        "output_dir": "app/data/output",
+    }
+)
 
 
 def preprocess_sentence(words: str) -> str:
@@ -138,7 +149,3 @@ def preprocessing_qtq() -> None:
                 triples = line.split("\t")
                 out.write("\t".join(preprocess_triples(triples)))
                 out.write("\n")
-
-
-if __name__ == "__main__":
-    preprocessing_qtq()

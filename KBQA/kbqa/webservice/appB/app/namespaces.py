@@ -1,7 +1,7 @@
-"""Arguments for BERT_wordpiece_SPBERT."""
+"""Arguments for all architectures."""
 from types import SimpleNamespace
 
-BERT_WORDPIECE_SPBERT = SimpleNamespace(
+BERT_SPBERT_SPBERT = SimpleNamespace(
     **{
         # --encoder_model_name_or_path, default=None, type=str, required=True,
         # help="Path to pre-trained model: e.g. roberta-base"

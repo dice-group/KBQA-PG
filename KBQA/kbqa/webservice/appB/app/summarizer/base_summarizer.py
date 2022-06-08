@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import List
 
 
-class Summarizer(ABC):
+class BaseSummarizer(ABC):
     """Abstract summarizer."""
 
     @abstractmethod
@@ -13,8 +13,8 @@ class Summarizer(ABC):
 
         Parameters
         ----------
-        question : str
-            A natural language question
+        question : Question
+            Question object containing a natural language question.
 
         Returns
         -------

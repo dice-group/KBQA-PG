@@ -114,7 +114,7 @@ exclude: |
     KBQA/appB/transformer_architectures/bert_spbert_spbert_base/. |
     KBQA/appB/transformer_architectures/bert_spbert_spbert/. |
     KBQA/kbqa/webservice/appA/app/nspm/generator_utils.py |
-    KBQA/kbqa/webservice/appB/app/bert_wordpiece_spbert/ |
+    KBQA/kbqa/webservice/appB/app/bert_spbert_spbert/bert_wordpiece_spbert/ |
     KBQA/tests/
   )
 

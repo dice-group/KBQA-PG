@@ -27,8 +27,8 @@ import os
 import random
 import re
 
-from app.bert_wordpiece_spbert.model import BertSeq2Seq     # modified
-from app.bert_wordpiece_spbert.model import Seq2Seq         # modified
+from app.bert_spbert_spbert.bert_wordpiece_spbert.model import BertSeq2Seq     # modified
+from app.bert_spbert_spbert.bert_wordpiece_spbert.model import Seq2Seq         # modified
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
@@ -47,7 +47,6 @@ from transformers import get_linear_schedule_with_warmup
 from transformers import RobertaConfig
 from transformers import RobertaModel
 from transformers import RobertaTokenizer
-from app.arguments.args_bert_wordpiece_spbert import BERT_WORDPIECE_SPBERT     #modified
 
 MODEL_CLASSES = {
     "roberta": (RobertaConfig, RobertaModel, RobertaTokenizer),
@@ -430,124 +429,134 @@ parser.add_argument(
         "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
     )
     # print arguments
-    #args = parser.parse_args()      # modified
-args = BERT_WORDPIECE_SPBERT
-logger.info(args)
+    # args = parser.parse_args()      # modified
+
+# initialize variables
+tokenizer = None
+model = None
+device = None
+
+def init(args):
+    global tokenizer
+    global model
+    global device
+
+    logger.info(args)
 
     # Setup CUDA, GPU & distributed training
-if args.local_rank == -1 or args.no_cuda:
-    device = torch.device(
-        "cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu"
-    )
-    args.n_gpu = torch.cuda.device_count()
-else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-    torch.cuda.set_device(args.local_rank)
-    device = torch.device("cuda", args.local_rank)
-    torch.distributed.init_process_group(backend="nccl")
-    args.n_gpu = 1
-args.device = device
-
-logger.warning(
-    "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s",
-    args.local_rank,
-    args.device,
-    args.n_gpu,
-    bool(args.local_rank != -1),
-)
-
-# Set seed
-set_seed(args.seed)
-
-# make dir if output_dir not exist
-if os.path.exists(args.output_dir) is False:
-    os.makedirs(args.output_dir)
-
-# Load models.
-config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
-tokenizer = tokenizer_class.from_pretrained(
-    args.tokenizer_name if args.tokenizer_name else args.encoder_model_name_or_path,
-    do_lower_case=args.do_lower_case,
-)
-
-# Build question encoder.
-config = config_class.from_pretrained(
-    args.config_name if args.config_name else args.encoder_model_name_or_path
-)
-encoder = model_class.from_pretrained(
-    args.encoder_model_name_or_path, config=config
-)
-
-# Build triple encoder.
-triple_encoder_config = BertConfig.from_pretrained(
-    args.decoder_model_name_or_path
-)
-triple_encoder = BertModel.from_pretrained(
-    args.decoder_model_name_or_path, config=triple_encoder_config
-)
-
-# Build decoder and model.
-if args.model_architecture == "bert2rnd":
-    assert False, "Not implemented yet."
-        # decoder_layer = nn.TransformerDecoderLayer(
-        #     d_model=config.hidden_size, nhead=config.num_attention_heads
-        # )
-        # decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
-        # model = Seq2Seq(
-        #     encoder=encoder,
-        #     decoder=decoder,
-        #     config=config,
-        #     beam_size=args.beam_size,
-        #     max_length=args.max_target_length,
-        #     sos_id=tokenizer.cls_token_id,
-        #     eos_id=tokenizer.sep_token_id,
-        #     device=device,
-        # )
-elif args.model_architecture == "bert2bert":
-    decoder_config = BertConfig.from_pretrained(
-        args.config_name if args.config_name else args.decoder_model_name_or_path
-    )
-    decoder_config.is_decoder = True
-    decoder_config.add_cross_attention = True
-    decoder = BertModel.from_pretrained(
-        args.decoder_model_name_or_path, config=decoder_config
-    )
-    model = BertSeq2Seq(
-        encoder=encoder,
-        triple_encoder=triple_encoder,
-        decoder=decoder,
-        config=config,
-        beam_size=args.beam_size,
-        max_length=args.max_target_length,
-        sos_id=tokenizer.cls_token_id,
-        eos_id=tokenizer.sep_token_id,
-        device=device
-    )
-else:
-    raise Exception("Model architecture is not valid.")
-
-# Load model checkpoint.
-if args.load_model_checkpoint == 'Yes' or (args.load_model_checkpoint == 'Dynamic' and args.do_test):
-    logger.info("reload model from {}".format(args.load_model_path))
-    model.load_state_dict(torch.load(args.load_model_path, map_location=torch.device('cpu')))
-
-model.to(device)
-if args.local_rank != -1:
-    # Distributed training
-    try:
-        from apex.parallel import DistributedDataParallel as DDP
-    except ImportError:
-        raise ImportError(
-            "Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training."
+    if args.local_rank == -1 or args.no_cuda:
+        device = torch.device(
+            "cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu"
         )
+        args.n_gpu = torch.cuda.device_count()
+    else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
+        torch.cuda.set_device(args.local_rank)
+        device = torch.device("cuda", args.local_rank)
+        torch.distributed.init_process_group(backend="nccl")
+        args.n_gpu = 1
+    args.device = device
 
-    model = DDP(model)
-elif args.n_gpu > 1:
-    # multi-gpu training
-    model = torch.nn.DataParallel(model)
+    logger.warning(
+        "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s",
+        args.local_rank,
+        args.device,
+        args.n_gpu,
+        bool(args.local_rank != -1),
+    )
+
+    # Set seed
+    set_seed(args.seed)
+
+    # make dir if output_dir not exist
+    if os.path.exists(args.output_dir) is False:
+        os.makedirs(args.output_dir)
+
+    # Load models.
+    config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
+    tokenizer = tokenizer_class.from_pretrained(
+        args.tokenizer_name if args.tokenizer_name else args.encoder_model_name_or_path,
+        do_lower_case=args.do_lower_case,
+    )
+
+    # Build question encoder.
+    config = config_class.from_pretrained(
+        args.config_name if args.config_name else args.encoder_model_name_or_path
+    )
+    encoder = model_class.from_pretrained(
+        args.encoder_model_name_or_path, config=config
+    )
+
+    # Build triple encoder.
+    triple_encoder_config = BertConfig.from_pretrained(
+        args.decoder_model_name_or_path
+    )
+    triple_encoder = BertModel.from_pretrained(
+        args.decoder_model_name_or_path, config=triple_encoder_config
+    )
+
+    # Build decoder and model.
+    if args.model_architecture == "bert2rnd":
+        assert False, "Not implemented yet."
+            # decoder_layer = nn.TransformerDecoderLayer(
+            #     d_model=config.hidden_size, nhead=config.num_attention_heads
+            # )
+            # decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
+            # model = Seq2Seq(
+            #     encoder=encoder,
+            #     decoder=decoder,
+            #     config=config,
+            #     beam_size=args.beam_size,
+            #     max_length=args.max_target_length,
+            #     sos_id=tokenizer.cls_token_id,
+            #     eos_id=tokenizer.sep_token_id,
+            #     device=device,
+            # )
+    elif args.model_architecture == "bert2bert":
+        decoder_config = BertConfig.from_pretrained(
+            args.config_name if args.config_name else args.decoder_model_name_or_path
+        )
+        decoder_config.is_decoder = True
+        decoder_config.add_cross_attention = True
+        decoder = BertModel.from_pretrained(
+            args.decoder_model_name_or_path, config=decoder_config
+        )
+        model = BertSeq2Seq(
+            encoder=encoder,
+            triple_encoder=triple_encoder,
+            decoder=decoder,
+            config=config,
+            beam_size=args.beam_size,
+            max_length=args.max_target_length,
+            sos_id=tokenizer.cls_token_id,
+            eos_id=tokenizer.sep_token_id,
+            device=device
+        )
+    else:
+        raise Exception("Model architecture is not valid.")
+
+    # Load model checkpoint.
+    if args.load_model_checkpoint == 'Yes' or (args.load_model_checkpoint == 'Dynamic' and args.do_test):
+        logger.info("reload model from {}".format(args.load_model_path))
+        model.load_state_dict(torch.load(args.load_model_path, map_location=torch.device('cpu')))
+
+    model.to(device)
+    if args.local_rank != -1:
+        # Distributed training
+        try:
+            from apex.parallel import DistributedDataParallel as DDP
+        except ImportError:
+            raise ImportError(
+                "Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training."
+            )
+
+        model = DDP(model)
+    elif args.n_gpu > 1:
+        # multi-gpu training
+        model = torch.nn.DataParallel(model)
 
 # ------------------------------------- end inlining -------------------------------------
 
-def run():    # modified
+def run(args):    # modified
     if args.do_train:
         # Prepare training data loader
         train_examples = read_examples(

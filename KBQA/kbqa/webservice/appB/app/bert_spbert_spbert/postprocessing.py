@@ -1,9 +1,18 @@
 """Module for postprocessing a query predicted by BERT_wordpiece_SPBERT."""
 import re
+from types import SimpleNamespace
 from typing import Dict
 
-from app.arguments.args_postprocessing import POSTPROCESSING
-from app.bert_wordpiece_spbert.generator_utils import decode
+from app.bert_spbert_spbert.bert_wordpiece_spbert.generator_utils import decode
+
+POSTPROCESSING = SimpleNamespace(
+    **{
+        # path tp predict_file
+        "predict_dir": "app/output/",
+        # predict file
+        "predict_file": "predict_0.output",
+    }
+)
 
 
 def postprocessing() -> Dict[str, str]:
@@ -16,7 +25,6 @@ def postprocessing() -> Dict[str, str]:
         the postprocessed SPARQL-queries as values.
     """
     args = POSTPROCESSING
-
     predict_dir = args.predict_dir
     predict_file = args.predict_file
 
@@ -37,7 +45,3 @@ def postprocessing() -> Dict[str, str]:
             queries[query_number] = query_decoded
 
     return queries
-
-
-if __name__ == "__main__":
-    postprocessing()

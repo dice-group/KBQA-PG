@@ -1,32 +1,26 @@
 """Main module for the application logic of approach B."""
+from configparser import ConfigParser
+from configparser import SectionProxy
 import json
 import os
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Tuple
 
-from app.arguments.args_preprocessing import SEPERATE_QTQ
-from app.arguments.args_summarizer import ONE_HOP_RANK_SUMMARIZER
-from app.bert_wordpiece_spbert.run import run
-from app.postprocessing.postprocessing import postprocessing
-from app.preprocessing.preprocessing_qtq import preprocessing_qtq
-from app.preprocessing.seperate_qtq import seperate_qtq
+from app.base_pipeline import BasePipeline
+from app.preprocessing import preprocessing_qtq
+from app.preprocessing import SEPERATE_QTQ
+from app.preprocessing import seperate_qtq
 from app.qald_builder import qald_builder_ask_answer
 from app.qald_builder import qald_builder_empty_answer
 from app.qald_builder import qald_builder_select_answer
-from app.summarizer.one_hop_rank_summarizer import OneHopRankSummarizer
+from app.summarizer import BaseSummarizer
 from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper.SPARQLExceptions import SPARQLWrapperException
 
-
-print("Loading summarizer...")
-ohrs = OneHopRankSummarizer(
-    ONE_HOP_RANK_SUMMARIZER.lower_rank,
-    ONE_HOP_RANK_SUMMARIZER.max_triples,
-    ONE_HOP_RANK_SUMMARIZER.limit,
-    ONE_HOP_RANK_SUMMARIZER.timeout,
-)
+config_path = "/config/app_b_config.ini"
 
 
 def main(query: str, lang: str = "en") -> Dict[str, Any]:
@@ -49,9 +43,12 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     """
     print("Question:", query.encode("utf-8"))
 
-    query_pairs = pipeline_for_bert_wordpiece_spbert(query)
-    sparql_query = query_pairs["0"]
+    summarize(query)
 
+    seperate_qtq()
+    preprocessing_qtq()
+
+    sparql_query = main_pipeline.predict_sparql_query(query)
     answer_qald = ask_dbpedia(query, sparql_query, lang)
 
     return answer_qald
@@ -106,82 +103,156 @@ def ask_dbpedia(question: str, sparql_query: str, lang: str) -> Dict[str, Any]:
     return qald_answer
 
 
-def pipeline_for_bert_wordpiece_spbert(question: str) -> Dict[str, str]:
-    """Pipeline for approach B using BERT_wordpiece_SPBERT.
-
-    Given a natural language question, the pipeline contains the following steps:
-    1. Create a subgraph based on recognized entities and trained predicates.
-    2. Create a QTQ dataset based on the summarized subgraph.
-    3. Preprocess the QTQ dataset s.t. SPBert can work with it
-    4. Predict a SPARQL-query for the question using SPBert.
-    5. Postprocess the predicted query into a valid SPARQL-query
-
-    Parameters
-    ----------
-    question : str
-        Natural language question asked by an enduser.
-
-    Returns
-    -------
-    result : dict
-        Dictionary containing the predicted SPARQL-query at the key "0".
-    """
-    # summarizer
-    summarize(question)
-
-    # preprocessing
-    seperate_qtq()
-    preprocessing_qtq()
-
-    # predicting
-    run()
-
-    # postprocessing
-    result = postprocessing()
-
-    return result
-
-
 def summarize(question: str) -> None:
-    """Create a subgraph using a summarizer and store it a QTQ-dataset.
-
-    Parameters
-    ----------
-    question : str
-        Natural language question asked by an enduser.
-    """
-    summarized_triples = ohrs.summarize(question)
-
-    save_summarized_result(question, "", summarized_triples)
-
-
-def save_summarized_result(question: str, sparql: str, triples: str) -> None:
-    """Save the summarized results in a QTQ dataset.
+    """Summarize a subgraph and store the resulting triples in a qtq-file.
 
     Parameters
     ----------
     question : str
         Natural language question.
-    sparql : str
-        SPARQL-query (since we have to predict the query, this should be empty).
-    triples : str
-        List of triples in the format <subject> <predicate> <object>.
     """
+    summarized_triples = main_summarizer.summarize(question)
+
     data_dir = SEPERATE_QTQ.data_dir
 
-    # create input directory to store QTQ dataset for preprocessing
     if os.path.exists(data_dir) is False:
         os.makedirs(data_dir)
 
     filename = f"{SEPERATE_QTQ.subset}.json"
 
-    dataset: Dict[str, List[Dict]] = {"questions": list()}
+    dataset: Dict[str, List[Dict[str, Any]]] = {"questions": list()}
 
-    qtq = dict()
+    qtq: Dict[str, Any] = dict()
     qtq["question"] = question
-    qtq["query"] = sparql
-    qtq["triples"] = triples
+    qtq["query"] = ""
+    qtq["triples"] = summarized_triples
     dataset["questions"].append(qtq)
 
     with open(f"{data_dir}/{filename}", "w", encoding="utf-8") as file:
         json.dump(dataset, file, indent=4, separators=(",", ": "))
+
+
+def load_config(path: str) -> Tuple[BaseSummarizer, BasePipeline]:
+    """Load the config file for all configurations.
+
+    The config file is expected to be an .ini file, which contains
+    a section 'general' with the attributes 'summarizer' and 'architecture'.
+    The values of those attributes should have there own section with all
+    dynamic parameters, which are used to initialize the corresponding
+    archtecture.
+
+    Parameters
+    ----------
+    path : str
+        Path to the .ini configuration file.
+
+    Returns
+    -------
+    BaseSummarizer
+        Initialized summarizer specified in the 'general' section.
+
+    BasePipeline
+        Initialized pipeline for the specified architecture.
+
+    Raises
+    ------
+    ValueError
+        If a section is not specified or the values are not supported.
+    """
+    parser = ConfigParser()
+
+    parser.read(path)
+
+    if "general" in parser.sections():
+        general = parser["general"]
+
+        summarizer_name = general["summarizer"]
+        architecture_name = general["architecture"]
+    else:
+        raise ValueError("Config file does not contain section 'general'.")
+
+    if summarizer_name == "one_hop_rank":
+        smrzr = init_one_hop_rank_summarizer(parser["one_hop_rank"])
+    else:
+        raise ValueError(f"Summarizer {summarizer_name} is not supported.")
+
+    if architecture_name == "bert_spbert_spbert":
+        pline = init_bert_spbert_spbert(parser["bert_spbert_spbert"])
+    # elif architecture_name == "bert_triple-bert_spbert":
+    #     pline = init_bert_triplebert_spbert(parser["bert_triple-bert_spbert"])
+    else:
+        raise ValueError(f"Architecture {architecture_name} is not supported.")
+
+    return smrzr, pline
+
+
+def init_one_hop_rank_summarizer(section: SectionProxy) -> BaseSummarizer:
+    """Initialize the OneHopRankSummarizer with the given values in the config section.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    OneHopRankSummarizer
+        Initialized instance of the OneHopRankSummarizer.
+    """
+    from app.summarizer.one_hop_rank_summarizer import OneHopRankSummarizer
+
+    datasets = str(section["datasets"])
+    confidence = float(section["confidence"])
+    lower_rank = int(section["lower_rank"])
+    max_triples = int(section["max_triples"])
+    limit = int(section["limit"])
+    timeout = float(section["timeout"])
+
+    ohrs = OneHopRankSummarizer(
+        datasets=datasets,
+        confidence=confidence,
+        lower_rank=lower_rank,
+        max_triples=max_triples,
+        limit=limit,
+        timeout=timeout,
+    )
+
+    return ohrs
+
+
+def init_bert_spbert_spbert(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for BERT_SPBERT_SPBERT.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertSPBertPipeline
+        Initialized BERT_SPBERT_SPBERT pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import BERT_SPBERT_SPBERT
+    from app.bert_spbert_spbert import BertSPBertSPBertPipeline
+
+    model_name = section["model_name"]
+
+    BERT_SPBERT_SPBERT.load_model_path = f"/models/{model_name}"
+    BERT_SPBERT_SPBERT.max_source_length = int(section["max_source_length"])
+    BERT_SPBERT_SPBERT.max_triples_length = int(section["max_triples_length"])
+    BERT_SPBERT_SPBERT.max_target_length = int(section["max_target_length"])
+
+    bss_pipeline = BertSPBertSPBertPipeline(BERT_SPBERT_SPBERT)
+
+    return bss_pipeline
+
+
+# def init_bert_triplebert_spbert(section):
+#     pass
+
+
+main_summarizer, main_pipeline = load_config(config_path)
