@@ -5,6 +5,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Union
 
 from rdflib import URIRef
 import requests
@@ -41,6 +42,35 @@ def query_dbspotlight(question: str, confidence: float = 0.5) -> Dict[str, Any]:
 
         return dict()
 
+    return response
+
+
+def query_falcon(question: str) -> Dict[str, Any]:
+    """Query the endpoint of Falcon 2.0 for entity recognition.
+
+    Parameters
+    ----------
+    question : str
+        Natural language question.
+
+    Returns
+    -------
+    response : dict
+        Response of the Falcon 2.0 endpoint without any processing
+        as JSON dict.
+    """
+    endpoint = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1"
+
+    try:
+        response = requests.post(
+            endpoint,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps({"text": question}),
+        ).json()
+    except JSONDecodeError:
+        print("It was not possible to parse the response.")
+
+        return dict()
     return response
 
 
@@ -142,7 +172,7 @@ def query_tagme(question: str) -> Dict[str, Any]:
 def entity_recognition_tagme(
     question: str, conf: float = 0.5
 ) -> List[Tuple[URIRef, float]]:
-    """Enttiy recognition using the TagMe API.
+    """Entity recognition using the TagMe API.
 
     Parameters
     ----------
@@ -169,22 +199,34 @@ def entity_recognition_tagme(
         confidence = float(annotation["rho"])
 
         if confidence >= conf:
-
-            query = f"""SELECT ?uri WHERE {{
-                ?uri dbo:wikiPageID ?id
-                FILTER( ?id = {ann_id} )
-            }}
-            """
-            answer = query_dbpedia(query)
-
-            bindings = answer["results"]["bindings"]
-
-            for binding in bindings:
-                entity = URIRef(binding["uri"]["value"])
-
-                entities.append((entity, confidence))
+            entity = URIRef(get_uri_for_wiki_page_id(ann_id))
+            entities.append((entity, confidence))
 
     return entities
+
+
+def get_uri_for_wiki_page_id(wiki_page_id: int) -> Union[str, None]:
+    """Query DBpedia for the URI corresponding to the wikiPageID wiki_page_id.
+
+    Parameters
+    ----------
+    wiki_page_id : int
+        The wikiPageID of some DBpedia page.
+
+    Returns
+    -------
+    str or None
+        The corresponding URI. None, if no URI was found.
+    """
+    uri = None
+    query = f"""SELECT ?uri WHERE {{
+                ?uri dbo:wikiPageID "{wiki_page_id}"^^xsd:integer .
+                }}"""
+    answer = query_dbpedia(query)
+    bindings = answer["results"]["bindings"]
+    for binding in bindings:
+        uri = binding["uri"]["value"]
+    return uri
 
 
 def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRef]]:
@@ -205,17 +247,8 @@ def entity_relation_recognition(question: str) -> Tuple[List[URIRef], List[URIRe
     relations : list
         List of all recognized relations as URIRef.
     """
-    endpoint = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1"
-
-    try:
-        response = requests.post(
-            endpoint,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps({"text": question}),
-        ).json()
-    except JSONDecodeError:
-        print("It was not possible to parse the response.")
-
+    response = query_falcon(question=question)
+    if "entities_dbpedia" not in response or "relations_dbpedia" not in response:
         return list(), list()
 
     dbpedia_entities = response["entities_dbpedia"]
@@ -255,7 +288,7 @@ def build_sparql_query_for_one_hop_predicates(entity: str, predicates: List) -> 
     Returns
     -------
     str
-        The formated SPARQL-query.
+        The formatted SPARQL-query.
     """
     predicate_str = ""
 
@@ -284,7 +317,7 @@ def build_sparql_query_for_two_hop_predicates(entity: str, predicates: List) -> 
     Returns
     -------
     str
-        The formated SPARQL-query.
+        The formatted SPARQL-query.
     """
     const_str = ""
     where_str = ""

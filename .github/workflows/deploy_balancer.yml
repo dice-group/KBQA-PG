@@ -1,0 +1,29 @@
+name: Balancer Deployment
+
+on:
+  push:
+    branches: [develop, master]
+    paths:
+      - "KBQA/kbqa/routing/**"
+  workflow_dispatch:
+    branches: [develop, master]
+
+concurrency:
+  group: balancer
+  cancel-in-progress: true
+
+jobs:
+  deploy-routing:
+    runs-on: [self-hosted, kbqa-pg-general]
+    timeout-minutes: 10080
+
+    steps:
+      - name: Stop running balancer
+        working-directory: KBQA/kbqa/routing
+        run: docker-compose -p kbqa-balancer down --remove-orphan
+        continue-on-error: true
+      - name: Get new version
+        uses: actions/checkout@v3
+      - name: Build and start balancer
+        working-directory: KBQA/kbqa/routing
+        run: docker-compose -p kbqa-balancer up -d --build

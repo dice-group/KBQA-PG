@@ -1,9 +1,14 @@
 """API for approach A. There is only a POST endpoint."""
+from typing import Dict
+from typing import Tuple
+
 from app.main import main
+from flask import abort
 from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import Response
+from werkzeug.exceptions import HTTPException
 
 
 application = Flask(__name__)
@@ -23,14 +28,45 @@ def endpoint() -> Response:
         JSON-dict, which contains the question, the answers and the
         query in the QALD format.
     """
-    query = request.form["query"]
+    query = request.form.get("query")
 
-    # check, whether the language parameter is set
-    if "lang" in request.form.keys():
-        lang = request.form["lang"]
+    if query is None:
+        abort(400, description="Missing parameter 'query'")
 
-        answer = main(query, lang)
-    else:
-        answer = main(query)
+    answer = main(query)
 
     return jsonify(answer)
+
+
+@application.errorhandler(400)
+def bad_request(error: HTTPException) -> Tuple[Dict[str, str], int]:
+    """Error handler for wrong requests (Bad Request).
+
+    Parameters
+    ----------
+    error : HTTPException
+        HTTPException with status code 400.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the information with the wrong parameter.
+    """
+    return jsonify({"status": "400", "msg": str(error)}), 400
+
+
+@application.errorhandler(500)
+def internal_error(error: HTTPException) -> Tuple[Dict[str, str], int]:
+    """Error handler for internal error from the app.
+
+    Parameters
+    ----------
+    error : HTTPException
+        HTTPException with status code 500.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the information that an internal error occured.
+    """
+    return jsonify({"status": "500", "msg": str(error)}), 500

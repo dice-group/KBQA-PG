@@ -1,4 +1,5 @@
 """Preprocess a seperated QTQ dataset to prepare it for the use of SPBert."""
+import os
 import re
 from typing import List
 
@@ -108,6 +109,10 @@ def preprocessing_qtq() -> None:
 
     data_dir = data_dir.rstrip("/")
     output_dir = output_dir.rstrip("/")
+
+    # create output directory to store output files for SPBERT
+    if os.path.exists(output_dir) is False:
+        os.makedirs(output_dir)
 
     with open(f"{output_dir}/{subset}.en", "w", encoding="utf-8") as out:
         with open(f"{data_dir}/{subset}.en", encoding="utf-8") as file:

@@ -4,6 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
+from flask import abort
 import requests
 
 
@@ -43,6 +44,15 @@ def process_question(question: str, app: str) -> Tuple[List[str], str]:
     else:
         raise ValueError("Approach should be A or B.")
 
+    if response.status_code == 500:
+        abort(500, description="There seems to be a problem in the endpoint")
+
+    if response.status_code == 502:
+        abort(502, description="The endpoint is not reachable for the moment")
+
+    if response.status_code == 504:
+        abort(504, description="The endpoint is taking too long to find an answer")
+
     response_json = json.loads(response.text)
     bindings, query = extract_bindings_from_qald(response_json)
     answers = format_bindings(bindings)
@@ -66,33 +76,65 @@ def extract_bindings_from_qald(qald: Dict) -> Tuple[List[Tuple[str, str]], str]:
     query : str
         Generated SPARQL-query used to find the answers.
     """
-    results = []
-
     questions = qald["questions"]
 
     for quest in questions:
-        question = quest["question"]
         query = quest["query"]
         answers = quest["answers"]
 
-        print("Question:", question)
-        print("Query:", query)
-
         for answer in answers:
-            variables = answer["head"]["vars"]
-
-            bindings = answer["results"]["bindings"]
-
-            for var in variables:
-                for binding in bindings:
-                    result_type = binding[var]["type"]
-                    result_value = binding[var]["value"]
-
-                    result = (result_type, result_value)
-
-                    results.append(result)
+            if "boolean" in answer.keys():
+                results = extract_results_from_boolean(answer)
+            else:
+                results = extract_results_from_variable(answer)
 
     return results, query["sparql"]
+
+
+def extract_results_from_boolean(answer: Dict) -> List[Tuple[str, str]]:
+    """Extract the results from a boolean answer.
+
+    Parameters
+    ----------
+    answer : dict
+        The answer as a dict.
+
+    Returns
+    -------
+    answers : list
+        List of answers. An answer is described by a tuple.
+    """
+    return [("", answer["boolean"])]
+
+
+def extract_results_from_variable(answer: Dict) -> List[Tuple[str, str]]:
+    """Extract the results from a variable answer.
+
+    Parameters
+    ----------
+    answer : dict
+        The answer as a dict.
+
+    Returns
+    -------
+    answers : list
+        List of answers. An answer is described by a tuple (type, value).
+    """
+    results = []
+
+    variables = answer["head"]["vars"]
+
+    bindings = answer["results"]["bindings"]
+
+    for var in variables:
+        for binding in bindings:
+            result_type = binding[var]["type"]
+            result_value = binding[var]["value"]
+
+            result = (result_type, result_value)
+
+            results.append(result)
+    return results
 
 
 def format_bindings(bindings: List[Tuple[str, str]]) -> List[str]:

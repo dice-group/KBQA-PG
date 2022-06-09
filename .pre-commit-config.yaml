@@ -6,7 +6,7 @@ repos:
         name: Prettier - format code of web development files
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.0
+    rev: v2.32.1
     hooks:
       - id: pyupgrade
         name: pyupgrade - upgrade syntax for newer python versions
@@ -18,13 +18,13 @@ repos:
         name: Black - format python code
 
   - repo: https://github.com/sqlalchemyorg/zimports
-    rev: v0.5.0
+    rev: v0.6.0
     hooks:
       - id: zimports
         name: zimports - reformat python imports
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.13.5
+    rev: v2.13.9
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
@@ -41,7 +41,13 @@ repos:
         name: Pylint (appA)
         files: ^KBQA/kbqa/webservice/appA/
         additional_dependencies:
-          [flask==2.0.2, requests==2.26.0, SPARQLWrapper==1.8.5]
+          [
+            flask==2.0.2,
+            requests==2.26.0,
+            SPARQLWrapper==1.8.5,
+            transformers==4.5.1,
+            spacy_dbpedia_spotlight==0.2.2,
+          ]
       - id: pylint
         name: Pylint (appB)
         files: ^KBQA/kbqa/webservice/appB/
@@ -68,7 +74,7 @@ repos:
         name: Flake8 - check python source files for errors and style
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.942
+    rev: v0.950
     hooks:
       - id: mypy
         name: Mypy - check python static types
@@ -103,10 +109,11 @@ repos:
 
 exclude: |
   (?x)^(
-    KBQA/appB/transformer_architectures/BERT_CompleX_SPBERT/. |
     KBQA/appB/transformer_architectures/BERT_WordPiece_SPBERT/. |
+    KBQA/appB/preprocessing/. |
     KBQA/appB/transformer_architectures/bert_spbert_spbert_base/. |
-    KBQA/kbqa/webservice/appA/app/nspm/ |
+    KBQA/appB/transformer_architectures/bert_spbert_spbert/. |
+    KBQA/kbqa/webservice/appA/app/nspm/generator_utils.py |
     KBQA/kbqa/webservice/appB/app/bert_wordpiece_spbert/ |
     KBQA/tests/
   )

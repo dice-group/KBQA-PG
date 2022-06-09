@@ -1,6 +1,7 @@
 import unittest
 
 from KBQA.appB.summarizers import OneHopRankSummarizer
+from KBQA.appB.data_generator import Question
 from rdflib import Graph
 from rdflib import URIRef
 
@@ -75,3 +76,14 @@ class TestOneHopRankSummarizer(unittest.TestCase):
         expected_result = [f"{germany.n3()} {capital.n3()} {berlin.n3()}", f"{france.n3()} {capital.n3()} {paris.n3()}"]
 
         self.assertListEqual(expected_result, formated_triples)
+
+    def test_integration(self):
+        question = Question("Which subsidiary of TUI Travel serves both Glasgow and Dublin?")
+        limit = 100      
+
+        ohrs = OneHopRankSummarizer(limit=limit)
+
+        result = ohrs.summarize(question)
+        self.assertEqual(len(result), limit)
+
+        

@@ -27,3 +27,7 @@ body {
   width: 50%;
   margin-top: 2%;
 }
+
+.right {
+  margin-left: auto;
+}

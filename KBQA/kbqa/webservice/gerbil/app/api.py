@@ -7,6 +7,7 @@ from typing import Tuple
 from app.config import Approach
 from app.config import approaches
 from app.config import decode_experiment_filename
+from app.evaluation import evaluate_approaches
 from flask import Flask
 from flask import render_template
 from flask import Response
@@ -56,9 +57,15 @@ def load_evaluation(approach: Approach) -> Tuple[str, str]:
 
 
 data = dict()
-for our_approach in approaches:
-    data[our_approach.name] = load_evaluation(our_approach)
 
+
+def reload_evaluations() -> None:
+    """Reload evaluations of all approaches."""
+    for our_approach in approaches:
+        data[our_approach.name] = load_evaluation(our_approach)
+
+
+reload_evaluations()
 application = Flask(__name__)
 
 
@@ -73,3 +80,21 @@ def endpoint() -> Response:
         Evaluation webpage
     """
     return render_template("index.html", evaluations=data)
+
+
+@application.route("/gerbil/start/", methods=["GET"])
+def start_evaluation() -> Response:
+    """
+    Endpoint to start a new GERBIL evaluation.
+
+    Returns
+    -------
+    Response
+        When finished
+    """
+    evaluate_approaches("dice")
+    reload_evaluations()
+    return "Finished"
+
+
+start_evaluation()
