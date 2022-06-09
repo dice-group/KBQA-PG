@@ -11,6 +11,8 @@ from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_utils import enumerate_spans
 from KBQA.appB.transformer_architectures.kb.common import WhitespaceTokenizer, MentionGenerator, get_empty_candidates
 
+import logging
+knowbert_logger = logging.getLogger('knowbert-logger.wiki')
 
 def prior_entity_candidates(candidates_file: str,
                             max_candidates: int = 30,
@@ -68,10 +70,10 @@ def prior_entity_candidates(candidates_file: str,
                     p_e_m[mention] = entity_candidates
                     mention_total_freq[mention] = absolute_freq
 
-    print("duplicate_mentions_cnt: ", duplicate_mentions_cnt)
-    print("end of p_e_m reading. wall time:", (time.time() - wall_start) / 60, " minutes")
-    print("p_e_m_errors: ", p_e_m_errors)
-    print("incompatible_ent_ids: ", incompatible_ent_ids)
+    knowbert_logger.info(f"duplicate_mentions_cnt: {duplicate_mentions_cnt}")
+    knowbert_logger.info(f"end of p_e_m reading. wall time: {(time.time() - wall_start) / 60} minutes")
+    knowbert_logger.info(f"p_e_m_errors: {p_e_m_errors}")
+    knowbert_logger.info(f"incompatible_ent_ids: {incompatible_ent_ids}")
 
     wall_start = time.time()
     # two different p(e|m) mentions can be the same after lower() so we merge the two candidate

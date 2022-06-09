@@ -35,6 +35,9 @@ import h5py
 
 import spacy
 
+import logging
+knowbert_logger = logging.getLogger('knowbert-logger.wordnet')
+
 
 class WordNetSpacyPreprocessor:
     """
@@ -692,7 +695,6 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
         """
 
         super().__init__()
-        print(pos_embedding_dim)
         if pos_embedding_dim is not None:
             # entity_id -> pos abbreviation, e.g.
             # 'cat.n.01' -> 'n'
@@ -717,7 +719,6 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
                 self.POS_MAP[entity_to_pos[ent]] for ent in entities
             ]
             self.register_buffer('entity_id_to_pos_index', torch.tensor(entity_id_to_pos_index))
-            print(self.entity_id_to_pos_index)
             self.pos_embeddings = torch.nn.Embedding(len(entities), pos_embedding_dim)
             init_bert_weights(self.pos_embeddings, 0.02)
 
@@ -783,12 +784,11 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
         # (num_unique_embeddings)
         if self.use_pos:
             weights = self.entity_id_to_pos_index.reshape(-1, 1)
-            print(weights)
             unique_pos_ids = torch.nn.functional.embedding(unique_ids, weights).contiguous()
             # unique_pos_ids = torch.nn.functional.embedding(unique_ids, self.entity_id_to_pos_index).contiguous()
             # (num_unique_embeddings, pos_dim)
             unique_pos_embeddings = self.pos_embeddings(unique_pos_ids).contiguous().squeeze()
-            print(unique_pos_embeddings)
+            knowbert_logger.debug(unique_pos_embeddings)
             # concat
             entity_and_pos = torch.cat([unique_entity_embeddings, unique_pos_embeddings], dim=-1)
         else:

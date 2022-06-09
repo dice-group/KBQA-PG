@@ -13,6 +13,8 @@ from KBQA.appB.transformer_architectures.kb.wiki_linking_util import WikiCandida
 from KBQA.appB.transformer_architectures.kb.wordnet import WordNetCandidateMentionGenerator
 from KBQA.appB.transformer_architectures.kb.entity_linking import TokenCharactersIndexerTokenizer
 
+import logging
+knowbert_logger = logging.getLogger('knowbert-logger.batchifier')
 
 def _extract_config_from_archive(model_archive):
     import tarfile
@@ -57,14 +59,14 @@ def build_tokenizer_and_candidate_generator():
         "wiki": wiki_tokenizer,
         "wordnet": wordnet_tokenizer
     }
-    print("Building Generators")
+    knowbert_logger.info("Building Generators")
     entity_candidate_generators = {
         "wiki": WikiCandidateMentionGenerator(),
         "wordnet": WordNetCandidateMentionGenerator(entity_file='https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wordnet/entities.jsonl')
     }
     #entity_candidate_generators = {}
     #entity_indexers = {}
-    print("Build Generators")
+    knowbert_logger.info("Build Generators")
 
     return BertTokenizerAndCandidateGenerator(
         entity_candidate_generators=entity_candidate_generators,
@@ -99,7 +101,7 @@ class KnowBertBatchifier:
         candidate_generator_params['entity_indexers']['wordnet']['tokenizer'] = {'type': 'just_spaces'}
 
         self.tokenizer_and_candidate_generator = build_tokenizer_and_candidate_generator()
-        print("Done building")
+        knowbert_logger.info("Done building candidate generators")
         # self.tokenizer_and_candidate_generator = TokenizerAndCandidateGenerator.\
         #     from_params(Params(candidate_generator_params))
 
@@ -150,7 +152,7 @@ class KnowBertBatchifier:
                 tokens_candidates = self.tokenizer_and_candidate_generator.\
                     tokenize_and_generate_candidates(self._replace_mask(sentence_or_sentence_pair))
 
-            print(f"token_candidates: {tokens_candidates}")
+            knowbert_logger.debug(f"token_candidates: {tokens_candidates}")
 
             if verbose:
                 print(self._replace_mask(sentence_or_sentence_pair))
@@ -184,14 +186,12 @@ class KnowBertBatchifier:
             fields = self.tokenizer_and_candidate_generator.\
                 convert_tokens_candidates_to_fields(tokens_candidates)
             #fields['tokens'].index(self.bert_vocab)
-            print(fields)
-            print(fields['tokens'])
+            knowbert_logger.debug(fields)
+            knowbert_logger.debug(fields['tokens'])
             instances.append(Instance(fields))
 
-            print(instances[-1])
+            knowbert_logger.debug(instances[-1])
 
-            #instances[-1].index_fields(self.vocab)
-            #print(instances[-1].as_tensor_dict())
         batch = Batch(instances)
         batch.index_instances(self.vocab)
         yield batch.as_tensor_dict()

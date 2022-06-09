@@ -25,6 +25,9 @@ from KBQA.appB.transformer_architectures.kb.evaluation.exponential_average_metri
 from KBQA.appB.transformer_architectures.kb.evaluation.weighted_average import WeightedAverage
 from KBQA.appB.transformer_architectures.kb.wordnet import WordNetAllEmbedding
 
+import logging
+knowbert_logger = logging.getLogger('knowbert-logger.main')
+
 def print_shapes(x, prefix='', raise_on_nan=False):
     if isinstance(x, torch.Tensor):
         print(prefix, x.shape)
@@ -409,7 +412,7 @@ class EntityDisambiguator(BaseEntityDisambiguator, torch.nn.Module):
                 num_attention_heads=span_encoder_config['num_attention_heads'],
                 intermediate_size=span_encoder_config['intermediate_size']
             )
-            print("Init Bert Encoder")
+            knowbert_logger.info("Init Bert Encoder")
             self.span_encoder = BertEncoder(config)
             init_bert_weights(self.span_encoder, initializer_range)
 
@@ -487,9 +490,9 @@ entity_embeddings_entity_ids)
         """
         # get the candidate entity embeddings
         # (batch_size, num_spans, num_candidates, entity_embedding_dim)
-        print(f"candidate_entities: {candidate_entities}")
+        knowbert_logger.debug(f"candidate_entities: {candidate_entities}")
         candidate_entity_embeddings = self.entity_embeddings(candidate_entities)
-        print(f"candidate_entity_embeddings: {candidate_entity_embeddings}")
+        knowbert_logger.debug(f"candidate_entity_embeddings: {candidate_entity_embeddings}")
         candidate_entity_embeddings = self.kg_layer_norm(candidate_entity_embeddings.contiguous())
 
         # project to entity embedding dim
@@ -788,7 +791,6 @@ class KnowBert(BertPretrainedMetricsLoss):
         super().__init__(vocab, regularizer)
 
         self.remap_segment_embeddings = remap_segment_embeddings
-
         # get the LM + NSP parameters from BERT
         pretrained_bert = BertForPreTraining.from_pretrained(bert_model_name)
         self.pretrained_bert = pretrained_bert
@@ -854,12 +856,12 @@ class KnowBert(BertPretrainedMetricsLoss):
         model_archive = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz"
         vocab_archive = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz"
         vocab = Vocabulary.from_files(directory=vocab_archive)
-        print("Loaded Vocabulary")
-        print(vocab)
+        knowbert_logger.info("Loaded Vocabulary")
+        knowbert_logger.debug(vocab)
         wiki_soldered_kg = KnowBert._load_soldered_kg_wiki(vocab)
-        print("Loaded wiki soldered KG")
+        knowbert_logger.info("Loaded wiki soldered KG")
         wordnet_soldered_kg = KnowBert._load_soldered_kg_wordnet(vocab)
-        print("Loaded wordnet soldered KG")
+        knowbert_logger.info("Loaded wordnet soldered KG")
         return KnowBert(
             vocab=vocab,
             bert_model_name="bert-base-uncased",
@@ -892,7 +894,7 @@ class KnowBert(BertPretrainedMetricsLoss):
             vocab_namespace="entity_wiki",
             vocab=vocab
         )
-        print("Loaded wiki embedding")
+        knowbert_logger.info("Loaded wiki embedding")
         entity_linker = EntityLinkingWithCandidateMentions(
             vocab=vocab,
             contextual_embedding_dim=768,
@@ -931,7 +933,7 @@ class KnowBert(BertPretrainedMetricsLoss):
             entity_h5_key="tucker_gensen",
             vocab_file=wordnet_vocab_file
         )
-        print("Loaded wordnet embedding")
+        knowbert_logger.info("Loaded wordnet embedding")
         
         entity_linker = EntityLinkingWithCandidateMentions(
             vocab=vocab,
@@ -975,20 +977,20 @@ class KnowBert(BertPretrainedMetricsLoss):
 
     def forward(self, tokens=None, segment_ids=None, candidates=None,
                 lm_label_ids=None, next_sentence_label=None, **kwargs):
-        #tokens = tokens['tokens']
-        print("In forward")
-        print(f"tokens {tokens}")
-        print(f"candidates {candidates}")
-        print(segment_ids)
-        print(lm_label_ids)
-        print(kwargs)
+
+        knowbert_logger.debug("In KnowBERT forward")
+        knowbert_logger.debug(f"tokens {tokens}")
+        knowbert_logger.debug(f"candidates {candidates}")
+        knowbert_logger.debug(segment_ids)
+        knowbert_logger.debug(lm_label_ids)
+        knowbert_logger.debug(kwargs)
 
         assert candidates.keys() == self.soldered_kgs.keys()
 
         mask = tokens['tokens'] > 0
         attention_mask = extend_attention_mask_for_bert(mask, get_dtype_for_module(self))
         contextual_embeddings = self.pretrained_bert.bert.embeddings(tokens['tokens'], segment_ids)
-        print(f"Bert input: {contextual_embeddings}")
+        knowbert_logger.debug(f"Bert input: {contextual_embeddings}")
 
 
         output = {}
@@ -1004,7 +1006,7 @@ class KnowBert(BertPretrainedMetricsLoss):
                 layer_idx = 0
                 for layer in self.pretrained_bert.bert.encoder.layer[start_layer_index:end_layer_index]:
                     contextual_embeddings = layer(contextual_embeddings, attention_mask)
-                    print(f"Bert Layer{layer_num},{layer_idx}: {contextual_embeddings}")
+                    knowbert_logger.debug(f"Bert Layer{layer_num},{layer_idx}: {contextual_embeddings}")
                     layer_idx += 1
             start_layer_index = end_layer_index
 
@@ -1025,7 +1027,7 @@ class KnowBert(BertPretrainedMetricsLoss):
                     loss = loss + kg_output['loss']
 
                 contextual_embeddings = kg_output['contextual_embeddings']
-                print(f"KG Layer: {contextual_embeddings}")
+                knowbert_logger.debug(f"KG Layer: {contextual_embeddings}")
                 output[soldered_kg_key] = {}
                 for key in kg_output.keys():
                     if key != 'loss' and key != 'contextual_embeddings':
