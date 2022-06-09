@@ -592,18 +592,18 @@ def main() -> None:
     # qald8 = "C:/Users/User/Downloads/QALD8-train.json"
     # lcquad = "C:/Users/User/Downloads/train-data.json"
     # qald9 = "C:/Users/User/Downloads/qald-9-train-multilingual.json"
-    # first_dataset = create_table_predicate_rank(lcquad, True)
+    # first_dataset = create_table_predicate_rank(qald8, False)
     # second_dataset = create_table_predicate_rank(qald9, False)
-    # third_dataset = create_table_predicate_rank(qald8, False)
+    # third_dataset = create_table_predicate_rank(lcquad, True)
     # combined_dataset = combine_predicates_without_dublicates(first_dataset, second_dataset)
     # combined_dataset1 = combine_predicates_without_dublicates(combined_dataset, third_dataset)
 
-    # open_file = open("lcquad_qald9_qald8.pickle", "wb")
+    # open_file = open("qald8_qald9_lcquad.pickle", "wb")
     # pickle.dump(combined_dataset1, open_file)
     # open_file.close()
-    with open("lcquad_qald9_qald8.pickle", "rb") as file:
-        lst = pickle.load(file)
-        print(len(lst))
+    # with open("qald8_qald9_lcquad.pickle", "rb") as file:
+    #    lst = pickle.load(file)
+    #    print(len(lst))
 
 
 # Call from shell as main.
