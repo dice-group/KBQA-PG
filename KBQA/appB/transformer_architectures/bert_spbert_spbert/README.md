@@ -1,4 +1,6 @@
-# SPBERT base
+# BERT-SPBERT-SPBERT
+This model consists of an encoder BERT model for questions, an encoder SPBERT model for triples. The output tokens of 
+both models are concatenated and fed into the decoder. The decoder is another SPBERT instance.
 
 ## Installation
 
