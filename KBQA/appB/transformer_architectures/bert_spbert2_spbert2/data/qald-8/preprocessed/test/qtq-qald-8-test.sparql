@@ -1,0 +1,41 @@
+select var_rdf_owl where brack_open <dbr_Web_Ontology_Language> <dbo_abstract> var_rdf_owl brack_close limit 1
+select var_writers where brack_open <dbr_The_Wall> <dbo_writer> var_writers brack_close
+select var_species where brack_open <dbr_Elephant> <dbo_species> var_species brack_close
+select var_Almamater where brack_open <dbr_Angela_Merkel> <dbo_almaMater> var_Almamater brack_close
+select var_area where brack_open <dbr_United_Kingdom> <dbo_area> var_area brack_close offset 0 limit 1
+select var_Author where brack_open <dbr_The_Interpretation_of_Dreams> <dbo_author> var_Author brack_close
+select var_bn where brack_open <dbr_Adele> <dbo_birthName> var_bn brack_close
+select var_company where brack_open var_company <dct_subject> <dbc_Car_manufacturers_of_Germany> sep_semi <dbo_equity> var_equity sep_semi <dbo_netIncome> var_netIncome sep_semi <dbo_production> var_production sep_semi <dbo_revenue> var_revenue brack_close _obd_ var_equity
+select attr_open count attr_open var_Awards attr_close as var_Counter attr_close where brack_open <dbr_Bertrand_Russell> <dbo_award> var_Awards brack_close
+select var_Dan where brack_open values var_Dan brack_open <dbr_Daniel_Jurafsky> brack_close brack_close
+select var_Date where brack_open <dbr_2018_FIFA_World_Cup> <dbp_date> var_Date brack_close offset 24 limit 1
+select var_ele where brack_open <dbr_Düsseldorf_Airport> <dbo_elevation> var_ele brack_close limit 1
+select var_europop where brack_open <dbr_European_Union> <dbo_populationTotal> var_europop brack_close
+select var_ff where brack_open <dbr_French_Fifth_Republic> <dbo_foundingDate> var_ff brack_close
+select var_founder where brack_open <dbr_BlaBlaCar> dbo_foundedBy var_founder brack_close
+select var_Ger_lang where brack_open <dbr_German_language> <dbp_speakers> var_Ger_lang brack_close offset 1 limit 1
+select var_Goethe where brack_open <dbr_Johann_Wolfgang_von_Goethe> <dbo_birthPlace> var_Goethe brack_close
+select var_uri where brack_open <dbr_Carolina_Reaper> <dbo_origin> var_uri brack_close
+select var_Mexico_City where brack_open <dbr_Mexico_City> <dbo_populationTotal> var_Mexico_City brack_close
+select var_nm where brack_open <dbr_Baghdad> <foaf_nick> var_nm brack_close
+select var_Novelist where brack_open <dbr_A_Song_of_Ice_and_Fire> <dbo_author> var_Novelist brack_close
+select var_percentage where brack_open <dbr_Brazil> <dbo_percentageOfAreaWater> var_percentage brack_close
+select var_pIraq where brack_open <dbr_Iraq> <dbo_populationTotal> var_pIraq brack_close
+select var_pop where brack_open <dbr_Cairo> <dbo_populationTotal> var_pop brack_close
+select var_rank where brack_open <dbr_Germany> <dbp_populationDensityRank> var_rank brack_close
+select var_tarea where brack_open <dbr_North_Rhine-Westphalia> <dbo_areaTotal> var_tarea brack_close
+select var_title where brack_open <dbr_The_Interpretation_of_Dreams> <foaf_name> var_title brack_close
+select var_x where brack_open <dbr_William_Shakespeare> <dbo_deathDate> var_x brack_close limit 1
+select var_border where brack_open <dbr_Geography_of_Iran> <dbp_borders> var_border brack_close limit 8
+select var_city where brack_open var_m <skos_broader> <dbc_Cities_in_Germany> sep_dot var_city <dct_subject> var_m sep_semi <dbo_areaTotal> var_area brack_close _oba_ var_area limit 1
+select var_company where brack_open var_company <dct_subject> <dbc_Companies_based_in_North_Rhine-Westphalia> sep_semi <rdf_type> <dbo_brewery> brack_close
+select var_lcity where brack_open <dbr_United_States> <dbo_largestCity> var_lcity brack_close
+select var_leader where brack_open <dbr_Federal_Ministry_of_Finance_ attr_open Germany attr_close > <dbo_leader> var_leader brack_close
+select var_m where brack_open <dbr_Bavarian_Alps> dbp_highest var_m brack_close
+select var_name where brack_open <dbr_8th_President_of_the_United_States> <dbo_wikiPageRedirects> var_link sep_dot var_link <dbp_name> var_name brack_close
+select var_point where brack_open <dbr_Extreme_points_of_Earth> <dct_subject> var_x sep_dot var_point <dct_subject> var_x sep_semi <rdfs_comment> var_comment filter par_open lang attr_open var_comment attr_close math_eql quote_str en quote_str par_close brack_close offset 13 limit 1
+select var_s where brack_open <dbr_Pennsylvania_State_University> <dbo_state> var_s brack_close
+select var_owner where brack_open var_owner <dbo_owner> <dbr_Donald_Trump> brack_close
+select var_book where brack_open var_book <dbo_author> <dbr_Dan_Brown> sep_dot var_book <dbo_publicationDate> var_date brack_close _obd_ var_date limit 1
+select var_books where brack_open var_books <dbo_author> <dbr_John_Green_ attr_open author attr_close > brack_close
+select var_date where brack_open <dbr_Friends> <dbo_completionDate> var_date brack_close
