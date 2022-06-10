@@ -1403,7 +1403,7 @@ def split_preprocessed_files(
     """
     input_file_paths_: list[Path] = list()
     for i, path in enumerate(input_file_paths):
-        input_file_paths_[i] = Path(path)
+        input_file_paths_.append(Path(path))
     output_folder_path = Path(output_folder_path)
     output_folder_path.mkdir(parents=True, exist_ok=True)
 
