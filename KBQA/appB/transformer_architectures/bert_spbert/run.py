@@ -727,6 +727,11 @@ def main():
                         f1.write(str(gold.idx) + "\t" + gold.target + "\n")
 
                 bl_score = corpus_bleu(label_str, pred_str) * 100
+                with open(bleu_file_path, "a") as file:
+                    if file.tell() == 0:
+                        file.write(f"{bl_score}")
+                    else:
+                        file.write(f"\n{bl_score}")
 
                 logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
                 logger.info("  " + "*" * 20)
@@ -814,12 +819,6 @@ def main():
                     f1.write(str(gold.idx) + "\t" + gold.target + "\n")
 
             bl_score = corpus_bleu(label_str, pred_str) * 100
-            with open(bleu_file_path, "a") as file:
-                if file.tell() == 0:
-                    file.write(f"{bl_score}")
-                else:
-                    file.write(f"\n{bl_score}")
-
             logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
             logger.info("  " + "*" * 20)
     if args.do_predict:
