@@ -1,28 +1,28 @@
+from typing import Dict, List
 
-from typing import Dict
-
+from allennlp.data.fields.field import DataArray
+from allennlp.data.fields.field import Field
+from allennlp.data.vocabulary import Vocabulary
 from overrides import overrides
 
-from allennlp.data.fields.field import DataArray, Field
-from allennlp.data.vocabulary import Vocabulary
-
-SEPERATOR = '*'
+SEPERATOR = "*"
 
 
 class DictField(Field):
     """
     dict with values as fields
     """
+
     def __init__(self, field_dict: Dict[str, Field]) -> None:
         self.field_dict = field_dict
 
     @overrides
-    def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
+    def count_vocab_items(self, counter: Dict[str, Dict[str, int]]) -> None:
         for field in self.field_dict.values():
             field.count_vocab_items(counter)
 
     @overrides
-    def index(self, vocab: Vocabulary):
+    def index(self, vocab: Vocabulary) -> None:
         for field in self.field_dict.values():
             field.index(vocab)
 
@@ -37,7 +37,7 @@ class DictField(Field):
     @overrides
     def as_tensor(self, padding_lengths: Dict[str, int]) -> DataArray:
         # padding_lengths is flattened from the nested structure -- unflatten
-        pl = {}
+        pl : Dict = {}
         for full_key, val in padding_lengths.items():
             key, _, sub_key = full_key.partition(SEPERATOR)
             if key not in pl:
@@ -52,10 +52,12 @@ class DictField(Field):
 
     @overrides
     def empty_field(self) -> Field:
-        return DictField({key: field.empty_field() for key, field in self.field_dict.items()})
+        return DictField(
+            {key: field.empty_field() for key, field in self.field_dict.items()}
+        )
 
     @overrides
-    def batch_tensors(self, tensor_list):
+    def batch_tensors(self, tensor_list: List[DataArray]) -> Dict:
         ret = {}
         for key, field in self.field_dict.items():
             ret[key] = field.batch_tensors([t[key] for t in tensor_list])

@@ -1,6 +1,5 @@
-from overrides import overrides
-
 from allennlp.training.metrics.metric import Metric
+from overrides import overrides
 
 
 @Metric.register("ema")
@@ -10,6 +9,7 @@ class ExponentialMovingAverage(Metric):
     alpha is the decay constant. Alpha = 1 means just keep the most recent value.
     alpha = 0.5 will have almost no contribution from 10 time steps ago.
     """
+
     def __init__(self, alpha: float = 0.5) -> None:
         self.alpha = alpha
         self.reset()

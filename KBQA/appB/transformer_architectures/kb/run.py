@@ -26,17 +26,13 @@ import logging
 import os
 import random
 import re
-import token
-from KBQA.appB.transformer_architectures.kb.knowbert import KnowBert
-from KBQA.appB.transformer_architectures.kb.test_model import load_model
-from KBQA.appB.transformer_architectures.kb.knowbert_utils import KnowBertBatchifier
 
+from KBQA.appB.transformer_architectures.kb.knowbert_utils import KnowBertBatchifier
+from KBQA.appB.transformer_architectures.kb.test_model import load_model
 from model import BertSeq2Seq
-from model import Seq2Seq
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
-import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.data import RandomSampler
 from torch.utils.data import SequentialSampler
@@ -55,7 +51,6 @@ from transformers import RobertaTokenizer
 MODEL_CLASSES = {
     "roberta": (RobertaConfig, RobertaModel, RobertaTokenizer),
     "bert": (BertConfig, BertModel, BertTokenizer),
-    "knowbert": (KnowBertConfig, KnowBertModel, KnowBertTokenizerAndCandidateGenerator)
 }
 
 logging.basicConfig(
@@ -132,53 +127,93 @@ class InputFeatures:
 
 
 def replace_mask(text):
-    return text.replace('[MASK]', ' [MASK] ')
+    return text.replace("[MASK]", " [MASK] ")
 
 
-def convert_examples_to_tensordataset(examples, tokenizer, knowbert_batchifier, args, stage=None):
+def convert_examples_to_tensordataset(
+    examples, tokenizer, knowbert_batchifier, args, stage=None
+):
     batch = knowbert_batchifier.iter_batches([example.source for example in examples])
     source_fields = next(batch)
 
-    source_fields['tokens']['tokens'] = source_fields['tokens']['tokens']['tokens']
-    source_fields['candidates']['wiki']['candidate_entities']['ids'] = \
-        source_fields['candidates']['wiki']['candidate_entities']['ids']['token_characters']
+    source_fields["tokens"]["tokens"] = source_fields["tokens"]["tokens"]["tokens"]
+    source_fields["candidates"]["wiki"]["candidate_entities"]["ids"] = source_fields[
+        "candidates"
+    ]["wiki"]["candidate_entities"]["ids"]["token_characters"]
 
-    candidate_mask = (source_fields['candidates']['wiki']['candidate_entities']['ids'] > 0).type(torch.uint8)
-    source_fields['candidates']['wiki']['candidate_entities']['ids'] -= candidate_mask
+    candidate_mask = (
+        source_fields["candidates"]["wiki"]["candidate_entities"]["ids"] > 0
+    ).type(torch.uint8)
+    source_fields["candidates"]["wiki"]["candidate_entities"]["ids"] -= candidate_mask
     print(candidate_mask)
 
-    source_fields['candidates']['wordnet']['candidate_entities']['ids'] = \
-        source_fields['candidates']['wordnet']['candidate_entities']['ids']['token_characters']
+    source_fields["candidates"]["wordnet"]["candidate_entities"]["ids"] = source_fields[
+        "candidates"
+    ]["wordnet"]["candidate_entities"]["ids"]["token_characters"]
 
-    candidate_mask = (source_fields['candidates']['wordnet']['candidate_entities']['ids'] > 0).type(torch.uint8)
-    source_fields['candidates']['wordnet']['candidate_entities']['ids'] -= candidate_mask
+    candidate_mask = (
+        source_fields["candidates"]["wordnet"]["candidate_entities"]["ids"] > 0
+    ).type(torch.uint8)
+    source_fields["candidates"]["wordnet"]["candidate_entities"][
+        "ids"
+    ] -= candidate_mask
 
     print(source_fields)
-    all_source_ids = source_fields['tokens']['tokens']
-    all_source_segment_ids = source_fields['segment_ids']
+    all_source_ids = source_fields["tokens"]["tokens"]
+    all_source_segment_ids = source_fields["segment_ids"]
     print(all_source_ids)
     print(all_source_segment_ids)
     max_source_length = 32
     padding_length = max(max_source_length - len(all_source_ids[0]), 0)
     num_examples = len(all_source_ids)
     if padding_length > 0:
-        all_source_ids = torch.cat((all_source_ids, torch.full((num_examples, padding_length), fill_value=tokenizer.pad_token_id)), dim=1)
-        all_source_segment_ids = torch.cat((all_source_segment_ids, torch.full((num_examples, padding_length), fill_value=0)), dim=1)
+        all_source_ids = torch.cat(
+            (
+                all_source_ids,
+                torch.full(
+                    (num_examples, padding_length), fill_value=tokenizer.pad_token_id
+                ),
+            ),
+            dim=1,
+        )
+        all_source_segment_ids = torch.cat(
+            (
+                all_source_segment_ids,
+                torch.full((num_examples, padding_length), fill_value=0),
+            ),
+            dim=1,
+        )
     all_source_mask = all_source_ids > 0
 
     print(all_source_ids)
     print(all_source_mask)
     print(all_source_segment_ids)
 
-    all_source_wiki_candidate_priors = source_fields['candidates']['wiki']['candidate_entity_priors']
-    all_source_wiki_candidate_ids = source_fields['candidates']['wiki']['candidate_entities']['ids']
-    all_source_wiki_candidate_spans = source_fields['candidates']['wiki']['candidate_spans']
-    all_source_wiki_candidate_segment_ids = source_fields['candidates']['wiki']['candidate_segment_ids']
+    all_source_wiki_candidate_priors = source_fields["candidates"]["wiki"][
+        "candidate_entity_priors"
+    ]
+    all_source_wiki_candidate_ids = source_fields["candidates"]["wiki"][
+        "candidate_entities"
+    ]["ids"]
+    all_source_wiki_candidate_spans = source_fields["candidates"]["wiki"][
+        "candidate_spans"
+    ]
+    all_source_wiki_candidate_segment_ids = source_fields["candidates"]["wiki"][
+        "candidate_segment_ids"
+    ]
 
-    all_source_wordnet_candidate_priors = source_fields['candidates']['wordnet']['candidate_entity_priors']
-    all_source_wordnet_candidate_ids = source_fields['candidates']['wordnet']['candidate_entities']['ids']
-    all_source_wordnet_candidate_spans = source_fields['candidates']['wordnet']['candidate_spans']
-    all_source_wordnet_candidate_segment_ids = source_fields['candidates']['wordnet']['candidate_segment_ids']
+    all_source_wordnet_candidate_priors = source_fields["candidates"]["wordnet"][
+        "candidate_entity_priors"
+    ]
+    all_source_wordnet_candidate_ids = source_fields["candidates"]["wordnet"][
+        "candidate_entities"
+    ]["ids"]
+    all_source_wordnet_candidate_spans = source_fields["candidates"]["wordnet"][
+        "candidate_spans"
+    ]
+    all_source_wordnet_candidate_segment_ids = source_fields["candidates"]["wordnet"][
+        "candidate_segment_ids"
+    ]
 
     features = []
     for example_index, example in enumerate(examples):
@@ -236,18 +271,12 @@ def convert_examples_to_tensordataset(examples, tokenizer, knowbert_batchifier, 
             )
         )
 
-    all_triples_ids = torch.tensor(
-        [f.triples_ids for f in features], dtype=torch.long
-    )
+    all_triples_ids = torch.tensor([f.triples_ids for f in features], dtype=torch.long)
     all_triples_mask = torch.tensor(
         [f.triples_mask for f in features], dtype=torch.long
     )
-    all_target_ids = torch.tensor(
-        [f.target_ids for f in features], dtype=torch.long
-    )
-    all_target_mask = torch.tensor(
-        [f.target_mask for f in features], dtype=torch.long
-    )
+    all_target_ids = torch.tensor([f.target_ids for f in features], dtype=torch.long)
+    all_target_mask = torch.tensor([f.target_mask for f in features], dtype=torch.long)
 
     train_data = TensorDataset(
         all_source_ids,
@@ -281,7 +310,7 @@ def set_seed(seed=42):
 def main():
     parser = argparse.ArgumentParser()
 
-    ## Required parameters
+    # Required parameters
     parser.add_argument(
         "--encoder_model_name_or_path",
         default=None,
@@ -297,7 +326,7 @@ def main():
         help="Path to pre-trained model: e.g. roberta-base",
     )
 
-    ## Other parameters
+    # Other parameters
     parser.add_argument(
         "--load_model_checkpoint",
         default="Dynamic",
@@ -576,7 +605,7 @@ def main():
             eos_id=tokenizer.sep_token_id,
             device=device,
         )
-        archive_file = 'https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz'
+        archive_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz"
         knowbert_batchifier = KnowBertBatchifier(archive_file)
     elif args.model_architecture == "knowbert2bert":
         pass
@@ -625,8 +654,6 @@ def main():
             sampler=train_sampler,
             batch_size=args.train_batch_size // args.gradient_accumulation_steps,
         )
-
-        num_train_optimization_steps = args.train_steps
 
         # Prepare optimizer and schedule (linear warmup and decay)
         no_decay = ["bias", "LayerNorm.weight"]
@@ -694,24 +721,23 @@ def main():
                     triples_ids,
                     triples_mask,
                     target_ids,
-                    target_mask
+                    target_mask,
                 ) = batch
 
                 source_candidates = {
-                    'wiki' : {
-                        'candidate_entity_priors' : source_wiki_candidate_priors,
-                        'candidate_entities' : {'ids' : source_wiki_candidate_ids},
-                        'candidate_spans' : source_wiki_candidate_spans,
-                        'candidate_segment_ids' : source_wiki_candidate_segment_ids
+                    "wiki": {
+                        "candidate_entity_priors": source_wiki_candidate_priors,
+                        "candidate_entities": {"ids": source_wiki_candidate_ids},
+                        "candidate_spans": source_wiki_candidate_spans,
+                        "candidate_segment_ids": source_wiki_candidate_segment_ids,
                     },
-                    'wordnet' : {
-                        'candidate_entity_priors' : source_wordnet_candidate_priors,
-                        'candidate_entities' : {'ids' : source_wordnet_candidate_ids},
-                        'candidate_spans' : source_wordnet_candidate_spans,
-                        'candidate_segment_ids' : source_wordnet_candidate_segment_ids
-                    }
+                    "wordnet": {
+                        "candidate_entity_priors": source_wordnet_candidate_priors,
+                        "candidate_entities": {"ids": source_wordnet_candidate_ids},
+                        "candidate_spans": source_wordnet_candidate_spans,
+                        "candidate_segment_ids": source_wordnet_candidate_segment_ids,
+                    },
                 }
-
 
                 loss, _, _ = model(
                     source_ids=source_ids,

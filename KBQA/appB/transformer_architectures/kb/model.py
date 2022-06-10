@@ -3,7 +3,6 @@
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class LabelSmoothingLoss(nn.Module):
@@ -92,7 +91,9 @@ class BertSeq2Seq(nn.Module):
         target_ids=None,
         target_mask=None,
     ):
-        outputs = self.encoder(tokens=source_ids, segment_ids=source_mask, candidates=source_candidates)
+        outputs = self.encoder(
+            tokens=source_ids, segment_ids=source_mask, candidates=source_candidates
+        )
         question_encoder_output = outputs[0]
         outputs = self.triple_encoder(triples_ids, attention_mask=triples_mask)
         triple_encoder_output = outputs[0]

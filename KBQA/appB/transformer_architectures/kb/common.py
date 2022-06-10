@@ -1,16 +1,17 @@
-
 import json
-
-import torch
-
-from pytorch_pretrained_bert.modeling import \
-    BertLayer, BertAttention, BertSelfAttention, BertSelfOutput, \
-    BertOutput, BertIntermediate, BertEncoder, BertLayerNorm
 
 from allennlp.common.registrable import Registrable
 from allennlp.training.metrics.metric import Metric
-
+from pytorch_pretrained_bert.modeling import BertAttention
+from pytorch_pretrained_bert.modeling import BertEncoder
+from pytorch_pretrained_bert.modeling import BertIntermediate
+from pytorch_pretrained_bert.modeling import BertLayer
+from pytorch_pretrained_bert.modeling import BertLayerNorm
+from pytorch_pretrained_bert.modeling import BertOutput
+from pytorch_pretrained_bert.modeling import BertSelfAttention
+from pytorch_pretrained_bert.modeling import BertSelfOutput
 from spacy.tokens import Doc
+import torch
 
 
 class MentionGenerator(Registrable):
@@ -29,7 +30,7 @@ def get_empty_candidates():
     return {
         "candidate_spans": [[-1, -1]],
         "candidate_entities": [["@@PADDING@@"]],
-        "candidate_entity_priors": [[1.0]]
+        "candidate_entity_priors": [[1.0]],
     }
 
 
@@ -39,7 +40,7 @@ class WhitespaceTokenizer(object):
         self.vocab = vocab
 
     def __call__(self, text):
-        words = text.split(' ')
+        words = text.split(" ")
         # All tokens 'own' a subsequent space character in this tokenizer
         spaces = [True] * len(words)
         return Doc(self.vocab, words=words, spaces=spaces)
@@ -56,6 +57,7 @@ class F1Metric(Metric):
     Takes two lists of predicted and gold elements and computes F1.
     Only requirements are that the elements are hashable.
     """
+
     def __init__(self, filter_func=None):
         self.reset()
         if filter_func is None:
@@ -76,9 +78,13 @@ class F1Metric(Metric):
         recall : float
         f1-measure : float
         """
-        precision = float(self._true_positives) / float(self._true_positives + self._false_positives + 1e-13)
-        recall = float(self._true_positives) / float(self._true_positives + self._false_negatives + 1e-13)
-        f1_measure = 2. * ((precision * recall) / (precision + recall + 1e-13))
+        precision = float(self._true_positives) / float(
+            self._true_positives + self._false_positives + 1e-13
+        )
+        recall = float(self._true_positives) / float(
+            self._true_positives + self._false_negatives + 1e-13
+        )
+        f1_measure = 2.0 * ((precision * recall) / (precision + recall + 1e-13))
         if reset:
             self.reset()
         return precision, recall, f1_measure
@@ -103,8 +109,8 @@ class F1Metric(Metric):
         assert len(predictions) == len(gold_labels)
 
         for pred, gold in zip(predictions, gold_labels):
-            s_gold = set(g for g in gold if self.filter_func(g))
-            s_pred = set(p for p in pred if self.filter_func(p))
+            s_gold = {g for g in gold if self.filter_func(g)}
+            s_pred = {p for p in pred if self.filter_func(p)}
 
             for p in s_pred:
                 if p in s_gold:
@@ -143,9 +149,15 @@ def init_bert_weights(module, initializer_range, extra_modules_without_weights=(
     # these modules don't have any weights, other then ones in submodules,
     # so don't have to worry about init
     modules_without_weights = (
-        BertEncoder, torch.nn.ModuleList, torch.nn.Dropout, BertLayer,
-        BertAttention, BertSelfAttention, BertSelfOutput,
-        BertOutput, BertIntermediate
+        BertEncoder,
+        torch.nn.ModuleList,
+        torch.nn.Dropout,
+        BertLayer,
+        BertAttention,
+        BertSelfAttention,
+        BertSelfOutput,
+        BertOutput,
+        BertIntermediate,
     ) + extra_modules_without_weights
 
     # modified from pytorch_pretrained_bert
@@ -180,7 +192,7 @@ def get_linear_layer_init_identity(dim):
 
 
 class JsonFile:
-    '''
+    """
     A flat text file where each line is one json object
 
     # to read though a file line by line
@@ -194,7 +206,7 @@ class JsonFile:
     with JsonFile('file.json', 'w') as fout:
         fout.write({'key1': 5, 'key2': 'token'})
         fout.write({'key1': 0, 'key2': 'the'})
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         self._args = args
@@ -206,7 +218,7 @@ class JsonFile:
 
     def write(self, item):
         item_as_json = json.dumps(item, ensure_ascii=False)
-        encoded = '{0}\n'.format(item_as_json)
+        encoded = "{}\n".format(item_as_json)
         self._file.write(encoded)
 
     def __enter__(self):

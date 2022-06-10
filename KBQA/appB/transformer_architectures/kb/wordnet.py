@@ -12,31 +12,35 @@ Notes on wordnet ids:
 """
 
 
+from collections import defaultdict
+import logging
+import random
+from typing import Dict
+from typing import List
+
+from allennlp.common.file_utils import cached_path
+from allennlp.data import DatasetReader
+from allennlp.data import Token
+from allennlp.data.fields import ArrayField
+from allennlp.data.fields import ListField
+from allennlp.data.fields import MetadataField
+from allennlp.data.fields import SpanField
+from allennlp.data.fields import TextField
+from allennlp.data.instance import Instance
+from allennlp.data.token_indexers import TokenIndexer
+import h5py
+from KBQA.appB.transformer_architectures.kb.common import EntityEmbedder
+from KBQA.appB.transformer_architectures.kb.common import get_empty_candidates
+from KBQA.appB.transformer_architectures.kb.common import init_bert_weights
+from KBQA.appB.transformer_architectures.kb.common import JsonFile
+from KBQA.appB.transformer_architectures.kb.common import MentionGenerator
+from KBQA.appB.transformer_architectures.kb.common import WhitespaceTokenizer
+from KBQA.appB.transformer_architectures.kb.entity_linking import EntityLinkingReader
+import numpy as np
+import spacy
 import torch
 
-import random
-
-from typing import List, Dict
-
-from allennlp.data import DatasetReader, Token
-from allennlp.data.token_indexers import TokenIndexer
-from allennlp.data.fields import TextField, ListField, SpanField, ArrayField, MetadataField
-from allennlp.data.instance import Instance
-from allennlp.common.file_utils import cached_path
-
-from collections import defaultdict
-
-from KBQA.appB.transformer_architectures.kb.common import JsonFile, get_empty_candidates
-from KBQA.appB.transformer_architectures.kb.common import WhitespaceTokenizer, MentionGenerator, init_bert_weights, EntityEmbedder
-from KBQA.appB.transformer_architectures.kb.entity_linking import EntityLinkingReader
-
-import numpy as np
-import h5py
-
-import spacy
-
-import logging
-knowbert_logger = logging.getLogger('knowbert-logger.wordnet')
+knowbert_logger = logging.getLogger("knowbert-logger.wordnet")
 
 
 class WordNetSpacyPreprocessor:
@@ -48,16 +52,15 @@ class WordNetSpacyPreprocessor:
     we'll run spacy first, then modify the POS / lemmas as needed, then
     return a new list of Token
     """
+
     def __init__(self, whitespace_tokenize_only: bool = False):
-        self.nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner', 'textcat'])
+        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "ner", "textcat"])
         if whitespace_tokenize_only:
             self.nlp.tokenizer = WhitespaceTokenizer(self.nlp.vocab)
 
         # spacy POS are similar, but not exactly the same as wordnet,
         # so need this conversion for tags that need to be mapped
-        self.spacy_to_wordnet_map = {
-            'PROPN': 'NOUN'
-        }
+        self.spacy_to_wordnet_map = {"PROPN": "NOUN"}
 
     def __call__(self, text: str) -> List[Token]:
         spacy_doc = self.nlp(text)
@@ -66,9 +69,8 @@ class WordNetSpacyPreprocessor:
             Token(
                 spacy_token.text,
                 pos_=self.spacy_to_wordnet_map.get(spacy_token.pos_, spacy_token.pos_),
-                lemma_=spacy_token.lemma_
+                lemma_=spacy_token.lemma_,
             )
-
             for spacy_token in spacy_doc
             if not spacy_token.is_space
         ]
@@ -77,15 +79,15 @@ class WordNetSpacyPreprocessor:
 
 
 def _norm_lemma(lemma_str):
-    return lemma_str.replace('_', ' ').replace('-', ' ')
+    return lemma_str.replace("_", " ").replace("-", " ")
 
 
 WORDNET_TO_SEMCOR_POS_MAP = {
-    'n': 'NOUN',  # %1
-    'v': 'VERB',  # %2
-    'a': 'ADJ',   # %3
-    'r': 'ADV',   # %4
-    's': 'ADJ',   # %5
+    "n": "NOUN",  # %1
+    "v": "VERB",  # %2
+    "a": "ADJ",  # %3
+    "r": "ADV",  # %4
+    "s": "ADJ",  # %5
 }
 
 
@@ -110,6 +112,7 @@ def load_candidate_maps(fname, topk=30, count_smoothing=1):
     count_smoothing = use this for smoothing
         if count_smoothing < 0 then don't normalize lemmas, just return raw counts
     """
+
     def _update(d, key, m):
         if key not in d:
             d[key] = []
@@ -121,31 +124,35 @@ def load_candidate_maps(fname, topk=30, count_smoothing=1):
             if len(all_candidates) > num:
                 # sort by count and trim
                 # sorted sorts ascending by default, we want decending by count
-                sorted_candidates = sorted(all_candidates, key=lambda x: x['prior'], reverse=True)
+                sorted_candidates = sorted(
+                    all_candidates, key=lambda x: x["prior"], reverse=True
+                )
                 trimmed_candidates = sorted_candidates[:num]
             else:
                 trimmed_candidates = all_candidates
 
             if smoothing >= 0:
-                sum_count = sum(ele['prior'] + smoothing for ele in trimmed_candidates)
+                sum_count = sum(ele["prior"] + smoothing for ele in trimmed_candidates)
                 for cand in trimmed_candidates:
-                    cand['prior'] = (cand['prior'] + smoothing) / sum_count
+                    cand["prior"] = (cand["prior"] + smoothing) / sum_count
             d[key] = trimmed_candidates
 
     candidates = {}
     lemma_id_to_synset_id = {}
 
-    with JsonFile(cached_path(fname), 'r') as fin:
+    with JsonFile(cached_path(fname), "r") as fin:
         for entity in fin:
-            if entity['type'] == 'lemma':
-                lemma_id = entity['id']
-                lemma_str = lemma_id.partition('%')[0]
-                synset_id = entity['synset']
+            if entity["type"] == "lemma":
+                lemma_id = entity["id"]
+                lemma_str = lemma_id.partition("%")[0]
+                synset_id = entity["synset"]
 
-                metadata = {'synset_id': synset_id,
-                            'lemma_id': lemma_id,
-                            'pos': entity['pos'],
-                            'prior': entity['count']}
+                metadata = {
+                    "synset_id": synset_id,
+                    "lemma_id": lemma_id,
+                    "pos": entity["pos"],
+                    "prior": entity["count"],
+                }
 
                 # normalize the lemma_str
                 lemma_str_normalized = _norm_lemma(lemma_str)
@@ -178,10 +185,11 @@ def load_candidate_maps(fname, topk=30, count_smoothing=1):
 #           should have near 100% recall of gold span
 #           and first sense baseline should be high
 
+
 def _update_candidate_list(c, s, e, p):
-    c['candidate_spans'].append(s)
-    c['candidate_entities'].append(e)
-    c['candidate_entity_priors'].append(p)
+    c["candidate_spans"].append(s)
+    c["candidate_entities"].append(e)
+    c["candidate_entity_priors"].append(p)
 
 
 @MentionGenerator.register("wordnet_mention_generator")
@@ -200,14 +208,16 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
              'candidate_entity_priors': List[List[float]]
         }
     """
+
     def __init__(
-            self,
-            entity_file: str,
-            max_entity_length: int = 7,
-            max_number_candidates: int = 30,
-            count_smoothing: int = 1,
-            use_surface_form: bool = False,
-            random_candidates: bool = False):
+        self,
+        entity_file: str,
+        max_entity_length: int = 7,
+        max_number_candidates: int = 30,
+        count_smoothing: int = 1,
+        use_surface_form: bool = False,
+        random_candidates: bool = False,
+    ):
 
         self._raw_data_processor = WordNetSpacyPreprocessor()
         self._raw_data_processor_whitespace = WordNetSpacyPreprocessor(
@@ -223,14 +233,14 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
             # 'location%1:03:00::': 'location.n.01',  # (LOC)
             # 'person%1:03:00::': 'person.n.01',    # (PER)
             # 'group%1:03:00::': 'group.n.01'      # (ORG)
-            'location': 'location.n.01',  # (LOC)
-            'person': 'person.n.01',    # (PER)
-            'group': 'group.n.01'      # (ORG)
+            "location": "location.n.01",  # (LOC)
+            "person": "person.n.01",  # (PER)
+            "group": "group.n.01",  # (ORG)
         }
         self._entity_lemmas = {
-            'location%1:03:00::',
-            'person%1:03:00::',
-            'group%1:03:00::',
+            "location%1:03:00::",
+            "person%1:03:00::",
+            "group%1:03:00::",
         }
 
         self._max_entity_length = max_entity_length
@@ -242,9 +252,7 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
         if self._random_candidates:
             self._unique_synsets = list(set(self._lemma_to_synset.values()))
 
-    def get_mentions_with_gold_spans(
-            self, gold_annotations
-    ):
+    def get_mentions_with_gold_spans(self, gold_annotations):
         """
         use for training with semcor -- it will use the full unrestricted
             generator, but restrict to just the gold annotation spans, without
@@ -253,36 +261,36 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
         remove generic entity types (PER, LOC, ORG)
         restrict candidate spans to just those that have annotated senses
         """
-        tokenized_text = gold_annotations['tokenized_text']
+        tokenized_text = gold_annotations["tokenized_text"]
 
-        text = ' '.join(gold_annotations['tokenized_text'])
-        candidates = self.get_mentions_raw_text(text,
-                                                whitespace_tokenize=True,
-                                                allow_empty_candidates=True)
+        text = " ".join(gold_annotations["tokenized_text"])
+        candidates = self.get_mentions_raw_text(
+            text, whitespace_tokenize=True, allow_empty_candidates=True
+        )
 
         # each gold annotation needs to be in output
         # will look up candidates by (start, end) indices so remap candidates
         candidates_by_endpoints = {
-            tuple(start_end): {'entities': ent, 'priors': pri}
+            tuple(start_end): {"entities": ent, "priors": pri}
             for start_end, ent, pri in zip(
-                candidates['candidate_spans'],
-                candidates['candidate_entities'],
-                candidates['candidate_entity_priors']
+                candidates["candidate_spans"],
+                candidates["candidate_entities"],
+                candidates["candidate_entity_priors"],
             )
         }
 
         filtered_candidates = {
-            'tokenized_text': tokenized_text,
-            'candidate_spans': [],
-            'candidate_entities': [],
-            'candidate_entity_priors': []
+            "tokenized_text": tokenized_text,
+            "candidate_spans": [],
+            "candidate_entities": [],
+            "candidate_entity_priors": [],
         }
 
-        for k in range(len(gold_annotations['gold_spans'])):
-            span = gold_annotations['gold_spans'][k]
+        for k in range(len(gold_annotations["gold_spans"])):
+            span = gold_annotations["gold_spans"][k]
             # lemma = gold_annotations['gold_lemmas'][k]
             # pos = gold_annotations['gold_pos'][k]
-            lemma_id = gold_annotations['gold_lemma_ids'][k]
+            lemma_id = gold_annotations["gold_lemma_ids"][k]
 
             if lemma_id in self._entity_lemmas:
                 # skip
@@ -294,15 +302,16 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
                 continue
 
             # add to the list
-            _update_candidate_list(filtered_candidates, span,
-                                   span_candidates['entities'],
-                                   span_candidates['priors'])
+            _update_candidate_list(
+                filtered_candidates,
+                span,
+                span_candidates["entities"],
+                span_candidates["priors"],
+            )
 
         return filtered_candidates
 
-    def get_mentions_from_gold_span_lemma_pos(
-            self, gold_annotations
-    ):
+    def get_mentions_from_gold_span_lemma_pos(self, gold_annotations):
         """
         apply heuristic for generic entity types
         restrict candidate spans to just those that have
@@ -319,20 +328,22 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
         """
         # each gold annotation needs to be in output
         # need one output for each gold span
-        tokenized_text = gold_annotations['tokenized_text']
-        candidates = {'tokenized_text': tokenized_text,
-                      'candidate_spans': [],
-                      'candidate_entities': [],
-                      'candidate_entity_priors': []}
+        tokenized_text = gold_annotations["tokenized_text"]
+        candidates = {
+            "tokenized_text": tokenized_text,
+            "candidate_spans": [],
+            "candidate_entities": [],
+            "candidate_entity_priors": [],
+        }
 
-        tokenized_text = gold_annotations['tokenized_text']
-        for k in range(len(gold_annotations['gold_spans'])):
-            span = gold_annotations['gold_spans'][k]
-            lemma = gold_annotations['gold_lemmas'][k]
-            pos = gold_annotations['gold_pos'][k]
+        tokenized_text = gold_annotations["tokenized_text"]
+        for k in range(len(gold_annotations["gold_spans"])):
+            span = gold_annotations["gold_spans"][k]
+            lemma = gold_annotations["gold_lemmas"][k]
+            pos = gold_annotations["gold_pos"][k]
 
             # check for named entities
-            if pos == 'NOUN' and lemma in self._entity_synsets:
+            if pos == "NOUN" and lemma in self._entity_synsets:
                 if lemma != tokenized_text[span[0]]:
                     # hack, assume it's the generic entity type
                     candidate_ids = [self._entity_synsets[lemma]]
@@ -349,9 +360,9 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
             cand_entities = []
             cand_priors = []
             for cand in all_candidates:
-                if WORDNET_TO_SEMCOR_POS_MAP[cand['pos']] == pos:
-                    cand_entities.append(cand['synset_id'])
-                    cand_priors.append(cand['prior'])
+                if WORDNET_TO_SEMCOR_POS_MAP[cand["pos"]] == pos:
+                    cand_entities.append(cand["synset_id"])
+                    cand_priors.append(cand["prior"])
             # renormalize prior
             sum_prior = sum(cand_priors) + len(cand_priors) * self._count_smoothing
             norm_prior = [(p + self._count_smoothing) / sum_prior for p in cand_priors]
@@ -359,10 +370,12 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
 
         return candidates
 
-    def get_mentions_raw_text(self,
-                              text: str,
-                              whitespace_tokenize: bool = False,
-                              allow_empty_candidates: bool = False):
+    def get_mentions_raw_text(
+        self,
+        text: str,
+        whitespace_tokenize: bool = False,
+        allow_empty_candidates: bool = False,
+    ):
         """
         returns:
             {'tokenized_text': List[str],
@@ -384,12 +397,10 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
 
         # will look up by both lemma (and the tokenized text if use_surface_form)
         # lowercase and remove '.'
-        lemmas = [token.lemma_.lower().replace('.', '') for token in tokenized]
+        lemmas = [token.lemma_.lower().replace(".", "") for token in tokenized]
         clist = [lemmas]
         if self._use_surface_form:
-            normed_tokens = [
-                token.lower().replace('.', '') for token in tokenized_text
-            ]
+            normed_tokens = [token.lower().replace(".", "") for token in tokenized_text]
             clist.append(normed_tokens)
             # remove ones that match the lemma
             # filtered_tokens = [None if t == l else t for l, t in  zip(lemmas, normed_tokens)]
@@ -410,9 +421,17 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
                 for ci, cc in enumerate(clist):
                     # only consider strings that don't begin/end with '-'
                     # and surface forms that are different from lemmas
-                    if cc[start] != '-' and cc[end] != '-' \
-                       and (ci == 0 or cc[start:(end + 1)] != lemmas[start:(end + 1)]):
-                        candidate_lemma = ' '.join([t for t in cc[start:(end + 1)] if t != '-'])
+                    if (
+                        cc[start] != "-"
+                        and cc[end] != "-"
+                        and (
+                            ci == 0
+                            or cc[start : (end + 1)] != lemmas[start : (end + 1)]
+                        )
+                    ):
+                        candidate_lemma = " ".join(
+                            [t for t in cc[start : (end + 1)] if t != "-"]
+                        )
                         if candidate_lemma in self._candidate_list:
                             candidate_metadata = self._candidate_list[candidate_lemma]
                             span_key = (start, end)
@@ -426,18 +445,24 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
             if len(s_candidates) > self._max_number_candidates:
                 # sort by count and trim
                 # sorted sorts ascending by default, we want decending by count
-                sorted_candidates = sorted(s_candidates, key=lambda x: x['prior'], reverse=True)
-                trimmed_candidates = sorted_candidates[:self._max_number_candidates]
+                sorted_candidates = sorted(
+                    s_candidates, key=lambda x: x["prior"], reverse=True
+                )
+                trimmed_candidates = sorted_candidates[: self._max_number_candidates]
             else:
                 trimmed_candidates = s_candidates
 
             # normalize the counts
-            sum_count = sum([ele['prior'] + self._count_smoothing for ele in trimmed_candidates])
+            sum_count = sum(
+                ele["prior"] + self._count_smoothing for ele in trimmed_candidates
+            )
             candidate_spans.append([span_key[0], span_key[1]])
-            candidate_entities.append([c['synset_id'] for c in trimmed_candidates])
+            candidate_entities.append([c["synset_id"] for c in trimmed_candidates])
             candidate_entity_priors.append(
-                [(c['prior'] + self._count_smoothing) / sum_count
-                 for c in trimmed_candidates]
+                [
+                    (c["prior"] + self._count_smoothing) / sum_count
+                    for c in trimmed_candidates
+                ]
             )
 
         if self._random_candidates:
@@ -449,10 +474,12 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
                     rand_candidates[j] = rand_candidate
                 candidate_entities[i] = rand_candidates
 
-        ret = {'tokenized_text': tokenized_text,
-               'candidate_spans': candidate_spans,
-               'candidate_entities': candidate_entities,
-               'candidate_entity_priors': candidate_entity_priors}
+        ret = {
+            "tokenized_text": tokenized_text,
+            "candidate_spans": candidate_spans,
+            "candidate_entities": candidate_entities,
+            "candidate_entity_priors": candidate_entity_priors,
+        }
 
         if not allow_empty_candidates and len(candidate_spans) == 0:
             # no candidates found, substitute the padding entity id
@@ -492,29 +519,31 @@ def unpack_wsd_training_instance(context):
 
     start = 0
     for token in context:
-        this_tokens = token['token'].replace('-', ' - ').split()
+        this_tokens = token["token"].replace("-", " - ").split()
         tokenized_text.extend(this_tokens)
 
         n = len(this_tokens)
         end = start + n - 1
 
-        if 'senses' in token:
+        if "senses" in token:
             gold_spans.append([start, end])
-            lemma = token['lemma']
+            lemma = token["lemma"]
             gold_lemmas.append(lemma)
             # just get the first
-            gold_lemma_ids.append(lemma + '%' + token['senses'][0])
-            gold_pos.append(token['pos'])
-            gold_ids.append(token['id'])
+            gold_lemma_ids.append(lemma + "%" + token["senses"][0])
+            gold_pos.append(token["pos"])
+            gold_ids.append(token["id"])
 
         start = end + 1
 
-    return {'tokenized_text': tokenized_text,
-            'gold_spans': gold_spans,
-            'gold_lemma_ids': gold_lemma_ids,
-            'gold_lemmas': gold_lemmas,
-            'gold_pos': gold_pos,
-            'gold_ids': gold_ids}
+    return {
+        "tokenized_text": tokenized_text,
+        "gold_spans": gold_spans,
+        "gold_lemma_ids": gold_lemma_ids,
+        "gold_lemmas": gold_lemmas,
+        "gold_pos": gold_pos,
+        "gold_ids": gold_ids,
+    }
 
 
 @DatasetReader.register("wordnet_fine_grained")
@@ -528,14 +557,16 @@ class WordNetFineGrainedSenseDisambiguationReader(EntityLinkingReader):
         task definitions.
     """
 
-    def __init__(self,
-                 wordnet_entity_file: str,
-                 token_indexers: Dict[str, TokenIndexer],
-                 entity_indexer: TokenIndexer,
-                 is_training: bool,
-                 use_surface_form: bool = False,
-                 should_remap_span_indices: bool = True,
-                 extra_candidate_generators: Dict[str, MentionGenerator] = None):
+    def __init__(
+        self,
+        wordnet_entity_file: str,
+        token_indexers: Dict[str, TokenIndexer],
+        entity_indexer: TokenIndexer,
+        is_training: bool,
+        use_surface_form: bool = False,
+        should_remap_span_indices: bool = True,
+        extra_candidate_generators: Dict[str, MentionGenerator] = None,
+    ):
 
         super().__init__(False)
 
@@ -551,62 +582,66 @@ class WordNetFineGrainedSenseDisambiguationReader(EntityLinkingReader):
         self.extra_candidate_generators = extra_candidate_generators
 
     def _read(self, file_path: str):
-        with JsonFile(cached_path(file_path), 'r') as fin:
+        with JsonFile(cached_path(file_path), "r") as fin:
             for sentence in fin:
                 gold_annotations = unpack_wsd_training_instance(sentence)
                 gold_span_to_entity_id = {
                     tuple(gs): self.mention_generator._lemma_to_synset[gi]
                     for gs, gi in zip(
-                        gold_annotations['gold_spans'],
-                        gold_annotations['gold_lemma_ids']
+                        gold_annotations["gold_spans"],
+                        gold_annotations["gold_lemma_ids"],
                     )
                 }
                 gold_span_to_data_id = {
                     tuple(gs): gid
                     for gs, gid in zip(
-                        gold_annotations['gold_spans'],
-                        gold_annotations['gold_ids']
+                        gold_annotations["gold_spans"], gold_annotations["gold_ids"]
                     )
                 }
 
                 # get the candidates
                 if self.is_training:
-                    candidates = self.mention_generator.get_mentions_with_gold_spans(gold_annotations)
+                    candidates = self.mention_generator.get_mentions_with_gold_spans(
+                        gold_annotations
+                    )
                 else:
-                    candidates = self.mention_generator.get_mentions_from_gold_span_lemma_pos(gold_annotations)
+                    candidates = (
+                        self.mention_generator.get_mentions_from_gold_span_lemma_pos(
+                            gold_annotations
+                        )
+                    )
 
                 # map the original gold lemma_id to the synset_id
                 gold_entities = [
-
                     # value is synset_id
                     gold_span_to_entity_id[tuple(candidate_span)]
-
-                    for candidate_span in candidates['candidate_spans']
-
+                    for candidate_span in candidates["candidate_spans"]
                 ]
 
                 gold_data_ids = [
                     gold_span_to_data_id[tuple(candidate_span)]
-                    for candidate_span in candidates['candidate_spans']
+                    for candidate_span in candidates["candidate_spans"]
                 ]
 
-                if len(candidates['candidate_spans']) > 0:
+                if len(candidates["candidate_spans"]) > 0:
                     yield self.text_to_instance(
-                        gold_annotations['tokenized_text'],
-                        candidates['candidate_entities'],
-                        candidates['candidate_spans'],
-                        candidates['candidate_entity_priors'],
+                        gold_annotations["tokenized_text"],
+                        candidates["candidate_entities"],
+                        candidates["candidate_spans"],
+                        candidates["candidate_entity_priors"],
                         gold_entities,
-                        gold_data_ids
+                        gold_data_ids,
                     )
 
-    def text_to_instance(self,
-                         tokens: List[str],
-                         candidate_entities: List[List[str]],
-                         candidate_spans: List[List[int]],
-                         candidate_entity_prior: List[List[float]],
-                         gold_entities: List[str] = None,
-                         gold_data_ids: List[str] = None):
+    def text_to_instance(
+        self,
+        tokens: List[str],
+        candidate_entities: List[List[str]],
+        candidate_spans: List[List[int]],
+        candidate_entity_prior: List[List[float]],
+        gold_entities: List[str] = None,
+        gold_data_ids: List[str] = None,
+    ):
 
         # prior needs to be 2D and full
         # can look like [[0.2, 0.8], [1.0]]  if one candidate for second
@@ -618,29 +653,36 @@ class WordNetFineGrainedSenseDisambiguationReader(EntityLinkingReader):
         np_prior = np.array(candidate_entity_prior)
 
         fields = {
-            "tokens": TextField([Token(t) for t in tokens],
-                                token_indexers=self.token_indexers),
+            "tokens": TextField(
+                [Token(t) for t in tokens], token_indexers=self.token_indexers
+            ),
             # join by space, then retokenize in the "character indexer"
             "candidate_entities": TextField(
-                [Token(" ".join(candidate_list)) for candidate_list in candidate_entities],
-                token_indexers=self.entity_indexer),
+                [
+                    Token(" ".join(candidate_list))
+                    for candidate_list in candidate_entities
+                ],
+                token_indexers=self.entity_indexer,
+            ),
             "candidate_entity_prior": ArrayField(np.array(np_prior)),
             # only one sentence
             "candidate_segment_ids": ArrayField(
                 np.array([0] * len(candidate_entities)), dtype=np.int
-            )
+            ),
         }
 
         if gold_entities is not None:
-            fields["gold_entities"] = TextField([Token(entity) for entity in gold_entities],
-                                                token_indexers=self.entity_indexer)
+            fields["gold_entities"] = TextField(
+                [Token(entity) for entity in gold_entities],
+                token_indexers=self.entity_indexer,
+            )
         if gold_data_ids is not None:
             fields["gold_data_ids"] = MetadataField(gold_data_ids)
 
         span_fields = []
         for span in candidate_spans:
-            span_fields.append(SpanField(span[0], span[1], fields['tokens']))
-        fields['candidate_spans'] = ListField(span_fields)
+            span_fields.append(SpanField(span[0], span[1], fields["tokens"]))
+        fields["candidate_spans"] = ListField(span_fields)
 
         if self.extra_candidate_generators:
             tokens = " ".join(tokens)
@@ -648,12 +690,14 @@ class WordNetFineGrainedSenseDisambiguationReader(EntityLinkingReader):
                 key: generator.get_mentions_raw_text(tokens, whitespace_tokenize=True)
                 for key, generator in self.extra_candidate_generators.items()
             }
-            fields['extra_candidates'] = MetadataField(extra_candidates)
+            fields["extra_candidates"] = MetadataField(extra_candidates)
 
-        return Instance(fields, should_remap_span_indices=self.should_remap_span_indices)
+        return Instance(
+            fields, should_remap_span_indices=self.should_remap_span_indices
+        )
 
 
-@EntityEmbedder.register('wordnet_all_embeddings')
+@EntityEmbedder.register("wordnet_all_embeddings")
 class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
     """
     Combines pretrained fixed embeddings with learned POS embeddings.
@@ -665,29 +709,32 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
         - linear project
         - remap to candidate embedding shape
     """
+
     POS_MAP = {
-        '@@PADDING@@': 0,
-        'n': 1,
-        'v': 2,
-        'a': 3,
-        'r': 4,
-        's': 5,
+        "@@PADDING@@": 0,
+        "n": 1,
+        "v": 2,
+        "a": 3,
+        "r": 4,
+        "s": 5,
         # have special POS embeddings for mask / null, so model can learn
         # it's own representation for them
-        '@@MASK@@': 6,
-        '@@NULL@@': 7,
-        '@@UNKNOWN@@': 8
+        "@@MASK@@": 6,
+        "@@NULL@@": 7,
+        "@@UNKNOWN@@": 8,
     }
 
-    def __init__(self,
-                 embedding_file: str,
-                 entity_dim: int,
-                 entity_file: str = None,
-                 vocab_file: str = None,
-                 entity_h5_key: str = 'conve_tucker_infersent_bert',
-                 dropout: float = 0.1,
-                 pos_embedding_dim: int = 25,
-                 include_null_embedding: bool = False):
+    def __init__(
+        self,
+        embedding_file: str,
+        entity_dim: int,
+        entity_file: str = None,
+        vocab_file: str = None,
+        entity_h5_key: str = "conve_tucker_infersent_bert",
+        dropout: float = 0.1,
+        pos_embedding_dim: int = 25,
+        include_null_embedding: bool = False,
+    ):
         """
         pass pos_emedding_dim = None to skip POS embeddings and all the
             entity stuff, using this as a pretrained embedding file
@@ -700,16 +747,16 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
             # 'cat.n.01' -> 'n'
             # includes special, e.g. '@@PADDING@@' -> '@@PADDING@@'
             entity_to_pos = {}
-            with JsonFile(cached_path(entity_file), 'r') as fin:
+            with JsonFile(cached_path(entity_file), "r") as fin:
                 for node in fin:
-                    if node['type'] == 'synset':
-                        entity_to_pos[node['id']] = node['pos']
-            for special in ['@@PADDING@@', '@@MASK@@', '@@NULL@@', '@@UNKNOWN@@']:
+                    if node["type"] == "synset":
+                        entity_to_pos[node["id"]] = node["pos"]
+            for special in ["@@PADDING@@", "@@MASK@@", "@@NULL@@", "@@UNKNOWN@@"]:
                 entity_to_pos[special] = special
 
             # list of entity ids
-            entities = ['@@PADDING@@']
-            with open(cached_path(vocab_file), 'r') as fin:
+            entities = ["@@PADDING@@"]
+            with open(cached_path(vocab_file), "r") as fin:
                 for line in fin:
                     entities.append(line.strip())
 
@@ -718,7 +765,9 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
             entity_id_to_pos_index = [
                 self.POS_MAP[entity_to_pos[ent]] for ent in entities
             ]
-            self.register_buffer('entity_id_to_pos_index', torch.tensor(entity_id_to_pos_index))
+            self.register_buffer(
+                "entity_id_to_pos_index", torch.tensor(entity_id_to_pos_index)
+            )
             self.pos_embeddings = torch.nn.Embedding(len(entities), pos_embedding_dim)
             init_bert_weights(self.pos_embeddings, 0.02)
 
@@ -727,13 +776,14 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
             self.use_pos = False
 
         # load the embeddings
-        with h5py.File(cached_path(embedding_file), 'r') as fin:
+        with h5py.File(cached_path(embedding_file), "r") as fin:
             entity_embeddings = fin[entity_h5_key][...]
         self.entity_embeddings = torch.nn.Embedding(
-            entity_embeddings.shape[0], entity_embeddings.shape[1],
-            padding_idx=0
+            entity_embeddings.shape[0], entity_embeddings.shape[1], padding_idx=0
         )
-        self.entity_embeddings.weight.data.copy_(torch.tensor(entity_embeddings).contiguous())
+        self.entity_embeddings.weight.data.copy_(
+            torch.tensor(entity_embeddings).contiguous()
+        )
 
         if pos_embedding_dim is not None:
             assert entity_embeddings.shape[0] == len(entities)
@@ -751,8 +801,8 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
         self.include_null_embedding = include_null_embedding
         if include_null_embedding:
             # a special embedding for null
-            entities = ['@@PADDING@@']
-            with open(cached_path(vocab_file), 'r') as fin:
+            entities = ["@@PADDING@@"]
+            with open(cached_path(vocab_file), "r") as fin:
                 for line in fin:
                     entities.append(line.strip())
             self.null_id = entities.index("@@NULL@@")
@@ -774,29 +824,41 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
             with entity embeddings
         """
         # get list of unique entity ids
-        unique_ids, unique_ids_to_entity_ids = torch.unique(entity_ids, return_inverse=True)
+        unique_ids, unique_ids_to_entity_ids = torch.unique(
+            entity_ids, return_inverse=True
+        )
         # unique_ids[unique_ids_to_entity_ids].reshape(entity_ids.shape)
 
         # look up (num_unique_embeddings, full_entity_dim)
-        unique_entity_embeddings = self.entity_embeddings(unique_ids.contiguous()).contiguous()
+        unique_entity_embeddings = self.entity_embeddings(
+            unique_ids.contiguous()
+        ).contiguous()
 
         # get POS tags from entity ids (form entity id -> pos id embedding)
         # (num_unique_embeddings)
         if self.use_pos:
             weights = self.entity_id_to_pos_index.reshape(-1, 1)
-            unique_pos_ids = torch.nn.functional.embedding(unique_ids, weights).contiguous()
+            unique_pos_ids = torch.nn.functional.embedding(
+                unique_ids, weights
+            ).contiguous()
             # unique_pos_ids = torch.nn.functional.embedding(unique_ids, self.entity_id_to_pos_index).contiguous()
             # (num_unique_embeddings, pos_dim)
-            unique_pos_embeddings = self.pos_embeddings(unique_pos_ids).contiguous().squeeze()
+            unique_pos_embeddings = (
+                self.pos_embeddings(unique_pos_ids).contiguous().squeeze()
+            )
             knowbert_logger.debug(unique_pos_embeddings)
             # concat
-            entity_and_pos = torch.cat([unique_entity_embeddings, unique_pos_embeddings], dim=-1)
+            entity_and_pos = torch.cat(
+                [unique_entity_embeddings, unique_pos_embeddings], dim=-1
+            )
         else:
             entity_and_pos = unique_entity_embeddings
 
         # run the ff
         # (num_embeddings, entity_dim)
-        projected_entity_and_pos = self.dropout(self.proj_feed_forward(entity_and_pos.contiguous()))
+        projected_entity_and_pos = self.dropout(
+            self.proj_feed_forward(entity_and_pos.contiguous())
+        )
 
         # replace null if needed
         if self.include_null_embedding:

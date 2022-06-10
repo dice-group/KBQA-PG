@@ -1,23 +1,32 @@
-from typing import List, Tuple, Union
-import time
 import json
+import logging
 import random
-
-import spacy
-from spacy.lang.en import STOP_WORDS
-from spacy.lang.char_classes import LIST_PUNCT, LIST_ELLIPSES, LIST_QUOTES, LIST_CURRENCY
+import time
+from typing import List
+from typing import Tuple
+from typing import Union
 
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_utils import enumerate_spans
-from KBQA.appB.transformer_architectures.kb.common import WhitespaceTokenizer, MentionGenerator, get_empty_candidates
+from KBQA.appB.transformer_architectures.kb.common import get_empty_candidates
+from KBQA.appB.transformer_architectures.kb.common import MentionGenerator
+from KBQA.appB.transformer_architectures.kb.common import WhitespaceTokenizer
+import spacy
+from spacy.lang.char_classes import LIST_CURRENCY
+from spacy.lang.char_classes import LIST_ELLIPSES
+from spacy.lang.char_classes import LIST_PUNCT
+from spacy.lang.char_classes import LIST_QUOTES
+from spacy.lang.en import STOP_WORDS
 
-import logging
-knowbert_logger = logging.getLogger('knowbert-logger.wiki')
+knowbert_logger = logging.getLogger("knowbert-logger.wiki")
 
-def prior_entity_candidates(candidates_file: str,
-                            max_candidates: int = 30,
-                            allowed_entities_set=None,
-                            max_mentions=None):
+
+def prior_entity_candidates(
+    candidates_file: str,
+    max_candidates: int = 30,
+    allowed_entities_set=None,
+    max_mentions=None,
+):
     """
     Args:
     cand_ent_num: how many candidate entities to keep for each mention
@@ -49,8 +58,11 @@ def prior_entity_candidates(candidates_file: str,
             for e in entities:
                 if len(entity_candidates) >= max_candidates:
                     break
-                ent_id, score, name = [x.strip() for x in e.split(',', 2)]
-                if allowed_entities_set is not None and name not in allowed_entities_set:
+                ent_id, score, name = [x.strip() for x in e.split(",", 2)]
+                if (
+                    allowed_entities_set is not None
+                    and name not in allowed_entities_set
+                ):
                     pass
                 else:
                     entity_candidates.append((ent_id, name, float(score)))
@@ -71,7 +83,9 @@ def prior_entity_candidates(candidates_file: str,
                     mention_total_freq[mention] = absolute_freq
 
     knowbert_logger.info(f"duplicate_mentions_cnt: {duplicate_mentions_cnt}")
-    knowbert_logger.info(f"end of p_e_m reading. wall time: {(time.time() - wall_start) / 60} minutes")
+    knowbert_logger.info(
+        f"end of p_e_m reading. wall time: {(time.time() - wall_start) / 60} minutes"
+    )
     knowbert_logger.info(f"p_e_m_errors: {p_e_m_errors}")
     knowbert_logger.info(f"incompatible_ent_ids: {incompatible_ent_ids}")
 
@@ -97,7 +111,9 @@ def prior_entity_candidates(candidates_file: str,
                 combined_candidates[cand[0]] = cand
 
         combined_candidates = list(combined_candidates.values())
-        sorted_candidates = sorted(combined_candidates, key=lambda x: x[2], reverse=True)
+        sorted_candidates = sorted(
+            combined_candidates, key=lambda x: x[2], reverse=True
+        )
 
         p_e_m_lowercased[l_mention] = sorted_candidates[:max_candidates]
 
@@ -131,17 +147,24 @@ class WikiCandidateMentionGenerator(MentionGenerator):
         "entity_world_path": "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wiki_entity_linking/wiki_id_to_string.json",
     }
 
-    def __init__(self,
-                 candidates_file: str = None,
-                 entity_world_path: str = None,
-                 lowercase_candidates: bool = True,
-                 random_candidates: bool = False,
-                 pickle_cache_file: str = None,
-                 ):
+    def __init__(
+        self,
+        candidates_file: str = None,
+        entity_world_path: str = None,
+        lowercase_candidates: bool = True,
+        random_candidates: bool = False,
+        pickle_cache_file: str = None,
+    ):
 
-        self.tokenizer = spacy.load('en_core_web_sm', disable=['parser', 'ner', 'textcat'])
-        self.whitespace_tokenizer = spacy.load('en_core_web_sm', disable=['parser', 'ner', 'textcat'])
-        self.whitespace_tokenizer.tokenizer = WhitespaceTokenizer(self.whitespace_tokenizer.vocab)
+        self.tokenizer = spacy.load(
+            "en_core_web_sm", disable=["parser", "ner", "textcat"]
+        )
+        self.whitespace_tokenizer = spacy.load(
+            "en_core_web_sm", disable=["parser", "ner", "textcat"]
+        )
+        self.whitespace_tokenizer.tokenizer = WhitespaceTokenizer(
+            self.whitespace_tokenizer.vocab
+        )
 
         self.random_candidates = random_candidates
         self.lowercase_candidates = lowercase_candidates
@@ -149,21 +172,31 @@ class WikiCandidateMentionGenerator(MentionGenerator):
         if isinstance(entity_world_path, dict):
             self.entity_world = entity_world_path
         else:
-            entity_world_path = cached_path(entity_world_path or self.defaults["entity_world_path"])
+            entity_world_path = cached_path(
+                entity_world_path or self.defaults["entity_world_path"]
+            )
             self.entity_world = json.load(open(entity_world_path))
 
         if pickle_cache_file is not None:
             import pickle
-            with open(cached_path(pickle_cache_file), 'rb') as fin:
+
+            with open(cached_path(pickle_cache_file), "rb") as fin:
                 data = pickle.load(fin)
-            self.p_e_m = data['p_e_m']
-            self.p_e_m_low = data['p_e_m_low']
-            self.mention_total_freq = data['mention_total_freq']
+            self.p_e_m = data["p_e_m"]
+            self.p_e_m_low = data["p_e_m_low"]
+            self.mention_total_freq = data["mention_total_freq"]
         else:
             valid_candidates_with_vectors = set(self.entity_world.keys())
-            candidates_file = cached_path(candidates_file or self.defaults["candidates_file"])
-            self.p_e_m, self.p_e_m_low, self.mention_total_freq = prior_entity_candidates(candidates_file,
-                                                                                          allowed_entities_set=valid_candidates_with_vectors)
+            candidates_file = cached_path(
+                candidates_file or self.defaults["candidates_file"]
+            )
+            (
+                self.p_e_m,
+                self.p_e_m_low,
+                self.mention_total_freq,
+            ) = prior_entity_candidates(
+                candidates_file, allowed_entities_set=valid_candidates_with_vectors
+            )
 
         self.random_candidates = random_candidates
         if self.random_candidates:
@@ -187,12 +220,14 @@ class WikiCandidateMentionGenerator(MentionGenerator):
             tokens = self.tokenizer(text)
 
         tokens = [t.text for t in tokens]
-        all_spans = enumerate_spans(tokens, max_span_width=5, filter_function=span_filter_func)
+        all_spans = enumerate_spans(
+            tokens, max_span_width=5, filter_function=span_filter_func
+        )
 
         spans_to_candidates = {}
 
         for span in all_spans:
-            candidate_entities = self.process(tokens[span[0]:span[1] + 1])
+            candidate_entities = self.process(tokens[span[0] : span[1] + 1])
             if candidate_entities:
                 # Only keep spans which we have candidates for.
                 spans_to_candidates[(span[0], span[1])] = candidate_entities
@@ -214,7 +249,7 @@ class WikiCandidateMentionGenerator(MentionGenerator):
             "tokenized_text": tokens,
             "candidate_spans": spans,
             "candidate_entities": entities,
-            "candidate_entity_priors": priors
+            "candidate_entity_priors": priors,
         }
 
         if len(spans) == 0:
@@ -222,9 +257,18 @@ class WikiCandidateMentionGenerator(MentionGenerator):
 
         return ret
 
-    def get_mentions_with_gold(self, text: str, gold_spans, gold_entities, whitespace_tokenize=True, keep_gold_only: bool = False):
+    def get_mentions_with_gold(
+        self,
+        text: str,
+        gold_spans,
+        gold_entities,
+        whitespace_tokenize=True,
+        keep_gold_only: bool = False,
+    ):
 
-        gold_spans_to_entities = {tuple(k): v for k, v in zip(gold_spans, gold_entities)}
+        gold_spans_to_entities = {
+            tuple(k): v for k, v in zip(gold_spans, gold_entities)
+        }
 
         if whitespace_tokenize:
             tokens = self.whitespace_tokenizer(text)
@@ -235,15 +279,19 @@ class WikiCandidateMentionGenerator(MentionGenerator):
         if keep_gold_only:
             spans_with_gold = set(gold_spans_to_entities.keys())
         else:
-            all_spans = enumerate_spans(tokens, max_span_width=5, filter_function=span_filter_func)
-            spans_with_gold = set().union(all_spans, [tuple(span) for span in gold_spans])
+            all_spans = enumerate_spans(
+                tokens, max_span_width=5, filter_function=span_filter_func
+            )
+            spans_with_gold = set().union(
+                all_spans, [tuple(span) for span in gold_spans]
+            )
 
         spans = []
         entities = []
         gold_entities = []
         priors = []
         for span in spans_with_gold:
-            candidate_entities = self.process(tokens[span[0]:span[1] + 1])
+            candidate_entities = self.process(tokens[span[0] : span[1] + 1])
 
             gold_entity = gold_spans_to_entities.get(span, "@@NULL@@")
             # Only keep spans which we have candidates for.
@@ -268,10 +316,12 @@ class WikiCandidateMentionGenerator(MentionGenerator):
             "candidate_entities": entities,
             # TODO Change to priors
             "candidate_entity_prior": priors,
-            "gold_entities": gold_entities
+            "gold_entities": gold_entities,
         }
 
-    def process(self, span: Union[List[str], str], lower=False) -> List[Tuple[str, str, float]]:
+    def process(
+        self, span: Union[List[str], str], lower=False
+    ) -> List[Tuple[str, str, float]]:
         """
         Look up spans in the candidate dictionary, including looking for
         a title format version of the same string. Returns a list of
@@ -282,7 +332,7 @@ class WikiCandidateMentionGenerator(MentionGenerator):
             return self.p_e_m[random_key]
 
         if isinstance(span, list):
-            span = ' '.join(span)
+            span = " ".join(span)
 
         # Makes all first chars of words uppercase, eg barack obama -> Barack Obama.
         title = span.title()
