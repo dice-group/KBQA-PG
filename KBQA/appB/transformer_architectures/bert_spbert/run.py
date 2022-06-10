@@ -29,11 +29,9 @@ import re
 from pathlib import Path
 
 from model import BertSeq2Seq
-from model import Seq2Seq
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
-import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.data import RandomSampler
 from torch.utils.data import SequentialSampler
@@ -65,47 +63,40 @@ logger = logging.getLogger(__name__)
 class Example:
     """A single training/test example."""
 
-    def __init__(self, idx, source, triples, target):
+    def __init__(self, idx, source, target):
         self.idx = idx
         self.source = source
-        self.triples = triples
         self.target = target
 
 
-def read_examples(source_file, triples_file, target_file):
+def read_examples(source_file, target_file):
     """Read examples from filename."""
     examples = []
     with open(source_file, encoding="utf-8") as source_f:
-        with open(triples_file, encoding="utf-8") as triples_f:
-            with open(target_file, encoding="utf-8") as target_f:
-                for idx, (source, triples, target) in enumerate(
-                    zip(source_f, triples_f, target_f)
-                ):
-                    examples.append(
-                        Example(
-                            idx=idx,
-                            source=source.strip(),
-                            triples=triples.strip(),
-                            target=target.strip(),
-                        )
-                    )
-    return examples
-
-
-def read_examples_without_target(source_file, triples_file):
-    """Read examples from filename."""
-    examples = []
-    with open(source_file, encoding="utf-8") as source_f:
-        with open(triples_file, encoding="utf-8") as triples_f:
-            for idx, (source, triples) in enumerate(zip(source_f, triples_f)):
+        with open(target_file, encoding="utf-8") as target_f:
+            for idx, (source, target) in enumerate(zip(source_f, target_f)):
                 examples.append(
                     Example(
                         idx=idx,
                         source=source.strip(),
-                        triples=triples.strip(),
-                        target="",
+                        target=target.strip(),
                     )
                 )
+    return examples
+
+
+def read_examples_without_target(source_file):
+    """Read examples from filename."""
+    examples = []
+    with open(source_file, encoding="utf-8") as source_f:
+        for idx, source in enumerate(source_f):
+            examples.append(
+                Example(
+                    idx=idx,
+                    source=source.strip(),
+                    target="",
+                )
+            )
     return examples
 
 
@@ -116,18 +107,14 @@ class InputFeatures:
         self,
         example_id,
         source_ids,
-        triples_ids,
         target_ids,
         source_mask,
-        triples_mask,
         target_mask,
     ):
         self.example_id = example_id
         self.source_ids = source_ids
-        self.triples_ids = triples_ids
         self.target_ids = target_ids
         self.source_mask = source_mask
-        self.triples_mask = triples_mask
         self.target_mask = target_mask
 
 
@@ -142,14 +129,6 @@ def convert_examples_to_features(examples, tokenizer, args, stage=None):
         padding_length = args.max_source_length - len(source_ids)
         source_ids += [tokenizer.pad_token_id] * padding_length
         source_mask += [0] * padding_length
-
-        # triples
-        triples_tokens = tokenizer.tokenize(example.triples)[: args.max_triples_length]
-        triples_ids = tokenizer.convert_tokens_to_ids(triples_tokens)
-        triples_mask = [1] * (len(triples_tokens))
-        padding_length = args.max_triples_length - len(triples_ids)
-        triples_ids += [tokenizer.pad_token_id] * padding_length
-        triples_mask += [0] * padding_length
 
         # target
         if stage == "test" or stage == "predict":
@@ -179,14 +158,6 @@ def convert_examples_to_features(examples, tokenizer, args, stage=None):
                 logger.info("source_mask: {}".format(" ".join(map(str, source_mask))))
 
                 logger.info(
-                    "triples_tokens: {}".format(
-                        [x.replace("\u0120", "_") for x in triples_tokens]
-                    )
-                )
-                logger.info("triples_ids: {}".format(" ".join(map(str, triples_ids))))
-                logger.info("triples_mask: {}".format(" ".join(map(str, triples_mask))))
-
-                logger.info(
                     "target_tokens: {}".format(
                         [x.replace("\u0120", "_") for x in target_tokens]
                     )
@@ -198,10 +169,8 @@ def convert_examples_to_features(examples, tokenizer, args, stage=None):
             InputFeatures(
                 example_index,
                 source_ids,
-                triples_ids,
                 target_ids,
                 source_mask,
-                triples_mask,
                 target_mask,
             )
         )
@@ -323,13 +292,6 @@ def main():
         default=64,
         type=int,
         help="The maximum total source sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
-    parser.add_argument(
-        "--max_triples_length",
-        default=128,
-        type=int,
-        help="The maximum total triples sequence length after tokenization. Sequences longer "
         "than this will be truncated, sequences shorter will be padded.",
     )
     parser.add_argument(
@@ -489,12 +451,6 @@ def main():
         args.encoder_model_name_or_path, config=config
     )
 
-    # Build triple encoder.
-    triple_encoder_config = BertConfig.from_pretrained(args.decoder_model_name_or_path)
-    triple_encoder = BertModel.from_pretrained(
-        args.decoder_model_name_or_path, config=triple_encoder_config
-    )
-
     # Build decoder and model.
     if args.model_architecture == "bert2rnd":
         assert False, "Not implemented yet."
@@ -523,7 +479,6 @@ def main():
         )
         model = BertSeq2Seq(
             encoder=encoder,
-            triple_encoder=triple_encoder,
             decoder=decoder,
             config=config,
             beam_size=args.beam_size,
@@ -567,7 +522,6 @@ def main():
         # Prepare training data loader
         train_examples = read_examples(
             args.train_filename + "." + args.source,
-            args.train_filename + ".triple",
             args.train_filename + "." + args.target,
         )
         train_features = convert_examples_to_features(
@@ -579,12 +533,6 @@ def main():
         all_source_mask = torch.tensor(
             [f.source_mask for f in train_features], dtype=torch.long
         )
-        all_triples_ids = torch.tensor(
-            [f.triples_ids for f in train_features], dtype=torch.long
-        )
-        all_triples_mask = torch.tensor(
-            [f.triples_mask for f in train_features], dtype=torch.long
-        )
         all_target_ids = torch.tensor(
             [f.target_ids for f in train_features], dtype=torch.long
         )
@@ -595,8 +543,6 @@ def main():
         train_data = TensorDataset(
             all_source_ids,
             all_source_mask,
-            all_triples_ids,
-            all_triples_mask,
             all_target_ids,
             all_target_mask,
         )
@@ -668,16 +614,12 @@ def main():
                 (
                     source_ids,
                     source_mask,
-                    triples_ids,
-                    triples_mask,
                     target_ids,
                     target_mask,
                 ) = batch
                 loss, _, _ = model(
                     source_ids=source_ids,
                     source_mask=source_mask,
-                    triples_ids=triples_ids,
-                    triples_mask=triples_mask,
                     target_ids=target_ids,
                     target_mask=target_mask,
                 )
@@ -714,7 +656,6 @@ def main():
                 else:
                     eval_examples = read_examples(
                         args.dev_filename + "." + args.source,
-                        args.dev_filename + ".triple",
                         args.dev_filename + "." + args.target,
                     )
                     eval_examples = random.sample(
@@ -729,17 +670,9 @@ def main():
                     all_source_mask = torch.tensor(
                         [f.source_mask for f in eval_features], dtype=torch.long
                     )
-                    all_triples_ids = torch.tensor(
-                        [f.triples_ids for f in eval_features], dtype=torch.long
-                    )
-                    all_triples_mask = torch.tensor(
-                        [f.triples_mask for f in eval_features], dtype=torch.long
-                    )
                     eval_data = TensorDataset(
                         all_source_ids,
                         all_source_mask,
-                        all_triples_ids,
-                        all_triples_mask,
                     )
                     dev_dataset["dev_bleu"] = eval_examples, eval_data
 
@@ -752,13 +685,11 @@ def main():
                 p = []
                 for batch in eval_dataloader:
                     batch = tuple(t.to(device) for t in batch)
-                    source_ids, source_mask, triples_ids, triples_mask = batch
+                    source_ids, source_mask = batch
                     with torch.no_grad():
                         preds = model(
                             source_ids=source_ids,
                             source_mask=source_mask,
-                            triples_ids=triples_ids,
-                            triples_mask=triples_mask,
                         )
                         for pred in preds:
                             t = pred[0].cpu().numpy()
@@ -796,11 +727,6 @@ def main():
                         f1.write(str(gold.idx) + "\t" + gold.target + "\n")
 
                 bl_score = corpus_bleu(label_str, pred_str) * 100
-                with open(bleu_file_path, "a") as file:
-                    if file.tell() == 0:
-                        file.write(f"{bl_score}")
-                    else:
-                        file.write(f"\n{bl_score}")
 
                 logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
                 logger.info("  " + "*" * 20)
@@ -827,7 +753,7 @@ def main():
         for idx, file in enumerate(files):
             logger.info("Test file: {}".format(file))
             eval_examples = read_examples(
-                file + "." + args.source, file + ".triple", file + "." + args.target
+                file + "." + args.source, file + "." + args.target
             )
             eval_features = convert_examples_to_features(
                 eval_examples, tokenizer, args, stage="test"
@@ -838,15 +764,7 @@ def main():
             all_source_mask = torch.tensor(
                 [f.source_mask for f in eval_features], dtype=torch.long
             )
-            all_triples_ids = torch.tensor(
-                [f.triples_ids for f in eval_features], dtype=torch.long
-            )
-            all_triples_mask = torch.tensor(
-                [f.triples_mask for f in eval_features], dtype=torch.long
-            )
-            eval_data = TensorDataset(
-                all_source_ids, all_source_mask, all_triples_ids, all_triples_mask
-            )
+            eval_data = TensorDataset(all_source_ids, all_source_mask)
 
             # Calculate bleu
             eval_sampler = SequentialSampler(eval_data)
@@ -858,13 +776,11 @@ def main():
             p = []
             for batch in tqdm(eval_dataloader, total=len(eval_dataloader)):
                 batch = tuple(t.to(device) for t in batch)
-                source_ids, source_mask, triples_ids, triples_mask = batch
+                source_ids, source_mask = batch
                 with torch.no_grad():
                     preds = model(
                         source_ids=source_ids,
                         source_mask=source_mask,
-                        triples_ids=triples_ids,
-                        triples_mask=triples_mask,
                     )
                     for pred in preds:
                         t = pred[0].cpu().numpy()
@@ -898,6 +814,12 @@ def main():
                     f1.write(str(gold.idx) + "\t" + gold.target + "\n")
 
             bl_score = corpus_bleu(label_str, pred_str) * 100
+            with open(bleu_file_path, "a") as file:
+                if file.tell() == 0:
+                    file.write(f"{bl_score}")
+                else:
+                    file.write(f"\n{bl_score}")
+
             logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
             logger.info("  " + "*" * 20)
     if args.do_predict:
@@ -906,9 +828,7 @@ def main():
             files.append(args.predict_filename)
         for idx, file in enumerate(files):
             logger.info("Predict file: {}".format(file))
-            eval_examples = read_examples_without_target(
-                file + "." + args.source, file + ".triple"
-            )
+            eval_examples = read_examples_without_target(file + "." + args.source)
             eval_features = convert_examples_to_features(
                 eval_examples, tokenizer, args, stage="predict"
             )
@@ -918,15 +838,7 @@ def main():
             all_source_mask = torch.tensor(
                 [f.source_mask for f in eval_features], dtype=torch.long
             )
-            all_triples_ids = torch.tensor(
-                [f.triples_ids for f in eval_features], dtype=torch.long
-            )
-            all_triples_mask = torch.tensor(
-                [f.triples_mask for f in eval_features], dtype=torch.long
-            )
-            eval_data = TensorDataset(
-                all_source_ids, all_source_mask, all_triples_ids, all_triples_mask
-            )
+            eval_data = TensorDataset(all_source_ids, all_source_mask)
 
             # Calculate bleu
             eval_sampler = SequentialSampler(eval_data)
@@ -938,13 +850,11 @@ def main():
             p = []
             for batch in tqdm(eval_dataloader, total=len(eval_dataloader)):
                 batch = tuple(t.to(device) for t in batch)
-                source_ids, source_mask, triples_ids, triples_mask = batch
+                source_ids, source_mask = batch
                 with torch.no_grad():
                     preds = model(
                         source_ids=source_ids,
                         source_mask=source_mask,
-                        triples_ids=triples_ids,
-                        triples_mask=triples_mask,
                     )
                     for pred in preds:
                         t = pred[0].cpu().numpy()
