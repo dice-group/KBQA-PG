@@ -4,8 +4,8 @@ import re
 from types import SimpleNamespace
 from typing import List
 
-from app.bert_spbert_spbert.bert_wordpiece_spbert.generator_utils import encode
-from app.bert_spbert_spbert.bert_wordpiece_spbert.generator_utils import SPARQL_KEYWORDS
+from app.utils.generator_utils import encode
+from app.utils.generator_utils import SPARQL_KEYWORDS
 
 PREPROCESSING_QTQ = SimpleNamespace(
     **{

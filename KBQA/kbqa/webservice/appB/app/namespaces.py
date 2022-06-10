@@ -1,6 +1,36 @@
 """Arguments for all architectures."""
 from types import SimpleNamespace
 
+BERT_SPBERT = SimpleNamespace(
+    **{
+        "encoder_model_name_or_path": "bert-base-cased",
+        "decoder_model_name_or_path": "razent/spbert-mlm-wso-base",
+        "load_model_checkpoint": "Yes",
+        "load_model_path": "/models/pytorch_model.bin",
+        "model_type": "bert",
+        "model_architecture": "bert2bert",
+        "output_dir": "app/output/",
+        "predict_filename": "app/data/output/question",
+        "source": "en",
+        "target": "sparql",
+        "config_name": "",
+        "tokenizer_name": "",
+        "max_source_length": 4,
+        "max_target:length": 4,
+        "do_train": False,
+        "do_eval": False,
+        "do_test": False,
+        "do_predict": True,
+        "do_lower_case": False,
+        "eval_batch_size": 2,
+        "beam_size": 2,
+        "no_cuda": True,
+        "local_rank": -1,
+        "seed": 42,
+        "save_interval": 1,
+    }
+)
+
 BERT_SPBERT_SPBERT = SimpleNamespace(
     **{
         # --encoder_model_name_or_path, default=None, type=str, required=True,

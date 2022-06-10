@@ -27,8 +27,8 @@ import os
 import random
 import re
 
-from app.bert_spbert_spbert.bert_wordpiece_spbert.model import BertSeq2Seq     # modified
-from app.bert_spbert_spbert.bert_wordpiece_spbert.model import Seq2Seq         # modified
+from app.bert_spbert_spbert.spbert.model import BertSeq2Seq     # modified
+from app.bert_spbert_spbert.spbert.model import Seq2Seq         # modified
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
@@ -309,127 +309,127 @@ parser.add_argument(
     help="The target language (for file extension)",
 )
 parser.add_argument(
-        "--config_name",
-        default="",
-        type=str,
-        help="Pretrained config name or path if not the same as model_name",
-    )
+    "--config_name",
+    default="",
+    type=str,
+    help="Pretrained config name or path if not the same as model_name",
+)
 parser.add_argument(
-        "--tokenizer_name",
-        default="",
-        type=str,
-        help="Pretrained tokenizer name or path if not the same as model_name",
-    )
+    "--tokenizer_name",
+    default="",
+    type=str,
+    help="Pretrained tokenizer name or path if not the same as model_name",
+)
 parser.add_argument(
-        "--max_source_length",
-        default=64,
-        type=int,
-        help="The maximum total source sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
+    "--max_source_length",
+    default=64,
+    type=int,
+    help="The maximum total source sequence length after tokenization. Sequences longer "
+    "than this will be truncated, sequences shorter will be padded.",
+)
 parser.add_argument(
-        "--max_triples_length",
-        default=128,
-        type=int,
-        help="The maximum total triples sequence length after tokenization. Sequences longer "
-             "than this will be truncated, sequences shorter will be padded.",
-    )
+    "--max_triples_length",
+    default=128,
+    type=int,
+    help="The maximum total triples sequence length after tokenization. Sequences longer "
+         "than this will be truncated, sequences shorter will be padded.",
+)
 parser.add_argument(
-        "--max_target_length",
-        default=32,
-        type=int,
-        help="The maximum total target sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
+    "--max_target_length",
+    default=32,
+    type=int,
+    help="The maximum total target sequence length after tokenization. Sequences longer "
+    "than this will be truncated, sequences shorter will be padded.",
+)
 
 parser.add_argument(
-        "--do_train", action="store_true", help="Whether to run training."
-    )
+    "--do_train", action="store_true", help="Whether to run training."
+)
 parser.add_argument(
-        "--do_eval", action="store_true", help="Whether to run eval on the dev set."
-    )
+    "--do_eval", action="store_true", help="Whether to run eval on the dev set."
+)
 parser.add_argument(
-        "--do_test", action="store_true", help="Whether to run test on the test set."
-    )
+    "--do_test", action="store_true", help="Whether to run test on the test set."
+)
 parser.add_argument(
-        "--do_predict", action="store_true", help="Whether to run prediction on the predict set."
-    )
+    "--do_predict", action="store_true", help="Whether to run prediction on the predict set."
+)
 parser.add_argument(
-        "--do_lower_case",
-        action="store_true",
-        help="Set this flag if you are using an uncased model.",
-    )
+    "--do_lower_case",
+    action="store_true",
+    help="Set this flag if you are using an uncased model.",
+)
 parser.add_argument(
-        "--no_cuda", action="store_true", help="Avoid using CUDA when available"
-    )
+    "--no_cuda", action="store_true", help="Avoid using CUDA when available"
+)
 
 parser.add_argument(
-        "--train_batch_size",
-        default=8,
-        type=int,
-        help="Batch size per GPU/CPU for training.",
-    )
+    "--train_batch_size",
+    default=8,
+    type=int,
+    help="Batch size per GPU/CPU for training.",
+)
 parser.add_argument(
-        "--eval_batch_size",
-        default=8,
-        type=int,
-        help="Batch size per GPU/CPU for evaluation.",
-    )
+    "--eval_batch_size",
+    default=8,
+    type=int,
+    help="Batch size per GPU/CPU for evaluation.",
+)
 parser.add_argument(
-        "--gradient_accumulation_steps",
-        type=int,
-        default=1,
-        help="Number of updates steps to accumulate before performing a backward/update pass.",
-    )
+    "--gradient_accumulation_steps",
+    type=int,
+    default=1,
+    help="Number of updates steps to accumulate before performing a backward/update pass.",
+)
 parser.add_argument(
-        "--learning_rate",
-        default=5e-5,
-        type=float,
-        help="The initial learning rate for Adam.",
-    )
+    "--learning_rate",
+    default=5e-5,
+    type=float,
+    help="The initial learning rate for Adam.",
+)
 parser.add_argument(
-        "--beam_size", default=10, type=int, help="beam size for beam search"
-    )
+    "--beam_size", default=10, type=int, help="beam size for beam search"
+)
 parser.add_argument(
-        "--weight_decay", default=0.0, type=float, help="Weight deay if we apply some."
-    )
+    "--weight_decay", default=0.0, type=float, help="Weight deay if we apply some."
+)
 parser.add_argument(
-        "--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer."
-    )
+    "--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer."
+)
 parser.add_argument(
-        "--max_grad_norm", default=1.0, type=float, help="Max gradient norm."
-    )
+    "--max_grad_norm", default=1.0, type=float, help="Max gradient norm."
+)
 parser.add_argument(
-        "--num_train_epochs",
-        default=3,
-        type=int,
-        help="Total number of training epochs to perform.",
-    )
+    "--num_train_epochs",
+    default=3,
+    type=int,
+    help="Total number of training epochs to perform.",
+)
 parser.add_argument(
-        "--max_steps",
-        default=-1,
-        type=int,
-        help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
-    )
+    "--max_steps",
+    default=-1,
+    type=int,
+    help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
+)
 parser.add_argument("--eval_steps", default=-1, type=int, help="")
 parser.add_argument("--train_steps", default=-1, type=int, help="")
 parser.add_argument(
-        "--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps."
-    )
+    "--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps."
+)
 parser.add_argument(
-        "--local_rank",
-        type=int,
-        default=-1,
-        help="For distributed training: local_rank",
-    )
+    "--local_rank",
+    type=int,
+    default=-1,
+    help="For distributed training: local_rank",
+)
 parser.add_argument(
-        "--seed", type=int, default=42, help="random seed for initialization"
-    )
+    "--seed", type=int, default=42, help="random seed for initialization"
+)
 parser.add_argument(
-        "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
-    )
-    # print arguments
-    # args = parser.parse_args()      # modified
+    "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
+)
+# print arguments
+# args = parser.parse_args()      # modified
 
 # initialize variables
 tokenizer = None

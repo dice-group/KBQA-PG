@@ -1,9 +1,9 @@
-"""Module for postprocessing a query predicted by BERT_wordpiece_SPBERT."""
+"""Module for postprocessing a query predicted by SPBERT."""
 import re
 from types import SimpleNamespace
 from typing import Dict
 
-from app.bert_spbert_spbert.bert_wordpiece_spbert.generator_utils import decode
+from app.utils.generator_utils import decode
 
 POSTPROCESSING = SimpleNamespace(
     **{
@@ -15,7 +15,7 @@ POSTPROCESSING = SimpleNamespace(
 )
 
 
-def postprocessing() -> Dict[str, str]:
+def postprocess_prediction() -> Dict[str, str]:
     """Postprocessing of a predicted query written in a file.
 
     Returns

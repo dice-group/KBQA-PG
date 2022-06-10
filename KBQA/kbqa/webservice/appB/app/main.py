@@ -7,6 +7,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Union
 
 from app.base_pipeline import BasePipeline
 from app.preprocessing import preprocessing_qtq
@@ -48,7 +49,7 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     seperate_qtq()
     preprocessing_qtq()
 
-    sparql_query = main_pipeline.predict_sparql_query(query)
+    sparql_query = pipeline_.predict_sparql_query(query)
     answer_qald = ask_dbpedia(query, sparql_query, lang)
 
     return answer_qald
@@ -111,7 +112,10 @@ def summarize(question: str) -> None:
     question : str
         Natural language question.
     """
-    summarized_triples = main_summarizer.summarize(question)
+    if summarizer_ is None:
+        summarized_triples = list()
+    else:
+        summarized_triples = summarizer_.summarize(question)
 
     data_dir = SEPERATE_QTQ.data_dir
 
@@ -132,7 +136,7 @@ def summarize(question: str) -> None:
         json.dump(dataset, file, indent=4, separators=(",", ": "))
 
 
-def load_config(path: str) -> Tuple[BaseSummarizer, BasePipeline]:
+def load_config(path: str) -> Tuple[Union[BaseSummarizer, None], BasePipeline]:
     """Load the config file for all configurations.
 
     The config file is expected to be an .ini file, which contains
@@ -149,7 +153,8 @@ def load_config(path: str) -> Tuple[BaseSummarizer, BasePipeline]:
     Returns
     -------
     BaseSummarizer
-        Initialized summarizer specified in the 'general' section.
+        Initialized summarizer specified in the 'general' section. If the
+        attribute is set to 'None', None will be returned.
 
     BasePipeline
         Initialized pipeline for the specified architecture.
@@ -173,10 +178,15 @@ def load_config(path: str) -> Tuple[BaseSummarizer, BasePipeline]:
 
     if summarizer_name == "one_hop_rank":
         smrzr = init_one_hop_rank_summarizer(parser["one_hop_rank"])
+    elif summarizer_name == "None":
+        smrzr = None
+        print("WARNING: Summarizer is set to 'None'. Summarizing will be skipped.")
     else:
         raise ValueError(f"Summarizer {summarizer_name} is not supported.")
 
-    if architecture_name == "bert_spbert_spbert":
+    if architecture_name == "bert_spbert":
+        pline = init_bert_spbert_pipeline(parser["bert_spbert"])
+    elif architecture_name == "bert_spbert_spbert":
         pline = init_bert_spbert_spbert(parser["bert_spbert_spbert"])
     elif architecture_name == "knowbert_spbert_spbert":
         pline = init_knowbert_spbert_spbert(parser["knowbert_spbert_spbert"])
@@ -221,6 +231,35 @@ def init_one_hop_rank_summarizer(section: SectionProxy) -> BaseSummarizer:
     )
 
     return ohrs
+
+
+def init_bert_spbert_pipeline(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for BERT_SPBERT.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertPipeline
+        Initialized BERT_SPBERT_SPBERT pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import BERT_SPBERT
+    from app.bert_spbert import BertSPBertPipeline
+
+    model_name = section["model_name"]
+
+    BERT_SPBERT.load_model_path = f"/models/{model_name}"
+    BERT_SPBERT.max_source_length = section["max_source_length"]
+    BERT_SPBERT.max_target_length = section["max_target_length"]
+
+    bs_pipeline = BertSPBertPipeline(BERT_SPBERT)
+
+    return bs_pipeline
 
 
 def init_bert_spbert_spbert(section: SectionProxy) -> BasePipeline:
@@ -305,4 +344,4 @@ def init_bert_triplebert_spbert(section: SectionProxy) -> BasePipeline:
     return bts_pipeline
 
 
-main_summarizer, main_pipeline = load_config(config_path)
+summarizer_, pipeline_ = load_config(config_path)
