@@ -52,6 +52,7 @@ def output_csv(file: str, ques_query_list: list) -> None:
     """
     with open(file, "w", encoding="utf-8") as f:
         writer = csv.writer(f)
+        writer.writerow(["question", "query"])
         writer.writerows(ques_query_list)
 
 
@@ -283,8 +284,13 @@ def convert_qald(qald_path: str, output_file: str, language: str = "en") -> None
     output_csv(output_file, qald9_ph)
 
 
+# To convert from lcqald
+# add you path to the LCQald dataset here and call convert_lcqald()
 lcqald_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/lc-quad-train.json"
-qald9_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/updated-qald-9-train-multilingual.json"
-
 convert_lcqald(lcqald_filepath, "lcqald_ph.csv")
+
+# To convert from qald dataset
+# add you path to the qald dataset here and call convert_qald()
+# you can also specify language of questions
+qald9_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/updated-qald-9-train-multilingual.json"
 convert_qald(qald9_filepath, "qald9_ph_de.csv", "de")
