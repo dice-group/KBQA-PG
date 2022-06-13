@@ -524,10 +524,10 @@ def init(args):
         model = torch.nn.DataParallel(model)
 
     # Create new bleu.csv file.
-    bleu_file_path = Path(args.bleu_file_path)
-    if args.load_bleu_file == "No":
-        if bleu_file_path.exists():
-            bleu_file_path.unlink()
+    # bleu_file_path = Path(args.bleu_file_path)
+    # if args.load_bleu_file == "No":
+    #     if bleu_file_path.exists():
+    #         bleu_file_path.unlink()
 
 def run(args):
     if args.do_train:

@@ -16,7 +16,7 @@ BERT_SPBERT = SimpleNamespace(
         "config_name": "",
         "tokenizer_name": "",
         "max_source_length": 4,
-        "max_target:length": 4,
+        "max_target_length": 4,
         "do_train": False,
         "do_eval": False,
         "do_test": False,

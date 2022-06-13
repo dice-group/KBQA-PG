@@ -254,8 +254,8 @@ def init_bert_spbert_pipeline(section: SectionProxy) -> BasePipeline:
     model_name = section["model_name"]
 
     BERT_SPBERT.load_model_path = f"/models/{model_name}"
-    BERT_SPBERT.max_source_length = section["max_source_length"]
-    BERT_SPBERT.max_target_length = section["max_target_length"]
+    BERT_SPBERT.max_source_length = int(section["max_source_length"])
+    BERT_SPBERT.max_target_length = int(section["max_target_length"])
 
     bs_pipeline = BertSPBertPipeline(BERT_SPBERT)
 
