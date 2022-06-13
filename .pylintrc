@@ -43,11 +43,12 @@ disable=
     no-self-use, # class methods should be usable, even if they do not access self
     wrong-import-order, # handled by zimports
     cyclic-import, # warning, which might be false positive (if there is a cyclic import, an error will be thrown)
+	import-outside-toplevel, # models are only loaded when the module is imported, import only used models to save memory
 
 [SIMILARITIES]
 
 # Minimum lines number of a similarity.
-min-similarity-lines=6
+min-similarity-lines=9
 
 [DESIGN]
 

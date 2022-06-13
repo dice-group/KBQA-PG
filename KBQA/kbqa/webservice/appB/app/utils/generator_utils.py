@@ -452,6 +452,7 @@ def decode(encoded_sparql):
     sparql = reverse_shorten_query(short_sparql)
     return " ".join(sparql.split())
 
+
 def fix_URI(query):
     query = re.sub(r"dbr:([^\s]+)", r"<http://dbpedia.org/resource/\1>", query)
     if query[-2:] == "}>":

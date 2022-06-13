@@ -1,9 +1,19 @@
 """Module to seperate a QTQ dataset into an en, sparql and triple file."""
 import json
 import os
+from types import SimpleNamespace
 from typing import List
 
-from app.arguments.args_preprocessing import SEPERATE_QTQ
+SEPERATE_QTQ = SimpleNamespace(
+    **{
+        # --data, dest="data_dir", required=True
+        "data_dir": "app/data/input",
+        # --subset, dest="subset", required=True
+        "subset": "question",
+        # --output, dest="output_dir", required=True
+        "output_dir": "app/data/sep",
+    }
+)
 
 
 def filter_triples(triples: List) -> List:
@@ -25,7 +35,6 @@ def filter_triples(triples: List) -> List:
 def seperate_qtq() -> None:
     """Seperate a QTQ dataset into an en, sparql and triple file."""
     args = SEPERATE_QTQ
-
     data_dir = args.data_dir
     subset = args.subset
     output_dir = args.output_dir
@@ -51,7 +60,3 @@ def seperate_qtq() -> None:
             en_file.write(element["question"] + "\n")
             sparql_file.write(element["query"] + "\n")
             triple_file.write("\t".join(filter_triples(element["triples"])) + "\n")
-
-
-if __name__ == "__main__":
-    seperate_qtq()
