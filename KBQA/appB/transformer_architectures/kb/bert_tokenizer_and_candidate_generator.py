@@ -1,12 +1,13 @@
 import copy
 import logging
+from typing import Any
 from typing import Dict
-from typing import Sequence
+from typing import List
+from typing import Tuple
 
 from allennlp.common.registrable import Registrable
 from allennlp.data import Token
 from allennlp.data.fields import ArrayField
-from allennlp.data.fields import Field
 from allennlp.data.fields import ListField
 from allennlp.data.fields import SpanField
 from allennlp.data.fields import TextField
@@ -23,20 +24,6 @@ knowbert_logger = logging.getLogger("knowbert-logger.candidate-generator")
 
 start_token = "[CLS]"
 sep_token = "[SEP]"
-
-
-def truncate_sequence_pair(
-    word_piece_tokens_a, word_piece_tokens_b, max_word_piece_sequence_length
-):
-    length_a = sum(len(x) for x in word_piece_tokens_a)
-    length_b = sum(len(x) for x in word_piece_tokens_b)
-    while max_word_piece_sequence_length < length_a + length_b:
-        if length_a < length_b:
-            discarded = word_piece_tokens_b.pop()
-            length_b -= len(discarded)
-        else:
-            discarded = word_piece_tokens_a.pop()
-            length_a -= len(discarded)
 
 
 class TokenizerAndCandidateGenerator(Registrable):
@@ -76,7 +63,7 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         self.whitespace_tokenize = whitespace_tokenize
         self.dtype = np.float32
 
-    def _word_to_word_pieces(self, word):
+    def _word_to_word_pieces(self, word: str) -> List[Token]:
         if self.do_lowercase and word not in list(
             self.bert_tokenizer.tokenizer.special_tokens_map.values()
         ):
@@ -85,7 +72,10 @@ class BertTokenizerAndCandidateGenerator(Registrable):
             1:-1
         ]  # exclude [CLS] and [SEP] at beginning and end
 
-    def tokenize_and_generate_candidates(self, text_a: str, text_b: str = None):
+    def tokenize_and_generate_candidates(
+        self,
+        text_a: str,
+    ) -> Dict[str, Any]:
         """
         # run BertTokenizer.basic_tokenizer.tokenize on sentence1 and sentence2 to word tokenization
         # generate candidate mentions for each of the generators and for each of sentence1 and 2 from word tokenized text
@@ -108,22 +98,10 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         """
         offsets_a, grouped_wp_a, tokens_a = self._tokenize_text(text_a)
 
-        if text_b is not None:
-            offsets_b, grouped_wp_b, tokens_b = self._tokenize_text(text_b)
-            truncate_sequence_pair(
-                grouped_wp_a, grouped_wp_b, self.max_word_piece_sequence_length - 3
-            )
-            offsets_b = offsets_b[: len(grouped_wp_b)]
-            tokens_b = tokens_b[: len(grouped_wp_b)]
-            instance_b = self._generate_sentence_entity_candidates(tokens_b, offsets_b)
-            word_piece_tokens_b = [
-                word_piece for word in grouped_wp_b for word_piece in word
-            ]
-        else:
-            length_a = sum(len(x) for x in grouped_wp_a)
-            while self.max_word_piece_sequence_length - 2 < length_a:
-                discarded = grouped_wp_a.pop()
-                length_a -= len(discarded)
+        length_a = sum(len(x) for x in grouped_wp_a)
+        while self.max_word_piece_sequence_length - 2 < length_a:
+            discarded = grouped_wp_a.pop()
+            length_a -= len(discarded)
 
         word_piece_tokens_a = [
             word_piece for word in grouped_wp_a for word_piece in word
@@ -132,63 +110,18 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         tokens_a = tokens_a[: len(grouped_wp_a)]
         instance_a = self._generate_sentence_entity_candidates(tokens_a, offsets_a)
 
-        # If we got 2 sentences.
-        if text_b is not None:
-            # Target length should include start and two end tokens, and then be divided equally between both sentences
-            # Note that this will result in potentially shorter documents than original target length,
-            # if one (or both) of the sentences are shorter than half the target length.
-            tokens = (
-                [start_token]
-                + word_piece_tokens_a
-                + [sep_token]
-                + word_piece_tokens_b
-                + [sep_token]
-            )
-            segment_ids = (len(word_piece_tokens_a) + 2) * [0] + (
-                len(word_piece_tokens_b) + 1
-            ) * [1]
-            offsets_a = [x + 1 for x in offsets_a]
-            offsets_b = [x + 2 + len(word_piece_tokens_a) for x in offsets_b]
         # Single sentence
-        else:
-            tokens = [start_token] + word_piece_tokens_a + [sep_token]
-            segment_ids = len(tokens) * [0]
-            offsets_a = [x + 1 for x in offsets_a]
-            offsets_b = None
+        tokens = [start_token] + word_piece_tokens_a + [sep_token]
+        segment_ids = len(tokens) * [0]
+        offsets_a = [x + 1 for x in offsets_a]
 
         for name in instance_a.keys():
             for span in instance_a[name]["candidate_spans"]:
                 span[0] += 1
                 span[1] += 1
 
-        fields: Dict[str, Sequence] = {}
-
-        # concatanating both sentences (for both tokens and ids)
-        if text_b is None:
-            candidates = instance_a
-        else:
-            candidates: Dict[str, Field] = {}
-
-            # Merging candidate lists for both sentences.
-            for entity_type in instance_b:
-                candidate_instance_a = instance_a[entity_type]
-                candidate_instance_b = instance_b[entity_type]
-
-                candidates[entity_type] = {}
-
-                for span in candidate_instance_b["candidate_spans"]:
-                    span[0] += len(word_piece_tokens_a) + 2
-                    span[1] += len(word_piece_tokens_a) + 2
-
-                # Merging each of the fields.
-                for key in [
-                    "candidate_entities",
-                    "candidate_spans",
-                    "candidate_entity_priors",
-                ]:
-                    candidates[entity_type][key] = (
-                        candidate_instance_a[key] + candidate_instance_b[key]
-                    )
+        fields: Dict[str, Any] = {}
+        candidates = instance_a
 
         for entity_type in candidates.keys():
             # deal with @@PADDING@@
@@ -230,10 +163,9 @@ class BertTokenizerAndCandidateGenerator(Registrable):
         fields["segment_ids"] = segment_ids
         fields["candidates"] = candidates
         fields["offsets_a"] = offsets_a
-        fields["offsets_b"] = offsets_b
         return fields
 
-    def _tokenize_text(self, text):
+    def _tokenize_text(self, text: str) -> Tuple[List[int], List[List[str]], List[str]]:
         if self.whitespace_tokenize:
             tokens = text.split()
         else:
@@ -253,7 +185,9 @@ class BertTokenizerAndCandidateGenerator(Registrable):
 
         return offsets, word_piece_tokens, tokens
 
-    def _generate_sentence_entity_candidates(self, tokens, offsets):
+    def _generate_sentence_entity_candidates(
+        self, tokens: List[str], offsets: List[int]
+    ) -> Dict[str, Any]:
         """
         Tokenize sentence, trim it to the target length, and generate entity candidates.
         :param sentence
@@ -287,7 +221,9 @@ class BertTokenizerAndCandidateGenerator(Registrable):
             entity_instances[name] = entities
         return entity_instances
 
-    def convert_tokens_candidates_to_fields(self, tokens_and_candidates):
+    def convert_tokens_candidates_to_fields(
+        self, tokens_and_candidates: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         tokens_and_candidates is the return from a previous call to
         generate_sentence_entity_candidates.  Converts the dict to

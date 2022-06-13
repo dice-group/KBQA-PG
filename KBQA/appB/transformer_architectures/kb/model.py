@@ -2,6 +2,7 @@
 # Licensed under the MIT license.
 
 import logging
+
 import torch
 import torch.nn as nn
 
@@ -62,7 +63,9 @@ class BertSeq2Seq(nn.Module):
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
         self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
         knowbert_logger.info(self.lm_head)
-        knowbert_logger.info(self.encoder.pretrained_bert.bert.embeddings.word_embeddings)
+        knowbert_logger.info(
+            self.encoder.pretrained_bert.bert.embeddings.word_embeddings
+        )
         knowbert_logger.info(config)
         self.lsm = nn.LogSoftmax(dim=-1)
         self.tie_weights()
@@ -102,9 +105,13 @@ class BertSeq2Seq(nn.Module):
         knowbert_logger.debug(f"source_segment_ids: {source_segment_ids}")
         knowbert_logger.debug(f"source_mask: {source_mask}")
         knowbert_logger.debug(f"source_candidates: {source_candidates}")
-        outputs = self.encoder(tokens=source_ids, segment_ids=source_segment_ids, candidates=source_candidates)
+        outputs = self.encoder(
+            tokens=source_ids,
+            segment_ids=source_segment_ids,
+            candidates=source_candidates,
+        )
         knowbert_logger.debug(outputs)
-        question_encoder_output = outputs['contextual_embeddings']
+        question_encoder_output = outputs["contextual_embeddings"]
         outputs = self.triple_encoder(triples_ids, attention_mask=triples_mask)
         knowbert_logger.debug(f"triple_encoder_ouput: {outputs}")
         triple_encoder_output = outputs[0]

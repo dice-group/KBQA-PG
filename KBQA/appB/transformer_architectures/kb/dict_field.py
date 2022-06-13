@@ -1,4 +1,5 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
 from allennlp.data.fields.field import DataArray
 from allennlp.data.fields.field import Field
@@ -37,7 +38,7 @@ class DictField(Field):
     @overrides
     def as_tensor(self, padding_lengths: Dict[str, int]) -> DataArray:
         # padding_lengths is flattened from the nested structure -- unflatten
-        pl : Dict = {}
+        pl: Dict = {}
         for full_key, val in padding_lengths.items():
             key, _, sub_key = full_key.partition(SEPERATOR)
             if key not in pl:

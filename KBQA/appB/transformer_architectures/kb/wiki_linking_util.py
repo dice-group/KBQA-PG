@@ -5,6 +5,9 @@ import time
 from typing import List
 from typing import Tuple
 from typing import Union
+from typing import Dict
+from typing import Set
+from typing import Any
 
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_utils import enumerate_spans
@@ -24,9 +27,9 @@ knowbert_logger = logging.getLogger("knowbert-logger.wiki")
 def prior_entity_candidates(
     candidates_file: str,
     max_candidates: int = 30,
-    allowed_entities_set=None,
-    max_mentions=None,
-):
+    allowed_entities_set: Union[None, Set] = None,
+    max_mentions: Union[None, int] = None,
+) -> Tuple[Dict, Dict, Dict]:
     """
     Args:
     cand_ent_num: how many candidate entities to keep for each mention
@@ -34,10 +37,10 @@ def prior_entity_candidates(
     the most frequent 1M entities. First this restiction applies and then the cand_ent_num.
     """
     wall_start = time.time()
-    p_e_m = {}  # for each mention we have a list of tuples (ent_id, score)
+    p_e_m: Dict = {}  # for each mention we have a list of tuples (ent_id, score)
     # for each mention of the p_e_m we store the total freq
     # this will help us decide which cand entities to take
-    mention_total_freq = {}
+    mention_total_freq: Dict = {}
     p_e_m_errors = 0
     incompatible_ent_ids = 0
     duplicate_mentions_cnt = 0
@@ -54,7 +57,7 @@ def prior_entity_candidates(
             mention = line_parts[0]
             absolute_freq = int(line_parts[1])
             entities = line_parts[2:]
-            entity_candidates = []
+            entity_candidates: List[Tuple] = []
             for e in entities:
                 if len(entity_candidates) >= max_candidates:
                     break
@@ -96,11 +99,11 @@ def prior_entity_candidates(
     # OBAMA gives 0.7 then we keep the 0.9 . Also we keep as before only the cand_ent_num entities
     # with the highest score
 
-    p_e_m_lowercased = {}
+    p_e_m_lowercased: Dict = {}
     for mention, candidates in p_e_m.items():
         l_mention = mention.lower()
         lower_candidates = p_e_m.get(l_mention, [])
-        combined_candidates = {}
+        combined_candidates: Dict = {}
 
         for cand in candidates + lower_candidates:
             if cand[0] in combined_candidates:
@@ -110,9 +113,11 @@ def prior_entity_candidates(
             else:
                 combined_candidates[cand[0]] = cand
 
-        combined_candidates = list(combined_candidates.values())
+        combined_candidates_list = list(combined_candidates.values())
         sorted_candidates = sorted(
-            combined_candidates, key=lambda x: x[2], reverse=True
+            combined_candidates_list,
+            key=lambda x: x[2],
+            reverse=True
         )
 
         p_e_m_lowercased[l_mention] = sorted_candidates[:max_candidates]
@@ -123,7 +128,7 @@ def prior_entity_candidates(
 STOP_SYMBOLS = set().union(LIST_PUNCT, LIST_ELLIPSES, LIST_QUOTES, LIST_CURRENCY)
 
 
-def span_filter_func(span: List[str]):
+def span_filter_func(span: List[str]) -> bool:
     """
     This function halves the number of suggested mention spans whilst not affecting
     gold span recall at all. It can probably be improved further.
@@ -149,11 +154,11 @@ class WikiCandidateMentionGenerator(MentionGenerator):
 
     def __init__(
         self,
-        candidates_file: str = None,
-        entity_world_path: str = None,
+        candidates_file: str = "",
+        entity_world_path: str = "",
         lowercase_candidates: bool = True,
         random_candidates: bool = False,
-        pickle_cache_file: str = None,
+        pickle_cache_file: str = "",
     ):
 
         self.tokenizer = spacy.load(
@@ -170,14 +175,14 @@ class WikiCandidateMentionGenerator(MentionGenerator):
         self.lowercase_candidates = lowercase_candidates
 
         if isinstance(entity_world_path, dict):
-            self.entity_world = entity_world_path
+            self.entity_world: Dict = entity_world_path
         else:
             entity_world_path = cached_path(
                 entity_world_path or self.defaults["entity_world_path"]
             )
             self.entity_world = json.load(open(entity_world_path))
 
-        if pickle_cache_file is not None:
+        if pickle_cache_file:
             import pickle
 
             with open(cached_path(pickle_cache_file), "rb") as fin:
@@ -202,7 +207,11 @@ class WikiCandidateMentionGenerator(MentionGenerator):
         if self.random_candidates:
             self.p_e_m_keys_for_sampling = list(self.p_e_m.keys())
 
-    def get_mentions_raw_text(self, text: str, whitespace_tokenize=False):
+    def get_mentions_raw_text(
+        self,
+        text: str,
+        whitespace_tokenize: bool = False
+    ) -> Dict[str, Any]:
         """
         returns:
             {'tokenized_text': List[str],
@@ -257,70 +266,10 @@ class WikiCandidateMentionGenerator(MentionGenerator):
 
         return ret
 
-    def get_mentions_with_gold(
-        self,
-        text: str,
-        gold_spans,
-        gold_entities,
-        whitespace_tokenize=True,
-        keep_gold_only: bool = False,
-    ):
-
-        gold_spans_to_entities = {
-            tuple(k): v for k, v in zip(gold_spans, gold_entities)
-        }
-
-        if whitespace_tokenize:
-            tokens = self.whitespace_tokenizer(text)
-        else:
-            tokens = self.tokenizer(text)
-
-        tokens = [t.text for t in tokens]
-        if keep_gold_only:
-            spans_with_gold = set(gold_spans_to_entities.keys())
-        else:
-            all_spans = enumerate_spans(
-                tokens, max_span_width=5, filter_function=span_filter_func
-            )
-            spans_with_gold = set().union(
-                all_spans, [tuple(span) for span in gold_spans]
-            )
-
-        spans = []
-        entities = []
-        gold_entities = []
-        priors = []
-        for span in spans_with_gold:
-            candidate_entities = self.process(tokens[span[0] : span[1] + 1])
-
-            gold_entity = gold_spans_to_entities.get(span, "@@NULL@@")
-            # Only keep spans which we have candidates for.
-            # For a small number of gold candidates,
-            # we don't have mention candidates for them,
-            # we can't link to them.
-            if not candidate_entities:
-                continue
-
-            candidate_names = [x[1] for x in candidate_entities]
-            candidate_priors = [x[2] for x in candidate_entities]
-            sum_priors = sum(candidate_priors)
-            priors.append([x / sum_priors for x in candidate_priors])
-
-            spans.append(list(span))
-            entities.append(candidate_names)
-            gold_entities.append(gold_entity)
-
-        return {
-            "tokenized_text": tokens,
-            "candidate_spans": spans,
-            "candidate_entities": entities,
-            # TODO Change to priors
-            "candidate_entity_prior": priors,
-            "gold_entities": gold_entities,
-        }
-
     def process(
-        self, span: Union[List[str], str], lower=False
+        self,
+        span: Union[List[str], str],
+        lower: bool = False
     ) -> List[Tuple[str, str, float]]:
         """
         Look up spans in the candidate dictionary, including looking for

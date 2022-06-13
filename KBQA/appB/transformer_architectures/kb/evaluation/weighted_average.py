@@ -16,7 +16,7 @@ class WeightedAverage(Metric):
         self._count = 0
 
     @overrides
-    def __call__(self, value: float, count=1) -> None:
+    def __call__(self, value: float, count: int = 1) -> None:
         """
         Parameters
         ----------

@@ -6,11 +6,13 @@ import torch
 
 @Metric.register("mrr")
 class MeanReciprocalRank(Metric):
-    def __init__(self):
+    def __init__(self) -> None:
         self._sum = 0.0
         self._n = 0.0
 
-    def __call__(self, predictions: torch.Tensor, labels: torch.Tensor, mask):
+    def __call__(
+        self, predictions: torch.Tensor, labels: torch.Tensor, mask: torch.Tensor
+    ) -> None:
         # Flatten
         labels = labels.view(-1)
         mask = mask.view(-1).float()
@@ -23,7 +25,7 @@ class MeanReciprocalRank(Metric):
         self._sum += (reciprocal_rank * mask).sum().item()
         self._n += mask.sum().item()
 
-    def get_metric(self, reset: bool = False):
+    def get_metric(self, reset: bool = False) -> float:
         mrr = self._sum / (self._n + 1e-13)
         if reset:
             self.reset()

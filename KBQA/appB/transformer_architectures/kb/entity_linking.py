@@ -57,6 +57,9 @@ Model component is split into several sub-components.
 # Should ideally do the original tokenization with the bert word splitter,
 # or if orginal annotation is word split already re-tokenize it.
 
+from typing import Dict
+from typing import List
+
 from allennlp.common.registrable import Registrable
 from allennlp.data import DatasetReader
 from allennlp.data import Tokenizer
@@ -73,7 +76,7 @@ import torch
 @TokenIndexer.register("characters_tokenizer")
 class TokenCharactersIndexerTokenizer(TokenCharactersIndexer):
     @classmethod
-    def from_params(cls, params):
+    def from_params(cls, params: Dict) -> "TokenCharactersIndexerTokenizer":
         tokenizer = Tokenizer.from_params(params.pop("tokenizer"))
         ret = TokenCharactersIndexer.from_params(params)
         ret._character_tokenizer = tokenizer
@@ -146,8 +149,12 @@ class EntityLinkingBase(Model):
         self._f1_metric_untyped = F1Metric()
 
     def _compute_f1(
-        self, linking_scores, candidate_spans, candidate_entities, gold_entities
-    ):
+        self,
+        linking_scores: torch.Tensor,
+        candidate_spans: torch.Tensor,
+        candidate_entities: torch.Tensor,
+        gold_entities: torch.Tensor,
+    ) -> None:
         # will call F1Metric with predicted and gold entities encoded as
         # [(start, end), entity_id]
 
@@ -174,10 +181,10 @@ class EntityLinkingBase(Model):
             .repeat([1, num_spans])[gold_mask.squeeze(-1).cpu()]
         )
 
-        gold_entities_for_f1 = []
-        predicted_entities_for_f1 = []
-        gold_spans_for_f1 = []
-        predicted_spans_for_f1 = []
+        gold_entities_for_f1: List = []
+        predicted_entities_for_f1: List = []
+        gold_spans_for_f1: List = []
+        predicted_spans_for_f1: List = []
         for k in range(batch_size):
             gold_entities_for_f1.append([])
             predicted_entities_for_f1.append([])
@@ -198,7 +205,12 @@ class EntityLinkingBase(Model):
         self._f1_metric_untyped(predicted_spans_for_f1, gold_spans_for_f1)
         self._f1_metric(predicted_entities_for_f1, gold_entities_for_f1)
 
-    def _decode(self, linking_scores, candidate_spans, candidate_entities):
+    def _decode(
+        self,
+        linking_scores: torch.Tensor,
+        candidate_spans: torch.Tensor,
+        candidate_entities: torch.Tensor,
+    ) -> List:
         # returns [[batch_index1, (start1, end1), eid1],
         #          [batch_index2, (start2, end2), eid2], ...]
 
@@ -248,7 +260,7 @@ class EntityLinkingBase(Model):
 
         return ret
 
-    def get_metrics(self, reset: bool = False):
+    def get_metrics(self, reset: bool = False) -> Dict:
         precision, recall, f1_measure = self._f1_metric.get_metric(reset)
         (
             precision_span,
@@ -267,8 +279,12 @@ class EntityLinkingBase(Model):
         return metrics
 
     def _compute_loss(
-        self, candidate_entities, candidate_spans, linking_scores, gold_entities
-    ):
+        self,
+        candidate_entities: torch.Tensor,
+        candidate_spans: torch.Tensor,
+        linking_scores: torch.Tensor,
+        gold_entities: torch.Tensor,
+    ) -> Dict:
 
         if self.loss_type == "margin":
             return self._compute_margin_loss(
@@ -278,10 +294,16 @@ class EntityLinkingBase(Model):
             return self._compute_softmax_loss(
                 candidate_entities, candidate_spans, linking_scores, gold_entities
             )
+        else:
+            return {"loss": f"Unknown self.loss_type = {self.loss_type}!"}
 
     def _compute_margin_loss(
-        self, candidate_entities, candidate_spans, linking_scores, gold_entities
-    ):
+        self,
+        candidate_entities: torch.Tensor,
+        candidate_spans: torch.Tensor,
+        linking_scores: torch.Tensor,
+        gold_entities: torch.Tensor,
+    ) -> Dict:
 
         # compute loss
         # in End-to-End Neural Entity Linking
@@ -324,8 +346,12 @@ class EntityLinkingBase(Model):
         return {"loss": loss}
 
     def _compute_softmax_loss(
-        self, candidate_entities, candidate_spans, linking_scores, gold_entities
-    ):
+        self,
+        candidate_entities: torch.Tensor,
+        candidate_spans: torch.Tensor,
+        linking_scores: torch.Tensor,
+        gold_entities: torch.Tensor,
+    ) -> Dict:
 
         # compute log softmax
         # linking scores is already masked with -1000 in invalid locations

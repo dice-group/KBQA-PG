@@ -1,8 +1,11 @@
 import math
+from typing import Dict
+from typing import Tuple
 
 from KBQA.appB.transformer_architectures.kb.common import extend_attention_mask_for_bert
 from KBQA.appB.transformer_architectures.kb.common import get_dtype_for_module
 from KBQA.appB.transformer_architectures.kb.common import init_bert_weights
+from pytorch_pretrained_bert.modeling import BertConfig
 from pytorch_pretrained_bert.modeling import BertIntermediate
 from pytorch_pretrained_bert.modeling import BertOutput
 from pytorch_pretrained_bert.modeling import BertSelfOutput
@@ -10,7 +13,7 @@ import torch
 
 
 class SpanWordAttention(torch.nn.Module):
-    def __init__(self, config):
+    def __init__(self, config: BertConfig):
         super(SpanWordAttention, self).__init__()
         if config.hidden_size % config.num_attention_heads != 0:
             raise ValueError(
@@ -27,7 +30,7 @@ class SpanWordAttention(torch.nn.Module):
 
         self.dropout = torch.nn.Dropout(config.attention_probs_dropout_prob)
 
-    def transpose_for_scores(self, x):
+    def transpose_for_scores(self, x: torch.Tensor) -> torch.Tensor:
         new_x_shape = x.size()[:-1] + (
             self.num_attention_heads,
             self.attention_head_size,
@@ -35,7 +38,12 @@ class SpanWordAttention(torch.nn.Module):
         x = x.view(*new_x_shape)
         return x.permute(0, 2, 1, 3)
 
-    def forward(self, hidden_states, entity_embeddings, entity_mask):
+    def forward(
+        self,
+        hidden_states: torch.Tensor,
+        entity_embeddings: torch.Tensor,
+        entity_mask: torch.Tensor,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         hidden_states = (batch_size, timesteps, dim)
         entity_embeddings = (batch_size, num_entities, dim)
@@ -83,7 +91,7 @@ class SpanWordAttention(torch.nn.Module):
 
 
 class SpanAttention(torch.nn.Module):
-    def __init__(self, config):
+    def __init__(self, config: BertConfig):
         super(SpanAttention, self).__init__()
         self.attention = SpanWordAttention(config)
         init_bert_weights(
@@ -92,7 +100,12 @@ class SpanAttention(torch.nn.Module):
         self.output = BertSelfOutput(config)
         init_bert_weights(self.output, config.initializer_range)
 
-    def forward(self, input_tensor, entity_embeddings, entity_mask):
+    def forward(
+        self,
+        input_tensor: torch.Tensor,
+        entity_embeddings: torch.Tensor,
+        entity_mask: torch.Tensor,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         span_output, attention_probs = self.attention(
             input_tensor, entity_embeddings, entity_mask
         )
@@ -102,7 +115,7 @@ class SpanAttention(torch.nn.Module):
 
 class SpanAttentionLayer(torch.nn.Module):
     # WARNING: does it's own init, so don't re-init
-    def __init__(self, config):
+    def __init__(self, config: BertConfig):
         super(SpanAttentionLayer, self).__init__()
         self.attention = SpanAttention(config)
         self.intermediate = BertIntermediate(config)
@@ -110,7 +123,12 @@ class SpanAttentionLayer(torch.nn.Module):
         init_bert_weights(self.intermediate, config.initializer_range)
         init_bert_weights(self.output, config.initializer_range)
 
-    def forward(self, hidden_states, entity_embeddings, entity_mask):
+    def forward(
+        self,
+        hidden_states: torch.Tensor,
+        entity_embeddings: torch.Tensor,
+        entity_mask: torch.Tensor,
+    ) -> Dict:
         attention_output, attention_probs = self.attention(
             hidden_states, entity_embeddings, entity_mask
         )

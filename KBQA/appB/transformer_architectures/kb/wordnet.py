@@ -15,8 +15,10 @@ Notes on wordnet ids:
 from collections import defaultdict
 import logging
 import random
+from typing import Any
 from typing import Dict
 from typing import List
+from typing import Tuple
 
 from allennlp.common.file_utils import cached_path
 from allennlp.data import Token
@@ -68,7 +70,7 @@ class WordNetSpacyPreprocessor:
         return normalized_tokens
 
 
-def _norm_lemma(lemma_str):
+def _norm_lemma(lemma_str: str) -> str:
     return lemma_str.replace("_", " ").replace("-", " ")
 
 
@@ -81,7 +83,9 @@ WORDNET_TO_SEMCOR_POS_MAP = {
 }
 
 
-def load_candidate_maps(fname, topk=30, count_smoothing=1):
+def load_candidate_maps(
+    fname: str, topk: int = 30, count_smoothing: int = 1
+) -> Tuple[Dict, Dict]:
     """
     Load the candidate maps from the entity file.
 
@@ -103,12 +107,12 @@ def load_candidate_maps(fname, topk=30, count_smoothing=1):
         if count_smoothing < 0 then don't normalize lemmas, just return raw counts
     """
 
-    def _update(d, key, m):
+    def _update(d: Dict, key: str, m: Dict) -> None:
         if key not in d:
             d[key] = []
         d[key].append(m)
 
-    def _trim_and_normalize(d, num, smoothing):
+    def _trim_and_normalize(d: Dict, num: int, smoothing: int) -> None:
         for key in d:
             all_candidates = d[key]
             if len(all_candidates) > num:
@@ -127,8 +131,8 @@ def load_candidate_maps(fname, topk=30, count_smoothing=1):
                     cand["prior"] = (cand["prior"] + smoothing) / sum_count
             d[key] = trimmed_candidates
 
-    candidates = {}
-    lemma_id_to_synset_id = {}
+    candidates: Dict = {}
+    lemma_id_to_synset_id: Dict = {}
 
     with JsonFile(cached_path(fname), "r") as fin:
         for entity in fin:
@@ -174,12 +178,6 @@ def load_candidate_maps(fname, topk=30, count_smoothing=1):
 #           for generic entity types, use heuristic to restrict candidates
 #           should have near 100% recall of gold span
 #           and first sense baseline should be high
-
-
-def _update_candidate_list(c, s, e, p):
-    c["candidate_spans"].append(s)
-    c["candidate_entities"].append(e)
-    c["candidate_entity_priors"].append(p)
 
 
 @MentionGenerator.register("wordnet_mention_generator")
@@ -242,130 +240,12 @@ class WordNetCandidateMentionGenerator(MentionGenerator):
         if self._random_candidates:
             self._unique_synsets = list(set(self._lemma_to_synset.values()))
 
-    def get_mentions_with_gold_spans(self, gold_annotations):
-        """
-        use for training with semcor -- it will use the full unrestricted
-            generator, but restrict to just the gold annotation spans, without
-            using the gold lemma or POS.
-
-        remove generic entity types (PER, LOC, ORG)
-        restrict candidate spans to just those that have annotated senses
-        """
-        tokenized_text = gold_annotations["tokenized_text"]
-
-        text = " ".join(gold_annotations["tokenized_text"])
-        candidates = self.get_mentions_raw_text(
-            text, whitespace_tokenize=True, allow_empty_candidates=True
-        )
-
-        # each gold annotation needs to be in output
-        # will look up candidates by (start, end) indices so remap candidates
-        candidates_by_endpoints = {
-            tuple(start_end): {"entities": ent, "priors": pri}
-            for start_end, ent, pri in zip(
-                candidates["candidate_spans"],
-                candidates["candidate_entities"],
-                candidates["candidate_entity_priors"],
-            )
-        }
-
-        filtered_candidates = {
-            "tokenized_text": tokenized_text,
-            "candidate_spans": [],
-            "candidate_entities": [],
-            "candidate_entity_priors": [],
-        }
-
-        for k in range(len(gold_annotations["gold_spans"])):
-            span = gold_annotations["gold_spans"][k]
-            # lemma = gold_annotations['gold_lemmas'][k]
-            # pos = gold_annotations['gold_pos'][k]
-            lemma_id = gold_annotations["gold_lemma_ids"][k]
-
-            if lemma_id in self._entity_lemmas:
-                # skip
-                continue
-
-            span_candidates = candidates_by_endpoints.get(tuple(span))
-            if span_candidates is None:
-                # this one wasn't found by candidate generation
-                continue
-
-            # add to the list
-            _update_candidate_list(
-                filtered_candidates,
-                span,
-                span_candidates["entities"],
-                span_candidates["priors"],
-            )
-
-        return filtered_candidates
-
-    def get_mentions_from_gold_span_lemma_pos(self, gold_annotations):
-        """
-        apply heuristic for generic entity types
-        restrict candidate spans to just those that have
-            annotated senses
-        use the gold lemma and POS to further restrict entity types
-
-        gold_annotations is output from unpack_wsd_training_instance, has keys
-            {'tokenized_text': tokenized_text,
-            'gold_spans': gold_spans,
-            'gold_entities': gold_entities,
-            'gold_lemmas': gold_lemmas,
-            'gold_pos': gold_pos,
-            'gold_ids': gold_ids}
-        """
-        # each gold annotation needs to be in output
-        # need one output for each gold span
-        tokenized_text = gold_annotations["tokenized_text"]
-        candidates = {
-            "tokenized_text": tokenized_text,
-            "candidate_spans": [],
-            "candidate_entities": [],
-            "candidate_entity_priors": [],
-        }
-
-        tokenized_text = gold_annotations["tokenized_text"]
-        for k in range(len(gold_annotations["gold_spans"])):
-            span = gold_annotations["gold_spans"][k]
-            lemma = gold_annotations["gold_lemmas"][k]
-            pos = gold_annotations["gold_pos"][k]
-
-            # check for named entities
-            if pos == "NOUN" and lemma in self._entity_synsets:
-                if lemma != tokenized_text[span[0]]:
-                    # hack, assume it's the generic entity type
-                    candidate_ids = [self._entity_synsets[lemma]]
-                    candidate_priors = [1.0]
-                    _update_candidate_list(
-                        candidates, span, candidate_ids, candidate_priors
-                    )
-                    continue
-
-            # look up by (lemma, pos)
-            normalized_lemma = _norm_lemma(lemma)
-            all_candidates = self._candidate_list[normalized_lemma]
-            # restrict to pos
-            cand_entities = []
-            cand_priors = []
-            for cand in all_candidates:
-                if WORDNET_TO_SEMCOR_POS_MAP[cand["pos"]] == pos:
-                    cand_entities.append(cand["synset_id"])
-                    cand_priors.append(cand["prior"])
-            # renormalize prior
-            sum_prior = sum(cand_priors) + len(cand_priors) * self._count_smoothing
-            norm_prior = [(p + self._count_smoothing) / sum_prior for p in cand_priors]
-            _update_candidate_list(candidates, span, cand_entities, norm_prior)
-
-        return candidates
-
     def get_mentions_raw_text(
         self,
         text: str,
         whitespace_tokenize: bool = False,
         allow_empty_candidates: bool = False,
-    ):
+    ) -> Dict[str, Any]:
         """
         returns:
             {'tokenized_text': List[str],
@@ -509,8 +389,8 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
         self,
         embedding_file: str,
         entity_dim: int,
-        entity_file: str = None,
-        vocab_file: str = None,
+        entity_file: str = "",
+        vocab_file: str = "",
         entity_h5_key: str = "conve_tucker_infersent_bert",
         dropout: float = 0.1,
         pos_embedding_dim: int = 25,
@@ -590,13 +470,13 @@ class WordNetAllEmbedding(torch.nn.Module, EntityEmbedder):
             self.null_embedding = torch.nn.Parameter(torch.zeros(entity_dim))
             self.null_embedding.data.normal_(mean=0.0, std=0.02)
 
-    def get_output_dim(self):
+    def get_output_dim(self) -> int:
         return self.entity_dim
 
-    def get_null_embedding(self):
+    def get_null_embedding(self) -> torch.nn.Parameter:
         return self.null_embedding
 
-    def forward(self, entity_ids):
+    def forward(self, entity_ids: torch.Tensor) -> torch.Tensor:
         """
         entity_ids = (batch_size, num_candidates, num_entities) array of entity
             ids

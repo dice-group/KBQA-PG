@@ -1,3 +1,5 @@
+from typing import Union
+
 from allennlp.training.metrics.metric import Metric
 from overrides import overrides
 
@@ -13,9 +15,10 @@ class ExponentialMovingAverage(Metric):
     def __init__(self, alpha: float = 0.5) -> None:
         self.alpha = alpha
         self.reset()
+        self._ema: Union[None, float] = None
 
     @overrides
-    def __call__(self, value):
+    def __call__(self, value: float) -> None:
         """
         Parameters
         ----------
@@ -29,7 +32,7 @@ class ExponentialMovingAverage(Metric):
             self._ema = self.alpha * value + (1.0 - self.alpha) * self._ema
 
     @overrides
-    def get_metric(self, reset: bool = False):
+    def get_metric(self, reset: bool = False) -> float:
         """
         Returns
         -------
@@ -46,5 +49,5 @@ class ExponentialMovingAverage(Metric):
         return ret
 
     @overrides
-    def reset(self):
+    def reset(self) -> None:
         self._ema = None

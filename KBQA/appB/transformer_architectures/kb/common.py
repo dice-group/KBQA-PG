@@ -1,4 +1,11 @@
 import json
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Generator
+from typing import List
+from typing import Tuple
+from typing import Union
 
 from allennlp.common.registrable import Registrable
 from allennlp.training.metrics.metric import Metric
@@ -10,6 +17,7 @@ from pytorch_pretrained_bert.modeling import BertLayerNorm
 from pytorch_pretrained_bert.modeling import BertOutput
 from pytorch_pretrained_bert.modeling import BertSelfAttention
 from pytorch_pretrained_bert.modeling import BertSelfOutput
+from spacy import Vocab
 from spacy.tokens import Doc
 import torch
 
@@ -22,7 +30,7 @@ class EntityEmbedder(Registrable):
     pass
 
 
-def get_empty_candidates():
+def get_empty_candidates() -> Dict:
     """
     The mention generators always return at least one candidate, but signal
     it with this special candidate
@@ -36,17 +44,17 @@ def get_empty_candidates():
 
 # from https://spacy.io/usage/linguistic-features#custom-tokenizer-example
 class WhitespaceTokenizer(object):
-    def __init__(self, vocab):
+    def __init__(self, vocab: Vocab) -> None:
         self.vocab = vocab
 
-    def __call__(self, text):
+    def __call__(self, text: str) -> Doc:
         words = text.split(" ")
         # All tokens 'own' a subsequent space character in this tokenizer
         spaces = [True] * len(words)
         return Doc(self.vocab, words=words, spaces=spaces)
 
 
-def no_filter_func(x):
+def no_filter_func(x: Any) -> bool:
     return True
 
 
@@ -58,18 +66,18 @@ class F1Metric(Metric):
     Only requirements are that the elements are hashable.
     """
 
-    def __init__(self, filter_func=None):
+    def __init__(self, filter_func: Union[None, Callable] = None) -> None:
         self.reset()
         if filter_func is None:
             filter_func = no_filter_func
         self.filter_func = filter_func
 
-    def reset(self):
+    def reset(self) -> None:
         self._true_positives = 0.0
         self._false_positives = 0.0
         self._false_negatives = 0.0
 
-    def get_metric(self, reset: bool = False):
+    def get_metric(self, reset: bool = False) -> Tuple[float, float, float]:
         """
         Returns
         -------
@@ -89,7 +97,7 @@ class F1Metric(Metric):
             self.reset()
         return precision, recall, f1_measure
 
-    def __call__(self, predictions, gold_labels):
+    def __call__(self, predictions: List, gold_labels: List) -> None:
         """
         predictions = batch of predictions that can be compared
         gold labels = list of gold labels
@@ -123,19 +131,21 @@ class F1Metric(Metric):
                     self._false_negatives += 1
 
 
-def get_dtype_for_module(module):
+def get_dtype_for_module(module: torch.nn.Module) -> torch.dtype:
     # gets dtype for module parameters, for fp16 support when casting
     # we unfortunately can't set this during module construction as module
     # will be moved to GPU or cast to half after construction.
     return next(module.parameters()).dtype
 
 
-def set_requires_grad(module, requires_grad):
+def set_requires_grad(module: torch.nn.Module, requires_grad: bool) -> None:
     for param in module.parameters():
         param.requires_grad_(requires_grad)
 
 
-def extend_attention_mask_for_bert(mask, dtype):
+def extend_attention_mask_for_bert(
+    mask: torch.Tensor, dtype: torch.dtype
+) -> torch.Tensor:
     # mask = (batch_size, timesteps)
     # returns an attention_mask useable with BERT
     # see: https://github.com/huggingface/pytorch-pretrained-BERT/blob/master/pytorch_pretrained_bert/modeling.py#L696
@@ -145,7 +155,11 @@ def extend_attention_mask_for_bert(mask, dtype):
     return extended_attention_mask
 
 
-def init_bert_weights(module, initializer_range, extra_modules_without_weights=()):
+def init_bert_weights(
+    module: torch.nn.Module,
+    initializer_range: float,
+    extra_modules_without_weights: Tuple = (),
+) -> None:
     # these modules don't have any weights, other then ones in submodules,
     # so don't have to worry about init
     modules_without_weights = (
@@ -161,7 +175,7 @@ def init_bert_weights(module, initializer_range, extra_modules_without_weights=(
     ) + extra_modules_without_weights
 
     # modified from pytorch_pretrained_bert
-    def _do_init(m):
+    def _do_init(m: torch.nn.Module) -> None:
         if isinstance(m, (torch.nn.Linear, torch.nn.Embedding)):
             # Slightly different from the TF version which uses truncated_normal for initialization
             # cf https://github.com/pytorch/pytorch/pull/5617
@@ -184,13 +198,6 @@ def init_bert_weights(module, initializer_range, extra_modules_without_weights=(
         _do_init(mm)
 
 
-def get_linear_layer_init_identity(dim):
-    ret = torch.nn.Linear(dim, dim)
-    ret.weight.data.copy_(torch.eye(dim))
-    ret.bias.data.fill_(0.0)
-    return ret
-
-
 class JsonFile:
     """
     A flat text file where each line is one json object
@@ -208,23 +215,23 @@ class JsonFile:
         fout.write({'key1': 0, 'key2': 'the'})
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._args = args
         self._kwargs = kwargs
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[Any, None, None]:
         for line in self._file:
             yield json.loads(line)
 
-    def write(self, item):
+    def write(self, item: Any) -> None:
         item_as_json = json.dumps(item, ensure_ascii=False)
         encoded = "{}\n".format(item_as_json)
         self._file.write(encoded)
 
-    def __enter__(self):
+    def __enter__(self) -> "JsonFile":
         self._file = open(*self._args, **self._kwargs)
         self._file.__enter__()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self._file.__exit__(exc_type, exc_val, exc_tb)

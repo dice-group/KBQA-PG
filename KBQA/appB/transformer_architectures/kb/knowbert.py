@@ -1,7 +1,11 @@
 import logging
 import math
 import tarfile
+from typing import Any
 from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
 
 from allennlp.common.file_utils import cached_path
 from allennlp.data import Vocabulary
@@ -30,10 +34,15 @@ from pytorch_pretrained_bert.modeling import BertEncoder
 from pytorch_pretrained_bert.modeling import BertForPreTraining
 import torch
 
+
 knowbert_logger = logging.getLogger("knowbert-logger.main")
 
 
-def print_shapes(x, prefix="", raise_on_nan=False):
+def print_shapes(
+    x: Union[torch.Tensor, List, Tuple, Dict],
+    prefix: str = "",
+    raise_on_nan: bool = False,
+) -> None:
     if isinstance(x, torch.Tensor):
         print(prefix, x.shape)
         if x.dtype == torch.float32 or x.dtype == torch.float16:
@@ -51,7 +60,11 @@ def print_shapes(x, prefix="", raise_on_nan=False):
         print("COULDN'T get shape ", type(x))
 
 
-def diagnose_backward_hook(module, m_input, m_output):
+def diagnose_backward_hook(
+    module: torch.nn.Module,
+    m_input: Union[torch.Tensor, List, Tuple, Dict],
+    m_output: Union[torch.Tensor, List, Tuple, Dict],
+) -> None:
     print("------")
     print("Inside " + module.__class__.__name__ + " backward")
     print("Inside class:" + module.__class__.__name__)
@@ -62,7 +75,11 @@ def diagnose_backward_hook(module, m_input, m_output):
     print("=======")
 
 
-def diagnose_forward_hook(module, m_input, m_output):
+def diagnose_forward_hook(
+    module: torch.nn.Module,
+    m_input: Union[torch.Tensor, List, Tuple, Dict],
+    m_output: Union[torch.Tensor, List, Tuple, Dict],
+) -> None:
     print("------")
     print("Inside " + module.__class__.__name__ + " forward")
     print("Inside class:" + module.__class__.__name__)
@@ -92,19 +109,19 @@ class BertPretrainedMetricsLoss(Model):
         }
         self._accuracy = CategoricalAccuracy()
 
-    def get_metrics(self, reset: bool = False):
+    def get_metrics(self, reset: bool = False) -> Dict:
         metrics = {k: v.get_metric(reset) for k, v in self._metrics.items()}
         metrics["nsp_accuracy"] = self._accuracy.get_metric(reset)
         return metrics
 
     def _compute_loss(
         self,
-        contextual_embeddings,
-        pooled_output,
-        lm_label_ids,
-        next_sentence_label,
-        update_metrics=True,
-    ):
+        contextual_embeddings: torch.Tensor,
+        pooled_output: torch.Tensor,
+        lm_label_ids: Dict,
+        next_sentence_label: Union[None, torch.Tensor],
+        update_metrics: bool = True,
+    ) -> Tuple[float, float]:
 
         # (batch_size, timesteps, vocab_size), (batch_size, 2)
         prediction_scores, seq_relationship_score = self.pretraining_heads(
@@ -112,7 +129,7 @@ class BertPretrainedMetricsLoss(Model):
         )
 
         loss_metrics = []
-        if lm_label_ids is not None:
+        if lm_label_ids:
             # Loss
             vocab_size = prediction_scores.shape[-1]
             masked_lm_loss = self.lm_loss_function(
@@ -153,9 +170,13 @@ class BertPretrainedMetricsLoss(Model):
         return masked_lm_loss, next_sentence_loss
 
     def _compute_mrr(
-        self, contextual_embeddings, pooled_output, lm_labels_ids, mask_indicator
-    ):
-        prediction_scores, seq_relationship_score = self.pretraining_heads(
+        self,
+        contextual_embeddings: torch.Tensor,
+        pooled_output: torch.Tensor,
+        lm_labels_ids: torch.Tensor,
+        mask_indicator: torch.Tensor,
+    ) -> None:
+        prediction_scores, _ = self.pretraining_heads(
             contextual_embeddings, pooled_output
         )
         self._metrics["mrr"](prediction_scores, lm_labels_ids, mask_indicator)
@@ -176,10 +197,10 @@ class DotAttentionWithPrior(torch.nn.Module):
     def __init__(
         self,
         output_feed_forward_hidden_dim: int = 100,
-        weighted_entity_threshold: float = None,
-        null_embedding: torch.Tensor = None,
+        weighted_entity_threshold: Union[None, float] = None,
+        null_embedding: Union[None, torch.Tensor] = None,
         initializer_range: float = 0.02,
-    ):
+    ) -> None:
 
         super().__init__()
 
@@ -195,11 +216,11 @@ class DotAttentionWithPrior(torch.nn.Module):
 
     def forward(
         self,
-        projected_span_representations,
-        candidate_entity_embeddings,
-        candidate_entity_prior,
-        entity_mask,
-    ):
+        projected_span_representations: torch.Tensor,
+        candidate_entity_embeddings: torch.Tensor,
+        candidate_entity_prior: torch.Tensor,
+        entity_mask: torch.Tensor,
+    ) -> Dict:
         """
         projected_span_representations = (batch_size, num_spans, entity_dim)
         candidate_entity_embeddings = (batch_size, num_spans, num_candidates, entity_embedding_dim)
@@ -252,8 +273,8 @@ class DotAttentionWithPrior(torch.nn.Module):
         return return_dict
 
     def _get_weighted_entity_embeddings(
-        self, linking_scores, candidate_entity_embeddings
-    ):
+        self, linking_scores: torch.Tensor, candidate_entity_embeddings: torch.Tensor
+    ) -> torch.Tensor:
         """
         Get the entity linking weighted entity embedding
 
@@ -298,18 +319,18 @@ class DotAttentionWithPrior(torch.nn.Module):
 class EntityDisambiguator(BaseEntityDisambiguator, torch.nn.Module):
     def __init__(
         self,
-        contextual_embedding_dim,
+        contextual_embedding_dim: int,
         entity_embedding_dim: int,
         entity_embeddings: torch.nn.Embedding,
         max_sequence_length: int = 512,
-        span_encoder_config: Dict[str, int] = None,
+        span_encoder_config: Union[None, Dict[str, int]] = None,
         dropout: float = 0.1,
         output_feed_forward_hidden_dim: int = 100,
         initializer_range: float = 0.02,
-        weighted_entity_threshold: float = None,
-        null_entity_id: int = None,
+        weighted_entity_threshold: Union[None, float] = None,
+        null_entity_id: Union[None, int] = None,
         include_null_embedding_in_dot_attention: bool = False,
-    ):
+    ) -> None:
         """
         Idea: Align the bert and KG vector space by learning a mapping between
             them.
@@ -360,7 +381,7 @@ class EntityDisambiguator(BaseEntityDisambiguator, torch.nn.Module):
         self.contextual_embedding_dim = contextual_embedding_dim
 
         if span_encoder_config is None:
-            self.span_encoder = None
+            self.span_encoder: BertEncoder = None
         else:
             # create BertConfig
             assert len(span_encoder_config) == 4
@@ -375,8 +396,8 @@ class EntityDisambiguator(BaseEntityDisambiguator, torch.nn.Module):
             self.span_encoder = BertEncoder(config)
             init_bert_weights(self.span_encoder, initializer_range)
 
-    def unfreeze(self, mode):
-        def _is_in_alignment(n):
+    def unfreeze(self, mode: str) -> None:
+        def _is_in_alignment(n: str) -> bool:
             if "bert_to_kg_projector" in n:
                 return True
             elif "projected_span_layer_norm" in n:
@@ -413,7 +434,9 @@ class EntityDisambiguator(BaseEntityDisambiguator, torch.nn.Module):
                 else:
                     p.requires_grad_(True)
 
-    def _run_span_encoders(self, x, span_mask):
+    def _run_span_encoders(
+        self, x: torch.Tensor, span_mask: torch.Tensor
+    ) -> torch.Tensor:
         # run the transformer
         attention_mask = extend_attention_mask_for_bert(
             span_mask, get_dtype_for_module(self)
@@ -428,8 +451,8 @@ class EntityDisambiguator(BaseEntityDisambiguator, torch.nn.Module):
         candidate_entities: torch.Tensor,
         candidate_entity_priors: torch.Tensor,
         candidate_segment_ids: torch.Tensor,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> Dict:
         """
                 contextual_embeddings = (batch_size, timesteps, dim) output
                     from language model
@@ -503,8 +526,8 @@ class EntityLinkingWithCandidateMentions(EntityLinkingBase):
         kg_model: Model = None,
         entity_embedding: Embedding = None,
         concat_entity_embedder: EntityEmbedder = None,
-        contextual_embedding_dim: int = None,
-        span_encoder_config: Dict[str, int] = None,
+        contextual_embedding_dim: int = 768,
+        span_encoder_config: Union[None, Dict[str, int]] = None,
         margin: float = 0.2,
         decode_threshold: float = 0.0,
         loss_type: str = "margin",
@@ -515,7 +538,7 @@ class EntityLinkingWithCandidateMentions(EntityLinkingBase):
         include_null_embedding_in_dot_attention: bool = False,
         namespace: str = "entity",
         regularizer: RegularizerApplicator = None,
-    ):
+    ) -> None:
 
         super().__init__(
             vocab,
@@ -572,11 +595,11 @@ class EntityLinkingWithCandidateMentions(EntityLinkingBase):
             null_entity_id=null_entity_id,
         )
 
-    def get_metrics(self, reset: bool = False):
+    def get_metrics(self, reset: bool = False) -> Dict:
         metrics = super().get_metrics(reset)
         return metrics
 
-    def unfreeze(self, mode):
+    def unfreeze(self, mode: str) -> None:
         # don't hold an parameters directly, so do nothing
         self.disambiguator.unfreeze(mode)
 
@@ -588,8 +611,8 @@ class EntityLinkingWithCandidateMentions(EntityLinkingBase):
         candidate_entities: torch.Tensor,
         candidate_entity_priors: torch.Tensor,
         candidate_segment_ids: torch.Tensor,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> Dict:
 
         disambiguator_output = self.disambiguator(
             contextual_embeddings=contextual_embeddings,
@@ -627,7 +650,7 @@ class SolderedKG(Model):
         should_init_kg_to_bert_inverse: bool = True,
         freeze: bool = False,
         regularizer: RegularizerApplicator = None,
-    ):
+    ) -> None:
         super().__init__(vocab, regularizer)
 
         self.entity_linker = entity_linker
@@ -671,7 +694,7 @@ class SolderedKG(Model):
 
         self._freeze_all = freeze
 
-    def _init_kg_to_bert_projection(self):
+    def _init_kg_to_bert_projection(self) -> None:
         if not self.should_init_kg_to_bert_inverse:
             return
 
@@ -690,10 +713,10 @@ class SolderedKG(Model):
         self.kg_to_bert_projection.weight.data.copy_(torch.tensor(w_pseudo_inv))
         self.kg_to_bert_projection.bias.data.copy_(torch.tensor(b_pseudo_inv))
 
-    def get_metrics(self, reset=False):
+    def get_metrics(self, reset: bool = False) -> Dict:
         return self.entity_linker.get_metrics(reset)
 
-    def unfreeze(self, mode):
+    def unfreeze(self, mode: str) -> None:
         if self._freeze_all:
             for p in self.parameters():
                 p.requires_grad_(False)
@@ -722,8 +745,8 @@ class SolderedKG(Model):
         candidate_entities: torch.Tensor,
         candidate_entity_priors: torch.Tensor,
         candidate_segment_ids: torch.Tensor,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> Dict:
 
         linker_output = self.entity_linker(
             contextual_embeddings,
@@ -785,13 +808,13 @@ class KnowBert(BertPretrainedMetricsLoss):
         soldered_kgs: Dict[str, Model],
         soldered_layers: Dict[str, int],
         bert_model_name: str,
-        mode: str = None,
-        model_archive: str = None,
+        mode: Union[None, str] = None,
+        model_archive: Union[None, str] = None,
         strict_load_archive: bool = True,
         debug_cuda: bool = False,
-        remap_segment_embeddings: int = None,
+        remap_segment_embeddings: Union[None, int] = None,
         regularizer: RegularizerApplicator = None,
-    ):
+    ) -> None:
 
         super().__init__(vocab, regularizer)
 
@@ -814,7 +837,7 @@ class KnowBert(BertPretrainedMetricsLoss):
         # the last layer
         num_bert_layers = len(self.pretrained_bert.bert.encoder.layer)
         # the first element of the list is the index
-        self.layer_to_soldered_kg.append([num_bert_layers - 1, None])
+        self.layer_to_soldered_kg.append((num_bert_layers - 1, ""))
 
         if model_archive is not None:
             with tarfile.open(cached_path(model_archive), "r:gz") as fin:
@@ -843,7 +866,9 @@ class KnowBert(BertPretrainedMetricsLoss):
                 m.register_forward_hook(diagnose_forward_hook)
                 m.register_backward_hook(diagnose_backward_hook)
 
-    def _remap_embeddings(self, token_type_embeddings):
+    def _remap_embeddings(
+        self, token_type_embeddings: torch.Tensor
+    ) -> torch.nn.Embedding:
         embed_dim = token_type_embeddings.shape[1]
         if list(token_type_embeddings.shape) == [
             self.remap_segment_embeddings,
@@ -855,7 +880,7 @@ class KnowBert(BertPretrainedMetricsLoss):
         new_embeddings.weight.data.copy_(token_type_embeddings.data[0, :])
         return new_embeddings
 
-    def load_state_dict(self, state_dict, strict=True):
+    def load_state_dict(self, state_dict: Dict, strict: bool = True) -> None:
         if self.remap_segment_embeddings:
             # hack the embeddings!
             new_embeddings = self._remap_embeddings(
@@ -870,7 +895,7 @@ class KnowBert(BertPretrainedMetricsLoss):
         super().load_state_dict(state_dict, strict=strict)
 
     @staticmethod
-    def load_pretrained_model():
+    def load_pretrained_model() -> "KnowBert":
         model_archive = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz"
         vocab_archive = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/vocabulary_wordnet_wiki.tar.gz"
         vocab = Vocabulary.from_files(directory=vocab_archive)
@@ -889,7 +914,7 @@ class KnowBert(BertPretrainedMetricsLoss):
         )
 
     @staticmethod
-    def _load_soldered_kg_wiki(vocab):
+    def _load_soldered_kg_wiki(vocab: Vocabulary) -> SolderedKG:
         pretrained_embedding_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wiki_entity_linking/entities_glove_format.gz"
         span_encoder_config = {
             "hidden_size": 300,
@@ -928,7 +953,7 @@ class KnowBert(BertPretrainedMetricsLoss):
         )
 
     @staticmethod
-    def _load_soldered_kg_wordnet(vocab):
+    def _load_soldered_kg_wordnet(vocab: Vocabulary) -> SolderedKG:
         wordnet_embedding_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wordnet/wordnet_synsets_mask_null_vocab_embeddings_tucker_gensen.hdf5"
         wordnet_entity_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wordnet/entities.jsonl"
         wordnet_vocab_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/wordnet/wordnet_synsets_mask_null_vocab.txt"
@@ -968,7 +993,7 @@ class KnowBert(BertPretrainedMetricsLoss):
             span_attention_config=span_attention_config,
         )
 
-    def unfreeze(self):
+    def unfreeze(self) -> None:
         if self.mode == "entity_linking":
             # all parameters in BERT are fixed, just training the linker
             # linker specific params set below when calling soldered_kg.unfreeze
@@ -982,7 +1007,7 @@ class KnowBert(BertPretrainedMetricsLoss):
             module = getattr(self, key + "_soldered_kg")
             module.unfreeze(self.mode)
 
-    def get_metrics(self, reset: bool = False):
+    def get_metrics(self, reset: bool = False) -> Dict:
         metrics = super().get_metrics(reset)
 
         for key in self.soldered_kgs.keys():
@@ -995,13 +1020,13 @@ class KnowBert(BertPretrainedMetricsLoss):
 
     def forward(
         self,
-        tokens=None,
-        segment_ids=None,
-        candidates=None,
-        lm_label_ids=None,
-        next_sentence_label=None,
-        **kwargs,
-    ):
+        tokens: Dict,
+        segment_ids: torch.Tensor,
+        candidates: Dict,
+        lm_label_ids: Dict = {},
+        next_sentence_label: Union[None, torch.Tensor] = None,
+        **kwargs: Any,
+    ) -> Dict:
 
         knowbert_logger.debug("In KnowBERT forward")
         knowbert_logger.debug(f"tokens {tokens}")
@@ -1021,7 +1046,7 @@ class KnowBert(BertPretrainedMetricsLoss):
         )
         knowbert_logger.debug(f"Bert input: {contextual_embeddings}")
 
-        output = {}
+        output: Dict = {}
         start_layer_index = 0
         loss = 0.0
 
@@ -1043,7 +1068,7 @@ class KnowBert(BertPretrainedMetricsLoss):
             start_layer_index = end_layer_index
 
             # run the SolderedKG component
-            if soldered_kg_key is not None:
+            if soldered_kg_key != "":
                 soldered_kg = getattr(self, soldered_kg_key + "_soldered_kg")
                 soldered_kwargs = candidates[soldered_kg_key]
                 soldered_kwargs.update(kwargs)
@@ -1068,7 +1093,7 @@ class KnowBert(BertPretrainedMetricsLoss):
         # get the pooled CLS output
         pooled_output = self.pooler(contextual_embeddings)
 
-        if lm_label_ids is not None or next_sentence_label is not None:
+        if lm_label_ids or next_sentence_label is not None:
             # compute loss !
             masked_lm_loss, next_sentence_loss = self._compute_loss(
                 contextual_embeddings, pooled_output, lm_label_ids, next_sentence_label

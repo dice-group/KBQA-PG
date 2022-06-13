@@ -1,6 +1,10 @@
 import logging
+from typing import Any
+from typing import Dict
+from typing import Generator
 from typing import List
-from typing import Union
+from typing import Set
+from typing import Tuple
 
 from allennlp.common import Params
 from allennlp.common.file_utils import cached_path
@@ -16,7 +20,9 @@ import torch
 knowbert_logger = logging.getLogger("knowbert-logger.batchifier")
 
 
-def replace_candidates_with_mask_entity(candidates, spans_to_mask):
+def replace_candidates_with_mask_entity(
+    candidates: Dict, spans_to_mask: Set[Tuple[int, int]]
+) -> None:
     """
     candidates = key -> {'candidate_spans': ...}
     """
@@ -32,7 +38,7 @@ def replace_candidates_with_mask_entity(candidates, spans_to_mask):
             candidates[candidate_key]["candidate_entity_priors"][ind] = [1.0]
 
 
-def _extract_config_from_archive(model_archive):
+def _extract_config_from_archive(model_archive: str) -> Params:
     import tarfile
     import tempfile
     import os
@@ -44,7 +50,7 @@ def _extract_config_from_archive(model_archive):
     return config
 
 
-def _find_key(d, key):
+def _find_key(d: Dict, key: Any) -> Any:
     val = None
     stack = [d.items()]
     while len(stack) > 0 and val is None:
@@ -58,7 +64,7 @@ def _find_key(d, key):
     return val
 
 
-def build_tokenizer_and_candidate_generator():
+def build_tokenizer_and_candidate_generator() -> BertTokenizerAndCandidateGenerator:
     knowbert_logger.info("Building Generators")
     wiki_tokenizer_params = {
         "namespace": "entity_wiki",
@@ -104,11 +110,9 @@ class KnowBertBatchifier:
 
     def __init__(
         self,
-        model_archive,
-        batch_size=32,
-        masking_strategy=None,
-        wordnet_entity_file=None,
-        vocab_dir=None,
+        model_archive: str,
+        masking_strategy: str = "",
+        wordnet_entity_file: str = "",
     ):
 
         # get bert_tokenizer_and_candidate_generator
@@ -119,7 +123,7 @@ class KnowBertBatchifier:
             config["dataset_reader"].as_dict(), "tokenizer_and_candidate_generator"
         )
 
-        if wordnet_entity_file is not None:
+        if wordnet_entity_file:
             candidate_generator_params["entity_candidate_generators"]["wordnet"][
                 "entity_file"
             ] = wordnet_entity_file
@@ -134,19 +138,9 @@ class KnowBertBatchifier:
             build_tokenizer_and_candidate_generator()
         )
         knowbert_logger.info("Done building candidate generators")
-        # self.tokenizer_and_candidate_generator = TokenizerAndCandidateGenerator.\
-        #     from_params(Params(candidate_generator_params))
-
-        # self.tokenizer_and_candidate_generator = BertTokenizerAndCandidateGenerator(
-        #    entity_candidate_generators=,
-        #    entity_indexers=,
-        #    bert_model_type='bert-base-uncased',
-        #    do_lower_case=True,
-        #    whitespace_tokenize=
-        # )
         self.tokenizer_and_candidate_generator.whitespace_tokenize = False
 
-        assert masking_strategy is None or masking_strategy == "full_mask"
+        assert masking_strategy == "" or masking_strategy == "full_mask"
         self.masking_strategy = masking_strategy
 
         # need bert_tokenizer_and_candidate_generator
@@ -157,39 +151,28 @@ class KnowBertBatchifier:
             model_name="bert-base-uncased"
         )
         self.vocab.extend_from_vocab(self.entity_vocab)
-        # self.vocab = Vocabulary.from_params(vocab_params)
 
-        # self.iterator = DataIterator.from_params(
-        #     Params({"type": "basic", "batch_size": batch_size})
-        # )
-        # self.iterator.index_with(self.vocab)
-
-    def _replace_mask(self, s):
+    def _replace_mask(self, s: str) -> str:
         return s.replace("[MASK]", " [MASK] ")
 
     def iter_batches(
         self,
-        sentences_or_sentence_pairs: Union[List[str], List[List[str]]],
-        verbose=True,
-    ):
+        sentences: List[str],
+        verbose: bool = True,
+    ) -> Generator[Dict, None, None]:
         # create instances
         instances = []
-        for sentence_or_sentence_pair in sentences_or_sentence_pairs:
-            if isinstance(sentence_or_sentence_pair, list):
-                assert len(sentence_or_sentence_pair) == 2
-                tokens_candidates = self.tokenizer_and_candidate_generator.tokenize_and_generate_candidates(
-                    self._replace_mask(sentence_or_sentence_pair[0]),
-                    self._replace_mask(sentence_or_sentence_pair[1]),
+        for sentence in sentences:
+            tokens_candidates = (
+                self.tokenizer_and_candidate_generator.tokenize_and_generate_candidates(
+                    self._replace_mask(sentence)
                 )
-            else:
-                tokens_candidates = self.tokenizer_and_candidate_generator.tokenize_and_generate_candidates(
-                    self._replace_mask(sentence_or_sentence_pair)
-                )
+            )
 
             knowbert_logger.debug(f"token_candidates: {tokens_candidates}")
 
             if verbose:
-                knowbert_logger.debug(self._replace_mask(sentence_or_sentence_pair))
+                knowbert_logger.debug(self._replace_mask(sentence))
                 knowbert_logger.debug(tokens_candidates["tokens"])
 
             # now modify the masking if needed
@@ -206,7 +189,7 @@ class KnowBertBatchifier:
                     tokens_candidates["candidates"], spans_to_mask
                 )
 
-                # now mbert_vocabke sure the spans are actually masked
+                # now make sure the spans are actually masked
                 for key in tokens_candidates["candidates"].keys():
                     for span_to_mask in spans_to_mask:
                         found = False
@@ -228,8 +211,6 @@ class KnowBertBatchifier:
                             tokens_candidates["candidates"][key][
                                 "candidate_segment_ids"
                             ].append(0)
-                            # hack, assume only one sentence
-                            assert not isinstance(sentence_or_sentence_pair, list)
 
             fields = self.tokenizer_and_candidate_generator.convert_tokens_candidates_to_fields(
                 tokens_candidates
