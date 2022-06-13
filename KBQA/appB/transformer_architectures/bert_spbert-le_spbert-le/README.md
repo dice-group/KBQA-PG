@@ -1,7 +1,7 @@
 # BERT-SPBERT-LE-SPBERT-LE
-This model consists of an encoder BERT model for questions, an encoder SPBERT2-LE model for triples. The output tokens of 
-both models are concatenated and fed into the decoder. The decoder is another SPBERT2-LE instance.
-SPBERT2-LE uses the preprocessor in `KBQA/AppB/preprocessing/labeling_preprocessor` which we call
+This model consists of an encoder BERT model for questions, an encoder SPBERT-LE model for triples. The output tokens of 
+both models are concatenated and fed into the decoder. The decoder is another SPBERT-LE instance.
+SPBERT-LE uses the preprocessor in `KBQA/AppB/preprocessing/labeling_preprocessor` which we call
 label-encoder (LE).
 ## Installation
 
