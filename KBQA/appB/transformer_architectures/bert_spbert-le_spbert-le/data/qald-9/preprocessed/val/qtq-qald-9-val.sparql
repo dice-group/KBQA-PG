@@ -1,0 +1,81 @@
+select distinct variable: uri where bracket open variable: uri a dbo: monarch :end_label ; dbo: spouse :end_label variable: spouse bracket open variable: spouse dbo: birth place :end_label dbr: Germany :end_label bracket close union bracket open variable: spouse dbo: birth place :end_label variable: p . variable: p dbo: country :end_label dbr: Germany :end_label bracket close bracket close
+select distinct variable: uri where bracket open variable: uri rdf:type dbo: country :end_label . variable: uri dbp: official languages :end_label variable: language . bracket close order by desc ( count ( variable: language)) offset 0 limit 1
+select distinct variable: n where bracket open variable: uri dbp: satellite of :end_label dbr: Jupiter :end_label ; dbo: mass (g) :end_label variable: n bracket close order by asc ( variable: n) offset 0 limit 1
+select distinct variable: uri where bracket open dbr: Mount Everest :end_label dbo: located in area :end_label variable: uri . variable: uri a dbo: country :end_label bracket close
+select distinct variable: uri where bracket open dbr: Air China :end_label dbo: target airport :end_label variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: movie :end_label ; dbo: country :end_label dbr: Denmark :end_label bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: movie :end_label ; dbo: starring :end_label dbr: Alec Guinness :end_label ; dbo: release date :end_label variable: date bracket close order by desc ( variable: date) limit 1
+select variable: uri where bracket open dbr: Farmers' Almanac :end_label dbp: editor :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Headquarters of the United Nations :end_label dbo: location :end_label variable: uri . variable: uri a dbo: city :end_label bracket close
+select distinct variable: d where bracket open dbr: Boris Becker :end_label dbo: active years end date :end_label variable: d bracket close
+select distinct variable: uri where bracket open variable: uri dbo: author :end_label dbr: Ernest Hemingway :end_label ; dbo: literary genre :end_label dbr: Autobiography :end_label bracket close
+select distinct variable: uri where bracket open variable: uri dbp: government type :end_label dbr: Boroughs of New York City :end_label bracket close
+select distinct variable: uri where bracket open variable: uri dbp: river :end_label dbr: Ganges :end_label bracket close
+select distinct variable: uri where bracket open dbr: Hotel California :end_label dbo: writer :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Russia :end_label dbo: government type :end_label variable: uri bracket close
+select ( count ( distinct variable: uri) as variable: c) where bracket open variable: uri dbo: spoken in :end_label dbr: Colombia :end_label bracket close
+select distinct variable: uri where bracket open dbr: Chile Route 68 :end_label dbo: route end :end_label variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: book :end_label ; dbo: author :end_label dbr: William Goldman :end_label ; dbo: number of pages :end_label variable: x filter ( variable: x greater than 300 ) bracket close
+select distinct variable: d where bracket open dbr: Operation Overlord :end_label dbo: date :end_label variable: d bracket close
+select ( count ( distinct variable: uri) as variable: c) where bracket open dbr: Benjamin Franklin :end_label dbo: child :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Secret Intelligence Service :end_label dbo: headquarter :end_label variable: uri . variable: uri dbo: country :end_label dbr: United Kingdom :end_label bracket close
+ask where bracket open dbr: Elvis Presley :end_label dbo: child :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Paris :end_label dbo: mayor :end_label variable: x . variable: x dbo: party :end_label variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: television show :end_label ; dbo: creator (agent) :end_label dbr: Walt Disney :end_label bracket close
+select distinct variable: uri where bracket open dbr: Albert Einstein :end_label dbo: doctoral advisor :end_label variable: uri bracket close
+select distinct variable: n where bracket open dbr: Pulp Fiction :end_label dbo: budget ($) :end_label variable: n bracket close
+select distinct variable: uri where bracket open dbr: Utah :end_label dbp: timezone :end_label variable: x . variable: uri a yago:WikicatStatesOfTheUnitedStates ; dbp: timezone :end_label variable: x filter ( variable: uri not equal dbr: Utah :end_label ) bracket close
+select distinct variable: uri where bracket open dbr: Batman :end_label dbo: creator (agent) :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: DBpedia :end_label dbo: developer :end_label variable: uri bracket close
+select variable: ele where bracket open dbr: Düsseldorf Airport :end_label dbo: elevation (μ) :end_label variable: ele bracket close limit 1
+select distinct variable: uri where bracket open dbr: Forbes :end_label dbo: editor :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Poland :end_label dbo: population total :end_label variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: launch pad :end_label ; dbo: operator :end_label dbr: NASA :end_label bracket close
+select distinct variable: university where bracket open dbr: Angela Merkel :end_label dbo: alma mater :end_label variable: university bracket close
+select distinct variable: uri where bracket open dbr: Paris :end_label dbo: mayor :end_label variable: uri bracket close
+ask where bracket open dbr: Arnold Schwarzenegger :end_label dbo: alma mater :end_label variable: x . variable: x a dbo: university :end_label bracket close
+ask where bracket open dbr: James Bond :end_label dbo: spouse :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Melon de Bourgogne :end_label dbo: wine region :end_label variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri dbo: film director :end_label dbr: Stanley Kubrick :end_label bracket close
+select distinct variable: num where bracket open dbr: Canada :end_label dbo: largest city :end_label variable: city . variable: city dbo: population total :end_label variable: num bracket close
+select distinct variable: height where bracket open dbr: Claudia Schiffer :end_label dbo: height (μ) :end_label variable: height bracket close
+select variable: rank where bracket open dbr: Germany :end_label dbp: population density rank :end_label variable: rank bracket close
+select distinct variable: uri where bracket open dbr: Suriname :end_label dbo: official language :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Chocolate chip cookie :end_label dbo: ingredient :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Limerick Lake :end_label dbo: country :end_label variable: uri bracket close
+select distinct variable: uri where bracket open dbr: Rotterdam :end_label dbp: leader name :end_label variable: uri bracket close limit 1
+select distinct variable: uri where bracket open variable: uri dbo: type :end_label dbr: Nonprofit organization :end_label bracket open variable: uri dbo: location :end_label dbr: Switzerland :end_label bracket close union bracket open variable: uri dbo: location :end_label variable: x . variable: x dbo: country :end_label dbr: Switzerland :end_label bracket close bracket close
+select distinct variable: uri where bracket open dbr: Boston Red Sox :end_label dbp: ballpark :end_label variable: uri bracket close
+select distinct variable: string where bracket open dbr: University of Oxford :end_label dbo: official school colour :end_label variable: string bracket close
+select ( count ( distinct variable: uri) as variable: c) where bracket open variable: uri a dbo: airline :end_label bracket close
+select distinct variable: uri where bracket open dbr: Himalayas :end_label dbo: country :end_label variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri dbp: series :end_label dbr: The Sopranos :end_label ; dbp: season :end_label 1 bracket close
+ask where bracket open dbr:Battlestar_Galactica_%281978_TV_series%29 dbo: number of episodes :end_label variable: x . dbr:Battlestar_Galactica_%282004_TV_series%29 dbo: number of episodes :end_label variable: y filter ( variable: y greater than variable: x ) bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: political party :end_label ; dbo: country :end_label dbr: Greece :end_label ; dbo: ideology :end_label dbr: Pro-Europeanism :end_label bracket close
+select distinct variable: uri where bracket open dbr: Fort Knox :end_label dbo: location :end_label variable: uri . variable: uri dbo: country :end_label dbr: United States :end_label bracket close
+select distinct variable: uri where bracket open variable: uri dbo: birth place :end_label dbr: Vienna :end_label ; dbo: death place :end_label dbr: Berlin :end_label bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: brewery :end_label bracket open variable: uri dbo: location :end_label dbr: Australia :end_label bracket close union bracket open variable: uri dbo: location :end_label variable: x . variable: x dbo: country :end_label dbr: Australia :end_label bracket close bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: soccer club :end_label bracket open variable: uri dbo: ground :end_label dbr: Spain :end_label bracket close union bracket open variable: uri dbp: ground :end_label variable: ground filter regex( variable: ground, "Spain") bracket close bracket close
+select distinct variable: uri where bracket open variable: uri dbo: spoken in :end_label dbr: Estonia :end_label bracket close
+select variable: uri where bracket open variable: uri a dbo: pope :end_label . dbr: Vatican Media :end_label dbo: founded by :end_label variable: uri bracket close
+select distinct variable: carbs where bracket open dbr: Peanut butter :end_label dbp: carbs :end_label variable: carbs bracket close
+select distinct variable: num where bracket open dbr: Google :end_label dbo: number of employees :end_label variable: num bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: actor :end_label ; dbo: birth place :end_label dbr: Berlin :end_label bracket close
+select distinct variable: uri where bracket open variable: single dbo: album :end_label variable: uri ; rdfs:label "Last Christmas" language English bracket close
+select distinct variable: ni where bracket open dbr: Apple Inc :end_label . dbo: net income ($) :end_label variable: ni bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: Band :end_label ; dbo: genre :end_label dbr: Metalcore :end_label bracket open variable: uri dbo: home town :end_label dbr: Australia :end_label bracket close union bracket open variable: uri dbo: home town :end_label variable: h . variable: h dbo: country :end_label dbr: Australia :end_label bracket close bracket close
+ask where bracket open dbr: Marc Chagall :end_label dbp: ethnicity :end_label "Jewish" language English bracket close
+ask where bracket open dbr: Margaret Thatcher :end_label dbo: occupation :end_label dbr: Chemist :end_label bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: mountain :end_label ; dbo: elevation (μ) :end_label variable: elevation bracket close order by desc ( variable: elevation) offset 1 limit 1
+ask where bracket open variable: x dbo: inflow :end_label dbr: Isar :end_label ; a dbo: lake :end_label bracket close
+select distinct variable: uri where bracket open dbr: Mount McKinley :end_label dbo: Wikipage redirect :end_label variable: x . variable: x dbo: located in area :end_label variable: uri. variable: uri a yago:WikicatStatesOfTheUnitedStates bracket close
+select distinct variable: uri where bracket open dbr: Tel Aviv :end_label dbo: leader name :end_label variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri dbo: field :end_label dbr: Oceanography :end_label ; dbo: birth place :end_label dbr: Sweden :end_label bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: programming language :end_label ; dbo: influenced :end_label dbr: JavaScript :end_label bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: software :end_label . variable: company a dbo: company :end_label . variable: uri dbo: developer :end_label variable: company . variable: company dbp: foundation :end_label dbr: California :end_label bracket close
+select distinct variable: uri where bracket open dbr: Cat Stevens :end_label dbp: instrument :end_label variable: uri bracket close
+select ( count ( distinct variable: uri) as variable: c) where bracket open variable: uri a dbo: airline :end_label ; dbo: alliance :end_label dbr: Star Alliance :end_label bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: country :end_label ; dbo: official language :end_label variable: language bracket close group by variable: uri having ( count ( variable: language) greater than 2 )
+select distinct variable: uri where bracket open variable: uri a dbo: country :end_label . variable: cave a dbo: cave :end_label bracket open variable: cave dbo: location :end_label variable: uri bracket close union bracket open variable: cave dbo: location :end_label variable: loc . variable: loc dbo: country :end_label variable: uri bracket close bracket close group by variable: uri having ( count ( variable: cave) greater than 10 )
+select distinct variable: uri where bracket open variable: uri dbo: currency :end_label dbr: West African CFA franc :end_label bracket close
+select distinct variable: uri where bracket open variable: uri a dbo: holiday :end_label bracket close
