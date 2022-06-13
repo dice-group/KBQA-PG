@@ -7,7 +7,6 @@ from allennlp.common.file_utils import cached_path
 from allennlp.data import Batch
 from allennlp.data import Instance
 from allennlp.data import Vocabulary
-from KBQA.appB.transformer_architectures.kb.bert_pretraining_reader import replace_candidates_with_mask_entity
 from KBQA.appB.transformer_architectures.kb.bert_tokenizer_and_candidate_generator import BertTokenizerAndCandidateGenerator
 from KBQA.appB.transformer_architectures.kb.entity_linking import TokenCharactersIndexerTokenizer
 from KBQA.appB.transformer_architectures.kb.wiki_linking_util import WikiCandidateMentionGenerator
@@ -15,6 +14,22 @@ from KBQA.appB.transformer_architectures.kb.wordnet import WordNetCandidateMenti
 import torch
 
 knowbert_logger = logging.getLogger("knowbert-logger.batchifier")
+
+
+def replace_candidates_with_mask_entity(candidates, spans_to_mask):
+    """
+    candidates = key -> {'candidate_spans': ...}
+    """
+    for candidate_key in candidates.keys():
+        indices_to_mask = []
+        for k, candidate_span in enumerate(
+            candidates[candidate_key]["candidate_spans"]
+        ):
+            if tuple(candidate_span) in spans_to_mask:
+                indices_to_mask.append(k)
+        for ind in indices_to_mask:
+            candidates[candidate_key]["candidate_entities"][ind] = ["@@MASK@@"]
+            candidates[candidate_key]["candidate_entity_priors"][ind] = [1.0]
 
 
 def _extract_config_from_archive(model_archive):
@@ -44,7 +59,7 @@ def _find_key(d, key):
 
 
 def build_tokenizer_and_candidate_generator():
-
+    knowbert_logger.info("Building Generators")
     wiki_tokenizer_params = {
         "namespace": "entity_wiki",
         "tokenizer": {"type": "just_spaces"},

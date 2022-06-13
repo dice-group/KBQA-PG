@@ -23,7 +23,7 @@ class MeanReciprocalRank(Metric):
         self._sum += (reciprocal_rank * mask).sum().item()
         self._n += mask.sum().item()
 
-    def get_metric(self, reset:bool=False):
+    def get_metric(self, reset: bool = False):
         mrr = self._sum / (self._n + 1e-13)
         if reset:
             self.reset()

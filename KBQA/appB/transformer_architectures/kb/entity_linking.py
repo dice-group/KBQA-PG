@@ -57,9 +57,6 @@ Model component is split into several sub-components.
 # Should ideally do the original tokenization with the bert word splitter,
 # or if orginal annotation is word split already re-tokenize it.
 
-
-import copy
-
 from allennlp.common.registrable import Registrable
 from allennlp.data import DatasetReader
 from allennlp.data import Tokenizer
@@ -71,22 +68,6 @@ from allennlp.nn.regularizers import RegularizerApplicator
 from KBQA.appB.transformer_architectures.kb.common import F1Metric
 from KBQA.appB.transformer_architectures.kb.common import get_dtype_for_module
 import torch
-
-# import random
-
-# from allennlp.data import Token
-
-# from allennlp.data import Batch
-
-# from allennlp.data.fields import Field, TextField, ListField, SpanField, LabelField
-# from allennlp.data.instance import Instance
-
-# from allennlp.data.iterators import DataIterator
-
-# from kb.bert_tokenizer_and_candidate_generator import BertTokenizerAndCandidateGenerator
-# from kb.bert_pretraining_reader import BertTokenizerCandidateGeneratorMasker
-
-# from kb.dict_field import DictField
 
 
 @TokenIndexer.register("characters_tokenizer")
@@ -384,14 +365,3 @@ class EntityLinkingBase(Model):
         )
 
         return {"loss": loss}
-
-
-class StubbedCandidateGenerator:
-    # this is dangerous, we will stub out the candidate generator to do a look
-    # up operation from the known candidates
-
-    def set_cache(self, candidates):
-        self.cached_candidates = candidates
-
-    def get_mentions_raw_text(self, text, whitespace_tokenize=True):
-        return copy.deepcopy(self.cached_candidates[text])
