@@ -1,3 +1,4 @@
+"Text", "Query"
 Welche anderen Waffen hat der Erfinder der <A> entwickelt?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Weapon ; dbp_designer var_x sep_dot <A> dbp_designer var_x FILTER ( var_uri != <A> ) brack_close
 Welcher Staat in den USA hat die höchste Bevölkerungsdichte?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type yago_WikicatStatesOfTheUnitedStates ; dbp_densityrank var_rank brack_close ORDER BY ASC(var_rank) LIMIT 1
 Welche Monarchen waren mit jemand deutschem verheiratet?,SELECT DISTINCT var_uri WHERE brack_open var_uri rdf_type dbo_Monarch ; dbo_spouse var_spouse brack_open var_spouse dbo_birthPlace dbr_Germany brack_close UNION brack_open var_spouse dbo_birthPlace var_p sep_dot var_p dbo_country dbr_Germany brack_close brack_close
