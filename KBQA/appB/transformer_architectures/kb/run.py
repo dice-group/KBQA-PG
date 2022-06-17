@@ -30,8 +30,7 @@ import sys
 from KBQA.appB.transformer_architectures.kb.knowbert import KnowBert
 from KBQA.appB.transformer_architectures.kb.knowbert_utils import KnowBertBatchifier
 
-from app.bert_spbert_spbert.spbert.model import BertSeq2Seq     # modified
-from app.bert_spbert_spbert.spbert.model import Seq2Seq         # modified
+from KBQA.appB.transformer_architectures.kb.model import BertSeq2Seq     # modified
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
