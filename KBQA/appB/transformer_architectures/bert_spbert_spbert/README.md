@@ -10,3 +10,7 @@ Install python packages with
 ```
 pip install -r requirements.txt
 ```
+
+## Preprocessing
+The preprocessor of the original SPBERT model is included. `preprocess_qtq.sh` provides a pipeline to preprocess 
+datasets in qtq format.

@@ -26,6 +26,7 @@ import logging
 import os
 import random
 import re
+from pathlib import Path
 
 from model import BertSeq2Seq
 from model import Seq2Seq
@@ -427,6 +428,26 @@ def main():
     parser.add_argument(
         "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
     )
+    parser.add_argument(
+        "--load_bleu_file",
+        default="No",
+        type=str,
+        choices=["Yes", "No"],
+        help='Should an old bleu file from bleu_file_path be loaded. Defaults to "No".',
+    )
+    parser.add_argument(
+        "--bleu_file_path",
+        default="./output/bleu.csv",
+        type=str,
+        help='Path of file for storing bleu scores. Enable loading from this file with "--load_bleu_file Yes". Defaults'
+             ' to "./output/bleu.csv".',
+    )
+    parser.add_argument(
+        "--warmup_epochs",
+        default=0,
+        type=int,
+        help="In training, do not evaluate the model on the first <warmup_epochs> number of epochs.",
+    )
     # print arguments
     args = parser.parse_args()
     logger.info(args)
@@ -541,6 +562,12 @@ def main():
     elif args.n_gpu > 1:
         # multi-gpu training
         model = torch.nn.DataParallel(model)
+
+    # Create new bleu.csv file.
+    bleu_file_path = Path(args.bleu_file_path)
+    if args.load_bleu_file == "No":
+        if bleu_file_path.exists():
+            bleu_file_path.unlink()
 
     if args.do_train:
         # Prepare training data loader
@@ -681,7 +708,7 @@ def main():
                     scheduler.step()
                     global_step += 1
 
-            if args.do_eval and (epoch + 1) % args.save_inverval == 0:
+            if args.do_eval and (epoch + 1) % args.save_inverval == 0 and epoch >= args.warmup_epochs:
                 # Eval model with dev dataset
                 tr_loss = 0
                 nb_tr_examples, nb_tr_steps = 0, 0
@@ -775,6 +802,11 @@ def main():
                         f1.write(str(gold.idx) + "\t" + gold.target + "\n")
 
                 bl_score = corpus_bleu(label_str, pred_str) * 100
+                with open(bleu_file_path, "a") as file:
+                    if file.tell() == 0:
+                        file.write(f"{bl_score}")
+                    else:
+                        file.write(f"\n{bl_score}")
 
                 logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
                 logger.info("  " + "*" * 20)
