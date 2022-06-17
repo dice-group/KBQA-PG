@@ -209,11 +209,11 @@ def replace_entities_in_question_and_query_lcqald(dataset: list) -> list:
     for question, query in dataset:
         entities = query_dbspotlight(question, confidence=0.1)
         question_ph, query_ph = question, query
+        placeholder = 65
         if "Resources" in entities.keys():
             for entity in entities["Resources"]:
                 uri = entity["@URI"]
                 surface = entity["@surfaceForm"]
-                placeholder = 65
                 if uri in query_ph:
                     query_ph = query_ph.replace(uri, "<" + chr(placeholder) + ">")
                     question_ph = question_ph.replace(
