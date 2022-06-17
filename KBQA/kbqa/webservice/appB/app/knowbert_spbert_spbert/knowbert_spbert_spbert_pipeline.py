@@ -2,7 +2,8 @@
 from types import SimpleNamespace
 
 from app.base_pipeline import BasePipeline
-
+from KBQA.appB.transformer_architectures.kb.run import init, train, test, predict
+from app.postprocessing import postprocess_prediction
 
 class KnowBertSPBertSPBertPipeline(BasePipeline):
     """Pipeline for the KNOWBERT_SPBERT_SPBERT architecture."""
@@ -17,12 +18,16 @@ class KnowBertSPBertSPBertPipeline(BasePipeline):
             SPBERT.
         """
         super().__init__(arguments)
+        self.model, self.batcher, self.tokenizer, self.device = init(arguments)
 
-        # TODO add initialization of KnowBert
-        print(arguments)  # used to make the linters work, can be removed
+    def train_pipeline(self) -> None:
+        train(self.model, self.batcher, self.tokenizer, self.device, self.arguments)
+
+    def test_pipeline(self) -> None:
+        test(self.model, self.batcher, self.tokenizer, self.device, self.arguments)
 
     def predict_sparql_query(self, question: str) -> str:
-        """Precit a SPARQL query for a given question.
+        """Predict a SPARQL query for a given question using BERT_SPBERT_SPBERT.
 
         Parameters
         ----------
@@ -32,7 +37,11 @@ class KnowBertSPBertSPBertPipeline(BasePipeline):
         Returns
         -------
         str
-            Predicted SPARQL query for the question.
+            Predicted SPARQL query for the question from BERT_SPBERT_SPBERT.
         """
-        # TODO add prediction of KnowBert
-        return ""
+        predict(self.model, self.batcher, self.tokenizer, self.device, self.arguments)
+
+        query_pairs = postprocess_prediction()
+        query = query_pairs["0"]
+
+        return query

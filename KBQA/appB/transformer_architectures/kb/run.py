@@ -26,13 +26,16 @@ import logging
 import os
 import random
 import re
-
+import sys
+from KBQA.appB.transformer_architectures.kb.knowbert import KnowBert
 from KBQA.appB.transformer_architectures.kb.knowbert_utils import KnowBertBatchifier
-from KBQA.appB.transformer_architectures.kb.test_model import load_model
-from model import BertSeq2Seq
+
+from app.bert_spbert_spbert.spbert.model import BertSeq2Seq     # modified
+from app.bert_spbert_spbert.spbert.model import Seq2Seq         # modified
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.data import RandomSampler
 from torch.utils.data import SequentialSampler
@@ -58,7 +61,12 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %H:%M:%S",
     level=logging.INFO,
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('knowbert-logger')
+streamHandler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+streamHandler.setFormatter(formatter)
+logger.addHandler(streamHandler)
+logger.setLevel(logging.DEBUG)
 
 
 class Example:
@@ -96,7 +104,9 @@ def read_examples_without_target(source_file, triples_file):
     examples = []
     with open(source_file, encoding="utf-8") as source_f:
         with open(triples_file, encoding="utf-8") as triples_f:
-            for idx, (source, triples) in enumerate(zip(source_f, triples_f)):
+            for idx, (source, triples) in enumerate(
+                zip(source_f, triples_f)
+            ):
                 examples.append(
                     Example(
                         idx=idx,
@@ -106,6 +116,28 @@ def read_examples_without_target(source_file, triples_file):
                     )
                 )
     return examples
+
+
+class InputFeatures:
+    """A single training/test features for a example."""
+
+    def __init__(
+        self,
+        example_id,
+        source_ids,
+        triples_ids,
+        target_ids,
+        source_mask,
+        triples_mask,
+        target_mask,
+    ):
+        self.example_id = example_id
+        self.source_ids = source_ids
+        self.triples_ids = triples_ids
+        self.target_ids = target_ids
+        self.source_mask = source_mask
+        self.triples_mask = triples_mask
+        self.target_mask = target_mask
 
 
 class InputFeatures:
@@ -125,96 +157,13 @@ class InputFeatures:
         self.triples_mask = triples_mask
         self.target_mask = target_mask
 
-
 def replace_mask(text):
-    return text.replace("[MASK]", " [MASK] ")
-
-
-def convert_examples_to_tensordataset(
-    examples, tokenizer, knowbert_batchifier, args, stage=None
-):
-    batch = knowbert_batchifier.iter_batches([example.source for example in examples])
-    source_fields = next(batch)
-
-    source_fields["tokens"]["tokens"] = source_fields["tokens"]["tokens"]["tokens"]
-    source_fields["candidates"]["wiki"]["candidate_entities"]["ids"] = source_fields[
-        "candidates"
-    ]["wiki"]["candidate_entities"]["ids"]["token_characters"]
-
-    candidate_mask = (
-        source_fields["candidates"]["wiki"]["candidate_entities"]["ids"] > 0
-    ).type(torch.uint8)
-    source_fields["candidates"]["wiki"]["candidate_entities"]["ids"] -= candidate_mask
-    print(candidate_mask)
-
-    source_fields["candidates"]["wordnet"]["candidate_entities"]["ids"] = source_fields[
-        "candidates"
-    ]["wordnet"]["candidate_entities"]["ids"]["token_characters"]
-
-    candidate_mask = (
-        source_fields["candidates"]["wordnet"]["candidate_entities"]["ids"] > 0
-    ).type(torch.uint8)
-    source_fields["candidates"]["wordnet"]["candidate_entities"][
-        "ids"
-    ] -= candidate_mask
-
-    print(source_fields)
-    all_source_ids = source_fields["tokens"]["tokens"]
-    all_source_segment_ids = source_fields["segment_ids"]
-    print(all_source_ids)
-    print(all_source_segment_ids)
-    max_source_length = 32
-    padding_length = max(max_source_length - len(all_source_ids[0]), 0)
-    num_examples = len(all_source_ids)
-    if padding_length > 0:
-        all_source_ids = torch.cat(
-            (
-                all_source_ids,
-                torch.full(
-                    (num_examples, padding_length), fill_value=tokenizer.pad_token_id
-                ),
-            ),
-            dim=1,
-        )
-        all_source_segment_ids = torch.cat(
-            (
-                all_source_segment_ids,
-                torch.full((num_examples, padding_length), fill_value=0),
-            ),
-            dim=1,
-        )
-    all_source_mask = all_source_ids > 0
-
-    print(all_source_ids)
-    print(all_source_mask)
-    print(all_source_segment_ids)
-
-    all_source_wiki_candidate_priors = source_fields["candidates"]["wiki"][
-        "candidate_entity_priors"
-    ]
-    all_source_wiki_candidate_ids = source_fields["candidates"]["wiki"][
-        "candidate_entities"
-    ]["ids"]
-    all_source_wiki_candidate_spans = source_fields["candidates"]["wiki"][
-        "candidate_spans"
-    ]
-    all_source_wiki_candidate_segment_ids = source_fields["candidates"]["wiki"][
-        "candidate_segment_ids"
-    ]
-
-    all_source_wordnet_candidate_priors = source_fields["candidates"]["wordnet"][
-        "candidate_entity_priors"
-    ]
-    all_source_wordnet_candidate_ids = source_fields["candidates"]["wordnet"][
-        "candidate_entities"
-    ]["ids"]
-    all_source_wordnet_candidate_spans = source_fields["candidates"]["wordnet"][
-        "candidate_spans"
-    ]
-    all_source_wordnet_candidate_segment_ids = source_fields["candidates"]["wordnet"][
-        "candidate_segment_ids"
-    ]
-
+    return text.replace('[MASK]', ' [MASK] ')
+def convert_examples_to_features(examples, 
+                                 tokenizer, 
+                                 batcher,
+                                 args,
+                                 stage=None):
     features = []
     for example_index, example in enumerate(examples):
 
@@ -271,15 +220,51 @@ def convert_examples_to_tensordataset(
             )
         )
 
-    all_triples_ids = torch.tensor([f.triples_ids for f in features], dtype=torch.long)
+    all_triples_ids = torch.tensor(
+        [f.triples_ids for f in features], dtype=torch.long
+    )
     all_triples_mask = torch.tensor(
         [f.triples_mask for f in features], dtype=torch.long
     )
-    all_target_ids = torch.tensor([f.target_ids for f in features], dtype=torch.long)
-    all_target_mask = torch.tensor([f.target_mask for f in features], dtype=torch.long)
+    all_target_ids = torch.tensor(
+        [f.target_ids for f in features], dtype=torch.long
+    )
+    all_target_mask = torch.tensor(
+        [f.target_mask for f in features], dtype=torch.long
+    )
 
-    train_data = TensorDataset(
+    batch = batcher.iter_batches([example.source for example in examples])
+    source_fields = next(batch)
+
+    logger.debug(source_fields)
+    all_source_ids = source_fields['tokens']['tokens']
+    all_source_segment_ids = source_fields['segment_ids']
+    logger.debug(all_source_ids)
+    logger.debug(all_source_segment_ids)
+    padding_length = max(args.max_source_length - len(all_source_ids[0]), 0)
+    num_examples = len(all_source_ids)
+    if padding_length > 0:
+        source_ids = torch.cat((all_source_ids, torch.full((num_examples, padding_length), fill_value=tokenizer_uncased.pad_token_id)), dim=1)
+        source_segment_ids = torch.cat((all_source_segment_ids, torch.full((num_examples, padding_length), fill_value=0)), dim=1)
+    all_source_mask = all_source_ids > 0
+
+    logger.debug(all_source_ids)
+    logger.debug(all_source_mask)
+    logger.debug(all_source_segment_ids)
+
+    all_source_wiki_candidate_priors = source_fields['candidates']['wiki']['candidate_entity_priors']
+    all_source_wiki_candidate_ids = source_fields['candidates']['wiki']['candidate_entities']['ids']
+    all_source_wiki_candidate_spans = source_fields['candidates']['wiki']['candidate_spans']
+    all_source_wiki_candidate_segment_ids = source_fields['candidates']['wiki']['candidate_segment_ids']
+
+    all_source_wordnet_candidate_priors = source_fields['candidates']['wordnet']['candidate_entity_priors']
+    all_source_wordnet_candidate_ids = source_fields['candidates']['wordnet']['candidate_entities']['ids']
+    all_source_wordnet_candidate_spans = source_fields['candidates']['wordnet']['candidate_spans']
+    all_source_wordnet_candidate_segment_ids = source_fields['candidates']['wordnet']['candidate_segment_ids']
+
+    all_features = (
         all_source_ids,
+        all_source_segment_ids,
         all_source_mask,
         all_source_wiki_candidate_priors,
         all_source_wiki_candidate_ids,
@@ -294,7 +279,8 @@ def convert_examples_to_tensordataset(
         all_target_ids,
         all_target_mask,
     )
-    return train_data
+
+    return all_features
 
 
 def set_seed(seed=42):
@@ -306,219 +292,229 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True
 
 
+# ------------------------------------- start inlining -------------------------------------
 # noinspection SpellCheckingInspection
-def main():
-    parser = argparse.ArgumentParser()
+# def main():     # modified
+parser = argparse.ArgumentParser()
 
-    # Required parameters
-    parser.add_argument(
-        "--encoder_model_name_or_path",
-        default=None,
-        type=str,
-        required=True,
-        help="Path to pre-trained model: e.g. roberta-base",
-    )
-    parser.add_argument(
-        "--decoder_model_name_or_path",
-        default=None,
-        type=str,
-        required=True,
-        help="Path to pre-trained model: e.g. roberta-base",
-    )
+## Required parameters
+parser.add_argument(
+    "--encoder_model_name_or_path",
+    default=None,
+    type=str,
+    required=True,
+    help="Path to pre-trained model: e.g. roberta-base",
+)
+parser.add_argument(
+    "--decoder_model_name_or_path",
+    default=None,
+    type=str,
+    required=True,
+    help="Path to pre-trained model: e.g. roberta-base",
+)
 
-    # Other parameters
-    parser.add_argument(
-        "--load_model_checkpoint",
-        default="Dynamic",
-        type=str,
-        choices=["Yes", "No"],
-        help='Should the model weights at load_model_path be loaded. Defaults to "No" in training and "Yes" in '
-        "testing",
-    )
-    parser.add_argument(
-        "--load_model_path",
-        default="./output/checkpoint-best-bleu/pytorch_model.bin",
-        type=str,
-        help="Path to trained model: Should contain the .bin files",
-    )
-    parser.add_argument(
-        "--model_type",
-        default="bert",
-        type=str,
-        help="Model type: e.g. roberta",
-    )
-    parser.add_argument(
-        "--model_architecture",
-        default="bert2bert",
-        type=str,
-        help="Model architecture: e.g. bert2bert, bert2rnd",
-    )
-    parser.add_argument(
-        "--output_dir",
-        default="./output/",
-        type=str,
-        help="The output directory where the model predictions and checkpoints will be written.",
-    )
-    parser.add_argument(
-        "--train_filename",
-        default=None,
-        type=str,
-        help="The train filename. Should contain the .jsonl files for this task.",
-    )
-    parser.add_argument(
-        "--dev_filename",
-        default=None,
-        type=str,
-        help="The dev filename.",
-    )
-    parser.add_argument(
-        "--test_filename",
-        default=None,
-        type=str,
-        help="The test filename.",
-    )
-    parser.add_argument(
-        "--predict_filename",
-        default=None,
-        type=str,
-        help="The prediction filename.",
-    )
-    parser.add_argument(
-        "--source",
-        default="en",
-        type=str,
-        help="The source language (for file extension)",
-    )
-    parser.add_argument(
-        "--target",
-        default="sparql",
-        type=str,
-        help="The target language (for file extension)",
-    )
-    parser.add_argument(
-        "--config_name",
-        default="",
-        type=str,
-        help="Pretrained config name or path if not the same as model_name",
-    )
-    parser.add_argument(
-        "--tokenizer_name",
-        default="",
-        type=str,
-        help="Pretrained tokenizer name or path if not the same as model_name",
-    )
-    parser.add_argument(
-        "--max_source_length",
-        default=64,
-        type=int,
-        help="The maximum total source sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
-    parser.add_argument(
-        "--max_triples_length",
-        default=128,
-        type=int,
-        help="The maximum total triples sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
-    parser.add_argument(
-        "--max_target_length",
-        default=32,
-        type=int,
-        help="The maximum total target sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
+## Other parameters
+parser.add_argument(
+    "--knowbert_batchifier_config_path",
+    default="https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz",
+    type=str,
+    required=True,
+    help="Path to Knowbert model containing config for Knowbert batchifier",
+)
+parser.add_argument(
+    "--load_model_checkpoint",
+    default='Dynamic',
+    type=str,
+    choices=['Yes', 'No'],
+    help="Should the model weights at load_model_path be loaded. Defaults to \"No\" in training and \"Yes\" in "
+         "testing",
+)
+parser.add_argument(
+    "--load_model_path",
+    default="./output/checkpoint-best-bleu/pytorch_model.bin",
+    type=str,
+    help="Path to trained model: Should contain the .bin files",
+)
+parser.add_argument(
+    "--model_type",
+    default="bert",
+    type=str,
+    help="Model type: e.g. roberta",
+)
+parser.add_argument(
+    "--model_architecture",
+    default='bert2bert',
+    type=str,
+    help="Model architecture: e.g. bert2bert, bert2rnd",
+)
+parser.add_argument(
+    "--output_dir",
+    default="./output/",
+    type=str,
+    help="The output directory where the model predictions and checkpoints will be written.",
+)
+parser.add_argument(
+    "--train_filename",
+    default=None,
+    type=str,
+    help="The train filename. Should contain the .jsonl files for this task.",
+)
+parser.add_argument(
+    "--dev_filename",
+    default=None,
+    type=str,
+    help="The dev filename.",
+)
+parser.add_argument(
+    "--test_filename",
+    default=None,
+    type=str,
+    help="The test filename.",
+)
+parser.add_argument(
+    "--predict_filename",
+    default=None,
+    type=str,
+    help="The prediction filename.",
+)
+parser.add_argument(
+    "--source",
+    default="en",
+    type=str,
+    help="The source language (for file extension)",
+)
+parser.add_argument(
+    "--target",
+    default="sparql",
+    type=str,
+    help="The target language (for file extension)",
+)
+parser.add_argument(
+    "--config_name",
+    default="",
+    type=str,
+    help="Pretrained config name or path if not the same as model_name",
+)
+parser.add_argument(
+    "--tokenizer_name",
+    default="",
+    type=str,
+    help="Pretrained tokenizer name or path if not the same as model_name",
+)
+parser.add_argument(
+    "--max_source_length",
+    default=64,
+    type=int,
+    help="The maximum total source sequence length after tokenization. Sequences longer "
+    "than this will be truncated, sequences shorter will be padded.",
+)
+parser.add_argument(
+    "--max_triples_length",
+    default=128,
+    type=int,
+    help="The maximum total triples sequence length after tokenization. Sequences longer "
+         "than this will be truncated, sequences shorter will be padded.",
+)
+parser.add_argument(
+    "--max_target_length",
+    default=32,
+    type=int,
+    help="The maximum total target sequence length after tokenization. Sequences longer "
+    "than this will be truncated, sequences shorter will be padded.",
+)
 
-    parser.add_argument(
-        "--do_train", action="store_true", help="Whether to run training."
-    )
-    parser.add_argument(
-        "--do_eval", action="store_true", help="Whether to run eval on the dev set."
-    )
-    parser.add_argument(
-        "--do_test", action="store_true", help="Whether to run test on the test set."
-    )
-    parser.add_argument(
-        "--do_predict",
-        action="store_true",
-        help="Whether to run prediction on the predict set.",
-    )
-    parser.add_argument(
-        "--do_lower_case",
-        action="store_true",
-        help="Set this flag if you are using an uncased model.",
-    )
-    parser.add_argument(
-        "--no_cuda", action="store_true", help="Avoid using CUDA when available"
-    )
+parser.add_argument(
+    "--do_train", action="store_true", help="Whether to run training."
+)
+parser.add_argument(
+    "--do_eval", action="store_true", help="Whether to run eval on the dev set."
+)
+parser.add_argument(
+    "--do_test", action="store_true", help="Whether to run test on the test set."
+)
+parser.add_argument(
+    "--do_predict", action="store_true", help="Whether to run prediction on the predict set."
+)
+parser.add_argument(
+    "--do_lower_case",
+    action="store_true",
+    help="Set this flag if you are using an uncased model.",
+)
+parser.add_argument(
+    "--no_cuda", action="store_true", help="Avoid using CUDA when available"
+)
 
-    parser.add_argument(
-        "--train_batch_size",
-        default=8,
-        type=int,
-        help="Batch size per GPU/CPU for training.",
-    )
-    parser.add_argument(
-        "--eval_batch_size",
-        default=8,
-        type=int,
-        help="Batch size per GPU/CPU for evaluation.",
-    )
-    parser.add_argument(
-        "--gradient_accumulation_steps",
-        type=int,
-        default=1,
-        help="Number of updates steps to accumulate before performing a backward/update pass.",
-    )
-    parser.add_argument(
-        "--learning_rate",
-        default=5e-5,
-        type=float,
-        help="The initial learning rate for Adam.",
-    )
-    parser.add_argument(
-        "--beam_size", default=10, type=int, help="beam size for beam search"
-    )
-    parser.add_argument(
-        "--weight_decay", default=0.0, type=float, help="Weight deay if we apply some."
-    )
-    parser.add_argument(
-        "--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer."
-    )
-    parser.add_argument(
-        "--max_grad_norm", default=1.0, type=float, help="Max gradient norm."
-    )
-    parser.add_argument(
-        "--num_train_epochs",
-        default=3,
-        type=int,
-        help="Total number of training epochs to perform.",
-    )
-    parser.add_argument(
-        "--max_steps",
-        default=-1,
-        type=int,
-        help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
-    )
-    parser.add_argument("--eval_steps", default=-1, type=int, help="")
-    parser.add_argument("--train_steps", default=-1, type=int, help="")
-    parser.add_argument(
-        "--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps."
-    )
-    parser.add_argument(
-        "--local_rank",
-        type=int,
-        default=-1,
-        help="For distributed training: local_rank",
-    )
-    parser.add_argument(
-        "--seed", type=int, default=42, help="random seed for initialization"
-    )
-    parser.add_argument(
-        "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
-    )
-    # print arguments
-    args = parser.parse_args()
+parser.add_argument(
+    "--train_batch_size",
+    default=8,
+    type=int,
+    help="Batch size per GPU/CPU for training.",
+)
+parser.add_argument(
+    "--eval_batch_size",
+    default=8,
+    type=int,
+    help="Batch size per GPU/CPU for evaluation.",
+)
+parser.add_argument(
+    "--gradient_accumulation_steps",
+    type=int,
+    default=1,
+    help="Number of updates steps to accumulate before performing a backward/update pass.",
+)
+parser.add_argument(
+    "--learning_rate",
+    default=5e-5,
+    type=float,
+    help="The initial learning rate for Adam.",
+)
+parser.add_argument(
+    "--beam_size", default=10, type=int, help="beam size for beam search"
+)
+parser.add_argument(
+    "--weight_decay", default=0.0, type=float, help="Weight deay if we apply some."
+)
+parser.add_argument(
+    "--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer."
+)
+parser.add_argument(
+    "--max_grad_norm", default=1.0, type=float, help="Max gradient norm."
+)
+parser.add_argument(
+    "--num_train_epochs",
+    default=3,
+    type=int,
+    help="Total number of training epochs to perform.",
+)
+parser.add_argument(
+    "--max_steps",
+    default=-1,
+    type=int,
+    help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
+)
+parser.add_argument("--eval_steps", default=-1, type=int, help="")
+parser.add_argument("--train_steps", default=-1, type=int, help="")
+parser.add_argument(
+    "--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps."
+)
+parser.add_argument(
+    "--local_rank",
+    type=int,
+    default=-1,
+    help="For distributed training: local_rank",
+)
+parser.add_argument(
+    "--seed", type=int, default=42, help="random seed for initialization"
+)
+parser.add_argument(
+    "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
+)
+# print arguments
+# args = parser.parse_args()      # modified
+
+
+def init(args):
+
     logger.info(args)
 
     # Setup CUDA, GPU & distributed training
@@ -560,10 +556,13 @@ def main():
     config = config_class.from_pretrained(
         args.config_name if args.config_name else args.encoder_model_name_or_path
     )
-    encoder = load_model()
+    encoder = KnowBert.load_pretrained_model()
+    batcher = KnowBertBatchifier(args.knowbert_batchifier_config_path)
 
     # Build triple encoder.
-    triple_encoder_config = BertConfig.from_pretrained(args.decoder_model_name_or_path)
+    triple_encoder_config = BertConfig.from_pretrained(
+        args.decoder_model_name_or_path
+    )
     triple_encoder = BertModel.from_pretrained(
         args.decoder_model_name_or_path, config=triple_encoder_config
     )
@@ -571,20 +570,20 @@ def main():
     # Build decoder and model.
     if args.model_architecture == "bert2rnd":
         assert False, "Not implemented yet."
-        # decoder_layer = nn.TransformerDecoderLayer(
-        #     d_model=config.hidden_size, nhead=config.num_attention_heads
-        # )
-        # decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
-        # model = Seq2Seq(
-        #     encoder=encoder,
-        #     decoder=decoder,
-        #     config=config,
-        #     beam_size=args.beam_size,
-        #     max_length=args.max_target_length,
-        #     sos_id=tokenizer.cls_token_id,
-        #     eos_id=tokenizer.sep_token_id,
-        #     device=device,
-        # )
+            # decoder_layer = nn.TransformerDecoderLayer(
+            #     d_model=config.hidden_size, nhead=config.num_attention_heads
+            # )
+            # decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
+            # model = Seq2Seq(
+            #     encoder=encoder,
+            #     decoder=decoder,
+            #     config=config,
+            #     beam_size=args.beam_size,
+            #     max_length=args.max_target_length,
+            #     sos_id=tokenizer.cls_token_id,
+            #     eos_id=tokenizer.sep_token_id,
+            #     device=device,
+            # )
     elif args.model_architecture == "bert2bert":
         decoder_config = BertConfig.from_pretrained(
             args.config_name if args.config_name else args.decoder_model_name_or_path
@@ -603,21 +602,15 @@ def main():
             max_length=args.max_target_length,
             sos_id=tokenizer.cls_token_id,
             eos_id=tokenizer.sep_token_id,
-            device=device,
+            device=device
         )
-        archive_file = "https://allennlp.s3-us-west-2.amazonaws.com/knowbert/models/knowbert_wiki_wordnet_model.tar.gz"
-        knowbert_batchifier = KnowBertBatchifier(archive_file)
-    elif args.model_architecture == "knowbert2bert":
-        pass
     else:
         raise Exception("Model architecture is not valid.")
 
     # Load model checkpoint.
-    if args.load_model_checkpoint == "Yes" or (
-        args.load_model_checkpoint == "Dynamic" and args.do_test
-    ):
+    if args.load_model_checkpoint == 'Yes' or (args.load_model_checkpoint == 'Dynamic' and args.do_test):
         logger.info("reload model from {}".format(args.load_model_path))
-        model.load_state_dict(torch.load(args.load_model_path))
+        model.load_state_dict(torch.load(args.load_model_path, map_location=torch.device('cpu')))
 
     model.to(device)
     if args.local_rank != -1:
@@ -634,81 +627,203 @@ def main():
         # multi-gpu training
         model = torch.nn.DataParallel(model)
 
-    if args.do_train:
-        # Prepare training data loader
-        train_examples = read_examples(
-            args.train_filename + "." + args.source,
-            args.train_filename + ".triple",
-            args.train_filename + "." + args.target,
-        )
-        train_data = convert_examples_to_tensordataset(
-            train_examples, tokenizer, knowbert_batchifier, args, stage="train"
-        )
+    return model, batcher, tokenizer, device
 
-        if args.local_rank == -1:
-            train_sampler = RandomSampler(train_data)
-        else:
-            train_sampler = DistributedSampler(train_data)
-        train_dataloader = DataLoader(
-            train_data,
-            sampler=train_sampler,
-            batch_size=args.train_batch_size // args.gradient_accumulation_steps,
-        )
+# ------------------------------------- end inlining -------------------------------------
 
-        # Prepare optimizer and schedule (linear warmup and decay)
-        no_decay = ["bias", "LayerNorm.weight"]
-        optimizer_grouped_parameters = [
-            {
-                "params": [
-                    p
-                    for n, p in model.named_parameters()
-                    if not any(nd in n for nd in no_decay)
-                ],
-                "weight_decay": args.weight_decay,
-            },
-            {
-                "params": [
-                    p
-                    for n, p in model.named_parameters()
-                    if any(nd in n for nd in no_decay)
-                ],
-                "weight_decay": 0.0,
-            },
-        ]
-        t_total = (
-            len(train_dataloader)
-            // args.gradient_accumulation_steps
-            * args.num_train_epochs
-        )
-        optimizer = AdamW(
-            optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon
-        )
-        scheduler = get_linear_schedule_with_warmup(
-            optimizer, num_warmup_steps=int(t_total * 0.1), num_training_steps=t_total
-        )
+def train(model, batcher, tokenizer, device, args):    # modified
+    # Prepare training data loader
+    train_examples = read_examples(
+        args.train_filename + "." + args.source,
+        args.train_filename + ".triple",
+        args.train_filename + "." + args.target,
+    )
+    all_features = convert_examples_to_features(
+        train_examples,
+        tokenizer,
+        batcher,
+        args,
+        stage="train"
+    )
 
-        # Start training
-        logger.info("***** Running training *****")
-        logger.info("  Num examples = %d", len(train_examples))
-        logger.info("  Batch size = %d", args.train_batch_size)
-        logger.info("  Num epoch = %d", args.num_train_epochs)
+    train_data = TensorDataset(
+        *all_features
+    )
 
-        model.train()
-        dev_dataset = {}
-        nb_tr_examples, nb_tr_steps, tr_loss, global_step, best_bleu, best_loss = (
-            0,
-            0,
-            0,
-            0,
-            -1,
-            1e6,
-        )
-        for epoch in range(args.num_train_epochs):
-            bar = tqdm(train_dataloader, total=len(train_dataloader))
-            for batch in bar:
+    if args.local_rank == -1:
+        train_sampler = RandomSampler(train_data)
+    else:
+        train_sampler = DistributedSampler(train_data)
+    train_dataloader = DataLoader(
+        train_data,
+        sampler=train_sampler,
+        batch_size=args.train_batch_size // args.gradient_accumulation_steps,
+    )
+
+    num_train_optimization_steps = args.train_steps
+
+    # Prepare optimizer and schedule (linear warmup and decay)
+    no_decay = ["bias", "LayerNorm.weight"]
+    optimizer_grouped_parameters = [
+        {
+            "params": [
+                p
+                for n, p in model.named_parameters()
+                if not any(nd in n for nd in no_decay)
+            ],
+            "weight_decay": args.weight_decay,
+        },
+        {
+            "params": [
+                p
+                for n, p in model.named_parameters()
+                if any(nd in n for nd in no_decay)
+            ],
+            "weight_decay": 0.0,
+        },
+    ]
+    t_total = (
+        len(train_dataloader)
+        // args.gradient_accumulation_steps
+        * args.num_train_epochs
+    )
+    optimizer = AdamW(
+        optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon
+    )
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer, num_warmup_steps=int(t_total * 0.1), num_training_steps=t_total
+    )
+
+    # Start training
+    logger.info("***** Running training *****")
+    logger.info("  Num examples = %d", len(train_examples))
+    logger.info("  Batch size = %d", args.train_batch_size)
+    logger.info("  Num epoch = %d", args.num_train_epochs)
+
+    model.train()
+    dev_dataset = {}
+    nb_tr_examples, nb_tr_steps, tr_loss, global_step, best_bleu, best_loss = (
+        0,
+        0,
+        0,
+        0,
+        -1,
+        1e6,
+    )
+    for epoch in range(args.num_train_epochs):
+        bar = tqdm(train_dataloader, total=len(train_dataloader))
+        for batch in bar:
+            logger.debug(batch)
+            batch = tuple(t.to(device) for t in batch)
+            (
+                source_ids,
+                source_segment_ids,
+                source_mask,
+                source_wiki_candidate_priors,
+                source_wiki_candidate_ids,
+                source_wiki_candidate_spans,
+                source_wiki_candidate_segment_ids,
+                source_wordnet_candidate_priors,
+                source_wordnet_candidate_ids,
+                source_wordnet_candidate_spans,
+                source_wordnet_candidate_segment_ids,
+                triples_ids,
+                triples_mask,
+                target_ids,
+                target_mask
+            ) = batch
+
+            source_candidates = {
+                'wiki' : {
+                    'candidate_entity_priors' : source_wiki_candidate_priors,
+                    'candidate_entities' : {'ids' : source_wiki_candidate_ids},
+                    'candidate_spans' : source_wiki_candidate_spans,
+                    'candidate_segment_ids' : source_wiki_candidate_segment_ids
+                },
+                'wordnet' : {
+                    'candidate_entity_priors' : source_wordnet_candidate_priors,
+                    'candidate_entities' : {'ids' : source_wordnet_candidate_ids},
+                    'candidate_spans' : source_wordnet_candidate_spans,
+                    'candidate_segment_ids' : source_wordnet_candidate_segment_ids
+                }
+            }
+
+            tokens = {'tokens' : source_ids}
+            loss, _, _ = model(
+                source_ids=tokens,
+                source_segment_ids=source_segment_ids,
+                source_mask=source_mask,
+                source_candidates=source_candidates,
+                triples_ids=triples_ids,
+                triples_mask=triples_mask,
+                target_ids=target_ids,
+                target_mask=target_mask,
+            )
+
+            if args.n_gpu > 1:
+                loss = loss.mean()  # mean() to average on multi-gpu.
+            if args.gradient_accumulation_steps > 1:
+                loss = loss / args.gradient_accumulation_steps
+            tr_loss += loss.item()
+            train_loss = round(
+                tr_loss * args.gradient_accumulation_steps / (nb_tr_steps + 1), 4
+            )
+            bar.set_description("epoch {} loss {}".format(epoch, train_loss))
+            nb_tr_examples += source_ids.size(0)
+            nb_tr_steps += 1
+            loss.backward()
+
+            if (nb_tr_steps + 1) % args.gradient_accumulation_steps == 0:
+                # Update parameters
+                optimizer.step()
+                optimizer.zero_grad()
+                scheduler.step()
+                global_step += 1
+
+        if args.do_eval and (epoch + 1) % args.save_inverval == 0:
+            # Eval model with dev dataset
+            tr_loss = 0
+            nb_tr_examples, nb_tr_steps = 0, 0
+            eval_flag = False
+
+            # Calculate bleu
+            if "dev_bleu" in dev_dataset:
+                eval_examples, eval_data = dev_dataset["dev_bleu"]
+            else:
+                eval_examples = read_examples(
+                    args.dev_filename + "." + args.source,
+                    args.dev_filename + ".triple",
+                    args.dev_filename + "." + args.target,
+                )
+                eval_examples = random.sample(
+                    eval_examples, min(1000, len(eval_examples))
+                )
+
+                all_eval_features = convert_examples_to_features(
+                    eval_examples,
+                    tokenizer,
+                    batcher,
+                    args,
+                    stage="test"
+                )
+
+                eval_data = TensorDataset(
+                    *all_eval_features
+                )
+                dev_dataset["dev_bleu"] = eval_examples, eval_data
+
+            eval_sampler = SequentialSampler(eval_data)
+            eval_dataloader = DataLoader(
+                eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size
+            )
+
+            model.eval()
+            p = []
+            for batch in eval_dataloader:
                 batch = tuple(t.to(device) for t in batch)
                 (
                     source_ids,
+                    source_segment_ids,
                     source_mask,
                     source_wiki_candidate_priors,
                     source_wiki_candidate_ids,
@@ -721,210 +836,30 @@ def main():
                     triples_ids,
                     triples_mask,
                     target_ids,
-                    target_mask,
+                    target_mask
                 ) = batch
-
                 source_candidates = {
-                    "wiki": {
-                        "candidate_entity_priors": source_wiki_candidate_priors,
-                        "candidate_entities": {"ids": source_wiki_candidate_ids},
-                        "candidate_spans": source_wiki_candidate_spans,
-                        "candidate_segment_ids": source_wiki_candidate_segment_ids,
+                    'wiki' : {
+                        'candidate_entity_priors' : source_wiki_candidate_priors,
+                        'candidate_entities' : {'ids' : source_wiki_candidate_ids},
+                        'candidate_spans' : source_wiki_candidate_spans,
+                        'candidate_segment_ids' : source_wiki_candidate_segment_ids
                     },
-                    "wordnet": {
-                        "candidate_entity_priors": source_wordnet_candidate_priors,
-                        "candidate_entities": {"ids": source_wordnet_candidate_ids},
-                        "candidate_spans": source_wordnet_candidate_spans,
-                        "candidate_segment_ids": source_wordnet_candidate_segment_ids,
-                    },
+                    'wordnet' : {
+                        'candidate_entity_priors' : source_wordnet_candidate_priors,
+                        'candidate_entities' : {'ids' : source_wordnet_candidate_ids},
+                        'candidate_spans' : source_wordnet_candidate_spans,
+                        'candidate_segment_ids' : source_wordnet_candidate_segment_ids
+                    }
                 }
 
-                loss, _, _ = model(
-                    source_ids=source_ids,
-                    source_mask=source_mask,
-                    source_candidates=source_candidates,
-                    triples_ids=triples_ids,
-                    triples_mask=triples_mask,
-                    target_ids=target_ids,
-                    target_mask=target_mask,
-                )
-
-                if args.n_gpu > 1:
-                    loss = loss.mean()  # mean() to average on multi-gpu.
-                if args.gradient_accumulation_steps > 1:
-                    loss = loss / args.gradient_accumulation_steps
-                tr_loss += loss.item()
-                train_loss = round(
-                    tr_loss * args.gradient_accumulation_steps / (nb_tr_steps + 1), 4
-                )
-                bar.set_description("epoch {} loss {}".format(epoch, train_loss))
-                nb_tr_examples += source_ids.size(0)
-                nb_tr_steps += 1
-                loss.backward()
-
-                if (nb_tr_steps + 1) % args.gradient_accumulation_steps == 0:
-                    # Update parameters
-                    optimizer.step()
-                    optimizer.zero_grad()
-                    scheduler.step()
-                    global_step += 1
-
-            if args.do_eval and (epoch + 1) % args.save_inverval == 0:
-                # Eval model with dev dataset
-                tr_loss = 0
-                nb_tr_examples, nb_tr_steps = 0, 0
-                eval_flag = False
-
-                # Calculate bleu
-                if "dev_bleu" in dev_dataset:
-                    eval_examples, eval_data = dev_dataset["dev_bleu"]
-                else:
-                    eval_examples = read_examples(
-                        args.dev_filename + "." + args.source,
-                        args.dev_filename + ".triple",
-                        args.dev_filename + "." + args.target,
-                    )
-                    eval_examples = random.sample(
-                        eval_examples, min(1000, len(eval_examples))
-                    )
-                    eval_features = convert_examples_to_features(
-                        eval_examples, tokenizer, args, stage="test"
-                    )
-                    all_source_ids = torch.tensor(
-                        [f.source_ids for f in eval_features], dtype=torch.long
-                    )
-                    all_source_mask = torch.tensor(
-                        [f.source_mask for f in eval_features], dtype=torch.long
-                    )
-                    all_triples_ids = torch.tensor(
-                        [f.triples_ids for f in eval_features], dtype=torch.long
-                    )
-                    all_triples_mask = torch.tensor(
-                        [f.triples_mask for f in eval_features], dtype=torch.long
-                    )
-                    eval_data = TensorDataset(
-                        all_source_ids,
-                        all_source_mask,
-                        all_triples_ids,
-                        all_triples_mask,
-                    )
-                    dev_dataset["dev_bleu"] = eval_examples, eval_data
-
-                eval_sampler = SequentialSampler(eval_data)
-                eval_dataloader = DataLoader(
-                    eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size
-                )
-
-                model.eval()
-                p = []
-                for batch in eval_dataloader:
-                    batch = tuple(t.to(device) for t in batch)
-                    source_ids, source_mask, triples_ids, triples_mask = batch
-                    with torch.no_grad():
-                        preds = model(
-                            source_ids=source_ids,
-                            source_mask=source_mask,
-                            triples_ids=triples_ids,
-                            triples_mask=triples_mask,
-                        )
-                        for pred in preds:
-                            t = pred[0].cpu().numpy()
-                            t = list(t)
-                            if 0 in t:
-                                t = t[: t.index(0)]
-                            text = tokenizer.decode(
-                                t, clean_up_tokenization_spaces=False
-                            )
-                            p.append(text)
-                model.train()
-                predictions = []
-                pred_str = []
-                label_str = []
-                with open(os.path.join(args.output_dir, "dev.output"), "w") as f, open(
-                    os.path.join(args.output_dir, "dev.gold"), "w"
-                ) as f1:
-                    for ref, gold in zip(p, eval_examples):
-                        ref = ref.strip().replace("< ", "<").replace(" >", ">")
-                        ref = re.sub(
-                            r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref
-                        )
-                        ref = ref.replace("attr_close>", "attr_close >").replace(
-                            "_attr_open", "_ attr_open"
-                        )
-                        ref = ref.replace(" [ ", " [").replace(" ] ", "] ")
-                        ref = ref.replace("_obd_", " _obd_ ").replace(
-                            "_oba_", " _oba_ "
-                        )
-
-                        pred_str.append(ref.split())
-                        label_str.append([gold.target.strip().split()])
-                        predictions.append(str(gold.idx) + "\t" + ref)
-                        f.write(str(gold.idx) + "\t" + ref + "\n")
-                        f1.write(str(gold.idx) + "\t" + gold.target + "\n")
-
-                bl_score = corpus_bleu(label_str, pred_str) * 100
-
-                logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
-                logger.info("  " + "*" * 20)
-                if bl_score > best_bleu:
-                    logger.info("  Best bleu:%s", bl_score)
-                    logger.info("  " + "*" * 20)
-                    best_bleu = bl_score
-                    # Save best checkpoint for best bleu
-                    output_dir = os.path.join(args.output_dir, "checkpoint-best-bleu")
-                    if not os.path.exists(output_dir):
-                        os.makedirs(output_dir)
-                    model_to_save = (
-                        model.module if hasattr(model, "module") else model
-                    )  # Only save the model it-self
-                    output_model_file = os.path.join(output_dir, "pytorch_model.bin")
-                    torch.save(model_to_save.state_dict(), output_model_file)
-
-    if args.do_test:
-        files = []
-        if args.dev_filename is not None:
-            files.append(args.dev_filename)
-        if args.test_filename is not None:
-            files.append(args.test_filename)
-        for idx, file in enumerate(files):
-            logger.info("Test file: {}".format(file))
-            eval_examples = read_examples(
-                file + "." + args.source, file + ".triple", file + "." + args.target
-            )
-            eval_features = convert_examples_to_features(
-                eval_examples, tokenizer, args, stage="test"
-            )
-            all_source_ids = torch.tensor(
-                [f.source_ids for f in eval_features], dtype=torch.long
-            )
-            all_source_mask = torch.tensor(
-                [f.source_mask for f in eval_features], dtype=torch.long
-            )
-            all_triples_ids = torch.tensor(
-                [f.triples_ids for f in eval_features], dtype=torch.long
-            )
-            all_triples_mask = torch.tensor(
-                [f.triples_mask for f in eval_features], dtype=torch.long
-            )
-            eval_data = TensorDataset(
-                all_source_ids, all_source_mask, all_triples_ids, all_triples_mask
-            )
-
-            # Calculate bleu
-            eval_sampler = SequentialSampler(eval_data)
-            eval_dataloader = DataLoader(
-                eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size
-            )
-
-            model.eval()
-            p = []
-            for batch in tqdm(eval_dataloader, total=len(eval_dataloader)):
-                batch = tuple(t.to(device) for t in batch)
-                source_ids, source_mask, triples_ids, triples_mask = batch
+                tokens = {'tokens' : source_ids}
                 with torch.no_grad():
                     preds = model(
-                        source_ids=source_ids,
+                        source_ids=tokens,
+                        source_segment_ids=source_segment_ids,
                         source_mask=source_mask,
+                        source_candidates=source_candidates,
                         triples_ids=triples_ids,
                         triples_mask=triples_mask,
                     )
@@ -933,25 +868,29 @@ def main():
                         t = list(t)
                         if 0 in t:
                             t = t[: t.index(0)]
-                        text = tokenizer.decode(t, clean_up_tokenization_spaces=False)
+                        text = tokenizer.decode(
+                            t, clean_up_tokenization_spaces=False
+                        )
                         p.append(text)
             model.train()
             predictions = []
             pred_str = []
             label_str = []
-            with open(
-                os.path.join(args.output_dir, "test_{}.output".format(str(idx))), "w"
-            ) as f, open(
-                os.path.join(args.output_dir, "test_{}.gold".format(str(idx))), "w"
+            with open(os.path.join(args.output_dir, "dev.output"), "w") as f, open(
+                os.path.join(args.output_dir, "dev.gold"), "w"
             ) as f1:
                 for ref, gold in zip(p, eval_examples):
                     ref = ref.strip().replace("< ", "<").replace(" >", ">")
-                    ref = re.sub(r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref)
+                    ref = re.sub(
+                        r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref
+                    )
                     ref = ref.replace("attr_close>", "attr_close >").replace(
                         "_attr_open", "_ attr_open"
                     )
                     ref = ref.replace(" [ ", " [").replace(" ] ", "] ")
-                    ref = ref.replace("_obd_", " _obd_ ").replace("_oba_", " _oba_ ")
+                    ref = ref.replace("_obd_", " _obd_ ").replace(
+                        "_oba_", " _oba_ "
+                    )
 
                     pred_str.append(ref.split())
                     label_str.append([gold.target.strip().split()])
@@ -960,79 +899,228 @@ def main():
                     f1.write(str(gold.idx) + "\t" + gold.target + "\n")
 
             bl_score = corpus_bleu(label_str, pred_str) * 100
+
             logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
             logger.info("  " + "*" * 20)
-    if args.do_predict:
-        files = []
-        if args.predict_filename is not None:
-            files.append(args.predict_filename)
-        for idx, file in enumerate(files):
-            logger.info("Predict file: {}".format(file))
-            eval_examples = read_examples_without_target(
-                file + "." + args.source, file + ".triple"
-            )
-            eval_features = convert_examples_to_features(
-                eval_examples, tokenizer, args, stage="predict"
-            )
-            all_source_ids = torch.tensor(
-                [f.source_ids for f in eval_features], dtype=torch.long
-            )
-            all_source_mask = torch.tensor(
-                [f.source_mask for f in eval_features], dtype=torch.long
-            )
-            all_triples_ids = torch.tensor(
-                [f.triples_ids for f in eval_features], dtype=torch.long
-            )
-            all_triples_mask = torch.tensor(
-                [f.triples_mask for f in eval_features], dtype=torch.long
-            )
-            eval_data = TensorDataset(
-                all_source_ids, all_source_mask, all_triples_ids, all_triples_mask
-            )
-
-            # Calculate bleu
-            eval_sampler = SequentialSampler(eval_data)
-            eval_dataloader = DataLoader(
-                eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size
-            )
-
-            model.eval()
-            p = []
-            for batch in tqdm(eval_dataloader, total=len(eval_dataloader)):
-                batch = tuple(t.to(device) for t in batch)
-                source_ids, source_mask, triples_ids, triples_mask = batch
-                with torch.no_grad():
-                    preds = model(
-                        source_ids=source_ids,
-                        source_mask=source_mask,
-                        triples_ids=triples_ids,
-                        triples_mask=triples_mask,
-                    )
-                    for pred in preds:
-                        t = pred[0].cpu().numpy()
-                        t = list(t)
-                        if 0 in t:
-                            t = t[: t.index(0)]
-                        text = tokenizer.decode(t, clean_up_tokenization_spaces=False)
-                        p.append(text)
-            model.train()
-            pred_str = []
-            with open(
-                os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w"
-            ) as f:
-                for ref, example in zip(p, eval_examples):
-                    ref = ref.strip().replace("< ", "<").replace(" >", ">")
-                    ref = re.sub(r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref)
-                    ref = ref.replace("attr_close>", "attr_close >").replace(
-                        "_attr_open", "_ attr_open"
-                    )
-                    ref = ref.replace(" [ ", " [").replace(" ] ", "] ")
-                    ref = ref.replace("_obd_", " _obd_ ").replace("_oba_", " _oba_ ")
-
-                    pred_str.append(ref.split())
-                    f.write(str(example.idx) + "\t" + ref + "\n")
-            logger.info("  " + "*" * 20)
+            if bl_score > best_bleu:
+                logger.info("  Best bleu:%s", bl_score)
+                logger.info("  " + "*" * 20)
+                best_bleu = bl_score
+                # Save best checkpoint for best bleu
+                output_dir = os.path.join(args.output_dir, "checkpoint-best-bleu")
+                if not os.path.exists(output_dir):
+                    os.makedirs(output_dir)
+                model_to_save = (
+                    model.module if hasattr(model, "module") else model
+                )  # Only save the model it-self
+                output_model_file = os.path.join(output_dir, "pytorch_model.bin")
+                torch.save(model_to_save.state_dict(), output_model_file)
 
 
-if __name__ == "__main__":
-    main()
+def test(model, batcher, tokenizer, device, args):
+    files = []
+    if args.dev_filename is not None:
+        files.append(args.dev_filename)
+    if args.test_filename is not None:
+        files.append(args.test_filename)
+    for idx, file in enumerate(files):
+        logger.info("Test file: {}".format(file))
+        eval_examples = read_examples(
+            file + "." + args.source, file + ".triple", file + "." + args.target
+        )
+        all_eval_features = convert_examples_to_features(
+            eval_examples,
+            tokenizer,
+            batcher,
+            args,
+            stage="test"
+        )
+        eval_data = TensorDataset(
+            *all_eval_features
+        )
+
+        # Calculate bleu
+        eval_sampler = SequentialSampler(eval_data)
+        eval_dataloader = DataLoader(
+            eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size
+        )
+
+        model.eval()
+        p = []
+        for batch in tqdm(eval_dataloader, total=len(eval_dataloader)):
+            batch = tuple(t.to(device) for t in batch)
+            (
+                source_ids,
+                source_segment_ids,
+                source_mask,
+                source_wiki_candidate_priors,
+                source_wiki_candidate_ids,
+                source_wiki_candidate_spans,
+                source_wiki_candidate_segment_ids,
+                source_wordnet_candidate_priors,
+                source_wordnet_candidate_ids,
+                source_wordnet_candidate_spans,
+                source_wordnet_candidate_segment_ids,
+                triples_ids,
+                triples_mask,
+                target_ids,
+                target_mask
+            ) = batch
+            source_candidates = {
+                'wiki' : {
+                    'candidate_entity_priors' : source_wiki_candidate_priors,
+                    'candidate_entities' : {'ids' : source_wiki_candidate_ids},
+                    'candidate_spans' : source_wiki_candidate_spans,
+                    'candidate_segment_ids' : source_wiki_candidate_segment_ids
+                },
+                'wordnet' : {
+                    'candidate_entity_priors' : source_wordnet_candidate_priors,
+                    'candidate_entities' : {'ids' : source_wordnet_candidate_ids},
+                    'candidate_spans' : source_wordnet_candidate_spans,
+                    'candidate_segment_ids' : source_wordnet_candidate_segment_ids
+                }
+            }
+
+            tokens = {'tokens' : source_ids}
+            with torch.no_grad():
+                preds = model(
+                    source_ids=tokens,
+                    source_segment_ids=source_segment_ids,
+                    source_mask=source_mask,
+                    source_candidates=source_candidates,
+                    triples_ids=triples_ids,
+                    triples_mask=triples_mask,
+                )
+                for pred in preds:
+                    t = pred[0].cpu().numpy()
+                    t = list(t)
+                    if 0 in t:
+                        t = t[: t.index(0)]
+                    text = tokenizer.decode(t, clean_up_tokenization_spaces=False)
+                    p.append(text)
+        model.train()
+        predictions = []
+        pred_str = []
+        label_str = []
+        with open(
+            os.path.join(args.output_dir, "test_{}.output".format(str(idx))), "w"
+        ) as f, open(
+            os.path.join(args.output_dir, "test_{}.gold".format(str(idx))), "w"
+        ) as f1:
+            for ref, gold in zip(p, eval_examples):
+                ref = ref.strip().replace("< ", "<").replace(" >", ">")
+                ref = re.sub(r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref)
+                ref = ref.replace("attr_close>", "attr_close >").replace(
+                    "_attr_open", "_ attr_open"
+                )
+                ref = ref.replace(" [ ", " [").replace(" ] ", "] ")
+                ref = ref.replace("_obd_", " _obd_ ").replace("_oba_", " _oba_ ")
+
+                pred_str.append(ref.split())
+                label_str.append([gold.target.strip().split()])
+                predictions.append(str(gold.idx) + "\t" + ref)
+                f.write(str(gold.idx) + "\t" + ref + "\n")
+                f1.write(str(gold.idx) + "\t" + gold.target + "\n")
+
+        bl_score = corpus_bleu(label_str, pred_str) * 100
+        logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
+        logger.info("  " + "*" * 20)
+
+
+def predict(model, batcher, tokenizer, device, args):
+    files = []
+    if args.predict_filename is not None:
+        files.append(args.predict_filename)
+    for idx, file in enumerate(files):
+        logger.info("Predict file: {}".format(file))
+        eval_examples = read_examples_without_target(
+            file + "." + args.source, file + ".triple"
+        )
+        all_eval_features = convert_examples_to_features(
+            eval_examples,
+            tokenizer,
+            batcher,
+            args,
+            stage="test"
+        )
+        eval_data = TensorDataset(
+            *all_eval_features
+        )
+
+        # Calculate bleu
+        eval_sampler = SequentialSampler(eval_data)
+        eval_dataloader = DataLoader(
+            eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size
+        )
+
+        model.eval()
+        p = []
+        for batch in tqdm(eval_dataloader, total=len(eval_dataloader)):
+            batch = tuple(t.to(device) for t in batch)
+            (
+                source_ids,
+                source_segment_ids,
+                source_mask,
+                source_wiki_candidate_priors,
+                source_wiki_candidate_ids,
+                source_wiki_candidate_spans,
+                source_wiki_candidate_segment_ids,
+                source_wordnet_candidate_priors,
+                source_wordnet_candidate_ids,
+                source_wordnet_candidate_spans,
+                source_wordnet_candidate_segment_ids,
+                triples_ids,
+                triples_mask,
+                target_ids,
+                target_mask
+            ) = batch
+            source_candidates = {
+                'wiki' : {
+                    'candidate_entity_priors' : source_wiki_candidate_priors,
+                    'candidate_entities' : {'ids' : source_wiki_candidate_ids},
+                    'candidate_spans' : source_wiki_candidate_spans,
+                    'candidate_segment_ids' : source_wiki_candidate_segment_ids
+                },
+                'wordnet' : {
+                    'candidate_entity_priors' : source_wordnet_candidate_priors,
+                    'candidate_entities' : {'ids' : source_wordnet_candidate_ids},
+                    'candidate_spans' : source_wordnet_candidate_spans,
+                    'candidate_segment_ids' : source_wordnet_candidate_segment_ids
+                }
+            }
+
+            tokens = {'tokens' : source_ids}
+            with torch.no_grad():
+                preds = model(
+                    source_ids=tokens,
+                    source_segment_ids=source_segment_ids,
+                    source_mask=source_mask,
+                    source_candidates=source_candidates,
+                    triples_ids=triples_ids,
+                    triples_mask=triples_mask,
+                )
+                for pred in preds:
+                    t = pred[0].cpu().numpy()
+                    t = list(t)
+                    if 0 in t:
+                        t = t[: t.index(0)]
+                    text = tokenizer.decode(t, clean_up_tokenization_spaces=False)
+                    p.append(text)
+        model.train()
+        pred_str = []
+        with open(
+                os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w", encoding="utf-8"
+        ) as f:
+            for ref, example in zip(p, eval_examples):
+                ref = ref.strip().replace("< ", "<").replace(" >", ">")
+                ref = re.sub(r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref)
+                ref = ref.replace("attr_close>", "attr_close >").replace(
+                    "_attr_open", "_ attr_open"
+                )
+                ref = ref.replace(" [ ", " [").replace(" ] ", "] ")
+                ref = ref.replace("_obd_", " _obd_ ").replace("_oba_", " _oba_ ")
+
+                pred_str.append(ref.split())
+                line = str(example.idx) + "\t" + ref    #modified
+                f.write(line + "\n")    # modified
+        logger.info("  " + "*" * 20)
