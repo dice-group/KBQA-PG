@@ -243,8 +243,9 @@ def convert_examples_to_features(examples,
     padding_length = max(args.max_source_length - len(all_source_ids[0]), 0)
     num_examples = len(all_source_ids)
     if padding_length > 0:
-        source_ids = torch.cat((all_source_ids, torch.full((num_examples, padding_length), fill_value=tokenizer_uncased.pad_token_id)), dim=1)
-        source_segment_ids = torch.cat((all_source_segment_ids, torch.full((num_examples, padding_length), fill_value=0)), dim=1)
+        uncased_pad_token_id = batcher.tokenizer_and_candidate_generator.bert_tokenizer.tokenizer.pad_token_id
+        all_source_ids = torch.cat((all_source_ids, torch.full((num_examples, padding_length), fill_value=uncased_pad_token_id)), dim=1)
+        all_source_segment_ids = torch.cat((all_source_segment_ids, torch.full((num_examples, padding_length), fill_value=0)), dim=1)
     all_source_mask = all_source_ids > 0
 
     logger.debug(all_source_ids)
