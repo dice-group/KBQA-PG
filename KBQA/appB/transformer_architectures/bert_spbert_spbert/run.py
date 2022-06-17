@@ -542,11 +542,6 @@ def main():
         logger.info("reload model from {}".format(args.load_model_path))
         model.load_state_dict(torch.load(args.load_model_path))
 
-    # Create new bleu.csv file.
-    bleu_file_path = Path(args.bleu_file_path)
-    if args.load_bleu_file == "No":
-        if bleu_file_path.exists():
-            bleu_file_path.unlink()
     model.to(device)
     if args.local_rank != -1:
         # Distributed training
@@ -561,6 +556,12 @@ def main():
     elif args.n_gpu > 1:
         # multi-gpu training
         model = torch.nn.DataParallel(model)
+
+    # Create new bleu.csv file.
+    bleu_file_path = Path(args.bleu_file_path)
+    if args.load_bleu_file == "No":
+        if bleu_file_path.exists():
+            bleu_file_path.unlink()
 
     if args.do_train:
         # Prepare training data loader

@@ -1,0 +1,323 @@
+{
+    "questions": [
+        {
+            "question": "What is the relation between Resource Description Framework and Web Ontology Language?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?rdf_owl WHERE { dbr:Web_Ontology_Language dbo:abstract ?rdf_owl } LIMIT 1",
+            "triples": [
+                "<http://dbpedia.org/resource/Web_Ontology_Language> <http://dbpedia.org/ontology/abstract> \"OWL \u00e9s l'acr\u00f2nim de l'angl\u00e8s Web Ontology Language, un llenguatge de marcat per publicar i compartir dades usant ontologies en la WWW. OWL t\u00e9 com a objectiu facilitar un model de marcat constru\u00eft sobre RDF i codificat en XML. T\u00e9 com a antecedent DAML+OIL, en els quals es van inspirar els creadors de OWL per crear el llenguatge. Al costat de l'entorn RDF i altres components, aquestes eines fan possible el projecte de web sem\u00e0ntica.\"@ca"
+            ]
+        },
+        {
+            "question": "Who are the writers of the Wall album of Pink Floyd?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?writers WHERE { dbr:The_Wall dbp:writer ?writers }",
+            "triples": []
+        },
+        {
+            "question": "Which species does an elephant belong?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?species WHERE { dbr:Elephant dbp:species ?species }",
+            "triples": []
+        },
+        {
+            "question": "What is the alma mater of the chancellor of Germany Angela Merkel?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Almamater WHERE { dbr:Angela_Merkel dbo:almaMater ?Almamater }",
+            "triples": [
+                "<http://dbpedia.org/resource/Angela_Merkel> <http://dbpedia.org/ontology/almaMater> <http://dbpedia.org/resource/German_Academy_of_Sciences_at_Berlin>",
+                "<http://dbpedia.org/resource/Angela_Merkel> <http://dbpedia.org/ontology/almaMater> <http://dbpedia.org/resource/Leipzig_University>"
+            ]
+        },
+        {
+            "question": "How large is the area of UK?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?area WHERE { dbr:United_Kingdom dbo:area ?area } OFFSET 0 LIMIT 1",
+            "triples": [
+                "<http://dbpedia.org/resource/United_Kingdom> <http://dbpedia.org/ontology/area> \"2.42495e+11\""
+            ]
+        },
+        {
+            "question": "Who is the author of the interpretation of dreams?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Author WHERE { dbr:The_Interpretation_of_Dreams dbo:author ?Author }",
+            "triples": [
+                "<http://dbpedia.org/resource/The_Interpretation_of_Dreams> <http://dbpedia.org/ontology/author> <http://dbpedia.org/resource/Sigmund_Freud>"
+            ]
+        },
+        {
+            "question": "What is the birth name of Adele?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?bn WHERE { dbr:Adele dbo:birthName ?bn }",
+            "triples": [
+                "<http://dbpedia.org/resource/Adele> <http://dbpedia.org/ontology/birthName> \"Adele Laurie Blue Adkins\"@en"
+            ]
+        },
+        {
+            "question": "What are the top selling luxury vehicle brands in Germany?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dbc: <http://dbpedia.org/resource/Category:> SELECT ?company WHERE { ?company dct:subject dbc:Car_manufacturers_of_Germany ; dbo:equity ?equity ; dbo:netIncome ?netIncome ; dbo:production ?production ; dbo:revenue ?revenue } ORDER BY DESC(?equity)",
+            "triples": [
+                "<http://dbpedia.org/resource/Porsche> <http://dbpedia.org/ontology/equity> \"2.0224E10\"",
+                "<http://dbpedia.org/resource/Audi> <http://dbpedia.org/ontology/revenue> \"5.568E10\"",
+                "<http://dbpedia.org/resource/Audi> <http://dbpedia.org/ontology/production> \"1802073\"",
+                "<http://dbpedia.org/resource/Audi> <http://dbpedia.org/ontology/equity> \"2.8395E10\"",
+                "<http://dbpedia.org/resource/Audi> <http://dbpedia.org/ontology/netIncome> \"3.943E9\"",
+                "<http://dbpedia.org/resource/Audi> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Car_manufacturers_of_Germany>",
+                "<http://dbpedia.org/resource/Daimler_AG> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Car_manufacturers_of_Germany>",
+                "<http://dbpedia.org/resource/Porsche> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Car_manufacturers_of_Germany>",
+                "<http://dbpedia.org/resource/Daimler_AG> <http://dbpedia.org/ontology/revenue> \"1.54309E11\"",
+                "<http://dbpedia.org/resource/Porsche> <http://dbpedia.org/ontology/netIncome> \"3.166E9\"",
+                "<http://dbpedia.org/resource/Porsche> <http://dbpedia.org/ontology/production> \"272162\"",
+                "<http://dbpedia.org/resource/Daimler_AG> <http://dbpedia.org/ontology/production> \"2840402\"",
+                "<http://dbpedia.org/resource/Porsche> <http://dbpedia.org/ontology/revenue> \"2.8695E10\"",
+                "<http://dbpedia.org/resource/Daimler_AG> <http://dbpedia.org/ontology/netIncome> \"4.009E9\"",
+                "<http://dbpedia.org/resource/Daimler_AG> <http://dbpedia.org/ontology/equity> \"6.2248E10\""
+            ]
+        },
+        {
+            "question": "How many awards has Bertrand Russell?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT (COUNT(?Awards) AS ?Counter) WHERE { dbr:Bertrand_Russell dbp:awards ?Awards }",
+            "triples": [
+                "<http://dbpedia.org/resource/Bertrand_Russell> <http://dbpedia.org/property/awards> <http://dbpedia.org/resource/Jerusalem_Prize>",
+                "<http://dbpedia.org/resource/Bertrand_Russell> <http://dbpedia.org/property/awards> <http://dbpedia.org/resource/Kalinga_Prize>",
+                "<http://dbpedia.org/resource/Bertrand_Russell> <http://dbpedia.org/property/awards> \"\"@en",
+                "<http://dbpedia.org/resource/Bertrand_Russell> <http://dbpedia.org/property/awards> <http://dbpedia.org/resource/Nobel_Prize_in_Literature>",
+                "<http://dbpedia.org/resource/Bertrand_Russell> <http://dbpedia.org/property/awards> <http://dbpedia.org/resource/De_Morgan_Medal>",
+                "<http://dbpedia.org/resource/Bertrand_Russell> <http://dbpedia.org/property/awards> <http://dbpedia.org/resource/Sylvester_Medal>"
+            ]
+        },
+        {
+            "question": "Who is Dan Jurafsky?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Dan WHERE { VALUES ?Dan { dbr:Daniel_Jurafsky } }",
+            "triples": []
+        },
+        {
+            "question": "When will start the final match of the football world cup 2018?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Date WHERE { dbr:2018_FIFA_World_Cup dbp:date ?Date } OFFSET 24 LIMIT 1",
+            "triples": []
+        },
+        {
+            "question": "how much is the elevation of D\u00fcsseldorf Airport ?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?ele WHERE { dbr:D\u00fcsseldorf_Airport dbo:elevation ?ele } LIMIT 1",
+            "triples": [
+                "<http://dbpedia.org/resource/D\u00fcsseldorf_Airport> <http://dbpedia.org/ontology/elevation> \"44.8\""
+            ]
+        },
+        {
+            "question": "how much is the total population of  european union?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?europop WHERE { dbr:European_Union dbo:populationTotal ?europop }",
+            "triples": [
+                "<http://dbpedia.org/resource/European_Union> <http://dbpedia.org/ontology/populationTotal> \"447706209\""
+            ]
+        },
+        {
+            "question": "when was the founding date of french fifth republic?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?ff WHERE { dbr:French_Fifth_Republic dbo:foundingDate ?ff }",
+            "triples": []
+        },
+        {
+            "question": "Who are the founders of  BlaBlaCar?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?founder WHERE { dbr:BlaBlaCar dbo:foundedBy ?founder }",
+            "triples": [
+                "<http://dbpedia.org/resource/BlaBlaCar> dbo:foundedBy <http://dbpedia.org/resource/Fr\u00e9d\u00e9ric_Mazzella>"
+            ]
+        },
+        {
+            "question": "how many foreigners speak German?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Ger_lang WHERE { dbr:German_language dbp:speakers ?Ger_lang } OFFSET 1 LIMIT 1",
+            "triples": []
+        },
+        {
+            "question": "Where is the birthplace of Goethe?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Goethe WHERE { dbr:Johann_Wolfgang_von_Goethe dbo:birthPlace ?Goethe }",
+            "triples": [
+                "<http://dbpedia.org/resource/Johann_Wolfgang_von_Goethe> <http://dbpedia.org/ontology/birthPlace> <http://dbpedia.org/resource/Free_City_of_Frankfurt>",
+                "<http://dbpedia.org/resource/Johann_Wolfgang_von_Goethe> <http://dbpedia.org/ontology/birthPlace> <http://dbpedia.org/resource/Holy_Roman_Empire>"
+            ]
+        },
+        {
+            "question": "Where is the origin of Carolina reaper?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?uri WHERE { dbr:Carolina_Reaper dbo:origin ?uri }",
+            "triples": [
+                "<http://dbpedia.org/resource/Carolina_Reaper> <http://dbpedia.org/ontology/origin> <http://dbpedia.org/resource/Fort_Mill,_South_Carolina>"
+            ]
+        },
+        {
+            "question": "How much is the population of Mexico City ?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Mexico_City WHERE { dbr:Mexico_City dbo:populationTotal ?Mexico_City }",
+            "triples": [
+                "<http://dbpedia.org/resource/Mexico_City> <http://dbpedia.org/ontology/populationTotal> \"9209944\""
+            ]
+        },
+        {
+            "question": "What is the nick name of Baghdad?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT ?nm WHERE { dbr:Baghdad foaf:nick ?nm }",
+            "triples": [
+                "<http://dbpedia.org/resource/Baghdad> <http://xmlns.com/foaf/0.1/nick> \"City of Peace (\u0645\u062f\u064a\u0646\u0629 \u0627\u0644\u0633\u0644\u0627\u0645)\"@en"
+            ]
+        },
+        {
+            "question": "Who is the novelist of the work a song of ice and fire?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Novelist WHERE { dbr:A_Song_of_Ice_and_Fire dbp:author ?Novelist }",
+            "triples": [
+                "<http://dbpedia.org/resource/A_Song_of_Ice_and_Fire> <http://dbpedia.org/property/author> <http://dbpedia.org/resource/George_R._R._Martin>"
+            ]
+        },
+        {
+            "question": "What is the percentage of area water in Brazil?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?percentage WHERE { dbr:Brazil dbo:percentageOfAreaWater ?percentage }",
+            "triples": [
+                "<http://dbpedia.org/resource/Brazil> <http://dbpedia.org/ontology/percentageOfAreaWater> \"0.65\""
+            ]
+        },
+        {
+            "question": "How much is the population of Iraq?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?pIraq WHERE { dbr:Iraq dbo:populationTotal ?pIraq }",
+            "triples": [
+                "<http://dbpedia.org/resource/Iraq> <http://dbpedia.org/ontology/populationTotal> \"40222503\""
+            ]
+        },
+        {
+            "question": "What is the population of Cairo?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?pop WHERE { dbr:Cairo dbo:populationTotal ?pop }",
+            "triples": [
+                "<http://dbpedia.org/resource/Cairo> <http://dbpedia.org/ontology/populationTotal> \"10025657\""
+            ]
+        },
+        {
+            "question": "How much is the population density rank of Germany?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?rank WHERE { dbr:Germany dbp:populationDensityRank ?rank }",
+            "triples": [
+                "<http://dbpedia.org/resource/Germany> <http://dbpedia.org/property/populationDensityRank> \"58\""
+            ]
+        },
+        {
+            "question": "How large is the total area of North Rhine-Westphalia?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?tarea WHERE { dbr:North_Rhine-Westphalia dbo:areaTotal ?tarea }",
+            "triples": [
+                "<http://dbpedia.org/resource/North_Rhine-Westphalia> <http://dbpedia.org/ontology/areaTotal> \"3.40841e+10\""
+            ]
+        },
+        {
+            "question": "What is the original title of the interpretation of dreams?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT ?title WHERE { dbr:The_Interpretation_of_Dreams foaf:name ?title }",
+            "triples": [
+                "<http://dbpedia.org/resource/The_Interpretation_of_Dreams> <http://xmlns.com/foaf/0.1/name> \"The Interpretation of Dreams\"@en",
+                "<http://dbpedia.org/resource/The_Interpretation_of_Dreams> <http://xmlns.com/foaf/0.1/name> \"Die Traumdeutung\"@en"
+            ]
+        },
+        {
+            "question": "When was the death  of  Shakespeare?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?x WHERE { dbr:William_Shakespeare dbo:deathDate ?x } LIMIT 1",
+            "triples": [
+                "<http://dbpedia.org/resource/William_Shakespeare> <http://dbpedia.org/ontology/deathDate> \"1616-04-23\""
+            ]
+        },
+        {
+            "question": "With how many countries Iran has borders?",
+            "query": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?border WHERE { dbr:Geography_of_Iran dbp:borders ?border } LIMIT 8",
+            "triples": [
+                "<http://dbpedia.org/resource/Geography_of_Iran> <http://dbpedia.org/property/borders> <http://dbpedia.org/resource/Azerbaijan>",
+                "<http://dbpedia.org/resource/Geography_of_Iran> <http://dbpedia.org/property/borders> <http://dbpedia.org/resource/Afghanistan>",
+                "<http://dbpedia.org/resource/Geography_of_Iran> <http://dbpedia.org/property/borders> <http://dbpedia.org/resource/Turkey>",
+                "<http://dbpedia.org/resource/Geography_of_Iran> <http://dbpedia.org/property/borders> <http://dbpedia.org/resource/Turkmenistan>",
+                "<http://dbpedia.org/resource/Geography_of_Iran> <http://dbpedia.org/property/borders> <http://dbpedia.org/resource/Armenia>",
+                "<http://dbpedia.org/resource/Geography_of_Iran> <http://dbpedia.org/property/borders> <http://dbpedia.org/resource/Pakistan>",
+                "<http://dbpedia.org/resource/Geography_of_Iran> <http://dbpedia.org/property/borders> <http://dbpedia.org/resource/List_of_countries_and_territories_by_land_borders>",
+                "<http://dbpedia.org/resource/Geography_of_Iran> <http://dbpedia.org/property/borders> <http://dbpedia.org/resource/Iraq>"
+            ]
+        },
+        {
+            "question": "What is the smallest city by area in Germany?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dbc: <http://dbpedia.org/resource/Category:> PREFIX dct: <http://purl.org/dc/terms/> SELECT ?city WHERE { ?m skos:broader dbc:Cities_in_Germany . ?city dct:subject ?m ; dbo:areaTotal ?area } ORDER BY ?area LIMIT 1",
+            "triples": [
+                "<http://dbpedia.org/resource/Category:Port_cities_and_towns_in_Germany> <http://www.w3.org/2004/02/skos/core#broader> <http://dbpedia.org/resource/Category:Cities_in_Germany>",
+                "<http://dbpedia.org/resource/Eckernf\u00f6rde> <http://dbpedia.org/ontology/areaTotal> \"1.797e+07\"",
+                "<http://dbpedia.org/resource/Eckernf\u00f6rde> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Port_cities_and_towns_in_Germany>"
+            ]
+        },
+        {
+            "question": "Which beer brewing comapnies are located in North-Rhine Westphalia?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dbc: <http://dbpedia.org/resource/Category:> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?company WHERE { ?company dct:subject dbc:Companies_based_in_North_Rhine-Westphalia ; rdf:type dbo:Brewery }",
+            "triples": [
+                "<http://dbpedia.org/resource/Diebels> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Companies_based_in_North_Rhine-Westphalia>",
+                "<http://dbpedia.org/resource/Pinkus_M\u00fcller> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Companies_based_in_North_Rhine-Westphalia>",
+                "<http://dbpedia.org/resource/Veltins_Brewery> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Companies_based_in_North_Rhine-Westphalia>",
+                "<http://dbpedia.org/resource/Krombacher_Brauerei> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Brewery>",
+                "<http://dbpedia.org/resource/Veltins_Brewery> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Brewery>",
+                "<http://dbpedia.org/resource/Krombacher_Brauerei> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Companies_based_in_North_Rhine-Westphalia>",
+                "<http://dbpedia.org/resource/Diebels> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Brewery>",
+                "<http://dbpedia.org/resource/Ernst_Barre_Private_Brewery> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Companies_based_in_North_Rhine-Westphalia>",
+                "<http://dbpedia.org/resource/Warsteiner> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Companies_based_in_North_Rhine-Westphalia>",
+                "<http://dbpedia.org/resource/Warsteiner> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Brewery>",
+                "<http://dbpedia.org/resource/Pinkus_M\u00fcller> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Brewery>",
+                "<http://dbpedia.org/resource/Ernst_Barre_Private_Brewery> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Brewery>"
+            ]
+        },
+        {
+            "question": "What is the largest city in america?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?lcity WHERE { dbr:United_States dbo:largestCity ?lcity }",
+            "triples": [
+                "<http://dbpedia.org/resource/United_States> <http://dbpedia.org/ontology/largestCity> <http://dbpedia.org/resource/New_York_City>"
+            ]
+        },
+        {
+            "question": "Who is the current federal minister of finance in Germany?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> SELECT ?leader WHERE { <http://dbpedia.org/resource/Federal_Ministry_of_Finance_(Germany)> dbo:leader ?leader }",
+            "triples": [
+                "<http://dbpedia.org/resource/Federal_Ministry_of_Finance_(Germany)> <http://dbpedia.org/ontology/leader> <http://dbpedia.org/resource/Olaf_Scholz>",
+                "<http://dbpedia.org/resource/Federal_Ministry_of_Finance_(Germany)> <http://dbpedia.org/ontology/leader> <http://dbpedia.org/resource/Bettina_Hagedorn>"
+            ]
+        },
+        {
+            "question": "What is the highest mountain in the Bavarian Alps?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?m WHERE { dbr:Bavarian_Alps dbp:highest ?m}",
+            "triples": [
+                "<http://dbpedia.org/resource/Bavarian_Alps> dbp:highest <http://dbpedia.org/resource/Zugspitze>"
+            ]
+        },
+        {
+            "question": "Who is 8th president of US?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?name WHERE { dbr:8th_President_of_the_United_States dbo:wikiPageRedirects ?link . ?link dbp:name ?name }",
+            "triples": [
+                "<http://dbpedia.org/resource/Martin_Van_Buren> <http://dbpedia.org/property/name> \"Martin Van Buren\"@en",
+                "<http://dbpedia.org/resource/8th_President_of_the_United_States> <http://dbpedia.org/ontology/wikiPageRedirects> <http://dbpedia.org/resource/Martin_Van_Buren>",
+                "<http://dbpedia.org/resource/Martin_Van_Buren> <http://dbpedia.org/property/name> \"Van Buren\"@en"
+            ]
+        },
+        {
+            "question": "Where is the most deep point in the ocean?",
+            "query": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?point WHERE { dbr:Extreme_points_of_Earth dct:subject ?x . ?point dct:subject ?x ; rdfs:comment ?comment FILTER ( lang(?comment) = \"en\" ) } OFFSET 13 LIMIT 1",
+            "triples": []
+        },
+        {
+            "question": "In which state Penn State University is located?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?s WHERE { dbr:Pennsylvania_State_University dbo:state ?s }",
+            "triples": [
+                "<http://dbpedia.org/resource/Pennsylvania_State_University> <http://dbpedia.org/ontology/state> <http://dbpedia.org/resource/Pennsylvania>"
+            ]
+        },
+        {
+            "question": "What is Donald Trump's main business?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?owner WHERE { ?owner dbo:owner dbr:Donald_Trump }",
+            "triples": [
+                "<http://dbpedia.org/resource/GoTrump.com> <http://dbpedia.org/ontology/owner> <http://dbpedia.org/resource/Donald_Trump>",
+                "<http://dbpedia.org/resource/The_Trump_Organization> <http://dbpedia.org/ontology/owner> <http://dbpedia.org/resource/Donald_Trump>",
+                "<http://dbpedia.org/resource/Trump_Model_Management> <http://dbpedia.org/ontology/owner> <http://dbpedia.org/resource/Donald_Trump>"
+            ]
+        },
+        {
+            "question": "What is the last work of Dan Brown?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?book WHERE { ?book dbo:author dbr:Dan_Brown . ?book dbo:publicationDate ?date } ORDER BY DESC(?date) LIMIT 1",
+            "triples": [
+                "<http://dbpedia.org/resource/Inferno_(Brown_novel)> <http://dbpedia.org/ontology/author> <http://dbpedia.org/resource/Dan_Brown>",
+                "<http://dbpedia.org/resource/Inferno_(Brown_novel)> <http://dbpedia.org/ontology/publicationDate> \"2013-05-14\""
+            ]
+        },
+        {
+            "question": "What other books have been written by the author of The Fault in Our Stars?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> SELECT ?books WHERE { ?books dbo:author <http://dbpedia.org/resource/John_Green_(author)> }",
+            "triples": []
+        },
+        {
+            "question": "When was the last episode of the TV series Friends aired?",
+            "query": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?date WHERE { dbr:Friends dbo:completionDate ?date }",
+            "triples": [
+                "<http://dbpedia.org/resource/Friends> <http://dbpedia.org/ontology/completionDate> \"2004-05-06\""
+            ]
+        }
+    ]
+}
