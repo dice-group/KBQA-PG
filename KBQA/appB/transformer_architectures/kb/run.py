@@ -507,7 +507,7 @@ parser.add_argument(
     "--seed", type=int, default=42, help="random seed for initialization"
 )
 parser.add_argument(
-    "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
+    "--save_interval", type=int, default=1, help="save checkpoint every N epochs"
 )
 # print arguments
 # args = parser.parse_args()      # modified
@@ -780,7 +780,7 @@ def train(model, batcher, tokenizer, device, args):    # modified
                 scheduler.step()
                 global_step += 1
 
-        if args.do_eval and (epoch + 1) % args.save_inverval == 0:
+        if args.do_eval and (epoch + 1) % args.save_interval == 0:
             # Eval model with dev dataset
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
