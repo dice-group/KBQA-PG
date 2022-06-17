@@ -1,20 +1,22 @@
+"""Module implements the recontextualization step from knowledge enhanced entity-span representations back to the word pieces"""
 import math
 from typing import Dict
 from typing import Tuple
 
-from KBQA.appB.transformer_architectures.kb.common import extend_attention_mask_for_bert
-from KBQA.appB.transformer_architectures.kb.common import get_dtype_for_module
-from KBQA.appB.transformer_architectures.kb.common import init_bert_weights
 from pytorch_pretrained_bert.modeling import BertConfig
 from pytorch_pretrained_bert.modeling import BertIntermediate
 from pytorch_pretrained_bert.modeling import BertOutput
 from pytorch_pretrained_bert.modeling import BertSelfOutput
 import torch
 
+from KBQA.appB.transformer_architectures.kb.common import extend_attention_mask_for_bert
+from KBQA.appB.transformer_architectures.kb.common import get_dtype_for_module
+from KBQA.appB.transformer_architectures.kb.common import init_bert_weights
+
 
 class SpanWordAttention(torch.nn.Module):
     def __init__(self, config: BertConfig):
-        super(SpanWordAttention, self).__init__()
+        super().__init__()
         if config.hidden_size % config.num_attention_heads != 0:
             raise ValueError(
                 "The hidden size (%d) is not a multiple of the number of attention "
@@ -92,7 +94,7 @@ class SpanWordAttention(torch.nn.Module):
 
 class SpanAttention(torch.nn.Module):
     def __init__(self, config: BertConfig):
-        super(SpanAttention, self).__init__()
+        super().__init__()
         self.attention = SpanWordAttention(config)
         init_bert_weights(
             self.attention, config.initializer_range, (SpanWordAttention,)
@@ -116,7 +118,7 @@ class SpanAttention(torch.nn.Module):
 class SpanAttentionLayer(torch.nn.Module):
     # WARNING: does it's own init, so don't re-init
     def __init__(self, config: BertConfig):
-        super(SpanAttentionLayer, self).__init__()
+        super().__init__()
         self.attention = SpanAttention(config)
         self.intermediate = BertIntermediate(config)
         self.output = BertOutput(config)

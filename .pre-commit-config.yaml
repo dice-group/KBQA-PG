@@ -82,7 +82,7 @@ repos:
             rdflib==6.1.1,
             overrides==6.1.0,
           ]
-        args: ["--rcfile /home/jmenzel/Documents/custom.rc"]
+        args: ["--rcfile=/home/jmenzel/Documents/custom.rc"]
 
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1

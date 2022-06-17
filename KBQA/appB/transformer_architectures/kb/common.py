@@ -1,3 +1,4 @@
+"""Module implements utility classes and functions used by multiple other modules"""
 import json
 from typing import Any
 from typing import Callable
@@ -23,10 +24,12 @@ import torch
 
 
 class MentionGenerator(Registrable):
+    """Base class for mention generators"""
     pass
 
 
 class EntityEmbedder(Registrable):
+    """Base class for entity embedders"""
     pass
 
 
@@ -54,7 +57,8 @@ class WhitespaceTokenizer(object):
         return Doc(self.vocab, words=words, spaces=spaces)
 
 
-def no_filter_func(x: Any) -> bool:
+def no_filter_func(label: Any) -> bool:
+    """Function not apply filter to any input"""
     return True
 
 

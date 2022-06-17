@@ -11,7 +11,7 @@ knowbert_logger = logging.getLogger("knowbert-logger.seq2seq-model")
 
 class LabelSmoothingLoss(nn.Module):
     def __init__(self, classes, smoothing=0.0, dim=-1):
-        super(LabelSmoothingLoss, self).__init__()
+        super().__init__()
         self.confidence = 1.0 - smoothing
         self.smoothing = smoothing
         self.cls = classes
@@ -53,7 +53,7 @@ class BertSeq2Seq(nn.Module):
         eos_id=None,
         device=None,
     ):
-        super(BertSeq2Seq, self).__init__()
+        super().__init__()
         self.encoder = encoder
         self.triple_encoder = triple_encoder
         self.decoder = decoder

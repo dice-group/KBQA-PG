@@ -2,12 +2,12 @@ import json
 import logging
 import random
 import time
+from typing import Any
+from typing import Dict
 from typing import List
+from typing import Set
 from typing import Tuple
 from typing import Union
-from typing import Dict
-from typing import Set
-from typing import Any
 
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_utils import enumerate_spans
@@ -115,9 +115,7 @@ def prior_entity_candidates(
 
         combined_candidates_list = list(combined_candidates.values())
         sorted_candidates = sorted(
-            combined_candidates_list,
-            key=lambda x: x[2],
-            reverse=True
+            combined_candidates_list, key=lambda x: x[2], reverse=True
         )
 
         p_e_m_lowercased[l_mention] = sorted_candidates[:max_candidates]
@@ -208,9 +206,7 @@ class WikiCandidateMentionGenerator(MentionGenerator):
             self.p_e_m_keys_for_sampling = list(self.p_e_m.keys())
 
     def get_mentions_raw_text(
-        self,
-        text: str,
-        whitespace_tokenize: bool = False
+        self, text: str, whitespace_tokenize: bool = False
     ) -> Dict[str, Any]:
         """
         returns:
@@ -267,9 +263,7 @@ class WikiCandidateMentionGenerator(MentionGenerator):
         return ret
 
     def process(
-        self,
-        span: Union[List[str], str],
-        lower: bool = False
+        self, span: Union[List[str], str], lower: bool = False
     ) -> List[Tuple[str, str, float]]:
         """
         Look up spans in the candidate dictionary, including looking for
