@@ -2507,26 +2507,26 @@ Name someone known for a project involved in the <A> of Japan?,SELECT DISTINCT v
 Count all those who previously played for a team which ownes <A> ?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_field <A> sep_dot var_uri dbo_formerTeam var_x  sep_dot brack_close
 Name the sea with <A> as one of the shore city and is also an outflow for <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_cities <A> sep_dot var_uri dbp_outflow <B>  sep_dot var_uri rdf_type dbo_Sea brack_close
 Count the awards won by the people who graduated from the National and Kapodistrian University of Athens.,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_almaMater dbr_National_and_Kapodistrian_University_of_Athens sep_dot var_x dbo_award var_uri  sep_dot brack_close
-What awards have been given to the dude who made Shaun the Sheep?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_notableworks dbr_Shaun_the_Sheep sep_dot var_x dbo_award var_uri  sep_dot var_x rdf_type dbo_Person brack_close
-"Name the office holders whose successor died in Morristown, New Jersey?","SELECT DISTINCT var_uri WHERE brack_open var_x dbo_deathPlace dbr_Morristown,_New_Jersey sep_dot var_uri dbo_successor var_x  sep_dot var_uri rdf_type dbo_OfficeHolder brack_close"
+What awards have been given to the dude who made <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_notableworks <A> sep_dot var_x dbo_award var_uri  sep_dot var_x rdf_type dbo_Person brack_close
+"Name the office holders whose successor died in <A> ?","SELECT DISTINCT var_uri WHERE brack_open var_x dbo_deathPlace <A> sep_dot var_uri dbo_successor var_x  sep_dot var_uri rdf_type dbo_OfficeHolder brack_close"
 What are the movies with <A> as screenwriter?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_screenplay <A>  sep_dot var_uri rdf_type dbo_Film brack_close
 Which awards are presented by the committee located in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_headquarters <A> sep_dot var_uri dbo_presenter var_x  sep_dot brack_close
-What is the common product of the <A> and services of the <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_product var_uri sep_dot <A> dbp_services var_uri brack_close
-Who are the tenants of MasterCard Centre?, SELECT DISTINCT var_uri WHERE brack_open dbr_MasterCard_Centre dbp_tenants var_uri brack_close 
+What is the common product of the <A> and services of the <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_product var_uri sep_dot <B> dbp_services var_uri brack_close
+Who are the tenants of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_tenants var_uri brack_close 
 Count the  area of the radio stations whose serves in <A> ?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_area <A> sep_dot var_x dbp_area var_uri brack_close
 How many games are played at universities affiliated with the Association of Southeast Asian Institutions of Higher Learning?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_affiliation dbr_Association_of_Southeast_Asian_Institutions_of_Higher_Learning sep_dot var_x dbo_sport var_uri  sep_dot brack_close
-Which adminstrative region of Lawrence F. Cafero is also the resting place of <A> ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Lawrence_F._Cafero dbo_region var_uri sep_dot <A> dbo_restingPlace var_uri brack_close
+Which adminstrative region of <B> is also the resting place of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <B> dbo_region var_uri sep_dot <A> dbo_restingPlace var_uri brack_close
 Who studied in universities located in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_campus <A> sep_dot var_uri dbp_education var_x  sep_dot brack_close
-List down the cinematographers of Mickey's Mellerdrammer?, SELECT DISTINCT var_uri WHERE brack_open dbr_Mickey's_Mellerdrammer dbp_cinematography var_uri brack_close 
+List down the cinematographers of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_cinematography var_uri brack_close 
 List the relative of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_relative var_uri brack_close 
 Who are the  judges of the television show whose anchor is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_presenter <A> sep_dot var_x dbp_judges var_uri  sep_dot var_x rdf_type dbo_TelevisionShow brack_close
 Who starred in Nothing in Common and produced From the Earth to the Moon?,SELECT DISTINCT var_uri WHERE brack_open dbr_From_the_Earth_to_the_Moon_(miniseries) dbo_executiveProducer var_uri sep_dot dbr_Nothing_in_Common dbp_starring var_uri sep_dot brack_close
- <A> (novel) and <A> is the notable work of which author?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_notableworks <A> sep_dot var_uri dbp_notableworks <A> sep_dot var_uri rdf_type dbo_Writer brack_close
+ <A> (novel) and <B> is the notable work of which author?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_notableworks <A> sep_dot var_uri dbp_notableworks <B> sep_dot var_uri rdf_type dbo_Writer brack_close
 What all are written in the <A>?, SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_programmingLanguage <A> brack_close 
-What are the artists that have been in the band Framptons camel?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_associatedActs dbr_Frampton's_Camel  sep_dot var_uri rdf_type dbo_Artist brack_close
+What are the artists that have been in the band <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_associatedActs <A>  sep_dot var_uri rdf_type dbo_Artist brack_close
 Count the number of artists in the <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open <A> dbp_artist var_uri  sep_dot brack_close
 By which companies is <A> designed?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_designer var_uri brack_close 
-Which are the previous broadcast networks of sister channels of <A>?,SELECT DISTINCT var_uri WHERE brack_open <A>_(DT2) dbp_sisterStations var_x sep_dot var_x dbo_formerBroadcastNetwork var_uri  sep_dot brack_close
+Which are the previous broadcast networks of sister channels of <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_sisterStations var_x sep_dot var_x dbo_formerBroadcastNetwork var_uri  sep_dot brack_close
 What are the movies whose director is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_director <A>  sep_dot var_uri rdf_type dbo_Film brack_close
 What is the religion of character of <A> Soprano from The Soprano television show?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_religion var_uri brack_close 
 which planet was discovered by <A>?, SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_discoverer <A> brack_close 
@@ -2536,80 +2536,80 @@ Name the chairman of the soccer club for which <A> currently plays?,SELECT DISTI
 Which Harris County based company is a subsidiary of <A>?,"SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_locationCity dbr_Harris_County,_Texas sep_dot var_uri dbo_subsidiary <A>  sep_dot var_uri rdf_type dbo_Company brack_close"
 What is the common licence of the Frontaccounting and nUbuntu?,SELECT DISTINCT var_uri WHERE brack_open dbr_Frontaccounting dbo_license var_uri sep_dot dbr_NUbuntu dbo_license var_uri sep_dot brack_close
 "What sport is <A> known for, and employes Craig Van Tibury?", SELECT DISTINCT var_uri WHERE brack_open <A> dbo_knownFor var_uri sep_dot dbr_Craig_Van_Tilbury dbo_occupation var_uri brack_close
-How many rivers are crossed by different Box Girder bridges?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_design dbr_Box_girder_bridge sep_dot var_x dbp_crosses var_uri  sep_dot var_uri rdf_type dbo_River brack_close
-Which <A>'s movie is distributed by <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_writer <A> sep_dot var_uri dbp_distributor <A>  sep_dot var_uri rdf_type dbo_Film brack_close
+How many rivers are crossed by different <A> ?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_design <A> sep_dot var_x dbp_crosses var_uri  sep_dot var_uri rdf_type dbo_River brack_close
+Which <A>'s movie is distributed by <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_writer <A> sep_dot var_uri dbp_distributor <B>  sep_dot var_uri rdf_type dbo_Film brack_close
 Was tupac a member of <A>?,ASK WHERE brack_open <A> dbp_pastMembers dbr_Tupac_Shakur brack_close
 Count the number of members of the organization which have <A> as one of the member ?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_membership <A> sep_dot var_x dbp_membership var_uri brack_close
-List the other members of the team where <A> Hayne currently plays?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_currentMember <A>_Hayne sep_dot var_x dbp_name var_uri  sep_dot var_x rdf_type dbo_OrganisationMember brack_close
-Who is married to Susan Weber Soros?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_spouse dbr_Susan_Weber_Soros  sep_dot brack_close
+List the other members of the team where <A> currently plays?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_currentMember <A> sep_dot var_x dbp_name var_uri  sep_dot var_x rdf_type dbo_OrganisationMember brack_close
+Who is married to <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_spouse <A> sep_dot brack_close
 list  the producer of the movies in which <A> in the star cast?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_starring <A> sep_dot var_x dbp_producer var_uri  sep_dot var_x rdf_type dbo_Film brack_close
-"Which political party of <A> election, 2014 was the leader of <A> ?"," SELECT DISTINCT var_uri WHERE brack_open <A>_election,_2014 dbp_party var_uri sep_dot <A> dbo_leaderName var_uri brack_close"
-How many groups have fought in wars where Richard Taylor fought too?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open dbr_Richard_Taylor_(colonel) dbp_battles var_x sep_dot var_x dbp_combatant var_uri  sep_dot var_x rdf_type dbo_MilitaryConflict brack_close
+"Which political party of <A> was the leader of <B> ?"," SELECT DISTINCT var_uri WHERE brack_open <A> dbp_party var_uri sep_dot <B> dbo_leaderName var_uri brack_close"
+How many groups have fought in wars where <A> fought too?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open <A> dbp_battles var_x sep_dot var_x dbp_combatant var_uri  sep_dot var_x rdf_type dbo_MilitaryConflict brack_close
 Is Another Lonely Night in New York by the musical band <A>?,ASK WHERE brack_open dbr_Another_Lonely_Night_in_New_York dbo_musicalBand <A> brack_close
-To which settlement does Elliot Bay belong to?, SELECT DISTINCT var_uri WHERE brack_open dbr_Elliott_Bay dbp_cities var_uri brack_close 
+To which settlement does <A> belong to?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_cities var_uri brack_close 
 What are the albums whose artists have performed with the <A> Dream?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_associatedBand <A>_Dream sep_dot var_uri dbp_artist var_x  sep_dot var_uri rdf_type dbo_Album brack_close
 Name the river on <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_river var_uri brack_close 
-Did <A> edit <A>?,ASK WHERE brack_open <A> dbp_editing <A> brack_close
+Did <A> edit <B>?,ASK WHERE brack_open <A> dbp_editing <B> brack_close
 Which people are known for appearing on the television show <A>'s Den?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_knownFor <A>s'_Den_(UK_TV_series)  sep_dot var_uri rdf_type dbo_Person brack_close
 What university campuses are situated in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_campus <A>  sep_dot var_uri rdf_type dbo_University brack_close
-Who is the authority of Maine School of Science and Mathematics ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Maine_School_of_Science_and_Mathematics dbo_authority var_uri brack_close 
+Who is the authority of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_authority var_uri brack_close 
 List some writers which speak one of the <A>.,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_languageFamily <A> sep_dot var_uri dbp_language var_x  sep_dot var_uri rdf_type dbo_Writer brack_close
 What are some awards given to people who were born in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_birthPlace <A> sep_dot var_x dbp_awards var_uri  sep_dot var_x rdf_type dbo_Person brack_close
 <A> employes how many people?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_employer <A>  sep_dot brack_close
-What band has <A> and <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_currentMembers <A> sep_dot var_uri dbp_currentMembers <A> sep_dot var_uri rdf_type dbo_Band brack_close
+What band has <A> and <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_currentMembers <A> sep_dot var_uri dbp_currentMembers <B> sep_dot var_uri rdf_type dbo_Band brack_close
 Is the assembly of tofa ahin <A>?,ASK WHERE brack_open dbr_Tofaş_Şahin dbo_assembly <A> brack_close
-Was the <A> of south central narrated by <A>?,ASK WHERE brack_open <A>_of_South_Central dbp_narrator <A> brack_close
-Name some schools with a bison as their mascot?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_mascot dbr_Bison  sep_dot var_uri rdf_type dbo_School brack_close
+Was the <A> narrated by <B>?,ASK WHERE brack_open <A> dbp_narrator <B> brack_close
+Name some schools with a <A> as their mascot?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_mascot <A> sep_dot var_uri rdf_type dbo_School brack_close
 What has <A> written his books about?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_author <A> sep_dot var_x dbp_subject var_uri  sep_dot var_x rdf_type dbo_Book brack_close
-In which state does the university which is the alma mater of Mateusz Morawiecki lie?,SELECT DISTINCT var_uri WHERE brack_open dbr_Mateusz_Morawiecki dbp_almaMater var_x sep_dot var_x dbp_state var_uri  sep_dot var_x rdf_type dbo_University brack_close
-Who voiced in <A> and <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_voice <A> sep_dot var_uri dbo_voice <A> sep_dot brack_close
+In which state does the university which is the alma mater of <A> lie?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_almaMater var_x sep_dot var_x dbp_state var_uri  sep_dot var_x rdf_type dbo_University brack_close
+Who voiced in <A> and <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_voice <A> sep_dot var_uri dbo_voice <B> sep_dot brack_close
 Who is the owner of the bank where <A> works ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_occupation var_x sep_dot var_x dbp_owner var_uri  sep_dot var_x rdf_type dbo_Bank brack_close
 What are some US citizens famous for?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_nationality dbr_United_States sep_dot var_x dbo_knownFor var_uri  sep_dot brack_close
 Who founded a company which served <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_regionServed <A> sep_dot var_x dbo_foundedBy var_uri  sep_dot brack_close
 British people have edited which movies?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_birthPlace dbr_United_Kingdom sep_dot var_uri dbp_editing var_x  sep_dot var_uri rdf_type dbo_Film brack_close
 Who is the leader of the town where the <A> originates?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_origin var_x sep_dot var_x dbo_leaderName var_uri  sep_dot var_x rdf_type dbo_Town brack_close
 List the home town of the bands whose label is <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_label <A> sep_dot var_x dbo_hometown var_uri  sep_dot var_x rdf_type dbo_Band brack_close
-Which broad cast area od <A> is the country of <A> Poker Tour ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_broadcastArea var_uri sep_dot <A>n_Poker_Tour dbo_country var_uri brack_close
+Which broad cast area od <A> is the country of <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_broadcastArea var_uri sep_dot <B> dbo_country var_uri brack_close
 List the subsequent work of the albums whose one of the subsequent work is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_subsequentWork <A> sep_dot var_x dbo_subsequentWork var_uri  sep_dot var_x rdf_type dbo_Album brack_close
 Name some basketball players whose team is coached by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_coach <A> sep_dot var_uri dbp_team var_x  sep_dot var_uri rdf_type dbo_BasketballPlayer brack_close
 Give me some administrators of bridges over which cars can go?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_carries dbr_Motor_vehicle sep_dot var_x dbo_maintainedBy var_uri  sep_dot var_x rdf_type dbo_Bridge brack_close
 Who are some US <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_rank <A>_(United_States)  sep_dot brack_close
-Where did Meg McGuffin graduated ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Meg_McGuffin dbo_education var_uri brack_close 
-Was <A> cinematographed by <A>?,ASK WHERE brack_open <A> dbp_cinematography <A> brack_close
+Where did <A> graduated ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_education var_uri brack_close 
+Was <A> cinematographed by <B>?,ASK WHERE brack_open <A> dbp_cinematography <B> brack_close
 Count the different alma maters of people employed by the <A>,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_employer <A> sep_dot var_x dbo_almaMater var_uri  sep_dot brack_close
-What are the awards won by the person who is an authority of <A> verschaffeltii ?,SELECT DISTINCT var_uri WHERE brack_open <A>_verschaffeltii dbp_binomialAuthority var_x sep_dot var_x dbp_awards var_uri  sep_dot var_x rdf_type dbo_Person brack_close
+What are the awards won by the person who is an authority of <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_binomialAuthority var_x sep_dot var_x dbp_awards var_uri  sep_dot var_x rdf_type dbo_Person brack_close
 Where did <A> dies ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_deathPlace var_uri brack_close 
 How many universities are in the <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_athletics <A>  sep_dot brack_close
 Which company developed the language designed by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_designer <A>_(computer_programmer) sep_dot var_x dbp_developer var_uri  sep_dot var_x rdf_type dbo_Language brack_close
 What is the mascot of the army unit whose commander is <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_commander <A> sep_dot var_x dbp_mascot var_uri  sep_dot var_x rdf_type dbo_MilitaryUnit brack_close
-What is the common citizenship between JSM Hopoer and Robert Valentine ?, SELECT DISTINCT var_uri WHERE brack_open dbr_J._S._M._Hooper dbo_citizenship var_uri sep_dot dbr_Robert_Valentine_(composer) dbo_country var_uri brack_close
+What is the common citizenship between <A> and <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_citizenship var_uri sep_dot <B> dbo_country var_uri brack_close
 Which country gave birth to the <A> and Start+Flug H101 aircrafts?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_nationalOrigin var_uri sep_dot dbr_Start_+_Flug_H-101 dbp_nationalOrigin var_uri sep_dot brack_close
 Which religion followers are the members of <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_party <A> sep_dot var_x dbo_religion var_uri  sep_dot brack_close
-Where are <A> located which is also the state of origin for <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_stateOfOrigin var_uri sep_dot <A> dbp_locations var_uri brack_close
-What is the workplace of Christopher S. Stewart ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Christopher_S._Stewart dbp_employer var_uri brack_close 
+Where are <A> located which is also the state of origin for <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_stateOfOrigin var_uri sep_dot <B> dbp_locations var_uri brack_close
+What is the workplace of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_employer var_uri brack_close 
 What are some things people born in <A> are famous for?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_placeOfBirth <A> sep_dot var_x dbp_knownFor var_uri  sep_dot brack_close
 Where did Fort Lauderdale Strikers season of 16 take place?, SELECT DISTINCT var_uri WHERE brack_open dbr_2016_Fort_Lauderdale_Strikers_season dbo_ground var_uri brack_close 
 Who is the founder of <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_founder var_uri brack_close 
-Who gave the musical score  of 9 to 5 (musical) ?, SELECT DISTINCT var_uri WHERE brack_open dbr_9_to_5_(musical) dbo_musicBy var_uri brack_close 
+Who gave the musical score  of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_musicBy var_uri brack_close 
 Who are the spouse of the actors of <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_starring var_x sep_dot var_x dbo_spouse var_uri  sep_dot brack_close
-Count all that was built by a company whose leader is Kazuo Hirai?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_keyPeople dbr_Kazuo_Hirai sep_dot var_uri dbo_manufacturer var_x  sep_dot brack_close
+Count all that was built by a company whose leader is <A> ?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_keyPeople <A> sep_dot var_uri dbo_manufacturer var_x  sep_dot brack_close
 Which producer of Wizards and the aliens is also the notable work of <A> ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Wizards_vs_Aliens dbo_producer var_uri sep_dot <A> dbo_notableWork var_uri brack_close
 Which coach of England national under 21 footbal team is also the coach of Aston Villa F.C season ?, SELECT DISTINCT var_uri WHERE brack_open dbr_England_national_under-21_football_team dbp_coach var_uri sep_dot dbr_2000–01_Aston_Villa_F.C._season dbp_name var_uri brack_close
 For which band did <A> perform in the past?, SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_pastMembers <A> brack_close 
-Name the scientist who is known for inventing <A> and was a member of <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_knownFor <A> sep_dot var_uri dbp_prizes <A>  sep_dot var_uri rdf_type dbo_Scientist brack_close
-Which show developed by Brain Graden has theme music composed by Primus ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_developer dbr_Brian_Graden sep_dot var_uri dbp_themeMusicComposer dbr_Primus_(band)  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+Name the scientist who is known for inventing <A> and was a member of <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_knownFor <A> sep_dot var_uri dbp_prizes <B>  sep_dot var_uri rdf_type dbo_Scientist brack_close
+Which show developed by <A> has theme music composed by <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_developer <A> sep_dot var_uri dbp_themeMusicComposer <B>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 Which builder has made <A> bridges?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_material <A> sep_dot var_x dbo_builder var_uri  sep_dot var_x rdf_type dbo_Bridge brack_close
 What is the serving railway line of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_servingRailwayLine var_uri brack_close 
 How many different products are there of the companies located in the <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_location <A> sep_dot var_x dbo_product var_uri  sep_dot brack_close
 What is that river whose source gets water from the <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_inflow <A> sep_dot var_uri dbo_source var_x  sep_dot var_uri rdf_type dbo_River brack_close
-"How many licensee are there, of the radio stations whose area is Nashville, Tennessee ?","SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_area dbr_Nashville,_Tennessee sep_dot var_x dbp_licensee var_uri  sep_dot brack_close"
+"How many licensee are there, of the radio stations whose area is <A> ?","SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_area <A> sep_dot var_x dbp_licensee var_uri  sep_dot brack_close"
 What is the allegiance of the <A> and state of origin of the <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_allegiance var_uri sep_dot <A> dbo_stateOfOrigin var_uri brack_close
 Who is the headcoach of 2008-09 Marquette Golden Eagles men's basketball team ?, SELECT DISTINCT var_uri WHERE brack_open dbr_2008–09_Marquette_Golden_Eagles_men's_basketball_team dbp_headcoach var_uri brack_close 
 Who is the vice president of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_vicePresident var_uri brack_close 
-What is the name of the information appliance by <A> whose predecessor is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_manufacturer <A> sep_dot var_uri dbp_predecessor <A>  sep_dot var_uri rdf_type dbo_InformationAppliance brack_close
+What is the name of the information appliance by <A> whose predecessor is <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_manufacturer <A> sep_dot var_uri dbp_predecessor <B>  sep_dot var_uri rdf_type dbo_InformationAppliance brack_close
 Who is the monarch of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_monarch var_uri brack_close 
 What actor starred in Splash and is married to <A>?,SELECT DISTINCT var_uri WHERE brack_open dbr_Splash_(film) dbp_starring var_uri sep_dot <A> dbp_spouse var_uri sep_dot brack_close
-What is the place of birth of Lauren Briggs ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Lauren_Briggs dbp_placeOfBirth var_uri brack_close 
+What is the place of birth of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_placeOfBirth var_uri brack_close 
 What is the river on which the <A> Dam and Batoka Gorge Hydroelectirc power station exist?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_river var_uri sep_dot dbr_Batoka_Gorge_Hydroelectric_Power_Station dbo_river var_uri sep_dot brack_close
 Players from how many teams have participated in the <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_league <A> sep_dot var_x dbo_team var_uri  sep_dot var_uri rdf_type dbo_SportsTeam brack_close
 What are some causes of death of <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_ethnicity <A> sep_dot var_x dbo_deathCause var_uri  sep_dot brack_close
@@ -2618,26 +2618,26 @@ What is the order of the Omar D. Conger where <A> was also the nominee ?, SELECT
 Which hockey team is coached by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_headCoach <A>  sep_dot var_uri rdf_type dbo_HockeyTeam brack_close
 Which battle of  Khalid bin Sultan was also the conflict of <A> ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Khalid_bin_Sultan dbp_battles var_uri sep_dot <A> dbo_battle var_uri brack_close
 What are the movies whose editor is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_editing <A>  sep_dot var_uri rdf_type dbo_Film brack_close
-List the music of Open House (American Horror Story)?, SELECT DISTINCT var_uri WHERE brack_open dbr_Open_House_(American_Horror_Story) dbp_music var_uri brack_close 
+List the music of <A> ? SELECT DISTINCT var_uri WHERE brack_open <A> dbp_music var_uri brack_close 
 What are the television shows whose network's sister station is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_sisterStation <A> sep_dot var_uri dbo_network var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-Where did the narrators of the Championship snooker die?,SELECT DISTINCT var_uri WHERE brack_open dbr_Championship_Snooker dbp_narrated var_x sep_dot var_x dbo_deathPlace var_uri  sep_dot brack_close
-What are the relatives of the rugby player one of whose relatives is Nick Williams?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_relatives dbr_Nick_Williams sep_dot var_x dbo_relative var_uri  sep_dot var_x rdf_type dbo_RugbyPlayer brack_close
-Who is the performer of Bengali in Platforms ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Bengali_in_Platforms dbo_artist var_uri brack_close 
+Where did the narrators of the <A> die?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_narrated var_x sep_dot var_x dbo_deathPlace var_uri  sep_dot brack_close
+What are the relatives of the rugby player one of whose relatives is <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_relatives <A> sep_dot var_x dbo_relative var_uri  sep_dot var_x rdf_type dbo_RugbyPlayer brack_close
+Who is the performer of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_artist var_uri brack_close 
 What are some families of mammals in the <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_kingdom <A> sep_dot var_x dbo_family var_uri  sep_dot var_x rdf_type dbo_Mammal brack_close
-Where is the headquarters of the public transit system which owns the American Boulevard (Metro Transit station) located ?,SELECT DISTINCT var_uri WHERE brack_open dbr_American_Boulevard_(Metro_Transit_station) dbo_owningOrganisation var_x sep_dot var_x dbp_headquarters var_uri  sep_dot var_x rdf_type dbo_PublicTransitSystem brack_close
-How many things are people who died in <A>. Petersburg known for?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_deathPlace <A>_Petersburg sep_dot var_x dbo_knownFor var_uri  sep_dot brack_close
-List down the important people of The Elders ?, SELECT DISTINCT var_uri WHERE brack_open dbr_The_Elders_(organization) dbp_keyPeople var_uri brack_close 
-Which TV show's executive producer is <A> and composed by <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_executiveProducer <A> sep_dot var_uri dbp_composer <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+Where is the headquarters of the public transit system which owns the <A> located ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_owningOrganisation var_x sep_dot var_x dbp_headquarters var_uri  sep_dot var_x rdf_type dbo_PublicTransitSystem brack_close
+How many things are people who died in <A> known for?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_deathPlace <A> sep_dot var_x dbo_knownFor var_uri  sep_dot brack_close
+List down the important people of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_keyPeople var_uri brack_close 
+Which TV show's executive producer is <A> and composed by <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_executiveProducer <A> sep_dot var_uri dbp_composer <B>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 Does <A> have a division called Nintendo Entertainment Planning & Development?,ASK WHERE brack_open <A> dbp_divisions <A>_Entertainment_Planning_&_Development brack_close
-Name the rivers which originate from within Pittsburg?,"SELECT DISTINCT var_uri WHERE brack_open var_x dbp_cities dbr_Pittsburg,_New_Hampshire sep_dot var_uri dbo_source var_x  sep_dot var_uri rdf_type dbo_River brack_close"
+Name the rivers which originate from within <A> ?,"SELECT DISTINCT var_uri WHERE brack_open var_x dbp_cities <A> sep_dot var_uri dbo_source var_x  sep_dot var_uri rdf_type dbo_River brack_close"
 In how many nations is <A> a common food ingredient?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_ingredient <A> sep_dot var_x dbp_country var_uri  sep_dot var_uri rdf_type dbo_Country brack_close
 Where do the rivers from <A> flow into?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_sourceRegion <A> sep_dot var_x dbp_mouthLocation var_uri  sep_dot var_x rdf_type dbo_River brack_close
 Which football teams are in a city where <A> were the tenants?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_tenant <A> sep_dot var_uri dbo_locationCity var_x  sep_dot var_uri rdf_type dbo_AmericanFootballTeam brack_close
 Who all have created new kinds of <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_type <A> sep_dot var_x dbp_creator var_uri  sep_dot brack_close
-"What country is Jeffrey Werleman from, which also has the <A>?",SELECT DISTINCT var_uri WHERE brack_open dbr_Jeffrey_Werleman dbo_birthPlace var_uri sep_dot <A> dbo_country var_uri sep_dot brack_close
+"What country is <B> from, which also has the <A>?",SELECT DISTINCT var_uri WHERE brack_open <B> dbo_birthPlace var_uri sep_dot <A> dbo_country var_uri sep_dot brack_close
 List the television shows whose network's owning company is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_owningCompany <A> sep_dot var_uri dbp_network var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 List the schools of the athlete with <A> as one of the school ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_school <A> sep_dot var_x dbp_school var_uri  sep_dot var_x rdf_type dbo_Athlete brack_close
-Which company was the designer of <A> and <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_designer var_uri sep_dot <A> dbo_designer var_uri sep_dot var_uri rdf_type dbo_Company brack_close
+Which company was the designer of <A> and <B> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_designer var_uri sep_dot <B> dbo_designer var_uri sep_dot var_uri rdf_type dbo_Company brack_close
 "For how many things are people famous, who were born in <A>?",SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_birthPlace <A> sep_dot var_x dbo_knownFor var_uri  sep_dot brack_close
 List the maintainers of <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_maintainedBy var_uri brack_close 
 List the starring of the movies whose label is T-Series ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_label dbr_T-Series sep_dot var_x dbp_starring var_uri  sep_dot var_x rdf_type dbo_Film brack_close
@@ -2647,57 +2647,57 @@ What is the religion of the successor of <A>?,SELECT DISTINCT var_uri WHERE brac
 What is the label of the singles whose group is <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_musicalArtist <A> sep_dot var_x dbp_label var_uri  sep_dot var_x rdf_type dbo_Single brack_close
 What are the television shows whose network's successor is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_successor <A> sep_dot var_uri dbo_network var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 what does the <A> flow into?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_inflow var_uri brack_close 
-where did Alfred Tarnowski die?, SELECT DISTINCT var_uri WHERE brack_open dbr_Alfred_Tarnowski dbp_placeOfDeath var_uri brack_close 
+where did <A> die?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_placeOfDeath var_uri brack_close 
 Does <A> play for the Brothers Union?,ASK WHERE brack_open <A> dbp_currentclub dbr_Brothers_Union brack_close
-In which city is  Arsenal Cider House ? located ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Arsenal_Cider_House dbp_locationCity var_uri brack_close 
-Name the television show distributed by <A> and voiced by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_distributor <A> sep_dot var_uri dbp_voices <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-Which operating system provider of <A> is also the employer of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_operatingSystem var_uri sep_dot <A> dbp_employer var_uri brack_close
-Which country had the county seats as <A> of Trier and <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_capital <A>_of_Trier sep_dot var_uri dbo_capital <A> sep_dot var_uri rdf_type dbo_Country brack_close
-List the <A> city is also the place of death of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_cities var_uri sep_dot <A> dbo_deathPlace var_uri brack_close
-Name the common record label of I pray on Christmas and Next Thing ?, SELECT DISTINCT var_uri WHERE brack_open dbr_I_Pray_on_Christmas dbp_label var_uri sep_dot dbr_Next_Thing dbo_recordLabel var_uri brack_close
+In which city is  <A>  located ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_locationCity var_uri brack_close 
+Name the television show distributed by <A> and voiced by <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_distributor <A> sep_dot var_uri dbp_voices <B>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+Which operating system provider of <A> is also the employer of <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_operatingSystem var_uri sep_dot <B> dbp_employer var_uri brack_close
+Which country had the county seats as <A> and <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_capital <A> sep_dot var_uri dbo_capital <B> sep_dot var_uri rdf_type dbo_Country brack_close
+List the <A> city is also the place of death of <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_cities var_uri sep_dot <B> dbo_deathPlace var_uri brack_close
+Name the common record label of <A> and Next Thing ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_label var_uri sep_dot dbr_Next_Thing dbo_recordLabel var_uri brack_close
 List down the TV shows whose producer is Stephen E. Ambros and writer is <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_producer dbr_Stephen_E._Ambrose sep_dot var_uri dbp_writer <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 What is the alma mater of <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_almaMater var_uri brack_close 
-Where are the National Academy Museum and School awardwinners buried?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_award dbr_National_Academy_Museum_and_School sep_dot var_x dbo_restingPlace var_uri  sep_dot brack_close
-Where is the person from whose military rank is <A> first class?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_militaryRank <A>_first_class sep_dot var_x dbp_state var_uri  sep_dot var_x rdf_type dbo_Person brack_close
+Where are the <A> awardwinners buried?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_award <A> sep_dot var_x dbo_restingPlace var_uri  sep_dot brack_close
+Where is the person from whose military rank is <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_militaryRank <A> sep_dot var_x dbp_state var_uri  sep_dot var_x rdf_type dbo_Person brack_close
 Who wrote the <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_writer var_uri brack_close 
-Where is Snake Island located ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Snake_Island_(Black_Sea) dbp_locationCountry var_uri brack_close 
+Where is <A> located ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_locationCountry var_uri brack_close 
 List all the co-founders of the non for profit which have founding member as <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_foundedBy <A> sep_dot var_x dbo_foundedBy var_uri  sep_dot var_x rdf_type dbo_Non-ProfitOrganisation brack_close
-What is the home town of the <A> is the DOD of the <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_homeTown var_uri sep_dot <A> dbp_deathDate var_uri brack_close
+What is the home town of the <A> is the DOD of the <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_homeTown var_uri sep_dot <B> dbp_deathDate var_uri brack_close
 Which soccer players are currently playing for NYC FC?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_currentclub dbr_New_York_City_FC  sep_dot var_uri rdf_type dbo_SoccerPlayer brack_close
 Name a writer who was educated in <A> and had a son named Lyubov Dostoyevskaya ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_education <A> sep_dot var_uri dbo_child dbr_Lyubov_Dostoyevskaya  sep_dot var_uri rdf_type dbo_Writer brack_close
 "What shows used to air on the channel which was earlier known as ""The Comedy Central""?",SELECT DISTINCT var_uri WHERE brack_open var_x dbo_predecessor dbr_The_Comedy_Channel_(United_States) sep_dot var_uri dbp_distributor var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 Which company owns <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_owningCompany var_uri brack_close 
 How many party leaders are there whose parties are headquartered in <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_headquarter <A> sep_dot var_x dbo_leader var_uri  sep_dot var_uri rdf_type dbo_Politician brack_close
-Where was the trainer of <A> Gold born?,SELECT DISTINCT var_uri WHERE brack_open <A>_Gold dbp_trainer var_x sep_dot var_x dbp_birthPlace var_uri  sep_dot brack_close
+Where was the trainer of <A> born?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_trainer var_x sep_dot var_x dbp_birthPlace var_uri  sep_dot brack_close
 Where can I find some buildings of <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_architecturalStyle <A> sep_dot var_x dbp_address var_uri  sep_dot var_x rdf_type dbo_Building brack_close
 Who are the people who played for <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_team <A>  sep_dot brack_close
-Was <A> a commander of the <A> of US?,ASK WHERE brack_open <A> dbo_notableCommander <A> brack_close
+Was <B> a commander of the <A> of US?,ASK WHERE brack_open <A> dbo_notableCommander <B> brack_close
 Name a famous relative of <A>,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_relative <A>  sep_dot brack_close
 With which artist did the musical artist of <A> collaborated ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_musicalArtist var_x sep_dot var_x dbp_associatedActs var_uri  sep_dot brack_close
-Where is the office of P Elmo Futrell Jr?,"SELECT DISTINCT var_uri WHERE brack_open dbr_P._Elmo_Futrell,_Jr sep_dot dbp_office var_uri  sep_dot brack_close"
+Where is the office of <A> ?,"SELECT DISTINCT var_uri WHERE brack_open <A> sep_dot dbp_office var_uri  sep_dot brack_close"
 Name the scientist who was awarded a position in <A> and has academic advisor as <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_awards <A> sep_dot var_uri dbo_academicAdvisor <A>  sep_dot var_uri rdf_type dbo_Scientist brack_close
 What are the last two studio albums of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_subsequentWork var_uri brack_close 
 Where can i find <A> based food?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_mainIngredient <A> sep_dot var_x dbp_country var_uri  sep_dot brack_close
-Does <A> play as a <A>?,ASK WHERE brack_open <A> dbo_position <A> brack_close
+Does <A> play as a <B>?,ASK WHERE brack_open <A> dbo_position <B> brack_close
 List places that are associated to cities in the state of <A>.,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_federalState <A> sep_dot var_uri dbp_cities var_x  sep_dot brack_close
 "Which awards did the writer, who is  the creator of <A>, won ?",SELECT DISTINCT var_uri WHERE brack_open <A> dbp_creator var_x sep_dot var_x dbp_awards var_uri  sep_dot var_x rdf_type dbo_Writer brack_close
 Who all have written songs that were then recorded in the <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_recordedIn <A> sep_dot var_x dbp_writer var_uri  sep_dot var_x rdf_type dbo_MusicalWork brack_close
 Count the number of sports played by the universities whihc also plays <A> ?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_athletics <A> sep_dot var_x dbp_athletics var_uri brack_close
-Is <A> the largest city of <A>?,ASK WHERE brack_open <A> dbp_largestCity <A> brack_close
-Which educational institutes have campuses at <A> and <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_campus <A> sep_dot var_uri dbo_campus <A> sep_dot var_uri rdf_type dbo_EducationalInstitution brack_close
+Is <A> the largest city of <B>?,ASK WHERE brack_open <B> dbp_largestCity <A> brack_close
+Which educational institutes have campuses at <A> and <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_campus <A> sep_dot var_uri dbo_campus <B> sep_dot var_uri rdf_type dbo_EducationalInstitution brack_close
 In which areas are the radio stations of <A> available too?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_city <A> sep_dot var_x dbp_area var_uri  sep_dot var_x rdf_type dbo_RadioStation brack_close
 Through how many labels has <A> released her singles?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_writer <A> sep_dot var_x dbo_recordLabel var_uri  sep_dot brack_close
-Who appointed William L. Dayton ?, SELECT DISTINCT var_uri WHERE brack_open dbr_William_L._Dayton dbo_appointer var_uri brack_close 
-Is <A> the distributing label of <A>?,ASK WHERE brack_open <A> dbo_distributingLabel <A> brack_close
-Was Gerald Gibbs the cinematographer of X the unknown?,ASK WHERE brack_open dbr_X_the_Unknown dbo_cinematography dbr_Gerald_Gibbs_(cinematographer) brack_close
+Who appointed <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_appointer var_uri brack_close 
+Is <A> the distributing label of <B>?,ASK WHERE brack_open <B> dbo_distributingLabel <A> brack_close
+Was Gerald Gibbs the cinematographer of <A> ?,ASK WHERE brack_open <A> dbo_cinematography dbr_Gerald_Gibbs_(cinematographer) brack_close
 <A> has narrated in which movie?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_narrator <A>  sep_dot var_uri rdf_type dbo_Film brack_close
-To which educational institutions did Lesli Sanchez go for her studies?, SELECT DISTINCT var_uri WHERE brack_open dbr_Leslie_Sanchez dbo_education var_uri brack_close 
+To which educational institutions did <A> go for her studies?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_education var_uri brack_close 
 What are some famous artists who rocked a Les Paul?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_notableInstruments dbr_Gibson_Les_Paul  sep_dot var_uri rdf_type dbo_MusicalArtist brack_close
-Name the sstadium of <A> Pro Duta FC season ?, SELECT DISTINCT var_uri WHERE brack_open <A>_Pro_Duta_FC_season dbp_stadium var_uri brack_close 
+Name the sstadium of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_stadium var_uri brack_close 
 Name some people who are buried in a place governed by the US Department of the <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_governingBody <A> sep_dot var_uri dbp_restingplace var_x  sep_dot var_uri rdf_type dbo_Person brack_close
-Pointe d'Aveneyre belongs to which mountain range?, SELECT DISTINCT var_uri WHERE brack_open dbr_Pointe_d'Aveneyre dbo_mountainRange var_uri brack_close 
+<A> belongs to which mountain range?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_mountainRange var_uri brack_close 
 <A>'s musicals has been adapted from how many things?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_music <A> sep_dot var_x dbo_basedOn var_uri  sep_dot brack_close
-Which country has leaders  <A> and <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_leader <A> sep_dot var_uri dbo_leader <A> sep_dot var_uri rdf_type dbo_Country brack_close
+Which country has leaders  <A> and <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_leader <A> sep_dot var_uri dbo_leader <B> sep_dot var_uri rdf_type dbo_Country brack_close
 Count the movies edited by  Mark Stevens (film editor) and were directed by <A>?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_editing dbr_Mark_Stevens_(film_editor) sep_dot var_uri dbo_director <A> brack_close 
 "In which city was the company founded , which owns Grasim Bhiwani Textiles?",SELECT DISTINCT var_uri WHERE brack_open dbr_Grasim_Bhiwani_Textiles dbp_parent var_x sep_dot var_x dbp_foundation var_uri  sep_dot var_x rdf_type dbo_Company brack_close
 What television shows's distributor is Eurovision?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_distributor dbr_Eurovision_(network)  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
@@ -2705,35 +2705,35 @@ List the judge of the TV show whose one of the judge is <A> ?,SELECT DISTINCT va
 Whose youth clubs used to participate in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_league <A> sep_dot var_uri dbp_youthclubs var_x  sep_dot brack_close
 List some people who were opponents of someone who was died by <A>? ,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_deathCause <A> sep_dot var_x dbo_opponent var_uri  sep_dot var_x rdf_type dbo_Person brack_close
 Who owns the railway line which goes through the Newark Station?,SELECT DISTINCT var_uri WHERE brack_open dbr_Newark_station_(Delaware) dbp_line var_x sep_dot var_x dbp_owner var_uri  sep_dot brack_close
-Which magazine's editor is married to Crystal Harris?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_spouse dbr_Crystal_Harris sep_dot var_uri dbp_editor var_x  sep_dot var_uri rdf_type dbo_Magazine brack_close
+Which magazine's editor is married to <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_spouse <A> sep_dot var_uri dbp_editor var_x  sep_dot var_uri rdf_type dbo_Magazine brack_close
 Is <A> a software company?,ASK WHERE brack_open <A> dbo_industry dbr_Software brack_close
 What is the currency of the country of <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_governmentType var_x sep_dot var_x dbo_currency var_uri  sep_dot brack_close
-Which sitcom is broadcasted by <A> and presented by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_channel <A> sep_dot var_uri dbp_presenter <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+Which sitcom is broadcasted by <A> and presented by <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_channel <A> sep_dot var_uri dbp_presenter <B>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 Which sports are played in the alma mater of <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_almaMater var_x sep_dot var_x dbo_sport var_uri  sep_dot brack_close
 What is the parent company of <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_parent var_uri brack_close 
 "What are some TV shows whose voice actors are from <A>, US?",SELECT DISTINCT var_uri WHERE brack_open var_x dbp_birthPlace <A> sep_dot var_uri dbp_voices var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-Which person won <A> Life Time Achievement award and has resting palce in <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_restingPlace <A> sep_dot var_uri dbo_award <A>_Life_Achievement_Award  sep_dot var_uri rdf_type dbo_Person brack_close
+Which person won <B> and has resting palce in <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_restingPlace <A> sep_dot var_uri dbo_award <B>  sep_dot var_uri rdf_type dbo_Person brack_close
 How many shows are made by <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_company <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 List the mascot of the universities which are a part of  <A>.,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_athletics <A> sep_dot var_x dbp_mascot var_uri  sep_dot var_x rdf_type dbo_University brack_close
-What is the route junction of Rhode Island Route 15 ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Rhode_Island_Route_15 dbo_routeJunction var_uri brack_close 
-Does the <A> flow into <A>?,ASK WHERE brack_open <A> dbo_mouthMountain <A> brack_close
+What is the route junction of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_routeJunction var_uri brack_close 
+Does the <A> flow into <B>?,ASK WHERE brack_open <A> dbo_mouthMountain <B> brack_close
 What is the famous relative of <A> known for?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_relatives <A> sep_dot var_x dbp_knownFor var_uri  sep_dot brack_close
 From which country is <A>'s nationality ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_nationality var_uri brack_close 
 From which party is the politician who was selected  in <A> constituency?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_constituency <A>_(Lok_Sabha_constituency) sep_dot var_x dbo_party var_uri  sep_dot var_x rdf_type dbo_OfficeHolder brack_close
-Name the associate acts of  Martin Pugh?, SELECT DISTINCT var_uri WHERE brack_open dbr_Martin_Pugh dbp_associatedActs var_uri brack_close 
-Who authored the work illustrated by Hiroyuki Takei?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_illustrator dbr_Hiroyuki_Takei sep_dot var_x dbp_author var_uri  sep_dot brack_close
-Who was the president at the time when both <A> and <A> held a position in US political framework?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_president var_uri sep_dot <A> dbp_president var_uri sep_dot brack_close
+Name the associate acts of  <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_associatedActs var_uri brack_close 
+Who authored the work illustrated by <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_illustrator <A> sep_dot var_x dbp_author var_uri  sep_dot brack_close
+Who was the president at the time when both <A> and <B> held a position in US political framework?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_president var_uri sep_dot <B> dbp_president var_uri sep_dot brack_close
 List all the presidents of the school which had atleast one of the president as Queen <A> of Jordan ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_president <A> sep_dot var_x dbo_president var_uri  sep_dot var_x rdf_type dbo_School brack_close
 Which TV show's  opening theme is The Best of Both Worlds (song) and executive producer is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_openingTheme dbr_The_Best_of_Both_Worlds_(song) sep_dot var_uri dbp_executiveProducer <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 What are the tenants of <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_tenant var_uri brack_close 
 What is the birth city of trainer of <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_trainer var_x sep_dot var_x dbp_birthPlace var_uri  sep_dot brack_close
 What are some TV shows similar to the one produced by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_producer <A> sep_dot var_uri dbo_related var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-"Which television show is based in <A> and has opening theme as ""<A>"" ?",SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_openingTheme <A> sep_dot var_uri dbo_location <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-Name the software which has been developed by John Fanning ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_developer dbr_John_Fanning_(businessman)  sep_dot var_uri rdf_type dbo_Software brack_close
-What is the mouth mountain of Current River (Missouri) ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Current_River_(Missouri) dbo_mouthMountain var_uri brack_close 
-Who has canonized someone who's a doctor of the church?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_titles dbr_Doctor_of_the_Church sep_dot var_x dbo_canonizedBy var_uri  sep_dot brack_close
+"Which television show is based in <A> and has opening theme as ""<B>"" ?",SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_openingTheme <B> sep_dot var_uri dbo_location <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+Name the software which has been developed by <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_developer <A>  sep_dot var_uri rdf_type dbo_Software brack_close
+What is the mouth mountain of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_mouthMountain var_uri brack_close 
+Who has canonized someone who's a <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_titles <A> sep_dot var_x dbo_canonizedBy var_uri  sep_dot brack_close
 was the first national bank and trust building architectured by <A>?,"ASK WHERE brack_open dbr_First_National_Bank_and_Trust_Building_(Lima,_Ohio) dbo_architecturalStyle <A> brack_close"
-Did Tupac write the lyrics of <A>?,ASK WHERE brack_open <A>_(musical) dbp_lyrics dbr_Tupac_Shakur brack_close
+Did Tupac write the lyrics of <A>?,ASK WHERE brack_open <A> dbp_lyrics dbr_Tupac_Shakur brack_close
 "Where is the tombstone of the parliament members who served with James Roberts as the Vice President, US?",SELECT DISTINCT var_uri WHERE brack_open var_x dbo_vicePresident dbr_James_Roberts_(trade_unionist) sep_dot var_x dbo_restingPlace var_uri  sep_dot var_x rdf_type dbo_MemberOfParliament brack_close
 What is the nationality of the entomologist who is a renowned authority of <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_binomialAuthority var_x sep_dot var_x dbo_citizenship var_uri  sep_dot var_x rdf_type dbo_Entomologist brack_close
 "Where is the ground of the soccer club, which has <A> as a team member ?",SELECT DISTINCT var_uri WHERE brack_open <A>__11 dbo_team var_x sep_dot var_x dbo_ground var_uri  sep_dot var_x rdf_type dbo_SoccerClub brack_close
@@ -2742,16 +2742,16 @@ What currencies are prevalent in the countries governed by the President of Fran
 Which company manufactured <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_manufacturer var_uri brack_close 
 In which fields are pupils of <A> working?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_academicAdvisor <A> sep_dot var_x dbp_fields var_uri  sep_dot brack_close
 Who is the artist of Time Radio hour ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Theme_Time_Radio_Hour dbp_creator var_uri brack_close 
-List the prospect team of Robin Kovacs ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Robin_Kovacs dbp_prospectTeam var_uri brack_close 
+List the prospect team of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_prospectTeam var_uri brack_close 
 "Where did the genres originate, which were in the Harry and the <A> album?",SELECT DISTINCT COUNT(var_uri) WHERE brack_open <A>_(album) dbo_genre var_x sep_dot var_x dbo_stylisticOrigin var_uri  sep_dot brack_close
 How many sitcoms are there whose theme music is composed by a New Yorker?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_hometown dbr_New_York sep_dot var_uri dbp_themeMusicComposer var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-"Which band made the song <A> me There, and has collaborated with <A> in the past?", SELECT DISTINCT var_uri WHERE brack_open <A>_Me_There_(Blackstreet_&_Mýa_song) dbo_musicalBand var_uri sep_dot <A> dbo_associatedBand var_uri brack_close
+"Which band made the song <A>, and has collaborated with <B> in the past?", SELECT DISTINCT var_uri WHERE brack_open <A> dbo_musicalBand var_uri sep_dot <B> dbo_associatedBand var_uri brack_close
 Who was succeeded by Arthur Gegei as the office ho0lder ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_successor dbr_Artúr_Görgei  sep_dot brack_close
-Whose successors are Robert P. Smith and Adrian A. Basora?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_successor dbr_Robert_P._Smith sep_dot var_uri dbp_successor dbr_Adrian_A._Basora sep_dot brack_close
-Give me a count of movies whose editor is Mark Stevens?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_editing dbr_Mark_Stevens_(film_editor)  sep_dot var_uri rdf_type dbo_Film brack_close
-How many other awards have been given to people who have won the Golden Globe?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_award dbr_Golden_Globe_Award sep_dot var_x dbp_awards var_uri  sep_dot var_uri rdf_type dbo_Award brack_close
-Name the mountain located in <A> and has parent peak as <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_locatedInArea <A> sep_dot var_uri dbo_parentMountainPeak <A>  sep_dot var_uri rdf_type dbo_Mountain brack_close
-Which person works at the American Magazine?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_employer dbr_The_American_Magazine  sep_dot var_uri rdf_type dbo_Person brack_close
+Whose successors are <A> and <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_successor <A> sep_dot var_uri dbp_successor <B> sep_dot brack_close
+Give me a count of movies whose editor is <A> ?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_editing <A>  sep_dot var_uri rdf_type dbo_Film brack_close
+How many other awards have been given to people who have won the <A> ?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_award <A> sep_dot var_x dbp_awards var_uri  sep_dot var_uri rdf_type dbo_Award brack_close
+Name the mountain located in <A> and has parent peak as <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_locatedInArea <A> sep_dot var_uri dbo_parentMountainPeak <B>  sep_dot var_uri rdf_type dbo_Mountain brack_close
+Which person works at <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_employer <A> sep_dot var_uri rdf_type dbo_Person brack_close
 What was developed by someone working in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_employer <A> sep_dot var_uri dbp_author var_x  sep_dot brack_close
 The people who did their high school in <A> did their college where?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_highschool <A> sep_dot var_x dbo_college var_uri  sep_dot var_x rdf_type dbo_Person brack_close
 "Where is the radio broadcasted in, whose sister station is <A>?",SELECT DISTINCT var_uri WHERE brack_open var_x dbo_sisterStation <A> sep_dot var_x dbo_broadcastArea var_uri  sep_dot var_x rdf_type dbo_RadioStation brack_close
@@ -2760,66 +2760,66 @@ Does the San Macros River start in <A>?,ASK WHERE brack_open dbr_San_Marcos_Rive
 Which stadium's operator works in the <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_occupation <A> sep_dot var_uri dbo_operator var_x  sep_dot brack_close
 What is the academic discipline of the Journal of Cerebral Blood Flow & Metabolism and also an ingredient of the <A> ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Journal_of_Cerebral_Blood_Flow_&_Metabolism dbo_academicDiscipline var_uri sep_dot <A> dbo_ingredient var_uri brack_close
 Is the national anthem of <A> motherland?,ASK WHERE brack_open <A> dbo_anthem dbr_Motherland_(anthem) brack_close
-In what tv shows did Jason Carter act?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_starring dbr_Jason_Carter_(actor)  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+In what tv shows did <A> act?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_starring <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 Where is the mouth of the river whose tributary is Bjelimićka  Rijeka ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_rightTributary dbr_Bjelimićka_Rijeka sep_dot var_x dbo_mouthCountry var_uri  sep_dot brack_close
 "Which companies make cars with a front engine, rear wheel drive layout?","SELECT DISTINCT var_uri WHERE brack_open var_x dbo_automobilePlatform dbr_Front-engine,_rear-wheel-drive_layout sep_dot var_x dbo_parentCompany var_uri  sep_dot var_x rdf_type dbo_Automobile brack_close"
 What is the mascot of the military unit in which <A> served?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_branch var_x sep_dot var_x dbp_mascot var_uri  sep_dot brack_close
-Did <A> create <A>?,ASK WHERE brack_open <A> dbp_creators <A> brack_close
+Did <B> create <A>?,ASK WHERE brack_open <A> dbp_creators <B> brack_close
 "Where does <A>, United States District Judge live?", SELECT DISTINCT var_uri WHERE brack_open <A> dbp_residence var_uri brack_close 
 <A> has how many american football teams?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_city <A>  sep_dot var_uri rdf_type dbo_AmericanFootballTeam brack_close
 To which sports team is Aubie the mascot?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_mascot dbr_Aubie  sep_dot var_uri rdf_type dbo_SportsTeam brack_close
 What is the religious affiliation of <A> Tang Hin Memorial Secondary School ?, SELECT DISTINCT var_uri WHERE brack_open <A>_Tang_Hin_Memorial_Secondary_School dbp_religiousAffiliation var_uri brack_close 
 What were the major actions taken by the politicians living in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_residence <A> sep_dot var_x dbo_battle var_uri  sep_dot var_x rdf_type dbo_Politician brack_close
 What are the software whose operating systems are Mac OS and Microsoft <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_operatingSystem dbr_Mac_OS sep_dot var_uri dbo_operatingSystem <A> sep_dot var_uri rdf_type dbo_Software brack_close
-What band had  <A> and <A> as former members ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_pastMembers <A> sep_dot var_uri dbp_pastMembers <A> sep_dot var_uri rdf_type dbo_Band brack_close
+What band had  <A> and <B> as former members ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_pastMembers <A> sep_dot var_uri dbp_pastMembers <B> sep_dot var_uri rdf_type dbo_Band brack_close
 Which royal people are buried in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_placeOfBurial <A>  sep_dot var_uri rdf_type dbo_Royalty brack_close
 Is <A> the result of Operation Autumn Clouds?,ASK WHERE brack_open dbr_Operation_Autumn_Clouds dbp_result <A> brack_close
-What artist was associated closely with the bare necessities and rock a doodle?, SELECT DISTINCT var_uri WHERE brack_open dbr_The_Bare_Necessities dbo_artist var_uri sep_dot dbr_Rock-a-Doodle dbo_starring var_uri brack_close
-Which parent company of the <A> is also the alma mater of the Mario Garca Menocal?, SELECT DISTINCT var_uri WHERE brack_open <A>_Press dbo_parentCompany var_uri sep_dot dbr_Mario_García_Menocal dbo_almaMater var_uri brack_close
+What artist was associated closely with <A> and <B>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_artist var_uri sep_dot <B> dbo_starring var_uri brack_close
+Which parent company of the <A> is also the alma mater of the Mario Garca Menocal?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_parentCompany var_uri sep_dot dbr_Mario_García_Menocal dbo_almaMater var_uri brack_close
 Which religions are followed by people in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_residence <A> sep_dot var_x dbp_religion var_uri  sep_dot var_x rdf_type dbo_Person brack_close
 Where was <A> born?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_birthPlace var_uri brack_close 
-Is <A> garrisoned at <A>?,ASK WHERE brack_open <A> dbp_garrison <A> brack_close
-What company involved in the development of Sherlock did Arthur Levinson work for?, SELECT DISTINCT var_uri WHERE brack_open dbr_Arthur_D._Levinson dbo_occupation var_uri sep_dot dbr_Sherlock_(software) dbo_developer var_uri brack_close
+Is <A> garrisoned at <B>?,ASK WHERE brack_open <A> dbp_garrison <B> brack_close
+What company involved in the development of Sherlock did <A> work for?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_occupation var_uri sep_dot dbr_Sherlock_(software) dbo_developer var_uri brack_close
 Who was the president during the time the opponent of <A> was in the office?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_opponent <A> sep_dot var_x dbo_incumbent var_uri  sep_dot brack_close
 What is the birthplace of the netball player who is the relative of <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_relatives var_x sep_dot var_x dbo_birthPlace var_uri  sep_dot var_x rdf_type dbo_NetballPlayer brack_close
 What is the religion of the academic authority on <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_binomialAuthority var_x sep_dot var_x dbp_veneratedIn var_uri  sep_dot brack_close
-What is the birth location of the pope who was canonized by Agatha of Sicily?,SELECT DISTINCT var_uri WHERE brack_open dbr_Agatha_of_Sicily dbo_canonizedBy var_x sep_dot var_x dbp_birthPlace var_uri  sep_dot var_x rdf_type dbo_Pope brack_close
+What is the birth location of the pope who was canonized by <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_canonizedBy var_x sep_dot var_x dbp_birthPlace var_uri  sep_dot var_x rdf_type dbo_Pope brack_close
 In which cities are there stations of <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_broadcastNetwork <A> sep_dot var_x dbp_city var_uri  sep_dot var_x rdf_type dbo_TelevisionStation brack_close
 Which set of researchers won the <A> of the Royal Astronomical Society award?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_prizes <A>  sep_dot var_uri rdf_type dbo_Scientist brack_close
 List the members of <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_bandMember var_uri brack_close 
 How did <A> died ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_deathCause var_uri brack_close 
-Which destination of the <A> International Airway is the source origin of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A>_International_Airways dbo_destination var_uri sep_dot <A> dbo_origin var_uri brack_close
-Which animator of Tommy Tucker's Tooth is also the film director of Alice's Wonderland ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Alice's_Wonderland dbo_director var_uri sep_dot dbr_Tommy_Tucker's_Tooth dbp_animator var_uri brack_close
+Which destination of the <B> is the source origin of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_destination var_uri sep_dot <A> dbo_origin var_uri brack_close
+Which animator of Tommy Tucker's Tooth is also the film director of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_director var_uri sep_dot dbr_Tommy_Tucker's_Tooth dbp_animator var_uri brack_close
 The president served by <A> died where?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_president var_x sep_dot var_x dbp_placeOfDeath var_uri  sep_dot brack_close
 Name the mouth country of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_mouthCountry var_uri brack_close 
-What show has writing of <A> and <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_writer <A> sep_dot var_uri dbp_writer <A> sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-Name the movies in which music is give by  <A> and edited by <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_music <A> sep_dot var_uri dbo_editing <A>  sep_dot var_uri rdf_type dbo_Film brack_close
-Which  <A> astronaut was on mission <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_type <A> sep_dot var_uri dbp_mission <A>  sep_dot var_uri rdf_type dbo_Astronaut brack_close
-Give me the places where people who worked in Church of England died in ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_occupation dbr_Church_of_England sep_dot var_x dbo_deathPlace var_uri  sep_dot brack_close
+What show has writing of <A> and <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_writer <A> sep_dot var_uri dbp_writer <B> sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+Name the movies in which music is give by  <A> and edited by <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_music <A> sep_dot var_uri dbo_editing <B>  sep_dot var_uri rdf_type dbo_Film brack_close
+Which  <A> astronaut was on mission <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_type <A> sep_dot var_uri dbp_mission <B>  sep_dot var_uri rdf_type dbo_Astronaut brack_close
+Give me the places where people who worked in <A> died in ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_occupation <A> sep_dot var_x dbo_deathPlace var_uri  sep_dot brack_close
 Which assembly of the <A> is the route end of the NorthSouth Transport Corridor?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_assembly var_uri sep_dot dbr_North–South_Transport_Corridor dbo_routeEnd var_uri brack_close
-Who is the producer of the song which is the previous work of He's a Liar ?,SELECT DISTINCT var_uri WHERE brack_open dbr_He's_a_Liar dbo_previousWork var_x sep_dot var_x dbo_producer var_uri  sep_dot var_x rdf_type dbo_Song brack_close
-Which river's source mountain is <A> and it's mouth is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_sourceMountain <A> sep_dot var_uri dbo_riverMouth <A>  sep_dot var_uri rdf_type dbo_River brack_close
+Who is the producer of the song which is the previous work of <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_previousWork var_x sep_dot var_x dbo_producer var_uri  sep_dot var_x rdf_type dbo_Song brack_close
+Which river's source mountain is <B> and it's mouth is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_sourceMountain <B> sep_dot var_uri dbo_riverMouth <A>  sep_dot var_uri rdf_type dbo_River brack_close
 How many universities are located in a country led by <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_leaderName <A> sep_dot var_uri dbo_country var_x  sep_dot var_uri rdf_type dbo_University brack_close
 where are <A> centers located?, SELECT DISTINCT var_uri WHERE brack_open <A>_Center dbp_address var_uri brack_close 
 Which publisher of <A> is also the university for which <A> plays for ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_publisher var_uri sep_dot <A>_(lacrosse) dbo_team var_uri brack_close
 What mascot of the Galatasaray Handball Team is also the team name of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_teamName var_uri sep_dot dbr_Galatasaray_Handball_Team dbp_mascot var_uri brack_close
-What is the alma mater of the author of Letter to a Christian Nation ?,SELECT DISTINCT var_uri WHERE brack_open dbr_Letter_to_a_Christian_Nation dbo_author var_x sep_dot var_x dbp_almaMater var_uri  sep_dot brack_close
+What is the alma mater of the author of <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_author var_x sep_dot var_x dbp_almaMater var_uri  sep_dot brack_close
 Which television shows have been produced by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_producer <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 What are the gadgets whose manufacturing company is founded by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_founder <A> sep_dot var_uri dbo_manufacturer var_x  sep_dot var_uri rdf_type dbo_Device brack_close
 What party are Siddharta Shankar Ray and <A> from?,SELECT DISTINCT var_uri WHERE brack_open dbr_Siddhartha_Shankar_Ray dbo_party var_uri sep_dot <A> dbp_party var_uri sep_dot brack_close
 How many books are there whose author's tomb is in <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_restingPlace <A> sep_dot var_uri dbo_author var_x  sep_dot var_uri rdf_type dbo_Book brack_close
-What are the television shows whose writers did notable work for Band of Brothers ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_notableWork dbr_Band_of_Brothers_(miniseries) sep_dot var_uri dbp_writer var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-To which political party does the writer of In the Bazaars of Hyderabad belong?,SELECT DISTINCT var_uri WHERE brack_open dbr_In_the_Bazaars_of_Hyderabad dbp_writer var_x sep_dot var_x dbo_party var_uri  sep_dot brack_close
+What are the television shows whose writers did notable work for <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_notableWork <A> sep_dot var_uri dbp_writer var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+To which political party does the writer of <A> belong?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_writer var_x sep_dot var_x dbo_party var_uri  sep_dot brack_close
 To how many different species does the members of the <A> belong?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_kingdom <A> sep_dot var_x dbo_species var_uri  sep_dot var_uri rdf_type dbo_Species brack_close
 Where do networks affiliated with ETC broadcast?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_affiliation dbr_ETC_(TV_channel) sep_dot var_x dbp_area var_uri  sep_dot var_x rdf_type dbo_BroadcastNetwork brack_close
 What water bodies are nearest to <A> city?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_nearestCity <A>  sep_dot var_uri rdf_type dbo_BodyOfWater brack_close
 Which relative of <A> is a famous formula one racer?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_relatives <A>  sep_dot var_uri rdf_type dbo_FormulaOneRacer brack_close
 What country did the successor of <A> swear his oath to?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_predecessor <A> sep_dot var_x dbp_allegiance var_uri  sep_dot brack_close
 Which countries were the first to play Gumus and <A>?,SELECT DISTINCT var_uri WHERE brack_open dbr_Gümüş_(TV_series) dbp_firstAired var_uri sep_dot <A> dbp_firstAired var_uri sep_dot brack_close
-Is <A> in the <A> achipelago?,ASK WHERE brack_open <A> dbp_archipelago <A> brack_close
+Is <A> in the <B> achipelago?,ASK WHERE brack_open <A> dbp_archipelago <B> brack_close
 What is the prize awarded to <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_award var_uri brack_close 
-"To which books Thomas Egerton, an editor?",SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_publisher dbr_Thomas_Egerton_(publisher)  sep_dot var_uri rdf_type dbo_Book brack_close
-Where did Marvo originate?, SELECT DISTINCT var_uri WHERE brack_open dbr_Mavro dbo_origin var_uri brack_close 
+"To which books <A>, an editor?",SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_publisher <A>  sep_dot var_uri rdf_type dbo_Book brack_close
+Where did <A> originate?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_origin var_uri brack_close 
 What is the burial place of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_placeOfBurial var_uri brack_close 
 What sport played in Polytechnic uni of San Juan has also made advocate nasiruddin famous?, SELECT DISTINCT var_uri WHERE brack_open dbr_Advocate_Nasiruddin dbo_knownFor var_uri sep_dot dbr_Polytechnic_University_of_the_Philippines_San_Juan dbo_sport var_uri brack_close
 What river ends in <A> and also starts somewhere in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_riverMouth <A> sep_dot var_uri dbo_sourceCountry <A>  sep_dot var_uri rdf_type dbo_River brack_close
@@ -2827,9 +2827,9 @@ Who all have been a commander during the battles of <A>?,SELECT DISTINCT var_uri
 What is the appliance build jointly by <A> and <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_manufacturer <A> sep_dot var_uri dbo_manufacturer <A> sep_dot var_uri rdf_type dbo_InformationAppliance brack_close
 How many groups speak the <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_languages <A>  sep_dot var_uri rdf_type dbo_EthnicGroup brack_close
 Which source of river Raa is the sovereign state of <A> ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Raša_(river) dbo_source var_uri sep_dot <A> dbo_country var_uri brack_close
-What was founded by Congress of Industrial Organizations ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Congress_of_Industrial_Organizations dbp_founded var_uri brack_close 
+What was founded by <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_founded var_uri brack_close 
 Which current players once played for <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_formerTeam <A>  sep_dot var_uri rdf_type dbo_AmericanFootballPlayer brack_close
-What is the religious affiliation of the Neungin High School which is also the academic interest of Sylvain Lvi ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Neungin_High_School dbp_religiousAffiliation var_uri sep_dot dbr_Sylvain_Lévi dbp_fields var_uri brack_close
+What is the religious affiliation of the <A> which is also the academic interest of Sylvain Lvi ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_religiousAffiliation var_uri sep_dot dbr_Sylvain_Lévi dbp_fields var_uri brack_close
 Give me a count of movies distributed by <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_distributor <A>  sep_dot brack_close
 Which magazines were founded by ann <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_founder <A>  sep_dot var_uri rdf_type dbo_Magazine brack_close
 Where is the venue of the <A> of Penny Arcade Expo located?,SELECT DISTINCT var_uri WHERE brack_open <A>_of_Penny_Arcade_Expo dbp_venue var_x sep_dot var_x dbp_address var_uri  sep_dot brack_close
@@ -2841,22 +2841,22 @@ Where is the headquarters of the company which runs the Metro Blue Line in minne
 How many people are in the <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_militaryBranch <A>  sep_dot brack_close
 Which religion followers are in the <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_militaryBranch <A> sep_dot var_x dbo_religion var_uri  sep_dot brack_close
 To which senator did military unit VMF-155 belong?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_militaryUnit dbr_VMF-155  sep_dot var_uri rdf_type dbo_Senator brack_close
-What are the movies whose music is composed by Vangelis?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_musicComposer dbr_Vangelis  sep_dot var_uri rdf_type dbo_Film brack_close
+What are the movies whose music is composed by <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_musicComposer <A>  sep_dot var_uri rdf_type dbo_Film brack_close
 In which areas can I find wine made of Vitis <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_species <A> sep_dot var_x dbo_wineRegion var_uri  sep_dot var_x rdf_type dbo_Grape brack_close
 Which expertise of the Menetries's warbler is the  nationality of the <A> ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Menetries's_warbler dbo_binomialAuthority var_uri sep_dot <A> dbo_nationality var_uri brack_close
 Who is the publisher of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_publisher var_uri brack_close 
-Which soccer clubs are in the Liga Divisi Utama?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_season dbr_Liga_Divisi_Utama sep_dot var_x dbp_name var_uri  sep_dot var_x rdf_type dbo_SoccerClub brack_close
+Which soccer clubs are in the <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_season <A> sep_dot var_x dbp_name var_uri  sep_dot var_x rdf_type dbo_SoccerClub brack_close
 How many services does <A> provide?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open <A> dbp_services var_uri  sep_dot brack_close
 What is the Location of the Dofinivka Estuary which is also the  birthplace of the <A> ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Dofinivka_Estuary dbp_location var_uri sep_dot <A> dbp_birthplace var_uri brack_close
 What are the former team of the american football players who played at gridiron football position ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_position dbr_Tackle_(gridiron_football_position) sep_dot var_x dbo_formerTeam var_uri  sep_dot var_x rdf_type dbo_AmericanFootballPlayer brack_close
-What subjects does the subsequent work of The Dragons of Eden deals with  ?,SELECT DISTINCT var_uri WHERE brack_open dbr_The_Dragons_of_Eden dbo_subsequentWork var_x sep_dot var_x dbp_subject var_uri  sep_dot brack_close
+What subjects does the subsequent work of <A> with  ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_subsequentWork var_x sep_dot var_x dbp_subject var_uri  sep_dot brack_close
 Name the TV show which has judge as harry Connick and is broadcasted on <A> ?,"SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_channel <A> sep_dot var_uri dbp_judges dbr_Harry_Connick,_Jr sep_dot  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close"
 What are some rivers over which there is a <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_design <A> sep_dot var_x dbp_crosses var_uri  sep_dot brack_close
-Whay common comic is written by Karakuri Dji Ultimo and narrated by The Incredible Hulk ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Karakuri_Dôji_Ultimo dbp_author var_uri sep_dot dbr_The_Incredible_Hulk_(1982_TV_series) dbp_narrated var_uri brack_close
-Which university attended by <A> and education institute of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_education var_uri sep_dot <A> dbo_education var_uri brack_close
+Whay common comic is written by <A> and narrated by The Incredible Hulk ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_author var_uri sep_dot dbr_The_Incredible_Hulk_(1982_TV_series) dbp_narrated var_uri brack_close
+Which university attended by <A> and education institute of <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_education var_uri sep_dot <B> dbo_education var_uri brack_close
 Where is the lake located into which the <A> River flows?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_outflow <A>_River sep_dot var_x dbp_location var_uri  sep_dot brack_close
 Which  municipality is neighbored by <A> and Chne-Bougeries?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_neighboringMunicipalities <A> sep_dot var_uri dbp_neighboringMunicipalities dbr_Chêne-Bougeries sep_dot brack_close
-Who is the designer of <A> S5S Raptor ?,SELECT DISTINCT var_uri WHERE brack_open <A>_S5S_Raptor dbp_designer var_uri  sep_dot brack_close
+Who is the designer of <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_designer var_uri  sep_dot brack_close
 Name the newspaper owned by Schibsted and headquartered at <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_owners dbr_Schibsted sep_dot var_uri dbp_headquarters <A>  sep_dot var_uri rdf_type dbo_Newspaper brack_close
 How many party are there of the office holders whose one of the party is <A> ?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_otherParty <A> sep_dot var_x dbo_otherParty var_uri brack_close
 Name the first driver of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_firstDriver var_uri brack_close 
@@ -2870,73 +2870,73 @@ Is <A> the band member of Beyond the Sixth Seal?,ASK WHERE brack_open dbr_Beyond
 Was the <A> designed by Herny Ford?,ASK WHERE brack_open <A> dbo_designCompany dbr_Henry_Ford brack_close
 Count the tenants of the stadiums designed by <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_architect <A> sep_dot var_x dbo_tenant var_uri  sep_dot brack_close
 Who all have been judges on <A>'s shows?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_network <A> sep_dot var_x dbp_judges var_uri  sep_dot var_x rdf_type dbo_TelevisionShow brack_close
-How many have former teams as <A> and <A>?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_formerTeam <A> sep_dot var_uri dbo_formerTeam <A> brack_close 
+How many have former teams as <A> and <B>?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_formerTeam <A> sep_dot var_uri dbo_formerTeam <B> brack_close 
 What are some movies whose distributer's CEO is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_keyPeople <A> sep_dot var_uri dbp_distributor var_x  sep_dot var_uri rdf_type dbo_Film brack_close
 What was the stadium of Panionios G.S.S. in 2014-15 season ?, SELECT DISTINCT var_uri WHERE brack_open dbr_2014–15_Panionios_G.S.S._season dbp_stadium var_uri brack_close 
 Does Mt St. Peter Churt follow the architectural style of <A>?,ASK WHERE brack_open dbr_Mount_St._Peter_Church dbp_architecture <A> brack_close
 Who was the editor of the newspaper owned by the the <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_owners <A> sep_dot var_x dbp_editor var_uri  sep_dot var_x rdf_type dbo_Newspaper brack_close
-List the <A>'s movies which has music by <A>  ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_director <A> sep_dot var_uri dbp_music <A>  sep_dot var_uri rdf_type dbo_Film brack_close
+List the <B>'s movies which has music by <A>  ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_director <B> sep_dot var_uri dbp_music <A>  sep_dot var_uri rdf_type dbo_Film brack_close
 What are the type of <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_type var_uri brack_close 
 "Where does the road starting from Madison, Wisconsin end?","SELECT DISTINCT var_uri WHERE brack_open var_x dbo_routeEnd dbr_Madison,_Wisconsin sep_dot var_x dbo_routeStart var_uri  sep_dot var_x rdf_type dbo_Road brack_close"
 To which label did The Producers and I pray on Christmas sign up?,SELECT DISTINCT var_uri WHERE brack_open dbr_The_Producers_(2005_film) dbp_label var_uri sep_dot dbr_I_Pray_on_Christmas dbp_label var_uri sep_dot brack_close
-What is sovereignity of the successor of Mr. George Robert Andrews ?,SELECT DISTINCT var_uri WHERE brack_open dbr_George_Roberts_Andrews dbp_successor var_x sep_dot var_x dbo_country var_uri  sep_dot brack_close
+What is sovereignity of the successor of Mr. <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_successor var_x sep_dot var_x dbo_country var_uri  sep_dot brack_close
 <A> was the commander of which military conflict ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_commander <A>  sep_dot var_uri rdf_type dbo_MilitaryConflict brack_close
-In which common territory did Sino French war and the Tonkin campaign take place?,SELECT DISTINCT var_uri WHERE brack_open dbr_Sino-French_War dbo_territory var_uri sep_dot dbr_Tonkin_Campaign dbo_territory var_uri sep_dot brack_close
-What is the label of Next Thing ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Next_Thing dbo_recordLabel var_uri brack_close 
-Is <A> a city close to <A>?,ASK WHERE brack_open <A> dbo_neighboringMunicipality <A> brack_close
-List down the schools whose mascot's order is Even-toed ungulate?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_order dbr_Even-toed_ungulate sep_dot var_uri dbp_mascot var_x  sep_dot brack_close
+In which common territory did <A> and the Tonkin campaign take place?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_territory var_uri sep_dot dbr_Tonkin_Campaign dbo_territory var_uri sep_dot brack_close
+What is the label of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_recordLabel var_uri brack_close 
+Is <A> a city close to <B>?,ASK WHERE brack_open <A> dbo_neighboringMunicipality <B> brack_close
+List down the schools whose mascot's order is <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_order <A> sep_dot var_uri dbp_mascot var_x  sep_dot brack_close
 Name the company whose products is Boeing F/A-18E/F Super Hornet and key person is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_products dbr_Boeing_F/A-18E/F_Super_Hornet sep_dot var_uri dbo_keyPerson <A>  sep_dot var_uri rdf_type dbo_Company brack_close
 List the relatives of the governor of <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_governor var_x sep_dot var_x dbo_relation var_uri  sep_dot brack_close
 "In all the states which have a Uniontown, where does a Keller's mill covered bridge exist too?","SELECT DISTINCT var_uri WHERE brack_open dbr_Uniontown,_Pennsylvania dbo_state var_uri sep_dot dbr_Keller's_Mill_Covered_Bridge dbo_state var_uri sep_dot brack_close"
-Who manufactured the <A> and the <A>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_manufacturer var_uri sep_dot <A> dbo_manufacturer var_uri sep_dot brack_close
+Who manufactured the <A> and the <B>?,SELECT DISTINCT var_uri WHERE brack_open <A> dbo_manufacturer var_uri sep_dot <B> dbo_manufacturer var_uri sep_dot brack_close
 How many corporations were founded in <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_foundationPlace <A>  sep_dot var_uri rdf_type dbo_Company brack_close
 What is the style of architecture of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_architecturalStyle var_uri brack_close 
-Which developer of Go was also the predecssor of X compnay ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Go_(programming_language) dbo_developer var_uri sep_dot dbr_X_(company) dbp_predecessor var_uri brack_close
+Which developer of <A> was also the predecssor of <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_developer var_uri sep_dot <B> dbp_predecessor var_uri brack_close
 List all the houses of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_houses var_uri brack_close 
 What companies are located in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_locationCity <A>  sep_dot var_uri rdf_type dbo_Company brack_close
-Where does the network cofounded by Seewoosagur Ramgoolam air its shows?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_founder dbr_Seewoosagur_Ramgoolam sep_dot var_x dbp_broadcastArea var_uri  sep_dot var_x rdf_type dbo_BroadcastNetwork brack_close
-Name the appliance produced by <A> and its OS is provided by <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_manufacturer <A> sep_dot var_uri dbp_os <A>  sep_dot var_uri rdf_type dbo_InformationAppliance brack_close
+Where does the network cofounded by <A> air its shows?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_founder <A> sep_dot var_x dbp_broadcastArea var_uri  sep_dot var_x rdf_type dbo_BroadcastNetwork brack_close
+Name the appliance produced by <A> and its OS is provided by <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_manufacturer <A> sep_dot var_uri dbp_os <B>  sep_dot var_uri rdf_type dbo_InformationAppliance brack_close
 Which teams participate in the football seasons headed by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_chairman <A> sep_dot var_x dbp_name var_uri  sep_dot var_x rdf_type dbo_SportsSeason brack_close
-Who was the architect of the stadium currently run by Brandenton?,"SELECT DISTINCT var_uri WHERE brack_open var_x dbo_operator dbr_Bradenton,_Florida sep_dot var_x dbp_architect var_uri  sep_dot var_x rdf_type dbo_Stadium brack_close"
+Who was the architect of the stadium currently run by <A> ?,"SELECT DISTINCT var_uri WHERE brack_open var_x dbo_operator <A> sep_dot var_x dbp_architect var_uri  sep_dot var_x rdf_type dbo_Stadium brack_close"
 who operates the <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_operatedBy var_uri brack_close 
 Name few companies founded in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_foundationPlace <A>  sep_dot var_uri rdf_type dbo_Company brack_close
-In which timezone does Khok Kwang lie?, SELECT DISTINCT var_uri WHERE brack_open dbr_Khok_Kwang dbo_timeZone var_uri brack_close 
-Who directed the albums recorded in Anaheim?,"SELECT DISTINCT var_uri WHERE brack_open var_x dbo_recordedIn dbr_Anaheim,_California sep_dot var_x dbp_director var_uri  sep_dot var_x rdf_type dbo_Album brack_close"
+In which timezone does <A> lie?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_timeZone var_uri brack_close 
+Who directed the albums recorded in <A> ?,"SELECT DISTINCT var_uri WHERE brack_open var_x dbo_recordedIn <A> sep_dot var_x dbp_director var_uri  sep_dot var_x rdf_type dbo_Album brack_close"
 Who has <A> and Mary as parents ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_parent <A> sep_dot var_uri dbo_parent dbr_Mary_(mother_of_Jesus) sep_dot brack_close
 "How many awards have been received by graduates of <A> of Melbourne, Faculty of VCA & MCM?",SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_training <A>_of_Melbourne_Faculty_of_VCA_and_MCM sep_dot var_x dbo_award var_uri  sep_dot brack_close
 Name the common current team of the <A> and John mcGuinness ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_currentTeam var_uri sep_dot dbr_John_McGuinness_(motorcycle_racer) dbp_currentTeam var_uri sep_dot brack_close
 What is the result of the GazaIsrael conflict is also  the  place of the <A>?, SELECT DISTINCT var_uri WHERE brack_open dbr_Gaza–Israel_conflict dbp_result var_uri sep_dot <A> dbp_place var_uri brack_close
-Where are <A> and <A> used as currency?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_currency <A> sep_dot var_uri dbo_currency <A> sep_dot brack_close
+Where are <A> and <B> used as currency?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_currency <A> sep_dot var_uri dbo_currency <B> sep_dot brack_close
 To which military division does <A> belong?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_militaryBranch var_uri brack_close 
 Who are the opponents of <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_opponent var_uri brack_close 
 Which planet was discovered by Johann Gottfired and <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_discoverer dbr_Johann_Gottfried_Galle sep_dot var_uri dbo_discoverer <A>  sep_dot var_uri rdf_type dbo_Planet brack_close
-Is <A> associated with <A>?,ASK WHERE brack_open <A> dbo_associatedBand <A> brack_close
-Who is the office holder for constituencies  <A> and <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_constituency <A> sep_dot var_uri dbp_constituency <A> sep_dot var_uri rdf_type dbo_OfficeHolder brack_close
+Is <A> associated with <B>?,ASK WHERE brack_open <A> dbo_associatedBand <B> brack_close
+Who is the office holder for constituencies  <A> and <B>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_constituency <A> sep_dot var_uri dbp_constituency <B> sep_dot var_uri rdf_type dbo_OfficeHolder brack_close
 Which awards have been given to <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_fields <A> sep_dot var_x dbo_award var_uri  sep_dot brack_close
 What are the mountains in the <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_locatedInArea <A>  sep_dot var_uri rdf_type dbo_Mountain brack_close
-What is the alma mater of <A> and <A>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_college var_uri sep_dot <A> dbp_almaMater var_uri brack_close
+What is the alma mater of <A> and <B>?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_college var_uri sep_dot <B> dbp_almaMater var_uri brack_close
 Which animator of <A> is also the animator of the Tommy Tucker's Tooth ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_animator var_uri sep_dot dbr_Tommy_Tucker's_Tooth dbp_animator var_uri brack_close
 From where did <A> do his highscool?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_highschool var_uri brack_close 
-Does the <A> flow into the <A>?,ASK WHERE brack_open <A> dbo_mouthMountain <A> brack_close
+Does the <A> flow into the <B>?,ASK WHERE brack_open <A> dbo_mouthMountain <B> brack_close
 Name some books by <A> speaking authors.,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_language <A> sep_dot var_uri dbp_author var_x  sep_dot brack_close
 How many famous people are born in <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_birthPlace <A>  sep_dot brack_close
 Name some sports played in institutions of <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_state <A> sep_dot var_x dbo_sport var_uri  sep_dot brack_close
 How many other genere are there of the radio stations whose one of the genre  is <A> ?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_programmeFormat <A> sep_dot var_x dbo_programmeFormat var_uri brack_close
 Where did <A> study?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_college var_uri brack_close 
 What is the common nationality of <A> a comedian and that of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A>_(comedian) dbp_nationality var_uri sep_dot <A> dbo_nationality var_uri brack_close
-What shows are aired on sister channels of <A> Parliaments,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_sisterNames <A>_Parliament sep_dot var_uri dbo_network var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
+What shows are aired on sister channels of <A> ,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_sisterNames <A> sep_dot var_uri dbo_network var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 How many veterans are buried in the <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_restingPlace <A>  sep_dot var_uri rdf_type dbo_MilitaryPerson brack_close
-Was <A> the Pole driver of <A>?,ASK WHERE brack_open <A> dbp_poleDriver <A> brack_close
-name the Glover's distributer ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Glover_(video_game) dbo_distributor var_uri brack_close 
-Whichi office of Walter Evnas Edge is also the part of Atlantic seaboard fall lines ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Atlantic_Seaboard_fall_line dbo_part var_uri sep_dot dbr_Walter_Evans_Edge dbp_office var_uri brack_close
-Does the <A> come under <A> county?,ASK WHERE brack_open <A> dbo_ceremonialCounty <A> brack_close
-Is <A> the membership of <A>?,ASK WHERE brack_open <A> dbp_membership <A> brack_close
+Was <A> the Pole driver of <B>?,ASK WHERE brack_open <A> dbp_poleDriver <B> brack_close
+name the <A>'s distributer ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_distributor var_uri brack_close 
+Whichi office of Walter Evnas Edge is also the part of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_part var_uri sep_dot dbr_Walter_Evans_Edge dbp_office var_uri brack_close
+Does the <A> come under <B> county?,ASK WHERE brack_open <A> dbo_ceremonialCounty <B> brack_close
+Is <A> the membership of <B>?,ASK WHERE brack_open <A> dbp_membership <B> brack_close
 Which team did Michael and <A> play for?,SELECT DISTINCT var_uri WHERE brack_open dbr_Michael_Powell_(lacrosse) dbo_team var_uri sep_dot <A> dbo_team var_uri sep_dot brack_close
 What are the television shows whose network is <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_network <A>  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 "To which company is the service ""<A> eShop"" associated with?",SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_services <A>_eShop  sep_dot var_uri rdf_type dbo_Company brack_close
 Name the famous employee of <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_employer <A>  sep_dot brack_close
 List the movies whose music composer is often associated with Jon and Vangelis.,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_associatedActs dbr_Jon_and_Vangelis sep_dot var_uri dbo_musicComposer var_x  sep_dot var_uri rdf_type dbo_Film brack_close
-Does <A> play for <A>?,ASK WHERE brack_open <A> dbp_currentTeam <A> brack_close
+Does <A> play for <B>?,ASK WHERE brack_open <A> dbp_currentTeam <B> brack_close
 who is the governer of New Castile?, SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_order dbr_Governorate_of_New_Castile brack_close 
 Does MSX BASIC have a license of <A>?,ASK WHERE brack_open dbr_MSX_BASIC dbp_license <A> brack_close
 How many teams have someone playing at the <A> position?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_position <A> sep_dot var_x dbo_team var_uri  sep_dot var_uri rdf_type dbo_SportsTeam brack_close
@@ -2946,57 +2946,57 @@ Which religion is followed by the PM who was served by <A>?,SELECT DISTINCT var_
 Name some shows similar to the one whose theme song is made by <A>.,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_themeMusicComposer <A> sep_dot var_uri dbo_related var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
 What is the constituency of the people who died in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_deathPlace <A> sep_dot var_x dbp_constituency var_uri  sep_dot var_x rdf_type dbo_Person brack_close
 Who are the relatives of the character after which Quagmire's Quagmire was made?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_subsequentWork dbr_Quagmire's_Quagmire sep_dot var_uri dbo_relative var_x  sep_dot brack_close
-Name the driver who was at pole in <A> and also <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_poleDriver var_uri sep_dot <A> dbo_poleDriver var_uri brack_close
+Name the driver who was at pole in <A> and also <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_poleDriver var_uri sep_dot <B> dbo_poleDriver var_uri brack_close
 Which fictional character portrayed by Roger barton has <A> as family member ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_family <A> sep_dot var_uri dbp_portrayer dbr_Roger_Barton_(film_editor)  sep_dot var_uri rdf_type dbo_FictionalCharacter brack_close
 Which band was left by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_formerBandMember <A>  sep_dot var_uri rdf_type dbo_Band brack_close
 What is the place of death of the <A> who was the silver medalist at the 1956 Summer Olympics Men's rings ?,SELECT DISTINCT var_uri WHERE brack_open <A>_at_the_1956_Summer_Olympics_–_Men's_rings dbo_silverMedalist var_x sep_dot var_x dbp_placeOfDeath var_uri  sep_dot brack_close
 Name the narrators of the album which has been narrated by <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_narrated <A> sep_dot var_x dbp_narrated var_uri  sep_dot brack_close
 Whose children died in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_deathPlace <A> sep_dot var_uri dbo_child var_x  sep_dot brack_close
 Name the presenter of <A>'s Storybook ?, SELECT DISTINCT var_uri WHERE brack_open <A>'s_Storybook dbp_presenter var_uri brack_close 
-What is the place of birth of the stars of <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A>_(film) dbp_starring var_x sep_dot var_x dbo_birthPlace var_uri  sep_dot brack_close
+What is the place of birth of the stars of <A> ?,SELECT DISTINCT var_uri WHERE brack_open <A> dbp_starring var_x sep_dot var_x dbo_birthPlace var_uri  sep_dot brack_close
 Name the television show created by CE Webber and also has actor named Companion?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_starring dbr_Companion_(Doctor_Who) sep_dot var_uri dbo_creator dbr_C._E._Webber  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-Give me the characters who last appeared in <A> Episode 3, SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_last <A>:_Episode_III_–_Revenge_of_the_Sith brack_close 
+Give me the characters who last appeared in <A>, SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_last <A> brack_close 
 How many awards have been awarded to people who are buried in <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_restingPlace <A> sep_dot var_x dbo_award var_uri  sep_dot brack_close
 Count the number of tenants whose one of the tenant is <A> ?, SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbo_tenant <A> sep_dot var_x dbo_tenant var_uri brack_close
 In which war did the units garrisoned at <A> fight?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_garrison <A> sep_dot var_x dbo_battle var_uri  sep_dot brack_close
-Which software uses <A> as programming language?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_programmingLanguage <A>+  sep_dot var_uri rdf_type dbo_Software brack_close
+Which software uses <A> as programming language?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_programmingLanguage <A>  sep_dot var_uri rdf_type dbo_Software brack_close
 Producers of what have died in <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_deathPlace <A> sep_dot var_uri dbo_producer var_x  sep_dot brack_close
 Where is the birthplace of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_birthplace var_uri brack_close 
 Did <A> write the Daredevils?,ASK WHERE brack_open dbr_The_Daredevils dbp_writers <A> brack_close
-Which sports exist in the universities whose president is Emanuel de Guzman?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_president dbr_Emanuel_de_Guzman sep_dot var_x dbo_sport var_uri  sep_dot var_x rdf_type dbo_University brack_close
+Which sports exist in the universities whose president is <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_president <A> sep_dot var_x dbo_sport var_uri  sep_dot var_x rdf_type dbo_University brack_close
 How many scientists are known for the <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_knownFor <A>  sep_dot var_uri rdf_type dbo_Scientist brack_close
 Who designed the stadiums which have been rented by <A>?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_tenant <A> sep_dot var_x dbp_architect var_uri  sep_dot var_x rdf_type dbo_Stadium brack_close
-Who were the producers of the tenderfoot?, SELECT DISTINCT var_uri WHERE brack_open dbr_The_Tenderfoot_(miniseries) dbo_producer var_uri brack_close 
-Name the route start of <A>  Moscow Railway ?, SELECT DISTINCT var_uri WHERE brack_open <A>_–_Moscow_Railway dbo_routeStart var_uri brack_close 
-Name the sport league of Hampton Roads Rhinos ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Hampton_Roads_Rhinos dbp_league var_uri brack_close 
+Who were the producers of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_producer var_uri brack_close 
+Name the route start of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_routeStart var_uri brack_close 
+Name the sport league of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_league var_uri brack_close 
 How many <A> towns are there?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_settlementType <A>  sep_dot var_uri rdf_type dbo_Town brack_close
 Name all the broadcast area of the TV stations which has <A> as one of the broadcast area ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_broadcastArea <A> sep_dot var_x dbp_broadcastArea var_uri  sep_dot var_x rdf_type dbo_TelevisionStation brack_close
-Which share holder of outlook is also the content license of the <A> Basics ?, SELECT DISTINCT var_uri WHERE brack_open <A>_BASIC dbp_license var_uri sep_dot dbr_Outlook_on_the_web dbp_owner var_uri brack_close
+Which share holder of outlook is also the content license of the <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_license var_uri sep_dot dbr_Outlook_on_the_web dbp_owner var_uri brack_close
 Name the shows whose theme was composed by a band in which <A> used to be?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_formerBandMember <A> sep_dot var_uri dbp_themeMusicComposer var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-Name the office holder with predecessor as <A> and partner <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_predecessor <A> sep_dot var_uri dbo_partner <A>  sep_dot var_uri rdf_type dbo_OfficeHolder brack_close
+Name the office holder with predecessor as <A> and partner <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_predecessor <A> sep_dot var_uri dbo_partner <B>  sep_dot var_uri rdf_type dbo_OfficeHolder brack_close
 Which newspaper owned by Schibsted is published in Swedish ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_language dbr_Swedish_language sep_dot var_uri dbp_owners dbr_Schibsted  sep_dot var_uri rdf_type dbo_Newspaper brack_close
 Was Yabanc Damat first aired in <A>?,ASK WHERE brack_open dbr_Yabancı_Damat dbp_firstAired <A> brack_close
 How many other people are in a band with <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_currentMembers <A> sep_dot var_x dbo_bandMember var_uri  sep_dot var_uri rdf_type dbo_Person brack_close
 "Which river goes through <A>, NY", SELECT DISTINCT var_uri WHERE brack_open <A> dbo_river var_uri brack_close 
 List the software which uses Microsoft <A> as their operating system ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_operatingSystem <A>  sep_dot var_uri rdf_type dbo_Software brack_close
 What all has been created by <A>?, SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_creators <A> brack_close 
-What is the common party of the <A> and  B. Shiva Rao?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_party var_uri sep_dot dbr_B._Shiva_Rao dbp_party var_uri brack_close
-Is <A> the academic discipline of <A>?,ASK WHERE brack_open <A> dbo_academicDiscipline <A> brack_close
+What is the common party of the <A> and  <B> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbo_party var_uri sep_dot <B> dbp_party var_uri brack_close
+Is <B> the academic discipline of <A>?,ASK WHERE brack_open <A> dbo_academicDiscipline <B> brack_close
 List the country of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_country var_uri brack_close 
-Who all were venerated in Islam?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_veneratedIn dbr_Islam  sep_dot brack_close
-Which country has outflow of  <A> Uniamsi and  inflows of the <A>?, SELECT DISTINCT var_uri WHERE brack_open <A>_Uniamési dbp_outflow var_uri sep_dot <A> dbp_inflow var_uri brack_close
+Who all were venerated in <A> ?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbo_veneratedIn <A>  sep_dot brack_close
+Which country has outflow of  <B>  and  inflows of the <A>?, SELECT DISTINCT var_uri WHERE brack_open <B> dbp_outflow var_uri sep_dot <A> dbp_inflow var_uri brack_close
 How many items belong to the <A> genre?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_uri dbp_genre <A>  sep_dot brack_close
 For what is <A> known ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_knownFor var_uri brack_close 
-Who is the author of Karakuri Dji Ultimo ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Karakuri_Dôji_Ultimo dbp_author var_uri brack_close 
+Who is the author of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_author var_uri brack_close 
 How many shows belong to the networks one of whose sister station is <A>?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_sisterNames <A>_(TV_channel) sep_dot var_uri dbo_network var_x  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
-Which spouse of <A> had a mother named <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_parent <A> sep_dot var_uri dbo_spouse <A>  sep_dot brack_close
-What is the mascot of Galatasaray Handball Team ?, SELECT DISTINCT var_uri WHERE brack_open dbr_Galatasaray_Handball_Team dbp_mascot var_uri brack_close 
+Which spouse of <A> had a mother named <B> ?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbo_parent <B> sep_dot var_uri dbo_spouse <A>  sep_dot brack_close
+What is the mascot of <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_mascot var_uri brack_close 
 Name some dishes made with <A>.,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_division <A> sep_dot var_uri dbo_ingredient var_x  sep_dot var_uri rdf_type dbo_Food brack_close
 Whose artworks are in <A> Museum of Art?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_museum <A>_Museum_of_Art sep_dot var_x dbp_artist var_uri  sep_dot var_x rdf_type dbo_Artwork brack_close
-Which country are the players of the Atletico Petroleos de Luanda from?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_club dbr_Atlético_Petróleos_de_Luanda_(handball) sep_dot var_x dbo_nationality var_uri  sep_dot var_x rdf_type dbo_Athlete brack_close
+Which country are the players of the <A> from?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_club <A> sep_dot var_x dbo_nationality var_uri  sep_dot var_x rdf_type dbo_Athlete brack_close
 What is the ethnicity of the people working for the Philippines <A> of representatives?,SELECT DISTINCT var_uri WHERE brack_open var_x dbo_occupation <A>_of_Representatives_of_the_Philippines sep_dot var_x dbo_ethnicity var_uri  sep_dot var_x rdf_type dbo_Person brack_close
 Where was <A> hosted?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_hostCity var_uri brack_close 
-What is the religion of the governors whose office is the <A> of Thailand?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_office <A>_of_Thailand sep_dot var_x dbo_religion var_uri  sep_dot var_x rdf_type dbo_Governor brack_close
+What is the religion of the governors whose office is the <A> ?,SELECT DISTINCT var_uri WHERE brack_open var_x dbp_office <A> sep_dot var_x dbo_religion var_uri  sep_dot var_x rdf_type dbo_Governor brack_close
 Count everyone who was in a youthclub chaired by <A> ?,SELECT DISTINCT COUNT(var_uri) WHERE brack_open var_x dbp_chairman <A> sep_dot var_uri dbp_youthclubs var_x  sep_dot brack_close
 What is the common branch of military of <A>  and <A> ?, SELECT DISTINCT var_uri WHERE brack_open <A> dbp_branch var_uri sep_dot <A> dbo_militaryBranch var_uri brack_close
 Which <A> show has Christopher Franke as artist?,SELECT DISTINCT var_uri WHERE brack_open var_uri dbp_artist dbr_Christopher_Franke sep_dot var_uri dbp_network <A>_(TV_channel)  sep_dot var_uri rdf_type dbo_TelevisionShow brack_close
