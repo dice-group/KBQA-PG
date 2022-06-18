@@ -14,7 +14,7 @@ model = BertForMaskedLM.from_pretrained('bert-base-uncased')
 #config = BertConfig.from_json_file('out/config.json')
 #model = BertForMaskedLM(config)
 
-with open('preprocessed_data_files/qtq-updated-qald-8-9-merged-train-multilingual.triple', 'r') as fp :
+with open('preprocessed_data_files/qtq-qald-8-train.triple', 'r') as fp :
     text = fp.read().split('\n')
 
 # with open('sparql_vocabulary.txt', 'r') as fp1 :
@@ -71,7 +71,7 @@ optim = AdamW(model.parameters(), lr=5e-5)
 args = TrainingArguments(
     output_dir='out',
     per_device_train_batch_size=2,
-    num_train_epochs=100
+    num_train_epochs=20
 )
 trainer = Trainer(
     model=model,
