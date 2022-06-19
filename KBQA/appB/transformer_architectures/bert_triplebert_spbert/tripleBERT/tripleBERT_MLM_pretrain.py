@@ -71,7 +71,7 @@ optim = AdamW(model.parameters(), lr=5e-5)
 args = TrainingArguments(
     output_dir='out',
     per_device_train_batch_size=2,
-    num_train_epochs=20
+    num_train_epochs=100
 )
 trainer = Trainer(
     model=model,
