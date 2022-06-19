@@ -4,12 +4,18 @@ import os
 from types import SimpleNamespace
 from typing import List
 
+
+# path to store the qtq files
+QTQ_DATA_DIR = "app/data/input"
+# name of the .en, .sparql and .triple files
+SPLIT_NAME = "question"
+
 SEPERATE_QTQ = SimpleNamespace(
     **{
         # --data, dest="data_dir", required=True
-        "data_dir": "app/data/input",
+        "data_dir": QTQ_DATA_DIR,
         # --subset, dest="subset", required=True
-        "subset": "question",
+        "subset": SPLIT_NAME,
         # --output, dest="output_dir", required=True
         "output_dir": "app/data/sep",
     }

@@ -10,9 +10,8 @@ from typing import Tuple
 from typing import Union
 
 from app.base_pipeline import BasePipeline
-from app.preprocessing import preprocessing_qtq
-from app.preprocessing import SEPERATE_QTQ
-from app.preprocessing import seperate_qtq
+from app.preprocessing import QTQ_DATA_DIR
+from app.preprocessing import SPLIT_NAME
 from app.qald_builder import qald_builder_ask_answer
 from app.qald_builder import qald_builder_empty_answer
 from app.qald_builder import qald_builder_select_answer
@@ -45,9 +44,6 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     print("Question:", query.encode("utf-8"))
 
     summarize(query)
-
-    seperate_qtq()
-    preprocessing_qtq()
 
     sparql_query = pipeline_.predict_sparql_query(query)
     answer_qald = ask_dbpedia(query, sparql_query, lang)
@@ -117,12 +113,12 @@ def summarize(question: str) -> None:
     else:
         summarized_triples = summarizer_.summarize(question)
 
-    data_dir = SEPERATE_QTQ.data_dir
+    data_dir = QTQ_DATA_DIR
 
     if os.path.exists(data_dir) is False:
         os.makedirs(data_dir)
 
-    filename = f"{SEPERATE_QTQ.subset}.json"
+    filename = f"{SPLIT_NAME}.json"
 
     dataset: Dict[str, List[Dict[str, Any]]] = {"questions": list()}
 
