@@ -24,15 +24,14 @@ import argparse
 from io import open
 import logging
 import os
+from pathlib import Path
 import random
 import re
 
 from model import BertSeq2Seq
-from model import Seq2Seq
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
-import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.data import RandomSampler
 from torch.utils.data import SequentialSampler
@@ -47,8 +46,6 @@ from transformers import get_linear_schedule_with_warmup
 from transformers import RobertaConfig
 from transformers import RobertaModel
 from transformers import RobertaTokenizer
-from pathlib import Path
-
 
 
 MODEL_CLASSES = {
@@ -388,7 +385,7 @@ def main():
         default="./output/bleu.csv",
         type=str,
         help='Path of file for storing bleu scores. Enable loading from this file with "--load_bleu_file Yes". Defaults'
-             ' to "./output/bleu.csv".',
+        ' to "./output/bleu.csv".',
     )
 
     parser.add_argument(
@@ -487,21 +484,20 @@ def main():
     # make dir if output_dir not exist
     if os.path.exists(args.output_dir) is False:
         os.makedirs(args.output_dir)
-    
+
     sv_flag = False
     # Load models.
     if args.sparql_vocab:
         sv_flag = True
         with open(args.sparql_vocab) as vocab_file:
-            new_tokens = vocab_file.read().split('\n')
-
+            new_tokens = vocab_file.read().split("\n")
 
     config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
     tokenizer = tokenizer_class.from_pretrained(
         args.tokenizer_name if args.tokenizer_name else args.encoder_model_name_or_path,
         do_lower_case=args.do_lower_case,
     )
-    
+
     if sv_flag:
         # num_added_tokens = tokenizer.add_tokens(new_tokens)
         tokenizer.add_tokens(new_tokens)
@@ -514,8 +510,8 @@ def main():
     )
     if sv_flag:
         encoder.resize_token_embeddings(len(tokenizer))
-    
-    #Build triple encoder.
+
+    # Build triple encoder.
     triple_encoder_config = BertConfig.from_pretrained(args.triple_encoder_name_or_path)
     triple_encoder = BertModel.from_pretrained(
         args.triple_encoder_name_or_path, config=triple_encoder_config

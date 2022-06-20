@@ -1,14 +1,14 @@
 import unittest
 
-from KBQA.appB.summarizers.utils import query_dbspotlight
 from KBQA.appB.summarizers.utils import entity_recognition_dbspotlight
 from KBQA.appB.summarizers.utils import entity_recognition_dbspotlight_confidence
-from KBQA.appB.summarizers.utils import query_tagme
 from KBQA.appB.summarizers.utils import entity_recognition_tagme
+from KBQA.appB.summarizers.utils import query_dbspotlight
+from KBQA.appB.summarizers.utils import query_tagme
 from rdflib import URIRef
 
-class TestUtils(unittest.TestCase):
 
+class TestUtils(unittest.TestCase):
     def test_query_dbspotlight(self):
         """Test the function query_dbspotlight."""
 
@@ -54,7 +54,7 @@ class TestUtils(unittest.TestCase):
         question = "Who is the spouse of Barack Obama?"
 
         result = query_tagme(question)
-        
+
         self.assertEqual(type(result), dict)
         self.assertTrue("annotations" in result)
         self.assertTrue(len(result["annotations"]) > 0)

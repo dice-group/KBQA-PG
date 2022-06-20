@@ -42,4 +42,3 @@ class BertTripleBertSPBertPipeline(BasePipeline):
         query = query_pairs["0"]
 
         return query
-        
