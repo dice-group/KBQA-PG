@@ -2,7 +2,7 @@
 from types import SimpleNamespace
 
 from app.base_pipeline import BasePipeline
-from KBQA.appB.transformer_architectures.kb.run import init, train, test, predict
+from app.knowbert_spbert_spbert.kb.run import init, train, test, predict
 from app.postprocessing import postprocess_prediction
 
 class KnowBertSPBertSPBertPipeline(BasePipeline):

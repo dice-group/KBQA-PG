@@ -311,7 +311,14 @@ def init_knowbert_spbert_spbert(section: SectionProxy) -> BasePipeline:
     from app.knowbert_spbert_spbert import KnowBertSPBertSPBertPipeline
 
     # TODO add updating of dynamic arguments
-    print(section)  # used to make the linters work, can be removed
+    for sec in section:
+        print(sec)
+    model_name = section["load_model_path"]
+
+    KNOWBERT_SPBERT_SPBERT.load_model_path = model_name #f"/models/{model_name}"
+    KNOWBERT_SPBERT_SPBERT.max_source_length = int(section["max_source_length"])
+    KNOWBERT_SPBERT_SPBERT.max_triples_length = int(section["max_triples_length"])
+    KNOWBERT_SPBERT_SPBERT.max_target_length = int(section["max_target_length"])
 
     kss_pipeline = KnowBertSPBertSPBertPipeline(KNOWBERT_SPBERT_SPBERT)
 
