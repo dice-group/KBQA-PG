@@ -1,3 +1,5 @@
+default_language_version:
+  node: 16.14.2
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.6.2
@@ -114,13 +116,14 @@ exclude: |
     KBQA/appB/transformer_architectures/bert_spbert_spbert_base/. |
     KBQA/appB/transformer_architectures/bert_spbert_spbert/. |
     KBQA/appB/transformer_architectures/bert_spbert/. |
+    KBQA/appB/transformer_architectures/kb/. |
     KBQA/kbqa/webservice/appA/app/nspm/generator_utils.py |
     KBQA/kbqa/webservice/appB/app/utils/generator_utils.py |
     KBQA/kbqa/webservice/appB/app/bert_spbert_spbert/spbert/ |
     KBQA/kbqa/webservice/appB/app/bert_spbert/spbert/ |
+    KBQA/kbqa/webservice/appB/app/knowbert_spbert_spbert/kb/ |
     KBQA/tests/
   )
-
 ci:
   autoupdate_branch: "develop"
   skip: [pylint, flake8, mypy, pydocstyle]
