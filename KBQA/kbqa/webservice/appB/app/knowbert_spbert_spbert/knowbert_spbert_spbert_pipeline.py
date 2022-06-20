@@ -2,8 +2,14 @@
 from types import SimpleNamespace
 
 from app.base_pipeline import BasePipeline
-from app.knowbert_spbert_spbert.kb.run import init, train, test, predict
+from app.knowbert_spbert_spbert.kb.run import init
+from app.knowbert_spbert_spbert.kb.run import predict
+from app.knowbert_spbert_spbert.kb.run import test
+from app.knowbert_spbert_spbert.kb.run import train
 from app.postprocessing import postprocess_prediction
+from app.preprocessing import preprocessing_qtq
+from app.preprocessing import seperate_qtq
+
 
 class KnowBertSPBertSPBertPipeline(BasePipeline):
     """Pipeline for the KNOWBERT_SPBERT_SPBERT architecture."""
@@ -21,9 +27,11 @@ class KnowBertSPBertSPBertPipeline(BasePipeline):
         self.model, self.batcher, self.tokenizer, self.device = init(arguments)
 
     def train_pipeline(self) -> None:
+        """Wrap train function from run.py."""
         train(self.model, self.batcher, self.tokenizer, self.device, self.arguments)
 
     def test_pipeline(self) -> None:
+        """Wrap test function from run.py."""
         test(self.model, self.batcher, self.tokenizer, self.device, self.arguments)
 
     def predict_sparql_query(self, question: str) -> str:
@@ -39,6 +47,9 @@ class KnowBertSPBertSPBertPipeline(BasePipeline):
         str
             Predicted SPARQL query for the question from BERT_SPBERT_SPBERT.
         """
+        seperate_qtq()
+        preprocessing_qtq()
+
         predict(self.model, self.batcher, self.tokenizer, self.device, self.arguments)
 
         query_pairs = postprocess_prediction()

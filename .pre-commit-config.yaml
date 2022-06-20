@@ -30,7 +30,7 @@ repos:
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
-        exclude: (?x)^(KBQA/kbqa/ | KBQA/appB/transformer_architectures/kb/)
+        exclude: ^KBQA/kbqa/
         additional_dependencies:
           [
             rdflib==6.0.2,
@@ -68,21 +68,6 @@ repos:
         name: Pylint (embedding_server)
         files: ^KBQA/kbqa/webservice/embedding_server/
         additional_dependencies: [flask==2.0.2, requests==2.26.0, numpy==1.21.3]
-      - id: pylint
-        name: Pylint (kb)
-        files: ^KBQA/appB/transformer_architectures/kb/
-        additional_dependencies:
-          [
-            torch==1.11.0,
-            pytorch-pretrained-bert==0.6.2,
-            transformers==4.17.0,
-            spacy==3.2.3,
-            allennlp==2.9.2,
-            scipy==1.8.0,
-            rdflib==6.1.1,
-            overrides==6.1.0,
-          ]
-        args: ["--rcfile=/home/jmenzel/Documents/custom.rc"]
 
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
@@ -131,13 +116,14 @@ exclude: |
     KBQA/appB/transformer_architectures/bert_spbert_spbert_base/. |
     KBQA/appB/transformer_architectures/bert_spbert_spbert/. |
     KBQA/appB/transformer_architectures/bert_spbert/. |
+    KBQA/appB/transformer_architectures/kb/. |
     KBQA/kbqa/webservice/appA/app/nspm/generator_utils.py |
     KBQA/kbqa/webservice/appB/app/utils/generator_utils.py |
     KBQA/kbqa/webservice/appB/app/bert_spbert_spbert/spbert/ |
     KBQA/kbqa/webservice/appB/app/bert_spbert/spbert/ |
+    KBQA/kbqa/webservice/appB/app/knowbert_spbert_spbert/kb/ |
     KBQA/tests/
   )
-
 ci:
   autoupdate_branch: "develop"
   skip: [pylint, flake8, mypy, pydocstyle]
