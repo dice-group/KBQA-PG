@@ -5,6 +5,8 @@ from app.base_pipeline import BasePipeline
 from app.bert_triplebert_spbert.triplebert.run import init
 from app.bert_triplebert_spbert.triplebert.run import run
 from app.postprocessing import postprocess_prediction
+from app.preprocessing import preprocessing_qtq
+from app.preprocessing import seperate_qtq
 
 
 class BertTripleBertSPBertPipeline(BasePipeline):
@@ -36,6 +38,8 @@ class BertTripleBertSPBertPipeline(BasePipeline):
         str
             Predicted SPARQL query for the question.
         """
+        seperate_qtq()
+        preprocessing_qtq()
         run(self.arguments)
 
         query_pairs = postprocess_prediction()
