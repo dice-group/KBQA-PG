@@ -1,6 +1,5 @@
 """Convert the LCQald dataset into qald format for Gerbil evaluation."""
 import json
-from typing import Any
 
 from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
@@ -24,7 +23,7 @@ def load_lcqald(lcqald: str) -> list:
     return data
 
 
-def build_qald(lcqald_data_content: list) -> dict[str, Any]:
+def build_qald(lcqald_data_content: list) -> dict:
     """Build the qald dataset.
 
     Parameters
