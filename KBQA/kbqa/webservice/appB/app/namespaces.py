@@ -153,12 +153,12 @@ KNOWBERT_SPBERT_SPBERT = SimpleNamespace(
 
 BERT_TRIPLEBERT_SPBERT = SimpleNamespace(
     **{
-         # --encoder_model_name_or_path, default=None, type=str, required=True,
+        # --encoder_model_name_or_path, default=None, type=str, required=True,
         # help="Path to pre-trained model: e.g. roberta-base"
         "encoder_model_name_or_path": "bert-base-cased",
         # --Triple_encoder_model_name_or_path, default: None, type=str, required=True,
         # help="Path to pre-trained model: e.g. roberta-base"
-        "triple_encoder_name_or_path" : "models/triplebert",
+        "triple_encoder_name_or_path": "/resources/triplebert/",
         # --decoder_model_name_or_path, default: None, type=str, required=True,
         # help="Path to pre-trained model: e.g. roberta-base"
         "decoder_model_name_or_path": "razent/spbert-mlm-wso-base",
