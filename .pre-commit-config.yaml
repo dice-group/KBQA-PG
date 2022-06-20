@@ -119,7 +119,7 @@ exclude: |
     KBQA/kbqa/webservice/appB/app/bert_spbert_spbert/spbert/ |
     KBQA/kbqa/webservice/appB/app/bert_spbert/spbert/ |
     KBQA/kbqa/webservice/appB/app/bert_triplebert_spbert/triplebert/ |
-    KBQA/appB/transformer_architectures/bert_triplebert_spbert/.
+    KBQA/appB/transformer_architectures/bert_triplebert_spbert/. |
     KBQA/tests/
   )
 
