@@ -10,9 +10,8 @@ from typing import Tuple
 from typing import Union
 
 from app.base_pipeline import BasePipeline
-from app.preprocessing import preprocessing_qtq
-from app.preprocessing import SEPERATE_QTQ
-from app.preprocessing import seperate_qtq
+from app.preprocessing import QTQ_DATA_DIR
+from app.preprocessing import SPLIT_NAME
 from app.qald_builder import qald_builder_ask_answer
 from app.qald_builder import qald_builder_empty_answer
 from app.qald_builder import qald_builder_select_answer
@@ -45,9 +44,6 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     print("Question:", query.encode("utf-8"))
 
     summarize(query)
-
-    seperate_qtq()
-    preprocessing_qtq()
 
     sparql_query = pipeline_.predict_sparql_query(query)
     answer_qald = ask_dbpedia(query, sparql_query, lang)
@@ -117,12 +113,12 @@ def summarize(question: str) -> None:
     else:
         summarized_triples = summarizer_.summarize(question)
 
-    data_dir = SEPERATE_QTQ.data_dir
+    data_dir = QTQ_DATA_DIR
 
     if os.path.exists(data_dir) is False:
         os.makedirs(data_dir)
 
-    filename = f"{SEPERATE_QTQ.subset}.json"
+    filename = f"{SPLIT_NAME}.json"
 
     dataset: Dict[str, List[Dict[str, Any]]] = {"questions": list()}
 
@@ -280,12 +276,10 @@ def init_bert_spbert_spbert(section: SectionProxy) -> BasePipeline:
     from app.namespaces import BERT_SPBERT_SPBERT
     from app.bert_spbert_spbert import BertSPBertSPBertPipeline
 
-    model_name = section["model_name"]
+    parsed_section = parse_section(section)
 
-    BERT_SPBERT_SPBERT.load_model_path = f"/models/{model_name}"
-    BERT_SPBERT_SPBERT.max_source_length = int(section["max_source_length"])
-    BERT_SPBERT_SPBERT.max_triples_length = int(section["max_triples_length"])
-    BERT_SPBERT_SPBERT.max_target_length = int(section["max_target_length"])
+    for entry, value in parsed_section:
+        setattr(BERT_SPBERT_SPBERT, entry, value)
 
     bss_pipeline = BertSPBertSPBertPipeline(BERT_SPBERT_SPBERT)
 
@@ -310,8 +304,10 @@ def init_knowbert_spbert_spbert(section: SectionProxy) -> BasePipeline:
     from app.namespaces import KNOWBERT_SPBERT_SPBERT
     from app.knowbert_spbert_spbert import KnowBertSPBertSPBertPipeline
 
-    # TODO add updating of dynamic arguments
-    print(section)  # used to make the linters work, can be removed
+    parsed_section = parse_section(section)
+
+    for entry, value in parsed_section:
+        setattr(KNOWBERT_SPBERT_SPBERT, entry, value)
 
     kss_pipeline = KnowBertSPBertSPBertPipeline(KNOWBERT_SPBERT_SPBERT)
 
@@ -336,12 +332,86 @@ def init_bert_triplebert_spbert(section: SectionProxy) -> BasePipeline:
     from app.namespaces import BERT_TRIPLEBERT_SPBERT
     from app.bert_triplebert_spbert import BertTripleBertSPBertPipeline
 
-    # TODO add updating of dynamic arguments
-    print(section)  # used to make the linters work, can be removed
+    parsed_section = parse_section(section)
+
+    for entry, value in parsed_section:
+        setattr(BERT_TRIPLEBERT_SPBERT, entry, value)
 
     bts_pipeline = BertTripleBertSPBertPipeline(BERT_TRIPLEBERT_SPBERT)
 
     return bts_pipeline
+
+
+def parse_section(section: SectionProxy) -> List[Tuple[str, Union[int, float, str]]]:
+    """Parse a section into a list of tuples.
+
+    Given a section element from a .ini file with pairs entry = value, create a
+    list with tuples (entry, value), where value is parsed to an int or float if
+    possible.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section element from a .ini file.
+
+    Returns
+    -------
+    list
+        List containing tuples of the form (entry, value).
+    """
+    result: List[Tuple[str, Union[int, float, str]]] = list()
+
+    for entry in section:
+        value = section[entry]
+
+        if is_int(value):
+            result.append((entry, int(value)))
+        elif is_float(value):
+            result.append((entry, float(value)))
+        else:
+            result.append((entry, str(value)))
+
+    return result
+
+
+def is_int(value: str) -> bool:
+    """Check, whether a string can be parsed into an int.
+
+    Parameters
+    ----------
+    value : str
+        String to be checked.
+
+    Returns
+    -------
+    bool
+        True, if value can be parsed to an int, else False.
+    """
+    try:
+        int(value)
+        return True
+    except ValueError:
+        return False
+
+
+def is_float(value: str) -> bool:
+    """Check, whether a string can be parsed into a float.
+
+    Parameters
+    ----------
+    value : str
+        String to be checked.
+
+    Returns
+    -------
+    bool
+        True, if value can be parsed to an float, else False.
+    """
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
 
 summarizer_, pipeline_ = load_config(config_path)

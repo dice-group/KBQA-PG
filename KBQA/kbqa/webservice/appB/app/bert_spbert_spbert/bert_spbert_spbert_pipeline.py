@@ -5,6 +5,8 @@ from app.base_pipeline import BasePipeline
 from app.bert_spbert_spbert.spbert.run import init
 from app.bert_spbert_spbert.spbert.run import run
 from app.postprocessing import postprocess_prediction
+from app.preprocessing import preprocessing_qtq
+from app.preprocessing import seperate_qtq
 
 
 class BertSPBertSPBertPipeline(BasePipeline):
@@ -36,6 +38,9 @@ class BertSPBertSPBertPipeline(BasePipeline):
         str
             Predicted SPARQL query for the question from BERT_SPBERT_SPBERT.
         """
+        seperate_qtq()
+        preprocessing_qtq()
+
         run(self.arguments)
 
         query_pairs = postprocess_prediction()
