@@ -9,8 +9,13 @@ import requests
 REPLACEMENT = [
     ["?", "var_"],
     [" . ", " sep_dot "],
-    ["{", "brack_open"],
-    ["}", "brack_close"],
+    ["{", "brack_open "],
+    ["}", " brack_close"],
+    ["http://dbpedia.org/resource/Category:", "dbc_"],
+    ["http://purl.org/dc/terms/", "dct_"],
+    ["http://www.w3.org/2004/02/skos/core#", "skos_"],
+    ["http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf_"],
+    ["http://www.w3.org/2000/01/rdf-schema#", "rdfs_"],
     ["http://dbpedia.org/property/", "dbp_"],
     ["http://dbpedia.org/resource/", "dbr_"],
     ["http://dbpedia.org/ontology/", "dbo_"],
@@ -292,5 +297,5 @@ convert_lcqald(lcqald_filepath, "lcqald_ph.csv")
 # To convert from qald dataset
 # add you path to the qald dataset here and call convert_qald()
 # you can also specify language of questions
-qald9_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/updated-qald-9-train-multilingual.json"
-convert_qald(qald9_filepath, "qald9_ph_de.csv", "de")
+# qald9_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/updated-qald-9-train-multilingual.json"
+# convert_qald(qald9_filepath, "qald9_ph_de.csv", "de")
