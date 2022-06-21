@@ -220,245 +220,255 @@ def set_seed(seed=42):
 
 
 # noinspection SpellCheckingInspection
-def main():
-    parser = argparse.ArgumentParser()
+#def main():
+parser = argparse.ArgumentParser()
 
-    ## Required parameters
-    parser.add_argument(
-        "--encoder_model_name_or_path",
-        default=None,
-        type=str,
-        required=True,
-        help="Path to pre-trained model: e.g. roberta-base",
-    )
-    parser.add_argument(
-        "--decoder_model_name_or_path",
-        default=None,
-        type=str,
-        required=True,
-        help="Path to pre-trained model: e.g. roberta-base",
-    )
-    parser.add_argument(
-        "--triple_encoder_name_or_path",
-        default=None,
-        type=str,
-        required=True,
-        help="Path to pre-trained triple model: e.g. tripleBERT",
-    )
-    parser.add_argument(
-        "--sparql_vocab",
-        default=None,
-        type=str,
-        help="Sparql vocab file name: e.g.sparql_vocabulary.txt ",
-    )
-    ## Other parameters
-    parser.add_argument(
-        "--load_model_checkpoint",
-        default="Dynamic",
-        type=str,
-        choices=["Yes", "No"],
-        help='Should the model weights at load_model_path be loaded. Defaults to "No" in training and "Yes" in '
-        "testing",
-    )
-    parser.add_argument(
-        "--load_model_path",
-        default="./output/checkpoint-best-bleu/pytorch_model.bin",
-        type=str,
-        help="Path to trained model: Should contain the .bin files",
-    )
-    parser.add_argument(
-        "--model_type",
-        default="bert",
-        type=str,
-        help="Model type: e.g. roberta",
-    )
-    parser.add_argument(
-        "--model_architecture",
-        default="bert2bert",
-        type=str,
-        help="Model architecture: e.g. bert2bert, bert2rnd",
-    )
-    parser.add_argument(
-        "--output_dir",
-        default="./output/",
-        type=str,
-        help="The output directory where the model predictions and checkpoints will be written.",
-    )
-    parser.add_argument(
-        "--train_filename",
-        default=None,
-        type=str,
-        help="The train filename. Should contain the .jsonl files for this task.",
-    )
-    parser.add_argument(
-        "--dev_filename",
-        default=None,
-        type=str,
-        help="The dev filename.",
-    )
-    parser.add_argument(
-        "--test_filename",
-        default=None,
-        type=str,
-        help="The test filename.",
-    )
-    parser.add_argument(
-        "--predict_filename",
-        default=None,
-        type=str,
-        help="The prediction filename.",
-    )
-    parser.add_argument(
-        "--source",
-        default="en",
-        type=str,
-        help="The source language (for file extension)",
-    )
-    parser.add_argument(
-        "--target",
-        default="sparql",
-        type=str,
-        help="The target language (for file extension)",
-    )
-    parser.add_argument(
-        "--config_name",
-        default="",
-        type=str,
-        help="Pretrained config name or path if not the same as model_name",
-    )
-    parser.add_argument(
-        "--tokenizer_name",
-        default="",
-        type=str,
-        help="Pretrained tokenizer name or path if not the same as model_name",
-    )
-    parser.add_argument(
-        "--max_source_length",
-        default=64,
-        type=int,
-        help="The maximum total source sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
-    parser.add_argument(
-        "--max_triples_length",
-        default=128,
-        type=int,
-        help="The maximum total triples sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
-    parser.add_argument(
-        "--max_target_length",
-        default=32,
-        type=int,
-        help="The maximum total target sequence length after tokenization. Sequences longer "
-        "than this will be truncated, sequences shorter will be padded.",
-    )
+## Required parameters
+parser.add_argument(
+    "--encoder_model_name_or_path",
+    default=None,
+    type=str,
+    required=True,
+    help="Path to pre-trained model: e.g. roberta-base",
+)
+parser.add_argument(
+    "--decoder_model_name_or_path",
+    default=None,
+    type=str,
+    required=True,
+    help="Path to pre-trained model: e.g. roberta-base",
+)
+parser.add_argument(
+    "--triple_encoder_name_or_path",
+    default=None,
+    type=str,
+    required=True,
+    help="Path to pre-trained triple model: e.g. tripleBERT",
+)
+parser.add_argument(
+    "--sparql_vocab",
+    default=None,
+    type=str,
+    help="Sparql vocab file name: e.g.sparql_vocabulary.txt ",
+)
+## Other parameters
+parser.add_argument(
+    "--load_model_checkpoint",
+    default="Dynamic",
+    type=str,
+    choices=["Yes", "No"],
+    help='Should the model weights at load_model_path be loaded. Defaults to "No" in training and "Yes" in '
+    "testing",
+)
+parser.add_argument(
+    "--load_model_path",
+    default="./output/checkpoint-best-bleu/pytorch_model.bin",
+    type=str,
+    help="Path to trained model: Should contain the .bin files",
+)
+parser.add_argument(
+    "--model_type",
+    default="bert",
+    type=str,
+    help="Model type: e.g. roberta",
+)
+parser.add_argument(
+    "--model_architecture",
+    default="bert2bert",
+    type=str,
+    help="Model architecture: e.g. bert2bert, bert2rnd",
+)
+parser.add_argument(
+    "--output_dir",
+    default="./output/",
+    type=str,
+    help="The output directory where the model predictions and checkpoints will be written.",
+)
+parser.add_argument(
+    "--train_filename",
+    default=None,
+    type=str,
+    help="The train filename. Should contain the .jsonl files for this task.",
+)
+parser.add_argument(
+    "--dev_filename",
+    default=None,
+    type=str,
+    help="The dev filename.",
+)
+parser.add_argument(
+    "--test_filename",
+    default=None,
+    type=str,
+    help="The test filename.",
+)
+parser.add_argument(
+    "--predict_filename",
+    default=None,
+    type=str,
+    help="The prediction filename.",
+)
+parser.add_argument(
+    "--source",
+    default="en",
+    type=str,
+    help="The source language (for file extension)",
+)
+parser.add_argument(
+    "--target",
+    default="sparql",
+    type=str,
+    help="The target language (for file extension)",
+)
+parser.add_argument(
+    "--config_name",
+    default="",
+    type=str,
+    help="Pretrained config name or path if not the same as model_name",
+)
+parser.add_argument(
+    "--tokenizer_name",
+    default="",
+    type=str,
+    help="Pretrained tokenizer name or path if not the same as model_name",
+)
+parser.add_argument(
+    "--max_source_length",
+    default=64,
+    type=int,
+    help="The maximum total source sequence length after tokenization. Sequences longer "
+    "than this will be truncated, sequences shorter will be padded.",
+)
+parser.add_argument(
+    "--max_triples_length",
+    default=128,
+    type=int,
+    help="The maximum total triples sequence length after tokenization. Sequences longer "
+    "than this will be truncated, sequences shorter will be padded.",
+)
+parser.add_argument(
+    "--max_target_length",
+    default=32,
+    type=int,
+    help="The maximum total target sequence length after tokenization. Sequences longer "
+    "than this will be truncated, sequences shorter will be padded.",
+)
 
-    parser.add_argument(
-        "--do_train", action="store_true", help="Whether to run training."
-    )
-    parser.add_argument(
-        "--do_eval", action="store_true", help="Whether to run eval on the dev set."
-    )
-    parser.add_argument(
-        "--do_test", action="store_true", help="Whether to run test on the test set."
-    )
-    parser.add_argument(
-        "--do_predict",
-        action="store_true",
-        help="Whether to run prediction on the predict set.",
-    )
-    parser.add_argument(
-        "--do_lower_case",
-        action="store_true",
-        help="Set this flag if you are using an uncased model.",
-    )
-    parser.add_argument(
-        "--no_cuda", action="store_true", help="Avoid using CUDA when available"
-    )
-    parser.add_argument(
-        "--load_bleu_file",
-        default="No",
-        type=str,
-        choices=["Yes", "No"],
-        help='Should an old bleu file from bleu_file_path be loaded. Defaults to "No".',
-    )
-    parser.add_argument(
-        "--bleu_file_path",
-        default="./output/bleu.csv",
-        type=str,
-        help='Path of file for storing bleu scores. Enable loading from this file with "--load_bleu_file Yes". Defaults'
-             ' to "./output/bleu.csv".',
-    )
+parser.add_argument(
+    "--do_train", action="store_true", help="Whether to run training."
+)
+parser.add_argument(
+    "--do_eval", action="store_true", help="Whether to run eval on the dev set."
+)
+parser.add_argument(
+    "--do_test", action="store_true", help="Whether to run test on the test set."
+)
+parser.add_argument(
+    "--do_predict",
+    action="store_true",
+    help="Whether to run prediction on the predict set.",
+)
+parser.add_argument(
+    "--do_lower_case",
+    action="store_true",
+    help="Set this flag if you are using an uncased model.",
+)
+parser.add_argument(
+    "--no_cuda", action="store_true", help="Avoid using CUDA when available"
+)
+parser.add_argument(
+    "--load_bleu_file",
+    default="No",
+    type=str,
+    choices=["Yes", "No"],
+    help='Should an old bleu file from bleu_file_path be loaded. Defaults to "No".',
+)
+parser.add_argument(
+    "--bleu_file_path",
+    default="./output/bleu.csv",
+    type=str,
+    help='Path of file for storing bleu scores. Enable loading from this file with "--load_bleu_file Yes". Defaults'
+            ' to "./output/bleu.csv".',
+)
 
-    parser.add_argument(
-        "--train_batch_size",
-        default=8,
-        type=int,
-        help="Batch size per GPU/CPU for training.",
-    )
-    parser.add_argument(
-        "--eval_batch_size",
-        default=8,
-        type=int,
-        help="Batch size per GPU/CPU for evaluation.",
-    )
-    parser.add_argument(
-        "--gradient_accumulation_steps",
-        type=int,
-        default=1,
-        help="Number of updates steps to accumulate before performing a backward/update pass.",
-    )
-    parser.add_argument(
-        "--learning_rate",
-        default=5e-5,
-        type=float,
-        help="The initial learning rate for Adam.",
-    )
-    parser.add_argument(
-        "--beam_size", default=10, type=int, help="beam size for beam search"
-    )
-    parser.add_argument(
-        "--weight_decay", default=0.0, type=float, help="Weight deay if we apply some."
-    )
-    parser.add_argument(
-        "--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer."
-    )
-    parser.add_argument(
-        "--max_grad_norm", default=1.0, type=float, help="Max gradient norm."
-    )
-    parser.add_argument(
-        "--num_train_epochs",
-        default=3,
-        type=int,
-        help="Total number of training epochs to perform.",
-    )
-    parser.add_argument(
-        "--max_steps",
-        default=-1,
-        type=int,
-        help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
-    )
-    parser.add_argument("--eval_steps", default=-1, type=int, help="")
-    parser.add_argument("--train_steps", default=-1, type=int, help="")
-    parser.add_argument(
-        "--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps."
-    )
-    parser.add_argument(
-        "--local_rank",
-        type=int,
-        default=-1,
-        help="For distributed training: local_rank",
-    )
-    parser.add_argument(
-        "--seed", type=int, default=42, help="random seed for initialization"
-    )
-    parser.add_argument(
-        "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
-    )
-    # print arguments
-    args = parser.parse_args()
+parser.add_argument(
+    "--train_batch_size",
+    default=8,
+    type=int,
+    help="Batch size per GPU/CPU for training.",
+)
+parser.add_argument(
+    "--eval_batch_size",
+    default=8,
+    type=int,
+    help="Batch size per GPU/CPU for evaluation.",
+)
+parser.add_argument(
+    "--gradient_accumulation_steps",
+    type=int,
+    default=1,
+    help="Number of updates steps to accumulate before performing a backward/update pass.",
+)
+parser.add_argument(
+    "--learning_rate",
+    default=5e-5,
+    type=float,
+    help="The initial learning rate for Adam.",
+)
+parser.add_argument(
+    "--beam_size", default=10, type=int, help="beam size for beam search"
+)
+parser.add_argument(
+    "--weight_decay", default=0.0, type=float, help="Weight deay if we apply some."
+)
+parser.add_argument(
+    "--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer."
+)
+parser.add_argument(
+    "--max_grad_norm", default=1.0, type=float, help="Max gradient norm."
+)
+parser.add_argument(
+    "--num_train_epochs",
+    default=3,
+    type=int,
+    help="Total number of training epochs to perform.",
+)
+parser.add_argument(
+    "--max_steps",
+    default=-1,
+    type=int,
+    help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
+)
+parser.add_argument("--eval_steps", default=-1, type=int, help="")
+parser.add_argument("--train_steps", default=-1, type=int, help="")
+parser.add_argument(
+    "--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps."
+)
+parser.add_argument(
+    "--local_rank",
+    type=int,
+    default=-1,
+    help="For distributed training: local_rank",
+)
+parser.add_argument(
+    "--seed", type=int, default=42, help="random seed for initialization"
+)
+parser.add_argument(
+    "--save_inverval", type=int, default=1, help="save checkpoint every N epochs"
+)
+# print arguments
+#args = parser.parse_args()
+# initialize variables
+tokenizer = None
+model = None
+device = None
+
+def init(args):
+    global tokenizer
+    global model
+    global device
     logger.info(args)
+
 
     # Setup CUDA, GPU & distributed training
     if args.local_rank == -1 or args.no_cuda:
@@ -585,11 +595,15 @@ def main():
         # multi-gpu training
         model = torch.nn.DataParallel(model)
 
+
+
+
+def run(args):
     # Create new bleu.csv file.
-    bleu_file_path = Path(args.bleu_file_path)
-    if args.load_bleu_file == "No":
-        if bleu_file_path.exists():
-            bleu_file_path.unlink()
+    # bleu_file_path = Path(args.bleu_file_path)
+    # if args.load_bleu_file == "No":
+    #     if bleu_file_path.exists():
+    #         bleu_file_path.unlink()
 
     if args.do_train:
         # Prepare training data loader
@@ -824,11 +838,11 @@ def main():
                         f1.write(str(gold.idx) + "\t" + gold.target + "\n")
 
                 bl_score = corpus_bleu(label_str, pred_str) * 100
-                with open(bleu_file_path, "a") as file:
-                    if file.tell() == 0:
-                        file.write(f"{bl_score}")
-                    else:
-                        file.write(f"\n{bl_score}")
+                # with open(bleu_file_path, "a") as file:
+                #     if file.tell() == 0:
+                #         file.write(f"{bl_score}")
+                #     else:
+                #         file.write(f"\n{bl_score}")
 
                 logger.info("  {} = {} ".format("BLEU", str(round(bl_score, 4))))
                 logger.info("  " + "*" * 20)
@@ -1001,4 +1015,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run()
