@@ -1,11 +1,8 @@
-# Basic Preprocessor
-`basic_preprocessing.py` is an overhauled version of the SPARQL preprocessor.
-This version reduces the number of tokens after tokenization.
-It is neccessary to include the `sparql_vocabulary.txt` into the tokenizer to make use 
-of it properly.
-
-## Warning
-In case a WordPiece tokenizer is used, only the wordpiece_version will work properly.
+# Labeling Preprocessor
+`labeling_preprocessor.py` encodes URIs by a prefix and the label of the URI. This is an
+additional property to the basic encoding scheme in basic_preprocessor.py. It makes the 
+encoding more related to natural language while it does not increase the amount of 
+tokens needed.
 
 ## Installation
 Install python packages with:
@@ -21,8 +18,7 @@ with open("sparql_vocabulary.txt", "r", encoding="utf-8") as file:
     tokens = [line.strip() for line in file]
 tokenizer.add_tokens(tokens)
 ```
-Note that the vocabulary of this preprocessor is different from the labeling 
-preprocessor.
+Note that the vocabulary of this preprocessor is different from the basic preprocessor.
 
 ## Usual Use Cases
 - If you have a qtq-dataset, the function `preprocess_qtq_file` will do everything for you.
@@ -31,3 +27,4 @@ preprocessor.
 - Equivalently for a file consisting of a triple-set in each line and `preprocess_triples_file`.
 - To decode an encoded SPARQL e.g. after prediction, use `decode`. To do this
 for a file of encoded SPARQLs where each line corresponds to one SPARQL, use `decode_file`.
+
