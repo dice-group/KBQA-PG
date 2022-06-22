@@ -15,11 +15,13 @@ PREPROCESSING_QTQ = SimpleNamespace(
         "subset": "question",
         # --output, dest="output_dir", required=True
         "output_dir": "app/data/output",
+        # --cased-NL, dest="uncased-NL", action="store_false"
+        "uncased-NL": True,
     }
 )
 
 
-def preprocess_sentence(words: str) -> str:
+def preprocess_sentence(words: str, uncased: bool = True) -> str:
     """Preprocess a single sentence from an en file.
 
     Parameters
@@ -31,6 +33,8 @@ def preprocess_sentence(words: str) -> str:
     -------
     words : str
         Preprocessed natural language sentence.
+    cased : bool
+        Flag for whether to return the sentence cased or uncased
     """
     # creating a space between a word and the punctuation following it
     # eg: "he is a boy." => "he is a boy ."
@@ -41,7 +45,9 @@ def preprocess_sentence(words: str) -> str:
     # replacing everything with space except (a-z, A-Z, ".", "?", "!", ",")
     # w = re.sub(r"[^a-zA-Z?.!,¿]+", " ", w)
     # w = re.sub(r'\[.*?\]', '<ans>', w).rstrip().strip()
-    words = words.rstrip().strip().lower()
+    words = words.rstrip().strip()
+    if uncased:
+        words = words.lower()
 
     # adding a start and an end token to the sentence
     # so that the model know when to start and stop predicting.
@@ -130,7 +136,7 @@ def preprocessing_qtq() -> None:
             for line in file:
                 if "\n" == line[-1]:
                     line = line[:-1]
-                out.write(preprocess_sentence(line))
+                out.write(preprocess_sentence(line, args.uncased_NL))
                 out.write("\n")
 
     with open(f"{output_dir}/{subset}.sparql", "w", encoding="utf-8") as out:

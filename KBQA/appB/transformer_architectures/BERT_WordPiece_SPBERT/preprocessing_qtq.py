@@ -5,7 +5,7 @@ from generator_utils import encode
 from generator_utils import SPARQL_KEYWORDS
 
 
-def preprocess_sentence(w):
+def preprocess_sentence(w, uncased=True):
     # creating a space between a word and the punctuation following it
     # eg: "he is a boy." => "he is a boy ."
     # Reference:- https://stackoverflow.com/questions/3645931/python-padding-punctuation-with-white-spaces-keeping-punctuation
@@ -15,7 +15,9 @@ def preprocess_sentence(w):
     # replacing everything with space except (a-z, A-Z, ".", "?", "!", ",")
     # w = re.sub(r"[^a-zA-Z?.!,¿]+", " ", w)
     # w = re.sub(r'\[.*?\]', '<ans>', w).rstrip().strip()
-    w = w.rstrip().strip().lower()
+    w = w.rstrip().strip()
+    if uncased:
+        w = w.lower()
 
     # adding a start and an end token to the sentence
     # so that the model know when to start and stop predicting.
@@ -63,6 +65,7 @@ if __name__ == "__main__":
     parser.add_argument("--data", dest="data_dir", required=True)
     parser.add_argument("--subset", dest="subset", required=True)
     parser.add_argument("--output", dest="output_dir", required=True)
+    parser.add_argument("--cased-NL", dest="uncased", action="store_false")
     args = parser.parse_args()
 
     data_dir = args.data_dir
@@ -77,7 +80,7 @@ if __name__ == "__main__":
             for line in f:
                 if "\n" == line[-1]:
                     line = line[:-1]
-                out.write(preprocess_sentence(line))
+                out.write(preprocess_sentence(line, args.uncased))
                 out.write("\n")
 
     with open(f"{output_dir}/{subset}.sparql", "w") as out:
