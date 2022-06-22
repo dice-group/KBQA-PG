@@ -4,6 +4,9 @@ additional property to the basic encoding scheme in basic_preprocessor.py. It ma
 encoding more related to natural language while it does not increase the amount of 
 tokens needed.
 
+## Warning
+In case a WordPiece tokenizer is used, only the wordpiece_version will work properly.
+
 ## Installation
 Install python packages with:
 ```bash

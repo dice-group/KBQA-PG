@@ -248,9 +248,9 @@ def encode(sparql: str) -> str:
     s = sparql
     s = uri_to_prefix(s)
     s = normalize_prefixes(s)
+    s = encode_datatype(s)
     s = do_replacements(s, ENCODING_REPLACEMENTS)
     s = encode_asterisk(s)
-    s = encode_datatype(s)
     s = s.strip()
     s = re.sub(r" +", " ", s)
     return s
@@ -270,12 +270,13 @@ def decode(encoded_sparql: str) -> str:
         The decoded string.
     """
     s = encoded_sparql
-    s = decode_datatype(s)
     s = decode_asterisk(s)
-    s = revert_replacements(
-        s, ENCODING_REPLACEMENTS, remove_successive_whitespaces=False
-    )
     s = prefix_to_uri(s)
+    s = revert_replacements(
+        s, ENCODING_REPLACEMENTS, remove_successive_whitespaces=True
+    )
+    s = re.sub(r"(\"\"\"|\'\'\'|\"|\') *@en", r"\1@en ", s)  # Remove whitespace in front of @en.
+    s = decode_datatype(s)
     s = s.strip()
     s = re.sub(r" +", " ", s)
     return s

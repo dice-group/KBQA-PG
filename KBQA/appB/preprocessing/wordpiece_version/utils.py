@@ -160,7 +160,7 @@ ENCODING_REPLACEMENTS = [
     [
         "@en",
         " language English ",
-        "@en ",
+        " @en ",
     ],  # For now, we are only considering english literals.
     [
         "{",
@@ -168,6 +168,19 @@ ENCODING_REPLACEMENTS = [
         " { ",
     ],  # No space after " bracket open" to enable successive occurrences.
     ["}", " bracket close", " } "],
+
+    # The following encodings are a workaround due to WordPiece Tokenizer problems.
+    [". ", " dot ", ' . '],
+    [" .", " dot ", ' . '],
+    [", ", " comma ", ' , '],
+    [" ,", " comma ", ' , '],
+    ["; ", " semicolon ", " ; "],
+    [" ;", " semicolon ", " ; "],
+    [";", " semicolon ", " ; "],  # Looking at some data, ';' can also be safely encoded.
+    ["(", " open parenthesis", ' ( '],
+    [")", " close parenthesis", ' ) '],
+    ['"', " quotation ", '"'],
+    ["'", " apostrophe ", "'"],
 ]
 IRI_SCHEMES = [
     "http:",
@@ -916,12 +929,10 @@ def prefix_to_uri(s: str) -> str:
     Note
     ----
     - We do not substitute prefixes if they follow a '<' because these could be schemas e.g. "bif:".
-    - We recognize '.' in prefix-form URIs if they are followed by anything except [\\s,;] e.g. dbr:file.txt. Else, the
-      '.' is recognized as "end of triple"-symbol and hence not part of the prefix-form URI.
     """
     for prefix, substitute in PREFIX_TO_URI.items():
         s = re.sub(
-            f"(?<!<)\\b{prefix}((?:[^\\s.,;]|(\\.[^\\s,;]))*)", f"<{substitute}\\1>", s
+            f"(?<!<)\\b{prefix}(\\S*)", f" <{substitute}\\1> ", s
         )
     return s
 
@@ -1095,7 +1106,7 @@ def decode_datatype(s: str) -> str:
     str
         The decoded string.
     """
-    s = re.sub(r"(\"\"\"|\'\'\'|\"|\') datatype ", r"\1^^", s)
+    s = re.sub(r"(\"\"\"|\'\'\'|\"|\') *datatype ", r"\1^^", s)
     return s
 
 
@@ -1220,6 +1231,8 @@ def sparql_encoder_levenshtein_dist_base(
     preprocessed_normalized = uri_to_prefix(preprocessed)
     preprocessed_normalized = normalize_prefixes(preprocessed_normalized)
     preprocessed_normalized = prefix_to_uri(preprocessed_normalized)
+    preprocessed_normalized = re.sub(r" +", " ", preprocessed_normalized)
+    preprocessed_normalized = re.sub(r"\^\^ <", "^^<", preprocessed_normalized)
     encoded = encoder(preprocessed)
     decoded = decoder(encoded)
     dist = distance.levenshtein(preprocessed_normalized, decoded)
