@@ -24,6 +24,13 @@ class KnowBertSPBertSPBertPipeline(BasePipeline):
             SPBERT.
         """
         super().__init__(arguments)
+
+        from app.preprocessing.preprocessing_qtq.preprocessing_qtq import (
+            PREPROCESSING_QTQ,
+        )
+
+        PREPROCESSING_QTQ.uncased_NL = self.arguments.uncased_NL
+
         self.model, self.batcher, self.tokenizer, self.device = init(arguments)
 
     def train_pipeline(self) -> None:
