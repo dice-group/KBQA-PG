@@ -19,9 +19,21 @@ def text_to_train_tensors(texts, tokenizer, max_seq_length):
     # train_tokens_tensor, train_masks_tensor
     return torch.tensor(train_tokens_ids), torch.tensor(train_masks)
 
+def text_to_predict_tensors(texts, tokenizer, max_seq_length):
+    train_tokens = list(map(lambda t: ['[CLS]'] + tokenizer.tokenize(t)[:max_seq_length - 1], texts))
+    train_tokens_ids = list(map(tokenizer.convert_tokens_to_ids, train_tokens))
+    train_tokens_ids = pad_sequences(train_tokens_ids, maxlen=max_seq_length, truncating="post", padding="post",
+                                     dtype="int")
 
 
-def to_dataloader(texts, extras, ys,
+
+    # to tensors
+    # train_tokens_tensor, train_masks_tensor
+    return torch.tensor(train_tokens_ids)
+
+
+
+def to_dataloader(texts, entity_table, ys,
                  tokenizer,
                  max_seq_length,
                  batch_size,
@@ -33,12 +45,13 @@ def to_dataloader(texts, extras, ys,
     #train_y = train_df[labels].values
 
     # Labels
-    train_y_tensor,_ =  text_to_train_tensors(ys, tokenizer, max_seq_length)
+    train_y_tensor =  text_to_predict_tensors(ys, tokenizer, max_seq_length)
 
+    entity_tensor = torch.tensor(entity_table, dtype = torch.float)
     
     train_tokens_tensor, train_masks_tensor = text_to_train_tensors(texts, tokenizer, max_seq_length)
 
-    train_dataset = dataset_cls(train_tokens_tensor, train_masks_tensor,  train_y_tensor)
+    train_dataset = dataset_cls(train_tokens_tensor, train_masks_tensor, entity_tensor,  train_y_tensor)
 
     train_sampler = sampler_cls(train_dataset)
     

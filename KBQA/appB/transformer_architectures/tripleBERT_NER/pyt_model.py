@@ -1,3 +1,4 @@
+from html import entities
 import torch
 from pytorch_pretrained_bert import BertModel
 from torch import nn
@@ -30,12 +31,11 @@ class BertforEntityConcat(nn.Module):
         # self.sigmoid = nn.Sigmoid()
         self.softmax = nn.Softmax()
 
-    def forward(self, tokens, masks):
+    def forward(self, tokens, entites,  masks):
         _, pooled_output = self.bert(tokens, attention_mask=masks, output_all_encoded_layers=False)
         dropout_output = self.dropout(pooled_output)
         
-        #concat_output = torch.cat((dropout_output, extras), dim=1)
-        concat_output = dropout_output
+        concat_output = torch.cat((dropout_output, entities), dim=1)
         mlp_output = self.mlp(concat_output)
         # proba = self.sigmoid(mlp_output)
         proba = self.softmax(mlp_output)
