@@ -1,0 +1,4 @@
+tqdm
+SPARQLWrapper
+distance
+requests

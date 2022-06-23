@@ -2,6 +2,11 @@
 from types import SimpleNamespace
 
 from app.base_pipeline import BasePipeline
+from app.bert_triplebert_spbert.triplebert.run import init
+from app.bert_triplebert_spbert.triplebert.run import run
+from app.postprocessing import postprocess_prediction
+from app.preprocessing import preprocessing_qtq
+from app.preprocessing import seperate_qtq
 
 
 class BertTripleBertSPBertPipeline(BasePipeline):
@@ -18,8 +23,7 @@ class BertTripleBertSPBertPipeline(BasePipeline):
         """
         super().__init__(arguments)
 
-        # TODO add initialization of TripleBert
-        print(arguments)  # used to make the linters work, can be removed
+        init(self.arguments)  # used to make the linters work, can be removed
 
     def predict_sparql_query(self, question: str) -> str:
         """Precit a SPARQL query for a given question.
@@ -34,5 +38,11 @@ class BertTripleBertSPBertPipeline(BasePipeline):
         str
             Predicted SPARQL query for the question.
         """
-        # TODO add prediction of TripleBert
-        return ""
+        seperate_qtq()
+        preprocessing_qtq()
+        run(self.arguments)
+
+        query_pairs = postprocess_prediction()
+        query = query_pairs["0"]
+
+        return query

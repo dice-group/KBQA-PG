@@ -4,6 +4,9 @@ This version reduces the number of tokens after tokenization.
 It is neccessary to include the `sparql_vocabulary.txt` into the tokenizer to make use 
 of it properly.
 
+## Warning
+In case a WordPiece tokenizer is used, only the wordpiece_version will work properly.
+
 ## Installation
 Install python packages with:
 ```bash
