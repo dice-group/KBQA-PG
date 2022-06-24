@@ -45,13 +45,13 @@ def log_statistics(used_resources, special_classes, not_instanced_templates):
         logging.info("{}".format(template))
 
 
-def save_cache(file, cache):
+def save_cache(file: str, cache):
     ordered = collections.OrderedDict(cache.most_common())
     with open(file, "w") as outfile:
         json.dump(ordered, outfile)
 
 
-def query_dbpedia(query):
+def query_dbpedia(query: str):
     param = dict()
     param["default-graph-uri"] = GRAPH
     param["query"] = query
@@ -71,7 +71,7 @@ def query_dbpedia(query):
     return json.loads(j)
 
 
-def strip_brackets(s):
+def strip_brackets(s: str):
     s = re.sub(r"\([^)]*\)", "", s)
     if "," in s:
         s = s[: s.index(",")]
@@ -440,27 +440,27 @@ STANDARDS = {
 }
 
 
-def encode(sparql):
+def encode(sparql: str):
     encoded_sparql = do_replacements(sparql)
     shorter_encoded_sparql = shorten_query(encoded_sparql)
     normalized = normalize_predicates(shorter_encoded_sparql)
     return normalized
 
 
-def decode(encoded_sparql):
+def decode(encoded_sparql: str):
     short_sparql = reverse_replacements(encoded_sparql)
     sparql = reverse_shorten_query(short_sparql)
     return " ".join(sparql.split())
 
 
-def fix_URI(query):
+def fix_URI(query: str):
     query = re.sub(r"dbr:([^\s]+)", r"<http://dbpedia.org/resource/\1>", query)
     if query[-2:] == "}>":
         query = query[:-2] + ">}"
     return query
 
 
-def normalize_predicates(sparql):
+def normalize_predicates(sparql: str):
     sparql = re.sub(
         r"dbo_([A-Z])([a-zA-Z]+)",
         lambda matches: "dbo_" + matches[1].lower() + matches[2],
@@ -474,7 +474,7 @@ def normalize_predicates(sparql):
     return sparql
 
 
-def do_replacements(sparql):
+def do_replacements(sparql: str):
     for r in REPLACEMENTS:
         encoding = r[-1]
         for original in r[:-1]:
@@ -482,7 +482,7 @@ def do_replacements(sparql):
     return sparql
 
 
-def reverse_replacements(sparql):
+def reverse_replacements(sparql: str):
     for r in REPLACEMENTS:
         original = r[0]
         encoding = r[-1]
@@ -493,7 +493,7 @@ def reverse_replacements(sparql):
     return sparql
 
 
-def shorten_query(sparql):
+def shorten_query(sparql: str):
     sparql = re.sub(
         r"order by desc\s+....?_open\s+([\S]+)\s+....?_close",
         "_obd_ \\1",
@@ -510,7 +510,7 @@ def shorten_query(sparql):
     return sparql
 
 
-def reverse_shorten_query(sparql):
+def reverse_shorten_query(sparql: str):
     sparql = re.sub(r"_oba_ ([\S]+)", "order by asc (\\1)", sparql, flags=re.IGNORECASE)
     sparql = re.sub(
         r"_obd_ ([\S]+)", "order by desc (\\1)", sparql, flags=re.IGNORECASE
@@ -518,7 +518,7 @@ def reverse_shorten_query(sparql):
     return sparql
 
 
-def read_template_file(file):
+def read_template_file(file: str):
     annotations = list()
     line_number = 1
     with open(file) as f:
@@ -547,7 +547,7 @@ class Annotation:
         self.variables = extract_variables(generator_query)
 
 
-def extract_variables(query):
+def extract_variables(query: str):
     variables = []
     query_form_pattern = r"^.*?where"
     query_form_match = re.search(query_form_pattern, query, re.IGNORECASE)
@@ -557,14 +557,14 @@ def extract_variables(query):
     return variables
 
 
-def extract_encoded_entities(encoded_sparql):
+def extract_encoded_entities(encoded_sparql: str):
     sparql = decode(encoded_sparql)
     entities = extract_entities(sparql)
     encoded_entities = list(map(encode, entities))
     return encoded_entities
 
 
-def extract_entities(sparql):
+def extract_entities(sparql: str):
     triples = extractTriples(sparql)
     entities = set()
     for triple in triples:
@@ -578,7 +578,7 @@ def extract_entities(sparql):
     return entities
 
 
-def extract_predicates(sparql):
+def extract_predicates(sparql: str):
     triples = extractTriples(sparql)
     predicates = set()
     for triple in triples:
@@ -587,7 +587,7 @@ def extract_predicates(sparql):
     return predicates
 
 
-def extractTriples(sparqlQuery):
+def extractTriples(sparqlQuery: str):
     triples = []
     whereStatementPattern = r"where\s*?{(.*?)}"
     whereStatementMatch = re.search(whereStatementPattern, sparqlQuery, re.IGNORECASE)
@@ -597,7 +597,7 @@ def extractTriples(sparqlQuery):
     return triples
 
 
-def splitIntoTriples(whereStatement):
+def splitIntoTriples(whereStatement: str):
     tripleAndSeparators = re.split(r"(\.[\s\?\<$])", whereStatement)
     trimmed = [str.strip() for str in tripleAndSeparators]
 
@@ -621,7 +621,7 @@ def splitIntoTriples(whereStatement):
     return triples
 
 
-def splitIntoTripleParts(triple):
+def splitIntoTripleParts(triple: str):
     statementPattern = r"(\S+)\s+(\S+)\s+(\S+)"
     statementPatternMatch = re.search(statementPattern, triple)
 
