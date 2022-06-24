@@ -16,7 +16,7 @@ PREPROCESSING_QTQ = SimpleNamespace(
         # --output, dest="output_dir", required=True
         "output_dir": "app/data/output",
         # --cased-NL, dest="uncased-NL", action="store_false"
-        "uncased-NL": True,
+        "uncased_NL": True,
     }
 )
 
@@ -28,13 +28,13 @@ def preprocess_sentence(words: str, uncased: bool = True) -> str:
     ----------
     words : str
         Natural language sentence.
+    uncased : bool
+        Flag for whether to return the sentence cased or uncased.
 
     Returns
     -------
     words : str
         Preprocessed natural language sentence.
-    cased : bool
-        Flag for whether to return the sentence cased or uncased
     """
     # creating a space between a word and the punctuation following it
     # eg: "he is a boy." => "he is a boy ."
