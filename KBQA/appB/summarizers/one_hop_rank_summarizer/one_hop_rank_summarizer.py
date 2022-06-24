@@ -1,6 +1,7 @@
 """Summarizer, which combines one hop triples and ranked tripels."""
 from math import inf
 import os
+import pickle
 import time
 from typing import Dict
 from typing import List
@@ -8,10 +9,12 @@ from typing import Tuple
 
 from KBQA.appB.data_generator import Question
 from KBQA.appB.summarizers import BaseSummarizer
+from KBQA.ranking.RANK_OF_TRIPLES.multihop_triples import triples_for_predicates_all_datasets
 from rdflib import URIRef
 
 from .entity_relation_hops import entity_relation_hops
-from .multihop_triples import triples_for_predicates_all_datasets
+
+# from .multihop_triples import triples_for_predicates_all_datasets
 
 
 class OneHopRankSummarizer(BaseSummarizer):
@@ -64,11 +67,11 @@ class OneHopRankSummarizer(BaseSummarizer):
 
     def __init__(
         self,
-        datasets: str = "qald8_qald9_lcquad",
-        confidence: float = 0.5,
+        datasets: str = "qald9_qald8_lcquad",
+        confidence: float = 0.3,
         lower_rank: int = 1,
         max_triples: int = 3,
-        limit: int = -1,
+        limit: int = 70,
         filtering: bool = True,
         timeout: float = 0,
         verbose: bool = True,
@@ -106,7 +109,29 @@ class OneHopRankSummarizer(BaseSummarizer):
         triples = self.summarize_ranks_confidence(question)
 
         formated_triples = self._format_triples(triples)
+        formated_triples = self.add_baseline_triples(formated_triples, question)
 
+        return formated_triples
+
+    def add_baseline_triples(self, formated_triples: list, question: Question) -> list:
+        """
+        Given a triples list and question. List with added triples is returned.
+
+        This function adds triples from summary.
+        --------------
+        :param formated_triples: list of triples.
+        :param question: question string.
+        :return: liat of triples with added triples.
+        """
+        with open("Baseline_triples_30.pickle", "rb") as file1:
+            quest_triples = pickle.load(file1)
+        baseline_triples = quest_triples[question.text]
+        for triple in baseline_triples:
+            subject = "<" + triple["subject"] + ">"
+            predicate = "<" + triple["predicate"] + ">"
+            objectt = "<" + triple["object"] + ">"
+            triple1 = subject + " " + predicate + " " + objectt
+            formated_triples.append(triple1)
         return formated_triples
 
     def summarize_ranks_confidence(
@@ -142,7 +167,7 @@ class OneHopRankSummarizer(BaseSummarizer):
             os.path.dirname(__file__), f"pickle_objects/{self.datasets}.pickle"
         )
         ranked_triples = triples_for_predicates_all_datasets(
-            question.text, dataset, self.filtering, number_of_triples=9999999
+            question.text, dataset, self.filtering, number_of_triples=100
         )
         # ------------------------------ ranking ------------------------------
 

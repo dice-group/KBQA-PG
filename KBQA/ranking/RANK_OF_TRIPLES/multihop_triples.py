@@ -4,11 +4,15 @@ from abc import abstractmethod
 from builtins import FileNotFoundError
 from json.decoder import JSONDecodeError
 import pickle
+import time
 from typing import Dict
 from typing import List
 from typing import Tuple
 
 from KBQA.appB.summarizers.utils import entity_recognition_tagme
+from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import calclualteRelatenessOfGraphs
+from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import dictTripleRelateness
+from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import graphs_for_the_question
 from rdflib.graph import Graph
 from rdflib.term import Literal
 from rdflib.term import URIRef
@@ -427,8 +431,40 @@ class Triples_for_pred(ABC):
             first_pred = first_pred + 60
             last_pred = last_pred + 60
         triples_list_sorted = triples_list_sorted[0:number_of_trip]
+        if len(triples_list_sorted) < number_of_trip:
+            triples_list_sorted = self.add_relatedness_triples(
+                triples_list_sorted, entities, number_of_trip - len(triples_list_sorted)
+            )
         final_triples_list = self.add_confidence(triples_list_sorted, confidence)
         return final_triples_list
+
+    def add_relatedness_triples(
+        self,
+        triples_list_sorted: List[Tuple[Tuple, int]],
+        entities: List[URIRef],
+        number_of_triples: int,
+    ) -> List[Tuple[Tuple, int]]:
+        """
+        Given a triples list with rank, entities and number_of_triples to add. Triples list with rank with added triples is returned.
+
+        This function adds triples which are similar for different entities from the question.
+        --------------
+        :param triples_list_sorted: triples with rank.
+        :param entities: list of entities.
+        :param number_of_triples: number of triples to add
+        :return: triples_list_sorted with added triples.
+        """
+        graphs = graphs_for_the_question(entities)
+        tupleRelatedness = calclualteRelatenessOfGraphs(graphs)
+        tripleRelatedness = dictTripleRelateness(tupleRelatedness)
+        triples_added = 0
+        for triple in tripleRelatedness:
+            if triple not in dict(triples_list_sorted).keys():
+                triples_list_sorted.append((triple, 1))
+                triples_added = triples_added + 1
+            if triples_added == number_of_triples:
+                break
+        return triples_list_sorted
 
 
 class Triples_for_pred_with_filter(Triples_for_pred):
@@ -485,7 +521,7 @@ def triples_for_predicates_all_datasets(
     predicate_table: str,
     filtering: bool,
     number_of_triples: int = 100,
-    confidence: float = 0.1,
+    confidence: float = 0.3,
 ) -> List[Tuple]:
     """
     Given question string, predicate_table. Necessary number of triples in ranked order are returned.
@@ -531,17 +567,20 @@ def main() -> None:
     # ent = m.ask_for_entities("Which politicians were married to a German?", confidence = 0.4)
     # print(ent)
     # triples = triples_for_predicates_all_datasets(
-    #   "How many emperors did China have?",
-    #   "qald9_qald8_lcquad.pickle",
-    #   True,
+    #    "Vladimir Putin, Donald Trump",
+    #    "qald9_qald8_lcquad.pickle",
+    #    True,
     #    number_of_triples=100,
-    #    confidence=0.1
+    #    confidence=0.3,
     # )
     # print(len(triples))
+    # for triple in triples:
+    #    print(triple)
+    #    print("\n")
 
 
 # Call from shell as main.
 if __name__ == "__main__":
-    # start_time = time.time()
+    start_time = time.time()
     main()
-    # print(time.time() - start_time)
+    print(time.time() - start_time)

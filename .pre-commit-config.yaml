@@ -38,6 +38,7 @@ repos:
             flask==2.0.2,
             numpy==1.21.3,
             SPARQLWrapper==1.8.5,
+            nltk,
           ]
       - id: pylint
         name: Pylint (appA)
