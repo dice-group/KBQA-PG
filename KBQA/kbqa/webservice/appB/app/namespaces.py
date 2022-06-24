@@ -188,6 +188,7 @@ KNOWBERT_SPBERT_SPBERT = SimpleNamespace(
         "local_rank": -1,
         "seed": 42,
         "save_interval": 1,
+        "uncased_NL": True,
     }
 )
 
