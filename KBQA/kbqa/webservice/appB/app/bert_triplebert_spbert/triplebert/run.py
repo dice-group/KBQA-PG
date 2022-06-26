@@ -27,8 +27,8 @@ import os
 import random
 import re
 
-from model import BertSeq2Seq
-from model import Seq2Seq
+from app.bert_triplebert_spbert.triplebert.model import BertSeq2Seq
+from app.bert_triplebert_spbert.triplebert.model import Seq2Seq
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
@@ -500,7 +500,7 @@ def init(args):
     
     sv_flag = False
     # Load models.
-    if args.sparql_vocab:
+    if args.sparql_vocab is not None:
         sv_flag = True
         with open(args.sparql_vocab) as vocab_file:
             new_tokens = vocab_file.read().split('\n')
