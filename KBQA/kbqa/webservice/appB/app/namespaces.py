@@ -221,6 +221,7 @@ BERT_TRIPLEBERT_SPBERT = SimpleNamespace(
         # --train_filename, default=None, type=str,
         # help="The train filename. Should contain the .jsonl files for this task."
         "train_filename": None,
+        "sparql_vocab": None,
         # --dev_filename, default=None, type=str,
         # help="The dev filename. Should contain the .jsonl files for this task."
         "dev_filename": None,

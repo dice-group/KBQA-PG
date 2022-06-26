@@ -500,7 +500,7 @@ def init(args):
     
     sv_flag = False
     # Load models.
-    if args.sparql_vocab:
+    if args.sparql_vocab is not None:
         sv_flag = True
         with open(args.sparql_vocab) as vocab_file:
             new_tokens = vocab_file.read().split('\n')
