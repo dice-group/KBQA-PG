@@ -27,8 +27,8 @@ import os
 import random
 import re
 
-from model import BertSeq2Seq
-from model import Seq2Seq
+from app.bert_triplebert_spbert.triplebert.model import BertSeq2Seq
+from app.bert_triplebert_spbert.triplebert.model import Seq2Seq
 from nltk.translate.bleu_score import corpus_bleu
 import numpy as np
 import torch
