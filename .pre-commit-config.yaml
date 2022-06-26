@@ -13,18 +13,6 @@ repos:
       - id: pyupgrade
         name: pyupgrade - upgrade syntax for newer python versions
 
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
-    hooks:
-      - id: black
-        name: Black - format python code
-
-  - repo: https://github.com/sqlalchemyorg/zimports
-    rev: v0.6.0
-    hooks:
-      - id: zimports
-        name: zimports - reformat python imports
-
   - repo: https://github.com/PyCQA/pylint
     rev: v2.14.3
     hooks:
@@ -38,6 +26,7 @@ repos:
             flask==2.0.2,
             numpy==1.21.3,
             SPARQLWrapper==1.8.5,
+            nltk,
           ]
       - id: pylint
         name: Pylint (appA)
