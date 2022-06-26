@@ -573,7 +573,7 @@ def main() -> None:
     #    number_of_triples=100,
     #    confidence=0.3,
     # )
-    # print(len(triples))
+    print("")
     # for triple in triples:
     #    print(triple)
     #    print("\n")
