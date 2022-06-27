@@ -309,3 +309,23 @@ BERT_TRIPLEBERT_SPBERT = SimpleNamespace(
         "save_interval": 1,
     }
 )
+
+
+T5 = SimpleNamespace(
+    **{
+        # --model_checkpoints, default=None, type=str, required=True,
+        # help  = "model checkpoints of the trained model"
+        "model_checkpoint": "models/t5-base-2",
+        # help="The output directory where the model predictions and checkpoints will be written."
+        "output_dir": "app/output/",
+        # help="The prediction filename."
+        "predict_filename": "app/data/output/question",  # "./data/output/qald_9_test",
+        # --source, default="en", type=str,
+        # help="The source language (for file extension)"
+        "source": "en",
+        # --target, default="sparql", type=str,
+        # help="The target language (for file extension)"
+        "target": "sparql",
+        # --config_name, default="", type=str,
+    }
+)

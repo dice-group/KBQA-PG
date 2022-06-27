@@ -194,6 +194,8 @@ def load_config(path: str) -> Tuple[Union[BaseSummarizer, None], BasePipeline]:
         pline = init_knowbert_spbert_spbert(parser["knowbert_spbert_spbert"])
     elif architecture_name == "bert_triple-bert_spbert":
         pline = init_bert_triplebert_spbert(parser["bert_triple-bert_spbert"])
+    elif architecture_name == "t5":
+        pline = init_t5(parser["t5"])
     else:
         raise ValueError(f"Architecture {architecture_name} is not supported.")
 
@@ -391,6 +393,34 @@ def init_bert_triplebert_spbert(section: SectionProxy) -> BasePipeline:
     bts_pipeline = BertTripleBertSPBertPipeline(BERT_TRIPLEBERT_SPBERT)
 
     return bts_pipeline
+
+
+def init_t5(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for t5.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertSPBertPipeline
+        Initialized t5 pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import T5
+    from app.t5 import t5Pipeline
+
+    parsed_section = parse_section(section)
+
+    for entry, value in parsed_section:
+        setattr(T5, entry, value)
+
+    t5_pipeline = t5Pipeline(T5)
+
+    return t5_pipeline
 
 
 def parse_section(section: SectionProxy) -> List[Tuple[str, Union[int, float, str]]]:
