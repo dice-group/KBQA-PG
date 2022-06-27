@@ -714,6 +714,7 @@ def train(model, batcher, tokenizer, device, args):    # modified
         bar = tqdm(train_dataloader, total=len(train_dataloader))
         for batch in bar:
             logger.debug(batch)
+            optimizer.zero_grad()
             batch = tuple(t.to(device) for t in batch)
             (
                 source_ids,
