@@ -98,6 +98,7 @@ def run(args):
         with open(
                 os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w", encoding="utf-8"
         ) as f:
+
             for count, ref in enumerate(preds):
                 ref = ref.strip().replace("< ", "<").replace(" >", ">")
                 ref = re.sub(r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref)
