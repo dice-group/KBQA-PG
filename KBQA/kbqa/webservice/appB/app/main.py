@@ -174,6 +174,12 @@ def load_config(path: str) -> Tuple[Union[BaseSummarizer, None], BasePipeline]:
 
     if summarizer_name == "one_hop_rank":
         smrzr = init_one_hop_rank_summarizer(parser["one_hop_rank"])
+    elif summarizer_name == "one_hop":
+        pass  # TODO
+    elif summarizer_name == "lauren":
+        smrzr = init_lauren_summarizer(parser["lauren"])
+    elif summarizer_name == "gold":
+        smrzr = init_gold_summarizer(parser["gold"])
     elif summarizer_name == "None":
         smrzr = None
         print("WARNING: Summarizer is set to 'None'. Summarizing will be skipped.")
@@ -229,6 +235,52 @@ def init_one_hop_rank_summarizer(section: SectionProxy) -> BaseSummarizer:
     return ohrs
 
 
+def init_lauren_summarizer(section: SectionProxy) -> BaseSummarizer:
+    """Initialize the LarenSummarizer with the given values in the config section.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    LaurenSummarizer
+        Initialized instance of the LaurenSummarizer.
+    """
+    from app.summarizer.lauren_summarizer import LaurenSummarizer
+
+    limit = int(section["limit"])
+
+    lauren = LaurenSummarizer(limit=limit)
+
+    return lauren
+
+
+def init_gold_summarizer(section: SectionProxy) -> BaseSummarizer:
+    """Initialize the GoldSummarizer with the given values in the config section.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    GoldSummarizer
+        Initialized instance of the GoldSummarizer.
+    """
+    from app.summarizer.gold_summarizer import GoldSummarizer
+
+    dataset = str(section["dataset"])
+
+    gold = GoldSummarizer(dataset)
+
+    return gold
+
+
 def init_bert_spbert_pipeline(section: SectionProxy) -> BasePipeline:
     """Initialize the pipeline for BERT_SPBERT.
 
@@ -247,11 +299,10 @@ def init_bert_spbert_pipeline(section: SectionProxy) -> BasePipeline:
     from app.namespaces import BERT_SPBERT
     from app.bert_spbert import BertSPBertPipeline
 
-    model_name = section["model_name"]
+    parsed_section = parse_section(section)
 
-    BERT_SPBERT.load_model_path = f"/models/{model_name}"
-    BERT_SPBERT.max_source_length = int(section["max_source_length"])
-    BERT_SPBERT.max_target_length = int(section["max_target_length"])
+    for entry, value in parsed_section:
+        setattr(BERT_SPBERT, entry, value)
 
     bs_pipeline = BertSPBertPipeline(BERT_SPBERT)
 
