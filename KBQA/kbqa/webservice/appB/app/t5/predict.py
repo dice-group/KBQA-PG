@@ -99,7 +99,7 @@ def run(args):
                 os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w", encoding="utf-8"
         ) as f:
             count = 0
-            for ref, count in enumerate(pred_str):
+            for ref in pred_str:
                 ref = ref.strip().replace("< ", "<").replace(" >", ">")
                 ref = re.sub(r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref)
                 ref = ref.replace("attr_close>", "attr_close >").replace(
