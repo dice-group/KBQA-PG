@@ -1,4 +1,5 @@
 """Wrapper class for the KNOWBERT_SPBERT_SPBERT pipeline."""
+import logging
 from types import SimpleNamespace
 
 from app.base_pipeline import BasePipeline
@@ -9,8 +10,6 @@ from app.knowbert_spbert_spbert.kb.run import train
 from app.postprocessing import postprocess_prediction
 from app.preprocessing import preprocessing_qtq
 from app.preprocessing import seperate_qtq
-
-import logging
 
 
 class KnowBertSPBertSPBertPipeline(BasePipeline):
@@ -30,6 +29,7 @@ class KnowBertSPBertSPBertPipeline(BasePipeline):
         from app.preprocessing.preprocessing_qtq.preprocessing_qtq import (
             PREPROCESSING_QTQ,
         )
+
         knowbert_logger = logging.getLogger("knowbert-logger")
         knowbert_logger.setLevel(logging.INFO)
         PREPROCESSING_QTQ.uncased_NL = self.arguments.uncased_NL
