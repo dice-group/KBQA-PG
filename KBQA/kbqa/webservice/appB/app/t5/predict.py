@@ -108,8 +108,8 @@ def run(args):
                 ref = ref.replace(" [ ", " [").replace(" ] ", "] ")
                 ref = ref.replace("_obd_", " _obd_ ").replace("_oba_", " _oba_ ")
 
-                pred_str.append(ref.split())
-                line = str(count) + "\t" + ref    #modified
+                
+                line = count + "\t" + ref    #modified
                 f.write(line + "\n")    # modified
 
     logger.info("  " + "*" * 20)
