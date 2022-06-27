@@ -11,3 +11,7 @@ https://github.com/huggingface/transformers/issues/15956 .
 
 ## Note
 This version is a quick and dirty fix. It is not Linter approved. It is not working as good as the base version.
+
+## TODO
+- Test this with the tokenizer which is used.
+- The encoding "variable:" probably yields problems in token- and untokenization.

@@ -5,26 +5,26 @@ from pathlib import Path
 import re
 from typing import Union
 
-from KBQA.appB.preprocessing import utils
-from KBQA.appB.preprocessing.utils import decode_asterisk
-from KBQA.appB.preprocessing.utils import decode_datatype
-from KBQA.appB.preprocessing.utils import decode_file_base
-from KBQA.appB.preprocessing.utils import do_replacements
-from KBQA.appB.preprocessing.utils import encode_asterisk
-from KBQA.appB.preprocessing.utils import encode_datatype
-from KBQA.appB.preprocessing.utils import normalize_prefixes
-from KBQA.appB.preprocessing.utils import prefix_to_uri
-from KBQA.appB.preprocessing.utils import preprocess_natural_language_file as preprocess_natural_language_file_
-from KBQA.appB.preprocessing.utils import preprocess_natural_language_sentence as preprocess_natural_language_sentence_
-from KBQA.appB.preprocessing.utils import preprocess_qtq_file_base
-from KBQA.appB.preprocessing.utils import preprocess_sparql_base
-from KBQA.appB.preprocessing.utils import preprocess_sparql_file_base
-from KBQA.appB.preprocessing.utils import preprocess_triples_base
-from KBQA.appB.preprocessing.utils import preprocess_triples_file_base
-from KBQA.appB.preprocessing.utils import revert_replacements
-from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_base
-from KBQA.appB.preprocessing.utils import sparql_encoder_levenshtein_dist_on_file_base
-from KBQA.appB.preprocessing.utils import uri_to_prefix
+from KBQA.appB.preprocessing.wordpiece_version import utils
+from KBQA.appB.preprocessing.wordpiece_version.utils import decode_asterisk
+from KBQA.appB.preprocessing.wordpiece_version.utils import decode_datatype
+from KBQA.appB.preprocessing.wordpiece_version.utils import decode_file_base
+from KBQA.appB.preprocessing.wordpiece_version.utils import do_replacements
+from KBQA.appB.preprocessing.wordpiece_version.utils import encode_asterisk
+from KBQA.appB.preprocessing.wordpiece_version.utils import encode_datatype
+from KBQA.appB.preprocessing.wordpiece_version.utils import normalize_prefixes
+from KBQA.appB.preprocessing.wordpiece_version.utils import prefix_to_uri
+from KBQA.appB.preprocessing.wordpiece_version.utils import preprocess_natural_language_file as preprocess_natural_language_file_
+from KBQA.appB.preprocessing.wordpiece_version.utils import preprocess_natural_language_sentence as preprocess_natural_language_sentence_
+from KBQA.appB.preprocessing.wordpiece_version.utils import preprocess_qtq_file_base
+from KBQA.appB.preprocessing.wordpiece_version.utils import preprocess_sparql_base
+from KBQA.appB.preprocessing.wordpiece_version.utils import preprocess_sparql_file_base
+from KBQA.appB.preprocessing.wordpiece_version.utils import preprocess_triples_base
+from KBQA.appB.preprocessing.wordpiece_version.utils import preprocess_triples_file_base
+from KBQA.appB.preprocessing.wordpiece_version.utils import revert_replacements
+from KBQA.appB.preprocessing.wordpiece_version.utils import sparql_encoder_levenshtein_dist_base
+from KBQA.appB.preprocessing.wordpiece_version.utils import sparql_encoder_levenshtein_dist_on_file_base
+from KBQA.appB.preprocessing.wordpiece_version.utils import uri_to_prefix
 from KBQA.appB.summarizers.utils import get_uri_for_wiki_page_id
 from KBQA.appB.summarizers.utils import query_dbspotlight
 from KBQA.appB.summarizers.utils import query_falcon
