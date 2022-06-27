@@ -6,7 +6,7 @@ from app.t5.predict import run
 from app.t5.predict import init
 from app.postprocessing import postprocess_prediction
 from app.preprocessing import preprocessing_qtq
-from appB.app.preprocessing import seperate_qtq
+from app.preprocessing import seperate_qtq
 
 
 class t5Pipeline(BasePipeline):
