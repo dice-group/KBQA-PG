@@ -93,7 +93,7 @@ def run(args):
             #text to sparql traanslation example
             answer = translate(ques)
             preds.append(answer)
-        
+        print(preds)
         pred_str=[]
         with open(
                 os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w", encoding="utf-8"
@@ -108,7 +108,7 @@ def run(args):
                 ref = ref.replace(" [ ", " [").replace(" ] ", "] ")
                 ref = ref.replace("_obd_", " _obd_ ").replace("_oba_", " _oba_ ")
 
-                
+                pred_str.append(ref.split())
                 line = count + "\t" + ref    #modified
                 f.write(line + "\n")    # modified
 
