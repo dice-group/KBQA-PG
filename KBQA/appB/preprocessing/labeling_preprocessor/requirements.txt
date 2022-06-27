@@ -3,3 +3,4 @@ SPARQLWrapper
 distance
 requests
 rdflib
+numpy

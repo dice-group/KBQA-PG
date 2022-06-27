@@ -104,6 +104,8 @@ exclude: |
     KBQA/appB/preprocessing/. |
     KBQA/appB/transformer_architectures/bert_spbert_spbert_base/. |
     KBQA/appB/transformer_architectures/bert_spbert_spbert/. |
+    KBQA/appB/transformer_architectures/bert_spbert2_spbert2/. |
+    KBQA/appB/transformer_architectures/bert_spbert-le_spbert-le/. |
     KBQA/appB/transformer_architectures/bert_spbert/. |
     KBQA/appB/transformer_architectures/kb/. |
     KBQA/kbqa/webservice/appA/app/nspm/generator_utils.py |
