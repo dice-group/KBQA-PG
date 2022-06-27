@@ -98,8 +98,7 @@ def run(args):
         with open(
                 os.path.join(args.output_dir, "predict_{}.output".format(str(idx))), "w", encoding="utf-8"
         ) as f:
-            count = 0
-            for ref, count in enumerate(pred_str):
+            for count, ref in enumerate(preds):
                 ref = ref.strip().replace("< ", "<").replace(" >", ">")
                 ref = re.sub(r' ?([!"#$%&\'(’)*+,-./:;=?@\\^_`{|}~]) ?', r"\1", ref)
                 ref = ref.replace("attr_close>", "attr_close >").replace(
@@ -109,10 +108,10 @@ def run(args):
                 ref = ref.replace("_obd_", " _obd_ ").replace("_oba_", " _oba_ ")
 
                 pred_str.append(ref.split())
-                line = count + "\t" + ref    #modified
+                line = str(count) + "\t" + ref    #modified
                 f.write(line + "\n")    # modified
-                count += 1
-        logger.info("  " + "*" * 20)
+
+    logger.info("  " + "*" * 20)
 
 if __name__ == "__main__":
     run()
