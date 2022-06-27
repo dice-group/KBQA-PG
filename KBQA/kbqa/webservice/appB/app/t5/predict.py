@@ -59,11 +59,15 @@ def init(args):
 
     model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
+    if os.path.exists(args.output_dir) is False:
+        os.makedirs(args.output_dir)
 
 
 
 def run(args):
     """Run and predict."""
+    if os.path.exists(args.output_dir) is False:
+        os.makedirs(args.output_dir)
     model_checkpoint = args.model_checkpoint
 
     model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
@@ -110,3 +114,5 @@ def run(args):
                 count += 1
         logger.info("  " + "*" * 20)
 
+if __name__ == "__main__":
+    run()
