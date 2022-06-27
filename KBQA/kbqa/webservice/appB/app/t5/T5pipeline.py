@@ -7,6 +7,7 @@ from app.t5.predict import init
 from app.postprocessing import postprocess_prediction
 from app.preprocessing import preprocessing_qtq
 from app.preprocessing import seperate_qtq
+from app.t5.postprocess import decode
 
 
 class t5Pipeline(BasePipeline):
@@ -43,5 +44,5 @@ class t5Pipeline(BasePipeline):
 
         query_pairs = postprocess_prediction()
         query = query_pairs["0"]
-
+        query = decode(query)
         return query
