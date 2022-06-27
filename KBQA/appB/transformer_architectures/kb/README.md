@@ -33,7 +33,7 @@ encoder = KnowBert.load_pretrained_model()
 batcher = KnowBertBatchifier(knowbert_model_path)
 ```
 
-For instantiating the full sequence-to-sequence model use the init function from run.py. The `args` are defined in `namespace.py` and for instantiation
+For instantiating the full sequence-to-sequence model use the `init` function from `run.py`. The `args` are defined in `namespace.py` and for instantiation
 the following arguments may be changed:
 ```
 "load_model_checkpoint": "Yes"/"No"
