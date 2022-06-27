@@ -115,6 +115,7 @@ exclude: |
     KBQA/kbqa/webservice/appB/app/bert_triplebert_spbert/triplebert/ |
     KBQA/appB/transformer_architectures/bert_triplebert_spbert/. |
     KBQA/kbqa/webservice/appB/app/knowbert_spbert_spbert/kb/ |
+    KBQA/kbqa/webservice/appB/app/t5/. |
     KBQA/tests/
   )
 ci:
