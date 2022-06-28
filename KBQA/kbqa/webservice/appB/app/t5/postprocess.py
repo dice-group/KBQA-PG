@@ -4,9 +4,10 @@ from app.t5.utils import decode_datatype
 from app.t5.utils import decode_asterisk
 from app.t5.utils import revert_replacements
 from app.t5.utils import prefix_to_uri
-import app.t5.utils
+#import app.t5.utils
+from app.t5.utils import ENCODING_REPLACEMENTS
 
-ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
+#ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
 
 import re
 
