@@ -13,17 +13,17 @@ repos:
       - id: pyupgrade
         name: pyupgrade - upgrade syntax for newer python versions
 
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
-    hooks:
-      - id: black
-        name: Black - format python code
-
   - repo: https://github.com/sqlalchemyorg/zimports
     rev: v0.6.0
     hooks:
       - id: zimports
         name: zimports - reformat python imports
+
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        name: Black - format python code
 
   - repo: https://github.com/PyCQA/pylint
     rev: v2.14.3
@@ -127,7 +127,7 @@ exclude: |
     KBQA/kbqa/webservice/appB/app/bert_triplebert_spbert/triplebert/ |
     KBQA/appB/transformer_architectures/bert_triplebert_spbert/. |
     KBQA/kbqa/webservice/appB/app/knowbert_spbert_spbert/kb/ |
-    KBQA/kbqa/webservice/appB/app/t5/. |
+    KBQA/kbqa/webservice/appB/app/t5/predict.py |
     KBQA/tests/
   )
 ci:

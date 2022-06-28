@@ -7,6 +7,8 @@ import os
 import re
 import sys
 import logging
+from types import SimpleNamespace
+from typing import Callable
 
 from transformers import pipeline
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
@@ -53,7 +55,7 @@ parser.add_argument(
 )
 
 
-def init(args):
+def init(args: SimpleNamespace) -> None:
     """Intialize model."""
     model_checkpoint = args.model_checkpoint
 
@@ -64,7 +66,7 @@ def init(args):
 
 
 
-def run(args):
+def run(args: SimpleNamespace) -> None:
     """Run and predict."""
     if os.path.exists(args.output_dir) is False:
         os.makedirs(args.output_dir)
@@ -77,7 +79,7 @@ def run(args):
         model=model,
         tokenizer=tokenizer
     )
-    translate= lambda q: (translator(q, max_length=100)[0]['translation_text'])
+    translate: Callable = lambda q: (translator(q, max_length=100)[0]['translation_text'])
 
 
     files = []
@@ -112,6 +114,3 @@ def run(args):
                 f.write(line + "\n")    # modified
 
     logger.info("  " + "*" * 20)
-
-if __name__ == "__main__":
-    run()
