@@ -291,11 +291,11 @@ def convert_qald(qald_path: str, output_file: str, language: str = "en") -> None
 
 # To convert from lcqald
 # add you path to the LCQald dataset here and call convert_lcqald()
-lcqald_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/lc-quad-train.json"
-convert_lcqald(lcqald_filepath, "lcqald_ph.csv")
+# lcqald_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/lc-quad-train.json"
+# convert_lcqald(lcqald_filepath, "lcqald_ph.csv")
 
 # To convert from qald dataset
 # add you path to the qald dataset here and call convert_qald()
 # you can also specify language of questions
-# qald9_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/updated-qald-9-train-multilingual.json"
-# convert_qald(qald9_filepath, "qald9_ph_de.csv", "de")
+qald9_filepath = "/Users/mengshima/GitRepos/KBQA-PG/KBQA/datasets/updated-qald-8-train-multilingual.json"
+convert_qald(qald9_filepath, "qald8_ph.csv", "en")
