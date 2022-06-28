@@ -406,19 +406,19 @@ def init_t5(section: SectionProxy) -> BasePipeline:
 
     Returns
     -------
-    BertSPBertSPBertPipeline
+    T5Pipeline
         Initialized t5 pipeline, which can be used to predict
         SPARQL queries using this architecture.
     """
     from app.namespaces import T5
-    from app.t5 import t5Pipeline
+    from app.t5 import T5Pipeline
 
     parsed_section = parse_section(section)
 
     for entry, value in parsed_section:
         setattr(T5, entry, value)
 
-    t5_pipeline = t5Pipeline(T5)
+    t5_pipeline = T5Pipeline(T5)
 
     return t5_pipeline
 
