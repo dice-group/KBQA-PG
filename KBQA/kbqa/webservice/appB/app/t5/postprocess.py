@@ -8,17 +8,17 @@ from app.t5.utils import ENCODING_REPLACEMENTS
 from app.t5.utils import prefix_to_uri
 from app.t5.utils import revert_replacements
 
-# import app.t5.utils
-
 # ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
 
 
 def decode(encoded_sparql: str) -> str:
     r"""Decode encoded sparql to make it a valid sparql query again.
+
     Parameters
     ----------
     encoded_sparql : str
         Decode this string.
+
     Returns
     -------
     str

@@ -9,6 +9,9 @@ import pickle
 import random
 import re
 from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Tuple
 from typing import Union
 
 import distance
@@ -184,7 +187,7 @@ IRI_SCHEMES = [
 ]
 
 
-def load_prefixes() -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
+def load_prefixes() -> Tuple[Dict[str, str], Dict[str, str], Dict[str, str]]:
     r"""Load the predefined DBpedia prefixes from prefixes/prefixes.txt or prefixes/prefixes.pickle if it exists.
 
     Returns
@@ -233,7 +236,7 @@ def preprocess_qtq_file_base(
     checkpointing_period: int = 10,
     *,
     encoder: Callable[[str], str],
-) -> tuple[Path, Path, Path]:
+) -> Tuple[Path, Path, Path]:
     r"""Separate and preprocess a JSON qtq-file into three files, question-, triple-, sparql-file.
 
     Let file_name_without_json be the file_name without the trailing ".json".
@@ -325,7 +328,7 @@ def preprocess_qtq_file_base(
 def separate_qtq_file(
     input_file_path: Union[str, os.PathLike, Path],
     output_folder_path: Union[str, os.PathLike, Path] = "separated_data_files",
-) -> tuple[Path, Path, Path]:
+) -> Tuple[Path, Path, Path]:
     r"""Separate a JSON qtq-file into three files, question-, triple-, sparql-file.
 
     Let file_name_without_json be the file_name without the trailing ".json".
@@ -380,7 +383,7 @@ def separate_qtq_file(
     return natural_language_file_path, triples_file_path, sparql_file_path
 
 
-def replace_new_line_char_by_comma(triples: list[str]) -> list[str]:
+def replace_new_line_char_by_comma(triples: List[str]) -> List[str]:
     r"""If a triple in triples has a '\n' character, replace it by ", ".
 
     Parameters
@@ -958,7 +961,7 @@ def sparql_keyword_to_lower_case(s: str) -> str:
 
 
 def do_replacements(
-    s: str, replacements: list[list[str]], remove_successive_whitespaces: bool = True
+    s: str, replacements: List[List[str]], remove_successive_whitespaces: bool = True
 ) -> str:
     r"""Replace string occurrences in s by some replacement.
 
@@ -988,7 +991,7 @@ def do_replacements(
 
 
 def revert_replacements(
-    s: str, replacements: list[list[str]], remove_successive_whitespaces: bool = True
+    s: str, replacements: List[List[str]], remove_successive_whitespaces: bool = True
 ) -> str:
     r"""Replace parts of s specified by replacements.
 
@@ -1241,7 +1244,7 @@ def sparql_encoder_levenshtein_dist_base(
 
 def test_do_valid_preprocessing_on_file(
     input_file_path: Union[str, os.PathLike, Path]
-) -> tuple[float, int]:
+) -> Tuple[float, int]:
     r"""Test the function do_valid_preprocessing on SPARQLs in input_file_path.
 
     Parameters
@@ -1324,7 +1327,7 @@ def split_qtq_uniformly(
     input_file_path: Union[str, os.PathLike, Path],
     output_folder_path: Union[str, os.PathLike, Path] = "split_data_files",
     validation_set_portion: float = 0.2,
-) -> tuple[Path, Path]:
+) -> Tuple[Path, Path]:
     r"""Split a qtq-file into a training and validation file.
 
     The validation file has the size of the input file times the validation_set_portion. The training file the
@@ -1374,10 +1377,10 @@ def split_qtq_uniformly(
 
 
 def split_preprocessed_files(
-    input_file_paths: list[Union[str, os.PathLike, Path]],
+    input_file_paths: List[Union[str, os.PathLike, Path]],
     output_folder_path: Union[str, os.PathLike, Path] = "split_data_files",
     validation_set_portion: float = 0.2,
-) -> Union[tuple[Path, Path], None]:
+) -> Union[Tuple[Path, Path], None]:
     r"""Split qtq-files into training and validation files at the same indexes.
 
     The validation file has the size of the input file times the validation_set_portion. The training file the
@@ -1401,7 +1404,7 @@ def split_preprocessed_files(
     -------
     None
     """
-    input_file_paths_: list[Path] = list()
+    input_file_paths_: List[Path] = list()
     for i, path in enumerate(input_file_paths):
         input_file_paths_.append(Path(path))
     output_folder_path = Path(output_folder_path)
