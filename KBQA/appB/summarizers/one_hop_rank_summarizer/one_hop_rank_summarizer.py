@@ -9,7 +9,9 @@ from typing import Tuple
 
 from KBQA.appB.data_generator import Question
 from KBQA.appB.summarizers import BaseSummarizer
-from KBQA.ranking.RANK_OF_TRIPLES.multihop_triples import triples_for_predicates_all_datasets
+from KBQA.ranking.RANK_OF_TRIPLES.multihop_triples import (
+    triples_for_predicates_all_datasets,
+)
 from rdflib import URIRef
 
 from .entity_relation_hops import entity_relation_hops
