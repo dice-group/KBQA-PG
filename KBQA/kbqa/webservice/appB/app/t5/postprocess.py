@@ -1,16 +1,16 @@
 """Module to post process sparql."""
 
-from app.t5.utils import decode_datatype
-from app.t5.utils import decode_asterisk
-from app.t5.utils import revert_replacements
-from app.t5.utils import prefix_to_uri
-#import app.t5.utils
-from app.t5.utils import ENCODING_REPLACEMENTS
-
-#ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
-
 import re
 
+from app.t5.utils import decode_asterisk
+from app.t5.utils import decode_datatype
+from app.t5.utils import ENCODING_REPLACEMENTS
+from app.t5.utils import prefix_to_uri
+from app.t5.utils import revert_replacements
+
+# import app.t5.utils
+
+# ENCODING_REPLACEMENTS = utils.ENCODING_REPLACEMENTS
 
 
 def decode(encoded_sparql: str) -> str:

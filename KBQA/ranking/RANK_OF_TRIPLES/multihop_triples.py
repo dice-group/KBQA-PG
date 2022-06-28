@@ -10,7 +10,9 @@ from typing import List
 from typing import Tuple
 
 from KBQA.appB.summarizers.utils import entity_recognition_tagme
-from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import calclualteRelatenessOfGraphs
+from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import (
+    calclualteRelatenessOfGraphs,
+)
 from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import dictTripleRelateness
 from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import graphs_for_the_question
 from rdflib.graph import Graph
