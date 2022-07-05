@@ -21,13 +21,13 @@ repos:
   #       name: zimports - reformat python imports
 
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.6.0
     hooks:
       - id: black
         name: Black - format python code
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.14.3
+    rev: v2.14.4
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
