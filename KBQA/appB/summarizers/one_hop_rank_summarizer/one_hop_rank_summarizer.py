@@ -1,18 +1,20 @@
 """Summarizer, which combines one hop triples and ranked tripels."""
 from math import inf
 import os
-import pickle
 import time
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Union
 
 from KBQA.appB.data_generator import Question
 from KBQA.appB.summarizers import BaseSummarizer
+from KBQA.appB.summarizers.one_hop_rank_summarizer.entity_relation_hops import entity_relation_hops
 from KBQA.ranking.RANK_OF_TRIPLES.multihop_triples import triples_for_predicates_all_datasets
 from rdflib import URIRef
+import requests
 
-from .entity_relation_hops import entity_relation_hops
+# from .entity_relation_hops import entity_relation_hops
 
 # from .multihop_triples import triples_for_predicates_all_datasets
 
@@ -70,8 +72,8 @@ class OneHopRankSummarizer(BaseSummarizer):
         datasets: str = "qald9_qald8_lcquad",
         confidence: float = 0.3,
         lower_rank: int = 1,
-        max_triples: int = 3,
-        limit: int = 70,
+        max_triples: int = 2,
+        limit: int = 100,
         filtering: bool = True,
         timeout: float = 0,
         verbose: bool = True,
@@ -109,11 +111,17 @@ class OneHopRankSummarizer(BaseSummarizer):
         triples = self.summarize_ranks_confidence(question)
 
         formated_triples = self._format_triples(triples)
-        formated_triples = self.add_baseline_triples(formated_triples, question)
+        number = self.limit - len(formated_triples)
+        if number < 100:
+            formated_triples = self.add_baseline_triples(
+                formated_triples, question, number
+            )
 
         return formated_triples
 
-    def add_baseline_triples(self, formated_triples: list, question: Question) -> list:
+    def add_baseline_triples(
+        self, formated_triples: List[str], question: Question, number: int = 30
+    ) -> List[str]:
         """
         Given a triples list and question. List with added triples is returned.
 
@@ -121,17 +129,27 @@ class OneHopRankSummarizer(BaseSummarizer):
         --------------
         :param formated_triples: list of triples.
         :param question: question string.
-        :return: liat of triples with added triples.
+        :param number: number of triples to add
+        :return: list of triples with added baseline triples.
         """
-        with open("Baseline_triples_30.pickle", "rb") as file1:
-            quest_triples = pickle.load(file1)
-        baseline_triples = quest_triples[question.text]
-        for triple in baseline_triples:
-            subject = "<" + triple["subject"] + ">"
-            predicate = "<" + triple["predicate"] + ">"
-            objectt = "<" + triple["object"] + ">"
-            triple1 = subject + " " + predicate + " " + objectt
-            formated_triples.append(triple1)
+        data: Dict[str, Union[str, int]] = dict()
+        data["question"] = question.text
+        data["size"] = number
+
+        try:
+            response = requests.get(
+                "http://qa-collab.cs.upb.de:5000/get-triples-by-text", json=data
+            ).json()
+        except ConnectionError:
+            print("Connection Error")
+
+        for triple in response["triples"]:
+            subj = triple["subject"]
+            pred = triple["predicate"]
+            obj = triple["object"]
+
+            formated_triple = f"<{subj}> <{pred}> <{obj}>"
+            formated_triples.append(formated_triple)
         return formated_triples
 
     def summarize_ranks_confidence(
@@ -279,3 +297,16 @@ class OneHopRankSummarizer(BaseSummarizer):
             formated_triples.append(formated_triple)
 
         return formated_triples
+
+
+def main() -> None:
+    """Call summarize on object OneHopRankSummarizer() to get summary triples."""
+    # obj = OneHopRankSummarizer()
+    # question = Question("Give me all chemical elements.")
+    # l = obj.summarize(question)
+    # print(l)
+    # print(len(l))
+
+
+if __name__ == "__main__":
+    main()
