@@ -20,11 +20,11 @@ repos:
   #     - id: zimports
   #       name: zimports - reformat python imports
 
-  - repo: https://github.com/psf/black
-    rev: 22.6.0
-    hooks:
-      - id: black
-        name: Black - format python code
+  #- repo: https://github.com/psf/black
+  #  rev: 22.6.0
+  #  hooks:
+  #    - id: black
+  #      name: Black - format python code
 
   - repo: https://github.com/PyCQA/pylint
     rev: v2.14.5
