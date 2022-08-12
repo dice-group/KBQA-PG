@@ -6,7 +6,7 @@ In this folder you find some preprocessors.
 - *wordpiece_version* includes the *basic_preprocessor* and *labeling_preprocessor* for the special case of using a 
   tokenizer which is based on WordPiece.
 
-For more information, see the readme files in the corresponding folders.
+For more information and basic usage guides, see the readme files in the corresponding folders.
 
 ## Warning
 In case a WordPiece tokenizer is used, only the wordpiece_version will work properly.
