@@ -72,7 +72,7 @@ class OneHopRankSummarizer(BaseSummarizer):
         confidence: float = 0.3,
         lower_rank: int = 1,
         max_triples: int = 3,
-        limit: int = 150,
+        limit: int = 15,
         filtering: bool = True,
         timeout: float = 0,
         verbose: bool = True,
