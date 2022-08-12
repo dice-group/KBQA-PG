@@ -10,8 +10,9 @@ problem. This argument is not working properly at the moment, see
 https://github.com/huggingface/transformers/issues/15956 .
 
 ## Note
-This version is a quick and dirty fix. It is not Linter approved. It is not working as good as the base version.
+This version is not working correctly in it's entirety. This can be seen on testing it with an encoding, tokenization, 
+detokenization and then decoding scheme.
 
 ## TODO
-- Test this with the tokenizer which is used.
+- Test it properly and fix corresponding problems.
 - The encoding "variable:" probably yields problems in token- and untokenization.

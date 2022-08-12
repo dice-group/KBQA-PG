@@ -1,4 +1,32 @@
-# Insights from dataset updating using QUANT:
+# Datasets
+
+This folder contains all of our datasets.
+
+## Content
+
+### lc-quad, qald-8, qald-9
+
+The respectively named datasets. They also contain updated versions, see
+[here](#insights-from-dataset-updating-using-quant) for information on the update.
+We also note some information on the difference between qald-8 and -9 at [Comparison of QALD 8 and 9](#comparison-of-qald-8-and-9).
+
+### qald-8-9-merged
+
+Duplicate free merge of updated versions of qald-8 and qald-9 with the intent to test on qald-9-test after training
+with the merged dataset.
+
+### qtq
+
+qtq (question-triple-query) datasets. Given a dataset with questions and queries (SPARQLs) e.g. qald-9, we generate
+triples with one of our [summarizers](../appB/summarizers/README.md) in `KBQA/appB/summarizers`. These triples are
+added to the datasets. These new kind of dataset we name qtq-datasets.
+
+### preprocessed
+
+Preprocessors of the App B models often take time. Here we store the preprocessed datasets. For more information, see
+[/preprocessed](preprocessed/README.md).
+
+## Insights from dataset updating using QUANT:
 
 Object or property not existent (What are the official languages of the Philippines?)
 Entity of list does not match with dbpedia page (Which movies starring Brad Pitt were directed by Guy Ritchie?)
@@ -12,11 +40,11 @@ Fixed dates in SPARQL instead of relative (Give me all world heritage sites desi
 Old SPARQL format used e.g. filtering (Give me all actors who were born in Paris after 1950.)  
 Property is missing for some pages (What is the highest mountain?)
 
-# Comparison of QALD 8 and 9:
+## Comparison of QALD 8 and 9:
 
 Number of Questions in:
 
-## Train Set
+### Train Set
 
 #QALD 8 Train: 219  
 #QALD 9 Train: 408
@@ -50,7 +78,7 @@ Who assassinated President McKinley? (id 207)
 Who killed Caesar? (id 209)  
 How big is the earth's diameter? (id 214)
 
-## Test Set
+### Test Set
 
 #QALD 8 Test: 41  
 #QALD 9 Test: 150
