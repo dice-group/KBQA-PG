@@ -4,17 +4,16 @@ from abc import abstractmethod
 from builtins import FileNotFoundError
 from json.decoder import JSONDecodeError
 import pickle
-import time
 from typing import Dict
 from typing import List
 from typing import Tuple
 
-from KBQA.appB.summarizers.utils import entity_recognition_tagme
 from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import (
     calclualteRelatenessOfGraphs,
+    dictTripleRelateness,
+    graphs_for_the_question,
 )
-from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import dictTripleRelateness
-from KBQA.ranking.RANK_OF_TRIPLES.Relatedness_triples import graphs_for_the_question
+from KBQA.appB.summarizers.utils import entity_recognition_tagme
 from rdflib.graph import Graph
 from rdflib.term import Literal
 from rdflib.term import URIRef
@@ -79,7 +78,6 @@ class Triples_for_pred(ABC):
         for entity in entities_tagme:
             if entity[0] not in entities:
                 entities.append(entity[0])
-        print("Y ENTITIES:", entities)
         return entities, confidence
 
     def generate_sparql_string(
@@ -553,36 +551,3 @@ def triples_for_predicates_all_datasets(
             confidence=confidence,
         )
     return final_triples_list
-
-
-def main() -> None:
-    """Call triples_for_predicates_all_datasets() to get triples with a rank for predicates from all data sets."""
-    # m = Triples_for_pred_no_filter()
-    # entity = rdflib.term.URIRef('http://dbpedia.org/resource/Abraham_Lincoln')
-    # entity2 = rdflib.term.URIRef('http://dbpedia.org/resource/Mary_Todd_Lincoln')
-    # try:
-    #    with open("qald9_qald8_lcquad.pickle", "rb") as file:
-    #        list_of_predicates = pickle.load(file)
-    # except FileNotFoundError:
-    #    pass
-    # graph = m.query_dbpedia_for_entity(entity2, list_of_predicates)
-    # ent = m.ask_for_entities("Which politicians were married to a German?", confidence = 0.4)
-    # print(ent)
-    # triples = triples_for_predicates_all_datasets(
-    #    "Vladimir Putin, Donald Trump",
-    #    "qald9_qald8_lcquad.pickle",
-    #    True,
-    #    number_of_triples=100,
-    #    confidence=0.3,
-    # )
-    print("")
-    # for triple in triples:
-    #    print(triple)
-    #    print("\n")
-
-
-# Call from shell as main.
-if __name__ == "__main__":
-    start_time = time.time()
-    main()
-    print(time.time() - start_time)
