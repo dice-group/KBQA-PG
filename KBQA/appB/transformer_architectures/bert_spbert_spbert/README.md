@@ -105,6 +105,8 @@ file.
 
 `--warmup_epochs 10` Defines the number of initial epochs before validation of the model is used also.
 
+The model will default to your GPU if you have one. To disable this, cou can use `---no_cuda` additionally.
+
 ## Postprocessing
 The model predicts encoded SPARQLs. To decode a SPARQL, use the `decode` function in `generator_utils.py`.
 
