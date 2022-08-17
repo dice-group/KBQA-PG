@@ -14,6 +14,91 @@
 
 Explore our QA system: [kbqa-pg.cs.upb.de](http://kbqa-pg.cs.upb.de/)
 
+# KBQA Library
+
+Within [`./KBQA`](KBQA) you find the library of this project. It is filled with READMEs to guide you through the library and
+modules are thooroughly documented. We worked on two different approaches, called App A and [App B](KBQA/appB/README.md).
+
+[App B](KBQA/appB/README.md) enhances [SPBERT](https://arxiv.org/abs/2106.09997) by adding
+triples as additional knowledge. The major parts it consists of are the [summarizers](KBQA/appB/summarizers/README.md)
+and the [transformer architectures](KBQA/appB/transformer_architectures/README.md). For more information on
+[App B](KBQA/appB/README.md), visit [`/KBQA/appB`](KBQA/appB).
+
+To use most of our modules, install the library with e.g.
+
+`pip install -e <path to cloned library>/KBQA-PG`.
+
+Following we will provide examples on how to use our library.
+
+## Examples
+
+### App B: bert-spbert-spbert
+
+This example goes through the steps to use our
+[bert-spbert-spbert](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md) model. This model consists of an
+encoder [BERT](https://arxiv.org/abs/1810.04805) model for questions, an encoder
+[SPBERT](https://arxiv.org/abs/2106.09997) model for triples. The output tokens of
+both models are concatenated and fed into the decoder. The decoder is another
+[SPBERT](https://arxiv.org/abs/2106.09997) instance.
+
+#### Training
+
+Training this model corresponds to the following steps:
+
+1. qtq-Dataset Generation
+2. qtq-Dataset Preprocessing
+3. Training the Model
+
+We will go through them in detail next.
+
+#### 1. qtq-Dataset Generation
+
+Given e.g. QALD-9 as dataset, we want to generate a qtq-dataset (question-triple-query-dataset) from it.
+
+TODO
+
+#### 2. qtq-Dataset Preprocessing
+
+Every model has specific preprocessors for the input data. You find the preprocessor corresponding to each model in the
+READMEs of the model you want to use. The input data must have qtq-format.
+
+We want to use
+[bert-spbert-spbert](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md) which is located in
+[`KBQA/appB/transformer_architectures/bert_spbert_spbert`](KBQA/appB/transformer_architectures/bert_spbert_spbert).
+The [README](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md) there explains how to preprocess. First
+you have to follow the [installation](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md#installation)
+instructions. Then the [preprocessing](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md#preprocessing)
+instructions.
+
+#### 3. Training the Model
+
+This step also is explained at the model [README](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md).
+Follow the example in the [Model Usage](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md#model-usage)
+section. The trained model will be stored as `/output/checkpoint-best-bleu/pytorch_model.bin` by default. This binary
+can be given as argument to the prediction phase.
+
+#### Prediction
+
+Prediction with the trained model consists of the following steps:
+
+1. qtq-Dataset Generation
+2. qtq-Dataset Preprocessing
+3. Prediction with Trained Model
+4. Decode Prediction
+
+Step 1 and 2 are the same as in the training example, except you will not see any queries in the qtq-dataset.
+
+Step 3 is explained on the [README](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md) within
+[Model Usage](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md#model-usage) again.
+
+For step 4, follow the [Postprocessing](KBQA/appB/transformer_architectures/bert_spbert_spbert/README.md#postprocessing)
+part.
+
+### App B: Other Models
+
+All the models in [`KBQA/appB/transformer_architectures`](KBQA/appB/transformer_architectures/README.md) follow similar
+schemes as in the [App B: bert-spbert-spbert](#app-b-bert-spbert-spbert) example. The corresponding READMEs should provide you with the information to use the corresponding model.
+
 # Contributing
 
 ## Workflow

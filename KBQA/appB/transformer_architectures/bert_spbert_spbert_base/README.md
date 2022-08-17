@@ -14,4 +14,4 @@ pip install -r requirements.txt
 ```
 
 ## Note
-This model is a changed version of the original [SPBERT](https://arxiv.org/abs/2106.09997) model.
+This model and code is a changed version of the original [SPBERT](https://arxiv.org/abs/2106.09997) model and code.

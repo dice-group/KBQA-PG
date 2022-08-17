@@ -27,8 +27,11 @@ The preprocessed data is located in `./data/output` as `<qtq-dataset-name>.en`, 
 usage.
 
 ## Model Usage
-Within `/example_commandline_invocations` you see examples on how to train, test and predict with the model. All 
-parameters are explained in `run.py`. I will explain the training example here shortly. 
+Within `/example_commandline_invocations` you see examples on how to train, test and predict with the model. For further
+information on the arguments we reffer the the code in `/run.py`. We will explain the training example here. Hints on
+the prediction example are following afterwards.
+
+#### Training
 
 Given the following example commandline invocation.
 ```
@@ -62,10 +65,11 @@ python run.py
 tested yet.
 
 `--encoder_model_name_or_path bert_base-cased` defines the model which is loaded as encoder. It is taken from 
-Huggingface.
+Huggingface. You can use local paths also.
 
 `--decoder_model_name_or_path "razent/spbert-mlm-wso-base" ` defines the model which is loaded for decoding AND in our
 model for encoding triples. It is loaded from Huggingface. `razent/spbert-mlm-wso-base` is the pretrained [SPBERT](https://arxiv.org/abs/2106.09997) model.
+You can use local paths also.
 
 `--train_filename ./data/qald-8/preprocessed/train/qtq-qald-8-train ` defines the location of the training data. Only 
 the name without suffix is taken. The suffixes `.en`, `.triple`, `.sparql` are appended implicitly.
@@ -83,7 +87,7 @@ model.
 `--max_target_length 192 ` defines the number of tokens output from the decoder. 192 is sufficient for qald-dataset 
 sparql lengths.
 
-`--train_batch_size 22` The batch size. 22 is the maximum for 2 x 25 GB GPUs. Note, that training is distributed on 
+`--train_batch_size 22` defines the batch size. 22 is the maximum for 2 x 25 GB GPUs. Note, that training is distributed on 
 all available GPUs automatically if not specified otherwise.
 
 `--eval_batch_size 22` the batch size of validation for the BLEU score.
@@ -103,12 +107,31 @@ file.
 
 `--load_model_checkpoint No ` Yes, if you are resuming a previous run and want an old model to be loaded.
 
-`--warmup_epochs 10` Defines the number of initial epochs before validation of the model is used also.
+`--warmup_epochs 10` defines the number of initial epochs before validation of the model is used also.
 
-The model will default to your GPU if you have one. To disable this, cou can use `---no_cuda` additionally.
+The model will default to your GPU if you have one. To disable this, you can use `--no_cuda` additionally.
+
+The trained model will be stored as `/output/checkpoint-best-bleu/pytorch_model.bin` by default. To specify another 
+output location, add `--output_dir` to the argument list with some path.
+
+#### Prediction
+
+Prediction does not vary much. In the example, you see the following additional arguments:
+
+`--do_predict` which enables prediction.
+
+`--load_model_checkpoint Yes` enables loading of a trained model.
+
+`--load_model_path ./output/checkpoint-best-bleu/pytorch_model.bin` defines the location of the trained model.
+
+`--predict_filename` defines a path to the dataset which predictions should be made on.
+
+The default location of the prediction is `/output`. It can be changed with the 
+`--output_dir` argument. The prediction file is `predict_0.output`.
 
 ## Postprocessing
-The model predicts encoded SPARQLs. To decode a SPARQL, use the `decode` function in `generator_utils.py`.
+The model predicts encoded SPARQLs. To decode a SPARQL, use the `decode` function in 
+`generator_utils.py`.
 
 ## Note
-This model is a changed version of the original [SPBERT](https://arxiv.org/abs/2106.09997) model.
+This model and code is a changed version of the original [SPBERT](https://arxiv.org/abs/2106.09997) model and code.
