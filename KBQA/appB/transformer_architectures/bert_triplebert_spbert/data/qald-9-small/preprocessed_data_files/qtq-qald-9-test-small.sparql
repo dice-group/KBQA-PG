@@ -1,0 +1,4 @@
+select distinct variable: uri where bracket open dbr:Bruce_Lee dbo:child variable: child . variable: child dbp:children variable: uri bracket close
+select distinct variable: weapon where bracket opendbr:Uzi dbp:designer variable: x . variable: x dbp:knownFor variable: weapon bracket close
+select distinct variable: uri where bracket open dbr:Universal_Pictures dbo:parentCompany variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri a yago:WikicatStatesOfTheUnitedStates ; dbp:populationDensityRank variable: rank bracket close order by asc( variable: rank) limit 1

@@ -1,0 +1,8 @@
+select variable: uri where bracket open variable: uri dbo:publisher dbr:GMT_Games bracket close
+select distinct variable: uri where bracket open dbr:Skype dbo:author variable: uri . bracket close
+select distinct variable: uri where bracket open variable: uri dbo:birthPlace dbr:Heraklion . bracket close
+select distinct variable: uri where bracket open dbr:Area_51 dbp:nearestTown variable: uri . bracket close limit 1
+select distinct variable: uri where bracket open dbr:New_York_City dbp:leaderName variable: uri bracket close
+select distinct variable: uri where bracket open variable: cave a dbo:Cave ; dbo:location variable: uri . variable: uri a dbo:Country bracket close group by variable: uri having ( count( variable: cave) greater than 2 )
+select distinct variable: uri where bracket open dbr:Abraham_Lincoln dbo:deathPlace variable: uri . bracket close
+select distinct variable: uri where bracket open dbr:Air_China dbo:targetAirport variable: uri bracket close

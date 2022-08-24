@@ -16,21 +16,22 @@ load-plugins=
 # Ignore config files
 ignore=conf.py
 
-init-hook='import sys; sys.path += [
+init-hook=
+    import sys;
+    sys.path += [
         "KBQA/kbqa/webservice/appA/",
         "KBQA/kbqa/webservice/appB/",
         "KBQA/kbqa/webservice/website_server/",
         "KBQA/kbqa/webservice/gerbil/",
         "KBQA/kbqa/webservice/embedding_server/",
         "./"
-    ]'
+    ];
 
 [MESSAGES CONTROL]
 
 # Checks to disable with reasons.
 disable=
     len-as-condition, # `if len(seq) != 0` is more explicit than `if seq`
-    bad-continuation, # has false-positives, black disagrees
     no-else-return, # I think a clear "else" is more readable in some cases
     line-too-long, # handled by black (differently)
     too-few-public-methods, # such classes can still be useful
@@ -40,14 +41,14 @@ disable=
     dangerous-default-value, # using list() instead of [] is not dangerous
     fixme, # allow TODOs
     invalid-name, # used to allow KBQA as a module
-    no-self-use, # class methods should be usable, even if they do not access self
     wrong-import-order, # handled by zimports
     cyclic-import, # warning, which might be false positive (if there is a cyclic import, an error will be thrown)
+	import-outside-toplevel, # models are only loaded when the module is imported, import only used models to save memory
 
 [SIMILARITIES]
 
 # Minimum lines number of a similarity.
-min-similarity-lines=6
+min-similarity-lines=9
 
 [DESIGN]
 

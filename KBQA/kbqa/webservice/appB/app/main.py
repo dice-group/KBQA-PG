@@ -1,32 +1,26 @@
 """Main module for the application logic of approach B."""
+from configparser import ConfigParser
+from configparser import SectionProxy
 import json
 import os
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Tuple
+from typing import Union
 
-from app.arguments.args_preprocessing import SEPERATE_QTQ
-from app.arguments.args_summarizer import ONE_HOP_RANK_SUMMARIZER
-from app.bert_wordpiece_spbert.run import run
-from app.postprocessing.postprocessing import postprocessing
-from app.preprocessing.preprocessing_qtq import preprocessing_qtq
-from app.preprocessing.seperate_qtq import seperate_qtq
+from app.base_pipeline import BasePipeline
+from app.preprocessing import QTQ_DATA_DIR
+from app.preprocessing import SPLIT_NAME
 from app.qald_builder import qald_builder_ask_answer
 from app.qald_builder import qald_builder_empty_answer
 from app.qald_builder import qald_builder_select_answer
-from app.summarizer.one_hop_rank_summarizer import OneHopRankSummarizer
+from app.summarizer import BaseSummarizer
 from SPARQLWrapper import JSON
 from SPARQLWrapper import SPARQLWrapper
 from SPARQLWrapper.SPARQLExceptions import SPARQLWrapperException
 
-
-print("Loading summarizer...")
-ohrs = OneHopRankSummarizer(
-    ONE_HOP_RANK_SUMMARIZER.lower_rank,
-    ONE_HOP_RANK_SUMMARIZER.max_triples,
-    ONE_HOP_RANK_SUMMARIZER.limit,
-    ONE_HOP_RANK_SUMMARIZER.timeout,
-)
+config_path = "/config/app_b_config.ini"
 
 
 def main(query: str, lang: str = "en") -> Dict[str, Any]:
@@ -49,9 +43,9 @@ def main(query: str, lang: str = "en") -> Dict[str, Any]:
     """
     print("Question:", query.encode("utf-8"))
 
-    query_pairs = pipeline_for_bert_wordpiece_spbert(query)
-    sparql_query = query_pairs["0"]
+    summarize(query)
 
+    sparql_query = pipeline_.predict_sparql_query(query)
     answer_qald = ask_dbpedia(query, sparql_query, lang)
 
     return answer_qald
@@ -106,82 +100,399 @@ def ask_dbpedia(question: str, sparql_query: str, lang: str) -> Dict[str, Any]:
     return qald_answer
 
 
-def pipeline_for_bert_wordpiece_spbert(question: str) -> Dict[str, str]:
-    """Pipeline for approach B using BERT_wordpiece_SPBERT.
-
-    Given a natural language question, the pipeline contains the following steps:
-    1. Create a subgraph based on recognized entities and trained predicates.
-    2. Create a QTQ dataset based on the summarized subgraph.
-    3. Preprocess the QTQ dataset s.t. SPBert can work with it
-    4. Predict a SPARQL-query for the question using SPBert.
-    5. Postprocess the predicted query into a valid SPARQL-query
-
-    Parameters
-    ----------
-    question : str
-        Natural language question asked by an enduser.
-
-    Returns
-    -------
-    result : dict
-        Dictionary containing the predicted SPARQL-query at the key "0".
-    """
-    # summarizer
-    summarize(question)
-
-    # preprocessing
-    seperate_qtq()
-    preprocessing_qtq()
-
-    # predicting
-    run()
-
-    # postprocessing
-    result = postprocessing()
-
-    return result
-
-
 def summarize(question: str) -> None:
-    """Create a subgraph using a summarizer and store it a QTQ-dataset.
-
-    Parameters
-    ----------
-    question : str
-        Natural language question asked by an enduser.
-    """
-    summarized_triples = ohrs.summarize(question)
-
-    save_summarized_result(question, "", summarized_triples)
-
-
-def save_summarized_result(question: str, sparql: str, triples: str) -> None:
-    """Save the summarized results in a QTQ dataset.
+    """Summarize a subgraph and store the resulting triples in a qtq-file.
 
     Parameters
     ----------
     question : str
         Natural language question.
-    sparql : str
-        SPARQL-query (since we have to predict the query, this should be empty).
-    triples : str
-        List of triples in the format <subject> <predicate> <object>.
     """
-    data_dir = SEPERATE_QTQ.data_dir
+    if summarizer_ is None:
+        summarized_triples = list()
+    else:
+        summarized_triples = summarizer_.summarize(question)
 
-    # create input directory to store QTQ dataset for preprocessing
+    data_dir = QTQ_DATA_DIR
+
     if os.path.exists(data_dir) is False:
         os.makedirs(data_dir)
 
-    filename = f"{SEPERATE_QTQ.subset}.json"
+    filename = f"{SPLIT_NAME}.json"
 
-    dataset: Dict[str, List[Dict]] = {"questions": list()}
+    dataset: Dict[str, List[Dict[str, Any]]] = {"questions": list()}
 
-    qtq = dict()
+    qtq: Dict[str, Any] = dict()
     qtq["question"] = question
-    qtq["query"] = sparql
-    qtq["triples"] = triples
+    qtq["query"] = ""
+    qtq["triples"] = summarized_triples
     dataset["questions"].append(qtq)
 
     with open(f"{data_dir}/{filename}", "w", encoding="utf-8") as file:
         json.dump(dataset, file, indent=4, separators=(",", ": "))
+
+
+def load_config(path: str) -> Tuple[Union[BaseSummarizer, None], BasePipeline]:
+    """Load the config file for all configurations.
+
+    The config file is expected to be an .ini file, which contains
+    a section 'general' with the attributes 'summarizer' and 'architecture'.
+    The values of those attributes should have there own section with all
+    dynamic parameters, which are used to initialize the corresponding
+    archtecture.
+
+    Parameters
+    ----------
+    path : str
+        Path to the .ini configuration file.
+
+    Returns
+    -------
+    BaseSummarizer
+        Initialized summarizer specified in the 'general' section. If the
+        attribute is set to 'None', None will be returned.
+
+    BasePipeline
+        Initialized pipeline for the specified architecture.
+
+    Raises
+    ------
+    ValueError
+        If a section is not specified or the values are not supported.
+    """
+    parser = ConfigParser()
+
+    parser.read(path)
+
+    if "general" in parser.sections():
+        general = parser["general"]
+
+        summarizer_name = general["summarizer"]
+        architecture_name = general["architecture"]
+    else:
+        raise ValueError("Config file does not contain section 'general'.")
+
+    if summarizer_name == "one_hop_rank":
+        smrzr = init_one_hop_rank_summarizer(parser["one_hop_rank"])
+    elif summarizer_name == "one_hop":
+        pass  # TODO
+    elif summarizer_name == "lauren":
+        smrzr = init_lauren_summarizer(parser["lauren"])
+    elif summarizer_name == "gold":
+        smrzr = init_gold_summarizer(parser["gold"])
+    elif summarizer_name == "None":
+        smrzr = None
+        print("WARNING: Summarizer is set to 'None'. Summarizing will be skipped.")
+    else:
+        raise ValueError(f"Summarizer {summarizer_name} is not supported.")
+
+    if architecture_name == "bert_spbert":
+        pline = init_bert_spbert_pipeline(parser["bert_spbert"])
+    elif architecture_name == "bert_spbert_spbert":
+        pline = init_bert_spbert_spbert(parser["bert_spbert_spbert"])
+    elif architecture_name == "knowbert_spbert_spbert":
+        pline = init_knowbert_spbert_spbert(parser["knowbert_spbert_spbert"])
+    elif architecture_name == "bert_triple-bert_spbert":
+        pline = init_bert_triplebert_spbert(parser["bert_triple-bert_spbert"])
+    elif architecture_name == "t5":
+        pline = init_t5(parser["t5"])
+    else:
+        raise ValueError(f"Architecture {architecture_name} is not supported.")
+
+    return smrzr, pline
+
+
+def init_one_hop_rank_summarizer(section: SectionProxy) -> BaseSummarizer:
+    """Initialize the OneHopRankSummarizer with the given values in the config section.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    OneHopRankSummarizer
+        Initialized instance of the OneHopRankSummarizer.
+    """
+    from app.summarizer.one_hop_rank_summarizer import OneHopRankSummarizer
+
+    datasets = str(section["datasets"])
+    confidence = float(section["confidence"])
+    lower_rank = int(section["lower_rank"])
+    max_triples = int(section["max_triples"])
+    limit = int(section["limit"])
+    timeout = float(section["timeout"])
+
+    ohrs = OneHopRankSummarizer(
+        datasets=datasets,
+        confidence=confidence,
+        lower_rank=lower_rank,
+        max_triples=max_triples,
+        limit=limit,
+        timeout=timeout,
+    )
+
+    return ohrs
+
+
+def init_lauren_summarizer(section: SectionProxy) -> BaseSummarizer:
+    """Initialize the LarenSummarizer with the given values in the config section.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    LaurenSummarizer
+        Initialized instance of the LaurenSummarizer.
+    """
+    from app.summarizer.lauren_summarizer import LaurenSummarizer
+
+    limit = int(section["limit"])
+
+    lauren = LaurenSummarizer(limit=limit)
+
+    return lauren
+
+
+def init_gold_summarizer(section: SectionProxy) -> BaseSummarizer:
+    """Initialize the GoldSummarizer with the given values in the config section.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    GoldSummarizer
+        Initialized instance of the GoldSummarizer.
+    """
+    from app.summarizer.gold_summarizer import GoldSummarizer
+
+    dataset = str(section["dataset"])
+
+    gold = GoldSummarizer(dataset)
+
+    return gold
+
+
+def init_bert_spbert_pipeline(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for BERT_SPBERT.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertPipeline
+        Initialized BERT_SPBERT_SPBERT pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import BERT_SPBERT
+    from app.bert_spbert import BertSPBertPipeline
+
+    parsed_section = parse_section(section)
+
+    for entry, value in parsed_section:
+        setattr(BERT_SPBERT, entry, value)
+
+    bs_pipeline = BertSPBertPipeline(BERT_SPBERT)
+
+    return bs_pipeline
+
+
+def init_bert_spbert_spbert(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for BERT_SPBERT_SPBERT.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertSPBertPipeline
+        Initialized BERT_SPBERT_SPBERT pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import BERT_SPBERT_SPBERT
+    from app.bert_spbert_spbert import BertSPBertSPBertPipeline
+
+    parsed_section = parse_section(section)
+
+    for entry, value in parsed_section:
+        setattr(BERT_SPBERT_SPBERT, entry, value)
+
+    bss_pipeline = BertSPBertSPBertPipeline(BERT_SPBERT_SPBERT)
+
+    return bss_pipeline
+
+
+def init_knowbert_spbert_spbert(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for KNOWBERT_SPBERT_SPBERT.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertSPBertPipeline
+        Initialized BERT_SPBERT_SPBERT pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import KNOWBERT_SPBERT_SPBERT
+    from app.knowbert_spbert_spbert import KnowBertSPBertSPBertPipeline
+
+    parsed_section = parse_section(section)
+
+    for entry, value in parsed_section:
+        setattr(KNOWBERT_SPBERT_SPBERT, entry, value)
+
+    kss_pipeline = KnowBertSPBertSPBertPipeline(KNOWBERT_SPBERT_SPBERT)
+
+    return kss_pipeline
+
+
+def init_bert_triplebert_spbert(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for BERT_TRIPLE_BERT.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    BertSPBertSPBertPipeline
+        Initialized BERT_SPBERT_SPBERT pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import BERT_TRIPLEBERT_SPBERT
+    from app.bert_triplebert_spbert import BertTripleBertSPBertPipeline
+
+    parsed_section = parse_section(section)
+
+    for entry, value in parsed_section:
+        setattr(BERT_TRIPLEBERT_SPBERT, entry, value)
+
+    bts_pipeline = BertTripleBertSPBertPipeline(BERT_TRIPLEBERT_SPBERT)
+
+    return bts_pipeline
+
+
+def init_t5(section: SectionProxy) -> BasePipeline:
+    """Initialize the pipeline for t5.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section from the configuration file with the corresponding dynamic
+        attributes.
+
+    Returns
+    -------
+    T5Pipeline
+        Initialized t5 pipeline, which can be used to predict
+        SPARQL queries using this architecture.
+    """
+    from app.namespaces import T5
+    from app.t5 import T5Pipeline
+
+    parsed_section = parse_section(section)
+
+    for entry, value in parsed_section:
+        setattr(T5, entry, value)
+
+    t5_pipeline = T5Pipeline(T5)
+
+    return t5_pipeline
+
+
+def parse_section(section: SectionProxy) -> List[Tuple[str, Union[int, float, str]]]:
+    """Parse a section into a list of tuples.
+
+    Given a section element from a .ini file with pairs entry = value, create a
+    list with tuples (entry, value), where value is parsed to an int or float if
+    possible.
+
+    Parameters
+    ----------
+    section : SectionProxy
+        Section element from a .ini file.
+
+    Returns
+    -------
+    list
+        List containing tuples of the form (entry, value).
+    """
+    result: List[Tuple[str, Union[int, float, str]]] = list()
+
+    for entry in section:
+        value = section[entry]
+
+        if is_int(value):
+            result.append((entry, int(value)))
+        elif is_float(value):
+            result.append((entry, float(value)))
+        else:
+            result.append((entry, str(value)))
+
+    return result
+
+
+def is_int(value: str) -> bool:
+    """Check, whether a string can be parsed into an int.
+
+    Parameters
+    ----------
+    value : str
+        String to be checked.
+
+    Returns
+    -------
+    bool
+        True, if value can be parsed to an int, else False.
+    """
+    try:
+        int(value)
+        return True
+    except ValueError:
+        return False
+
+
+def is_float(value: str) -> bool:
+    """Check, whether a string can be parsed into a float.
+
+    Parameters
+    ----------
+    value : str
+        String to be checked.
+
+    Returns
+    -------
+    bool
+        True, if value can be parsed to an float, else False.
+    """
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
+summarizer_, pipeline_ = load_config(config_path)
