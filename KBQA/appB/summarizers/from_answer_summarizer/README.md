@@ -4,8 +4,9 @@ The FromAnswer summarizer is used for generating triples by extracting them from
 
 ## Usage
 
-The FromAnswer summarizer may be used with the [data_generator](../../data_generator) to generate a qtq-dataset. Simply specify *FromAnswer* as the summarizer.
+The FromAnswer summarizer may be used with the [data_generator](../../data_generator) to generate a qtq-dataset. Simply specify _FromAnswer_ as the summarizer.
+
 ## Limitations
 
-The FromAnswer summarizer does not work with questions that do not have an answer, either because they are outdated or because they are ASK questions that are supposed to return *false*.  
+The FromAnswer summarizer does not work with questions that do not have an answer, either because they are outdated or because they are ASK questions that are supposed to return _false_.  
 Also, it does not work with the VALUES keyword, and it ignores FILTERs and OPTIONALs.
