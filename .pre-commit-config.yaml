@@ -44,12 +44,11 @@ repos:
       - id: pylint
         name: Pylint (appA)
         files: ^KBQA/kbqa/webservice/appA/
-        additional_dependencies:
-          [
+        additional_dependencies: [
             flask==2.0.2,
             requests==2.26.0,
             SPARQLWrapper==1.8.5,
-            transformers==4.5.1,
+            # transformers==4.5.1,
             spacy_dbpedia_spotlight==0.2.2,
           ]
       - id: pylint
