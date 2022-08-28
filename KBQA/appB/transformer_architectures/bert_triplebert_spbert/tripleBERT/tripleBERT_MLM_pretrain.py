@@ -53,6 +53,7 @@ for i in range(inputs.input_ids.shape[0]):
 
 
 class TripleDataset(torch.utils.data.Dataset):
+    """ Class to create dataset objects or instances for triples. It inherits properties from Dataset class provided by torch in utils. """
     def __init__(self, encodings):
         self.encodings = encodings
 
