@@ -7,10 +7,10 @@ The GoldSummarizer returns the exact triples, which answer a natural language qu
 A simple example for a question from _qald8_ is shown below:
 
 ```python
->>> from KBQA.appB.dataset_generator import Question
+>>> from KBQA.appB.data_generator import Question
 >>> from KBQA.appB.summarizers import GoldSummarizer
 >>>
->>> gold_smr = GoldSummaizer(dataset="qald8")
+>>> gold_smr = GoldSummarizer(dataset="qald8")
 >>> triples = gold_smr.summarize(Question("What is the alma mater of the chancellor of Germany Angela Merkel?"))
 ["<http://dbpedia.org/resource/Angela_Merkel> <http://dbpedia.org/ontology/almaMater> <http://dbpedia.org/resource/German_Academy_of_Sciences_at_Berlin>",
 "<http://dbpedia.org/resource/Angela_Merkel> <http://dbpedia.org/ontology/almaMater> <http://dbpedia.org/resource/Leipzig_University>"]

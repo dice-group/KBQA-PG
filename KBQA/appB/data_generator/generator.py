@@ -7,6 +7,8 @@ from KBQA.appB.data_generator import Dataset
 from KBQA.appB.data_generator import Question
 from KBQA.appB.summarizers import BaseSummarizer
 from KBQA.appB.summarizers import FromAnswerSummarizer
+from KBQA.appB.summarizers import GoldSummarizer
+from KBQA.appB.summarizers import LaurenSummarizer
 from KBQA.appB.summarizers import NES
 from KBQA.appB.summarizers import OneHopRankSummarizer
 
@@ -104,7 +106,9 @@ def main() -> None:
     summarizers = {
         "NES": NES,
         "FromAnswer": FromAnswerSummarizer,
-        "OneHopRanking": OneHopRankSummarizer,
+        "OneHopRankSummarizer": OneHopRankSummarizer,
+        "GoldSummarizer": GoldSummarizer,
+        "LaurenSummarizer": LaurenSummarizer,
     }
 
     if summarizer_name not in summarizers:
