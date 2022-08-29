@@ -1,1 +1,3 @@
 # Labeling
+
+The basic idea of the labeling generator is to generate a QTQL-dataset from a QTQ-dataset. A QTQL-dataset extends a QTQ-dataset by adding labeled triples containing the labels of triples generated from a summarizer. For example, for the triple `<http://dbpedia.org/resource/Germany> <http://dbpedia.org/ontology/capital> <http://dbpedia.org/resource/Berlin>` the labeled triple `Germany capital Berlin` is added to the dataset. Originally, this generator was implemented to have a more natural language representation of the triples. However, the implementation of the generator is not finished and was replaced by a preprocessor for the SPBERT architectures. Therefore, this directory contains only non-executable code.
