@@ -54,7 +54,7 @@ model, batcher, tokenizer, device = init(KNOWBERT_SPBERT_SPBERT)
 ```
 
 ## Training
-For training the preprocessing of the NL-question, the triples and the SPARQL-query is the same as for [bert-spbert-spbert](https://github.com/dice-group/KBQA-PG/tree/feature/knowbert-clean/KBQA/appB/transformer_architectures/bert_spbert_spbert).
+For training the preprocessing of the NL-question, the triples and the SPARQL-query is the same as for [bert-spbert-spbert](../bert_spbert_spbert/).
 Additionally, the following arguments may be changed for training:
 ```
 "output_dir": "/path/to/output/location"
@@ -71,7 +71,7 @@ Then, train the model using the `run` function from `run.py`.
 from KBQA.appB.transformer_architectures.kb.namespace import KNOWBERT_SPBERT_SPBERT
 from KBQA.appB.transformer_architectures.kb.run import train
 
-train(model, batcher, tokenizer, device, BERT_SPBERT_SPBERT)
+train(model, batcher, tokenizer, device, KNOWBERT_SPBERT_SPBERT)
 ```
 
 ## Prediction
@@ -80,6 +80,6 @@ Use the same parameters as for training. The input NL-Question and triples need 
 from KBQA.appB.transformer_architectures.kb.namespace import KNOWBERT_SPBERT_SPBERT
 from KBQA.appB.transformer_architectures.kb.run import predict
 
-predict(model, batcher, tokenizer, device, BERT_SPBERT_SPBERT)
+predict(model, batcher, tokenizer, device, KNOWBERT_SPBERT_SPBERT)
 ```
 The output prediction is then also stored in the `"predict_file_name"` folder.
