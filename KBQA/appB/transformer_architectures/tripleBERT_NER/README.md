@@ -1,9 +1,9 @@
 # BERTforEntityConcat
-This module modfies the basic BERT model and concat the entity embeddings to the model for the prediction of SPARQL queries based on input question and embedding of known entity present in the question.
+This module modfies the standard BERT model (bert-base-uncased) and concats the entity embeddings of known entity present in the question with the BERT model for the prediction of SPARQL queries based on input question and known *named-entity* in the question.
 This module is based on *Enriching BERT with Knowledge Graph Embedding for Document Classification* (https://arxiv.org/abs/1909.08402). 
 
 ## Entity Annotations  and Embeddings
-The entity present in the natural language questions are annotated with DBPedia Spotlight. The embeddings for the identifed entites are then retrived from embedding server hosted on the Project Gropu VM.
+The entity present in the natural language questions are annotated with DBpedia Spotlight. The embeddings for the identifed entites are then retrived from embedding server hosted on the Project Group VM.
 The embeddings along with entites are stored in `entity2vec` file.
 
 ## Models
