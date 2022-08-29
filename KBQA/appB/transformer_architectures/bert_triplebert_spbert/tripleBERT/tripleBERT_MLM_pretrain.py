@@ -1,3 +1,4 @@
+# Module to fine-tune modified BERT model on pre-processed triples and generate tripleBERT model.
 # from transformers import BertTokenizer, BertForMaskedLM
 from bert_LM import BertForMaskedLM
 import torch
@@ -5,6 +6,8 @@ from transformers import AdamW
 from transformers import BertTokenizer
 from transformers import Trainer
 from transformers import TrainingArguments
+
+sparql_vocab = False
 
 
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
@@ -15,11 +18,13 @@ model = BertForMaskedLM.from_pretrained("bert-base-uncased")
 with open("preprocessed_data_files/qtq-qald-8-train.triple", "r") as fp:
     text = fp.read().split("\n")
 
-# with open('sparql_vocabulary.txt', 'r') as fp1 :
-#     new_tokens = fp1.read().split('\n')
+#adds special sparql tokens to the model 
+if sparql_vocab is True:
+    with open('sparql_vocabulary.txt', 'r') as fp1 :
+        new_tokens = fp1.read().split('\n')
 
-# num_added_toks = tokenizer.add_tokens(new_tokens)
-# model.resize_token_embeddings(len(tokenizer))
+    num_added_toks = tokenizer.add_tokens(new_tokens)
+    model.resize_token_embeddings(len(tokenizer))
 
 inputs = tokenizer(
     text, return_tensors="pt", max_length=512, truncation=True, padding="max_length"
@@ -48,6 +53,7 @@ for i in range(inputs.input_ids.shape[0]):
 
 
 class TripleDataset(torch.utils.data.Dataset):
+    """ Class to create dataset objects or instances for triples. It inherits properties from Dataset class provided by torch in utils. """
     def __init__(self, encodings):
         self.encodings = encodings
 
@@ -57,13 +63,13 @@ class TripleDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.encodings.input_ids)
 
-
+#generate the dataset instance from input and fit it into dataloader
 dataset = TripleDataset(inputs)
 loader = torch.utils.data.DataLoader(dataset, batch_size=8, shuffle=True)
 
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-# and move our model over to the selected device
+# and move the model over to the selected device
 model.to(device)
 # activate training mode
 model.train()
@@ -78,6 +84,8 @@ args = TrainingArguments(
 )
 trainer = Trainer(model=model, args=args, train_dataset=dataset)
 
+#perform the training of the model
 trainer.train()
 
+#save the trained model to output directory
 model.save_pretrained("out/")
