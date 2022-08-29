@@ -1,3 +1,4 @@
+""" A module to create BERT model with entity concatination following HuggingFace implementation of  BERT model."""
 import torch
 from KBQA.appB.transformer_architectures.bert_spbert_spbert_base.tripleBERT.tripleBERT import BertModel
 from transformers.models.bert.modeling_bert import  BertPreTrainedModel
@@ -6,6 +7,7 @@ from torch.nn import CrossEntropyLoss
 
 
 class BertforEntityConcat(BertPreTrainedModel):
+    """Class for creating instance of modified BERT model by concatinating it with MLP to process entity embedding. """
     def __init__(self, config, mlp_dim = 100, hidden_dim = 768):
         super().__init__(config)
         assert (

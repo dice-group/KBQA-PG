@@ -1,3 +1,4 @@
+""" A module to create dataloader objects for training BERT model with entitiy concatenation."""
 import torch
 import torch.nn as nn
 import numpy as np
@@ -8,6 +9,20 @@ import pickle
 
 
 def text_to_train_tensors(texts, tokenizer, max_seq_length):
+    """ 
+    A function to convert input training text into tensors for BERT model.
+    
+    input_parameters:
+    ---------------------------------------------------------
+    texts : text in natural language
+    tokenizer : tokenizer object to convert text into tokens
+    max_seq_length : maximium number of tokens per input line
+
+    returns:
+    -------------------------------------------------
+    train_tokens_ids : ids for tokens based on tokenizer
+    train_mask : ids of the masked tokens
+    """
     train_tokens = list(map(lambda t: ['[CLS]'] + tokenizer.tokenize(t)[:max_seq_length - 1], texts))
     train_tokens_ids = list(map(tokenizer.convert_tokens_to_ids, train_tokens))
     train_tokens_ids = pad_sequences(train_tokens_ids, maxlen=max_seq_length, truncating="post", padding="post",
@@ -20,6 +35,21 @@ def text_to_train_tensors(texts, tokenizer, max_seq_length):
     return torch.tensor(train_tokens_ids), torch.tensor(train_masks)
 
 def text_to_predict_tensors(texts, tokenizer, max_seq_length):
+
+    """ 
+    A function to convert prediction text into tensors for BERT model.
+    
+    input_parameters:
+    ---------------------------------------------------------
+    texts : text in natural language
+    tokenizer : tokenizer object to convert text into tokens
+    max_seq_length : maximium number of tokens per input line
+
+    returns:
+    -------------------------------------------------
+    train_tokens_ids : ids for tokens based on tokenizer
+
+    """
     train_tokens = list(map(lambda t: ['[CLS]'] + tokenizer.tokenize(t)[:max_seq_length - 1], texts))
     train_tokens_ids = list(map(tokenizer.convert_tokens_to_ids, train_tokens))
     train_tokens_ids = pad_sequences(train_tokens_ids, maxlen=max_seq_length, truncating="post", padding="post",
@@ -40,7 +70,18 @@ def to_dataloader(texts, entity_table, ys,
                  dataset_cls=TensorDataset,
                  sampler_cls=RandomSampler):
     """
-    Convert raw input into PyTorch dataloader
+    Convert raw input into PyTorch dataloader.
+
+    input_parameters:
+    -----------------------------------
+    texts : text in natural language
+    entity_table : table for entities with embeddings
+    ys : prediction target text i.e. sparql queries
+    max_seq_length : maximium number of tokens per input line
+    batch_size : size of input lines to feed into the model at once
+
+    returns: Dataloader object.
+    
     """
     #train_y = train_df[labels].values
 
@@ -60,7 +101,8 @@ def to_dataloader(texts, entity_table, ys,
 
 def get_entity_embeddings(triple_list, entity2vec):
     """
-    Build matrix for extra data (i.e. entity embeddings )
+    Build matrix for extra data (i.e. entity embeddings ).
+
     """
     
     ENTITY_DIM = len(next(iter(entity2vec.values())))
@@ -81,10 +123,14 @@ def get_entity_embeddings(triple_list, entity2vec):
 
 
 def prepare_data_loaders(MAX_SEQ_LENGTH, batch_size):
+    """ A function to prepare input dataloader for training model using dataloader object."""
     batch_size = batch_size
     MAX_SEQ_LENGTH = 512
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    
+    #read input data
     with open('train_data/entity2vec.pickle', 'rb') as f:
         entity2vec = pickle.load(f)
     triple_list = []
@@ -107,7 +153,8 @@ def prepare_data_loaders(MAX_SEQ_LENGTH, batch_size):
 
     train_texts = natural_questions
     train_y = sparql_data
-
+    
+    #create dataloader for training
     train_dataloader = to_dataloader(train_texts, entity_table, train_y,
                                          tokenizer,
                                          MAX_SEQ_LENGTH,

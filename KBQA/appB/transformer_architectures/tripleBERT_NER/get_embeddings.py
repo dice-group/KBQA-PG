@@ -1,3 +1,4 @@
+""" A model to retrive Knowledge graph embeddings for given entities from embeddings server."""
 import requests
 from requests.exceptions import RequestException
 import requests
@@ -8,6 +9,7 @@ import numpy as np
 
 
 def append_embeddings(response, embeddingss):
+    """ A function append the embeddings from response to embeddingss dict."""
     for embeddings_raw in response:
         if (len(embeddings_raw) > 0):
             embeddings_raw = embeddings_raw.split('\t')
@@ -21,6 +23,7 @@ def append_embeddings(response, embeddingss):
     return
 
 def process_batch(batch_entities, embeddingss):
+    """ A function to process a batch of entites and retive embeddings from embedding server on remote machine."""
     uri_list = batch_entities
     uri_dict = {"entities": uri_list, "relations" :[]}
     r = requests.post("http://kbqa-pg.cs.upb.de/dev/embedding_query/", json=uri_dict)
@@ -28,6 +31,13 @@ def process_batch(batch_entities, embeddingss):
     return
 
 def get_embeddings(uri_list):
+    """ 
+    Function to  retirve input and convert it to batches of size 50 each.
+     When a batch is ready, sends it for embeddings retival.
+     
+    input_parameter : list of URIs
+    returns : emnedding matrix with entities and respective embeddings.
+    """
     embeddingss = {}
     t_count, count= 0, 0
     current_batch = []

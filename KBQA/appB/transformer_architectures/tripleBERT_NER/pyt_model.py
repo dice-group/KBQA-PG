@@ -1,3 +1,4 @@
+""" A module to create BERT model with entity concatination using Pyorch."""
 from html import entities
 import torch
 from pytorch_pretrained_bert import BertModel
@@ -6,6 +7,7 @@ from torch.nn import functional as F
 
 
 class BertforEntityConcat(nn.Module):
+    """Class for creating instance of modified BERT model by concatinating it with MLP to process entity embedding. """
     def __init__(self, bert_model_path, labels_count, hidden_dim=768, mlp_dim=100, extras_dim=6, dropout=0.1):
         super().__init__()
 
@@ -16,7 +18,7 @@ class BertforEntityConcat(nn.Module):
             'mlp_dim': mlp_dim,
             'dropout': dropout,
         }
-
+        #define base-bert model from model path
         self.bert = BertModel.from_pretrained(bert_model_path)
         self.dropout = nn.Dropout(dropout)
         self.mlp = nn.Sequential(
@@ -35,6 +37,7 @@ class BertforEntityConcat(nn.Module):
         _, pooled_output = self.bert(tokens, attention_mask=masks, output_all_encoded_layers=False)
         dropout_output = self.dropout(pooled_output)
         
+        #concat bert model with entity embedding
         concat_output = torch.cat((dropout_output, entities), dim=1)
         mlp_output = self.mlp(concat_output)
         # proba = self.sigmoid(mlp_output)
