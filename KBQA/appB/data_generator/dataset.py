@@ -1,6 +1,5 @@
 """Question Dataset."""
 import json
-import re
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -89,13 +88,15 @@ class Dataset:
 
         :raises ValueError: If dataset is not recognized as QALD or LC-QuAD
         """
-        qald_regex = r"qald-[0-9]+-(train|test)-multilingual"
-        lc_quad_regex = r"lc-quad-(train|test)"
+        qald_regex = "qald"  # r"qald-[0-9]+-(train|test)-multilingual"
+        lc_quad_regex = "lc-quad"  # r"lc-quad-(train|test)"
         dataset_file = dataset_path.split("/")[-1]
 
-        if re.match(qald_regex, dataset_file):
+        # if re.match(qald_regex, dataset_file):
+        if qald_regex in dataset_file:
             self.load_qald_dataset(dataset_path)
-        elif re.match(lc_quad_regex, dataset_file):
+        # elif re.match(lc_quad_regex, dataset_file):
+        elif lc_quad_regex in dataset_file:
             self.load_lc_quad_dataset(dataset_path)
         else:
             raise ValueError(f"{dataset_file} is neither QALD nor LC-QuAD datset")

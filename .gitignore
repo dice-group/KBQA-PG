@@ -3,6 +3,7 @@
 KBQA/kbqa/resources/*
 kbqa_pg.egg-info/*
 build/**
+dist/**
 
 # PyCharm
 .idea/
