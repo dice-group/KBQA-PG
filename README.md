@@ -56,7 +56,7 @@ We will go through them in detail next.
 The preprocessors are designed to parse a qtq-dataset (question-triple-query-dataset). Therefore, the first step is the generation of such a dataset by the [data_generator](KBQA/appB/data_generator/README.md). In the following the steps are shown to generate the qtq-dataset from the dataset [qald-9-train-multilingual](KBQA/datasets/qald-9/updated/) using the [LaurenSummarizer](KBQA/appB/summarizers/lauren_summarizer/README.md):
 
 1. Navigate to the data_generator directory: `cd KBQA/appB/data_generator`
-2. Run the command `python data_generator -d updated-qald-9-train-multilingual.json -s LaurenSummarizer -o qtq-updated-qald-9-train-multilingual.json`
+2. Run the command `python generator -d qald-9/updated/updated-qald-9-train-multilingual.json -s LaurenSummarizer --output qtq-updated-qald-9-train-multilingual.json`
 
 The generator will then generate the qtq-dataset and save it to the [datasets](KBQA/datasets/) directory. Note that for `qald-8`, `qald-9` and `lc-quad` all qtq-datasets were already generated and can be found in [this](KBQA/datasets/qtq/) directory.
 
