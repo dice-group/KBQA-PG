@@ -1,6 +1,6 @@
 # Modul Relatedness_triples
 
-This module summarizes the triples based on semantically relatedness. For two DBPedia subgraph G1 and G2 for different entities and for two triples f1 and f2 from the graps we take the labels of predicates and retrieve two sets of hypernyms S1 and S2 from the lexical database WordNet. We compute similarity score of predicates for every pair of triples. Tuple - Relatedness score or Triple-Relatedness score can be returned.
+This module summarizes the triples based on semantically relatedness. For two DBPedia subgraph G1 and G2 of different entities and for two triples f1 and f2 from the graps we take the labels of predicates and retrieve two sets of hypernyms S1 and S2 from the lexical database WordNet. We compute similarity score of predicates for every pair of triples. Dictionary {Tuple - Relatedness score} or {Triple-Relatedness score} can be returned.
 
 ### Functions:
 
@@ -18,9 +18,11 @@ For dictionary (tuple-relatedness score) dictionary (triple- relatedness score) 
 
 # Modul Multihope_triples
 
-The module summarizes the triples for entities in the question and uses predicates from QALD8, QALD9 and LCQALD data sets. It uses prepared Pickle objects with table predicate - rank. It extracts triples from DBPedia, that have predicates from dataset and rank them according frequency of predicates in the data sets. There is possibility to set number of triples, that are nessesary. If the number of founded triples is less then required it additionaly adds triples with high relatedness score if the question has more then one entity.
+The module summarizes the triples for entities in the question and uses predicates from QALD8, QALD9 and LCQALD data sets. It uses prepared Pickle objects with the match table predicate - rank. It extracts triples from DBPedia, that have predicates from the dataset and rank them according frequency of predicates in the data sets. There is possibility to set number of triples, that are nessesary. If the number of founded triples is less then required it additionaly adds triples with high relatedness score if the question has more than one entity.
 
 ### Functions:
+
+To get summarization you need to call only one function.
 
 #### triples_for_predicates_all_datasets.
 
@@ -28,9 +30,11 @@ The function returns final_triples_list of tuples(triple, rank, confidence).
 
 ### Parameters.
 
+These parameters you need to set for the summarization.
+
 #### question.
 
-question: str, question string in a natural language.
+question: str: question string in a natural language.
 
 #### predicate_table.
 
@@ -38,16 +42,15 @@ name of the file with predicates from data sets qald8, qald9, lcquad. Order of t
 
 #### filtering.
 
-filtering: bool.
-True if we need only triples, where Literal in English.
+filtering: bool: true if we need only triples, where the literal in English.
 
 #### number_of_triples.
 
-number_of_triples: int, how many triples are needed.
+number_of_triples: int: how many triples are needed.
 
 #### confidence.
 
-confidence: float. Start confidence score for the entity linker.
+confidence: float:start confidence score for the entity linker.
 
 # Modul Multihope_triples
 
