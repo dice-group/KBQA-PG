@@ -1,4 +1,4 @@
-# This is first part of summarizer, which summarize database for the entity and output triples in ranked order.
+This is a first part of summarizer, which summarizes database for the entity and outputs triples in the ranked order.
 
 # Modul Relatedness_triples
 
