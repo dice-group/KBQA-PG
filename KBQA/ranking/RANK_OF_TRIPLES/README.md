@@ -1,3 +1,5 @@
+# This is first part of summarizer, which summarize database for the entity and output triples in ranked order.
+
 # Modul Relatedness_triples
 
 This module summarizes the triples based on semantically relatedness. For two DBPedia subgraph G1 and G2 of different entities and for two triples f1 and f2 from the graps we take the labels of predicates and retrieve two sets of hypernyms S1 and S2 from the lexical database WordNet. We compute similarity score of predicates for every pair of triples. Dictionary {Tuple - Relatedness score} or {Triple-Relatedness score} can be returned.
@@ -52,6 +54,6 @@ number_of_triples: int: how many triples are needed.
 
 confidence: float:start confidence score for the entity linker.
 
-# Modul Multihope_triples
+# Modul Ranking
 
 If you need precompute table with rank and predicate from another dataset, you can use the function create_table_predicate_rank(dataset: str, lcquad: bool) -> List[Tuple[Tuple, int]]. This function may need some modification since it parses json file and depends from format of json. If you have two datasets you can combine predicates table in one predicate table with the function combine_predicates_without_dublicates(first_dataset: List[Tuple], second_dataset: List[Tuple[Tuple, int]]) -> List[Tuple[Tuple, int]].
