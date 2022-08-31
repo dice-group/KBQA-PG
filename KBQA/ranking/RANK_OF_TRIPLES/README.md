@@ -1,3 +1,5 @@
+# MULTIHOP SUMMARIZER
+
 This is a first part of summarizer, which summarizes database for the entity and outputs triples in the ranked order.
 
 # Modul Relatedness_triples
@@ -20,7 +22,7 @@ For dictionary (tuple-relatedness score) dictionary (triple- relatedness score) 
 
 # Modul Multihope_triples
 
-The module summarizes the triples for entities in the question and uses predicates from QALD8, QALD9 and LCQALD data sets. It uses prepared Pickle objects with the match table predicate - rank. It extracts triples from DBPedia, that have predicates from the dataset and rank them according frequency of predicates in the data sets. There is possibility to set number of triples, that are nessesary. If the number of founded triples is less then required it additionaly adds triples with high relatedness score if the question has more than one entity.
+The module summarizes the triples for entities in the question and uses predicates from QALD8, QALD9 and LCQALD data sets. It uses prepared Pickle objects with the match table predicate or tuple of predicates (if multihop) - rank. It extracts triples from DBPedia, that have predicates from the dataset and rank them according frequency of predicates in the data sets. There is possibility to set number of triples, that are nessesary. If the number of founded triples is less then required it additionaly adds triples with high relatedness score if the question has more than one entity.
 
 ### Functions:
 
