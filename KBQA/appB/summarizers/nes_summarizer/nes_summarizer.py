@@ -8,7 +8,7 @@ from .nes_ner_hop import nes_ner_hop
 
 
 class NES(BaseSummarizer):
-    """NES summarizer from module NES_NER_Hop using dbpedia spotlight."""
+    """NES summarizer from module nes_summarizer using dbpedia spotlight."""
 
     def summarize(self, question: Question) -> List[str]:
         """Summarize a natural question and return found triples from dbpedia.
