@@ -54,4 +54,4 @@ confidence: float:start confidence score for the entity linker.
 
 # Modul Multihope_triples
 
-If you need precompute table with rank and predicate from another dataset. You can use the function create_table_predicate_rank(dataset: str, lcquad: bool) -> List[Tuple[Tuple, int]]. This function may need some modification since it parses json file and depends from format of json. If you have two datasets you can combine predicates table in one predicate table with the function combine_predicates_without_dublicates(first_dataset: List[Tuple], second_dataset: List[Tuple[Tuple, int]]) -> List[Tuple[Tuple, int]].
+If you need precompute table with rank and predicate from another dataset, you can use the function create_table_predicate_rank(dataset: str, lcquad: bool) -> List[Tuple[Tuple, int]]. This function may need some modification since it parses json file and depends from format of json. If you have two datasets you can combine predicates table in one predicate table with the function combine_predicates_without_dublicates(first_dataset: List[Tuple], second_dataset: List[Tuple[Tuple, int]]) -> List[Tuple[Tuple, int]].
