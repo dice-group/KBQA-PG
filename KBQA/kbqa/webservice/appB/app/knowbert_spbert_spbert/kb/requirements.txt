@@ -1,0 +1,8 @@
+torch == 1.11.0
+pytorch-pretrained-bert == 0.6.2
+transformers == 4.17.0
+spacy == 3.2.3
+allennlp == 2.9.2
+scipy == 1.8.0
+rdflib == 6.1.1
+overrides == 6.1.0

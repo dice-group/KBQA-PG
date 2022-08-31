@@ -1,0 +1,43 @@
+select distinct variable: num where bracket open dbr:Colombo_Lighthouse dbo:height variable: num bracket close
+select distinct variable: n where bracket open dbr:Pulp_Fiction dbo:budget variable: n bracket close
+select distinct variable: uri where bracket open variable: uri dbo:product dbr:Slack_(software) bracket close
+select distinct variable: uri where bracket open dbr:Jacques_Chirac dbo:spouse variable: uri bracket close
+select distinct variable: height where bracket open dbr:Amazon_Eve dbo:height variable: height bracket close
+ask where bracket open dbr:James_Bond dbo:spouse variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri a dbo:Country ; dbo:area variable: n bracket close order by desc ( variable: n) offset 0 limit 1
+select variable: uri where bracket open dbr:Palace_of_Westminster dbo:location variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri a dbo:Mountain ; dbo:locatedInArea dbr:Australia; dbo:elevation variable: elevation bracket close order by desc ( variable: elevation) limit 1
+ask where bracket open dbr:Cuban_Missile_Crisis dbo:date variable: x . dbr:Bay_of_Pigs_Invasion dbo:date variable: y filter ( variable: x less than variable: y ) bracket close
+select distinct variable: uri where bracket open variable: uri dbo:abbreviation "IYCM" bracket close
+select distinct variable: uri where bracket open dbr:Mount_Everest dbo:locatedInArea variable: uri . variable: uri a dbo:Country bracket close
+select distinct variable: uri where bracket open variable: uri a dbo:LaunchPad ; dbo:operator dbr:NASA bracket close
+select distinct variable: uri where bracket open variable: uri dbp:series dbr:The_Sopranos ; dbp:season 1 bracket close
+select distinct variable: uri where bracket open dbr:Forbes dbo:editor variable: uri bracket close
+select distinct variable: num where bracket open dbr:Australia dbo:capital variable: x . variable: x dbo:populationTotal variable: num bracket close
+select distinct variable: number where bracket open dbr:Aldi dbo:numberOfLocations variable: number bracket close
+ask where bracket open variable: uri a dbo:VideoGame ; rdfs:label "Battle Chess" language English bracket close
+ask where bracket open dbr:Abraham_Lincoln dbo:spouse variable: spouse . variable: spouse rdfs:label variable: name filter regex( variable: name, "Mary") bracket close
+select distinct variable: uri where bracket open dbr:Russia dbo:governmentType variable: uri bracket close
+select ( count ( distinct variable: uri) as variable: c) where bracket open dbr:Benjamin_Franklin dbo:child variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri dbo:publisher dbr:GMT_Games bracket close
+ask where bracket open dbr:Barack_Obama dbo:spouse variable: spouse . variable: spouse rdfs:label variable: name filter regex( variable: name, "Michelle") bracket close
+select distinct variable: uri where bracket open dbr:Eritrea dbp:leaderName variable: uri bracket close
+select distinct variable: uri where bracket open dbr:Nikos_Kazantzakis dbo:deathPlace variable: uri . variable: uri a dbo:City bracket close
+ask where bracket open dbr:Elvis_Presley dbo:child variable: uri bracket close
+select distinct variable: uri where bracket open dbr:Sitecore dbp:locationCountry variable: uri bracket close
+select distinct variable: uri where bracket open dbr:Vincent_van_Gogh dbp:training variable: uri bracket close
+select distinct variable: uri where bracket open dbr:Oregon_wine dbo:growingGrape variable: uri bracket close
+select distinct variable: uri where bracket open variable: uri dbo:parent dbr:Cher ; dbo:parent dbr:Sonny_Bono bracket close
+select distinct variable: uri where bracket open dbr:Penguin_Books dbo:founder variable: uri bracket close
+ask where bracket open dbr:Proinsulin a dbo:Protein bracket close
+ask where bracket open dbr:Che_Guevara dbo:child variable: uri bracket close
+select ( count ( distinct variable: uri) as variable: c) where bracket open variable: uri dbo:spokenIn dbr:Colombia bracket close
+ask where bracket open dbr:Urdu dbo:languageFamily variable: uri . dbr:Persian_language dbo:languageFamily variable: uri bracket close
+ask where bracket open dbr:Horse_racing a dbo:Sport bracket close
+select variable: uri where bracket open variable: uri a dbo:BodyOfWater ; dbo:length variable: length bracket close order by desc ( variable: length) limit 1
+select variable: loc where bracket open variable: uri dbo:type dbr:Rapid_transit ; dbo:openingYear variable: date ; dbo:location variable: loc . variable: loc a dbo:City bracket close order by asc ( variable: date) limit 1
+select distinct variable: uri where bracket open variable: uri a dbo:Holiday bracket close
+select variable: uri where bracket open variable: uri dct:subject dbc:Seven_Wonders_of_the_Ancient_World bracket close
+select distinct variable: uri where bracket open variable: uri a dbo:Person ; dct:subject dbc:American_assassins ; dct:subject dbc:Assassination_of_William_McKinley bracket close
+select distinct variable: uri where bracket open variable: uri dct:subject dbc:Assassins_of_Julius_Caesar bracket close
+select distinct variable: uri where bracket open variable: uri a dbo:Film ; dbo:director dbr:Akira_Kurosawa bracket close

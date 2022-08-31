@@ -1,0 +1,6 @@
+tqdm
+SPARQLWrapper
+distance
+requests
+rdflib
+numpy

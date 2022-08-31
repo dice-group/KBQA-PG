@@ -1,0 +1,68 @@
+.answer_area {
+  border: solid black;
+  border-width: thin;
+  border-radius: 5px;
+  margin-top: 80px;
+  margin-bottom: 25%;
+  display: none;
+}
+
+.question {
+  margin-left: 5%;
+}
+
+.answer_list {
+  margin-left: 5%;
+}
+
+.answer_element {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: 24;
+}
+
+.query_btn {
+  margin-left: 5%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: #3563ff;
+  color: white;
+  font-size: 16;
+  border-radius: 5px;
+}
+
+.query {
+  display: none;
+  margin-left: 10%;
+}
+
+.query_display {
+  background-color: #f6f6f6;
+  border-radius: 5px;
+  font-size: 16;
+  padding: 10px;
+  width: 90%;
+}
+
+.loading_area {
+  display: flex;
+  justify-content: center;
+}
+
+/* Copied from https://www.w3schools.com/howto/howto_css_loader.asp */
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
