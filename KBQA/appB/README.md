@@ -29,5 +29,5 @@ For more information, see [./summarizers](summarizers/README.md).
 
 ### ./transformer_architectures
 
-We developed differen models for App B. For more information, see
+We developed different models for App B. For more information, see
 [./transformer_architectures](transformer_architectures/README.md).
