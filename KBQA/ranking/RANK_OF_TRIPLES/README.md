@@ -1,6 +1,6 @@
 # MULTI-HOP SUMMARIZER
 
-This is a first part of summarizer, which summarizes database for the entity and outputs triples in the ranked order.
+This is a part of summarizer, which summarizes database for the entity and outputs triples in the ranked order.
 
 # Modul Relatedness_triples
 
