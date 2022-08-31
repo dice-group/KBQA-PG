@@ -8,7 +8,7 @@ This summarizer provides the superclass for the summarizers. All summarizers ext
 
 ### NES
 
-This summarizer uses named entity recognition for extracting named entities from a given natural language question and returning a subgraph with all outgoing and ingoing edges for these entities. For more information, see [./NES_NER_Hop](NES_NER_Hop/README.md).
+This summarizer uses named entity recognition for extracting named entities from a given natural language question and returning a subgraph with all outgoing and ingoing edges for these entities. For more information, see [./nes_summarizer](nes_summarizer/README.md).
 
 ### FromAnswerSummarizer
 
