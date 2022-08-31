@@ -23,7 +23,7 @@ The module summarizes the triples for entities in the question and uses predicat
 ### Functions:
 
 ####triples_for_predicates_all_datasets(
-####question: str,
+question: str,
 predicate_table: str,
 filtering: bool,
 number_of_triples: int = 100,
