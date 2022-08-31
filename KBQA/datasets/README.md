@@ -28,11 +28,11 @@ Preprocessors of the App B models often take time. Here we store the preprocesse
 
 ## Insights from dataset updating using QUANT:
 
-Object or property not existent (What are the official languages of the Philippines?)
-Entity of list does not match with dbpedia page (Which movies starring Brad Pitt were directed by Guy Ritchie?)
-Property is not specific (number instead of name) (Give me the grandchildren of Bruce Lee.)
-Wikipage / Company was renamed. Maybe redirect? (Who is the owner of Universal Studios?)
-Sparql incomplete (Which state of the United States of America has the highest density?)
+Object or property not existent (What are the official languages of the Philippines?)  
+Entity of list does not match with dbpedia page (Which movies starring Brad Pitt were directed by Guy Ritchie?)  
+Property is not specific (number instead of name) (Give me the grandchildren of Bruce Lee.)  
+Wikipage / Company was renamed. Maybe redirect? (Who is the owner of Universal Studios?)  
+Sparql incomplete (Which state of the United States of America has the highest density?)  
 Incomplete answer list / dbpeadia knowledge is missing (Give me a list of all trumpet players that were bandleaders.)  
 Answer type is wrong (When was the Statue of Liberty built?)  
 Language (@en) oder type tag (@int) is added (Who is the governor of Wyoming?)  
