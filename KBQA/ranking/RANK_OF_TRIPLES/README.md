@@ -22,7 +22,8 @@ The module summarizes the triples for entities in the question and uses predicat
 
 ### Functions:
 
-####triples_for_predicates_all_datasets.
+#### triples_for_predicates_all_datasets.
+
 The function returns final_triples_list of tuples(triple, rank, confidence).
 
 ### Parameters.
