@@ -1,4 +1,4 @@
-"""A module to use NES_NER_Hop named entity summarization."""
+"""A module to use NES (named entity summarization)."""
 from typing import List
 from typing import Tuple
 
@@ -40,6 +40,7 @@ def ner_dbpedia_spotlight(question: str, *, confidence: float = 0.8) -> List[URI
         webserver_address,
         data={"text": question, "confidence": confidence},
         headers={"Accept": "application/json"},
+        timeout=120,
     ).json()
 
     named_entities: List[URIRef] = []

@@ -2,7 +2,7 @@ default_language_version:
   node: 16.14.2
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.7.1
+    rev: v3.0.0-alpha.0
     hooks:
       - id: prettier
         name: Prettier - format code of web development files
@@ -27,7 +27,7 @@ repos:
         name: Black - format python code
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.14.5
+    rev: v2.15.0
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
@@ -44,12 +44,11 @@ repos:
       - id: pylint
         name: Pylint (appA)
         files: ^KBQA/kbqa/webservice/appA/
-        additional_dependencies:
-          [
+        additional_dependencies: [
             flask==2.0.2,
             requests==2.26.0,
             SPARQLWrapper==1.8.5,
-            transformers==4.5.1,
+            # transformers==4.5.1,
             spacy_dbpedia_spotlight==0.2.2,
           ]
       - id: pylint
