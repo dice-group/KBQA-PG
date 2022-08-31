@@ -24,20 +24,24 @@ The module summarizes the triples for entities in the question and uses predicat
 
 ####triples_for_predicates_all_datasets(
 ####question: str,
-####predicate_table: str,
-####filtering: bool,
-####number_of_triples: int = 100,
-####confidence: float = 0.3,
-####) -> List[Tuple]:
+predicate_table: str,
+filtering: bool,
+number_of_triples: int = 100,
+confidence: float = 0.3)  
+The function returns final_triples_list of tuples(triple, rank, confidence).
 
 ### Parameters:
 
-question: question string in natural language.  
-predicate_table: name of the file with predicates from data sets qald8, qald9, lcquad. Order of the datasets 'qald8', 'qald9' and 'lcquad'. The value has to be in '["qald8_qald9_lcquad", "qald9_qald8_lcquad", "qald8_lcquad_qald9", "qald9_lcquad_qald8", "lcquad_qald8_qald9", "lcquad_qald9_qald8"]'.  
-filtering: True if we need only triples, where Literal in English.  
-number_of_triples: how many triples are needed.  
-confidence: start confidence score. Confidence score for the entity linker.  
-The function returns final_triples_list of tuples(triple, rank, confidence).
+####question:
+question string in natural language.  
+####predicate_table:
+name of the file with predicates from data sets qald8, qald9, lcquad. Order of the datasets 'qald8', 'qald9' and 'lcquad'. The value has to be in '["qald8_qald9_lcquad", "qald9_qald8_lcquad", "qald8_lcquad_qald9", "qald9_lcquad_qald8", "lcquad_qald8_qald9", "lcquad_qald9_qald8"]'.  
+####filtering:
+True if we need only triples, where Literal in English.  
+####number_of_triples:
+how many triples are needed.  
+####confidence:
+start confidence score. Confidence score for the entity linker.
 
 # Modul Multihope_triples
 
