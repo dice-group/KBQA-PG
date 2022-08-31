@@ -27,20 +27,25 @@ The function returns final_triples_list of tuples(triple, rank, confidence).
 
 ### Parameters.
 
-####question.
+#### question.
+
 question: str, question string in a natural language.
 
-####predicate_table.
+#### predicate_table.
+
 name of the file with predicates from data sets qald8, qald9, lcquad. Order of the datasets 'qald8', 'qald9' and 'lcquad'. The value has to be in '["qald8_qald9_lcquad", "qald9_qald8_lcquad", "qald8_lcquad_qald9", "qald9_lcquad_qald8", "lcquad_qald8_qald9", "lcquad_qald9_qald8"]'.
 
-####filtering.
+#### filtering.
+
 filtering: bool.
 True if we need only triples, where Literal in English.
 
-####number_of_triples.
+#### number_of_triples.
+
 number_of_triples: int, how many triples are needed.
 
-####confidence.
+#### confidence.
+
 confidence: float. Start confidence score for the entity linker.
 
 # Modul Multihope_triples
