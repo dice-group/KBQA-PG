@@ -1,4 +1,4 @@
-flask==2.0.2
+flask==2.3.2
 requests==2.26.0
 uwsgi==2.0.20
 SPARQLWrapper==1.8.5
