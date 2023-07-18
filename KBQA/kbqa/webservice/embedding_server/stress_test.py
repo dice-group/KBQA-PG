@@ -15,7 +15,6 @@ def stress_test(path: str, stop_after: int = 1000, status_every: int = 100) -> N
     """
     with open(
         path,
-        "r",
         newline="",
         encoding="utf-8",
     ) as tsv_file:
@@ -51,7 +50,6 @@ def stress_test_batch(
     """
     with open(
         path,
-        "r",
         newline="",
         encoding="utf-8",
     ) as tsv_file:
@@ -59,7 +57,6 @@ def stress_test_batch(
         batch: list = []
         expected_embeddings: list = []
         for i, line in enumerate(tsv_file):
-
             line_split = line.split("\t", maxsplit=1)
             uri = line_split[0]
 

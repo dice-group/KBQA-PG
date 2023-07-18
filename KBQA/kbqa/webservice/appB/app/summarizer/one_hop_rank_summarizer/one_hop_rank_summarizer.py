@@ -72,7 +72,6 @@ class OneHopRankSummarizer(BaseSummarizer):
         timeout: float = 0,
         verbose: bool = True,
     ) -> None:
-
         if datasets not in self.DATASETS:
             raise ValueError(f"Dataset {datasets} is not supported")
 

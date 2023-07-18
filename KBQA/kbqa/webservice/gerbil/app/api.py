@@ -32,7 +32,7 @@ def load_evaluation(approach: Approach) -> Tuple[str, str]:
 
     try:
         with open(
-            f"/evaluation/summary-{approach.name}.json", "r", encoding="utf-8"
+            f"/evaluation/summary-{approach.name}.json", encoding="utf-8"
         ) as summary_file:  # TODO: Add App B
             summary = json.load(summary_file)
     except OSError:
@@ -44,7 +44,7 @@ def load_evaluation(approach: Approach) -> Tuple[str, str]:
                 file_path = os.path.join(path, file)
                 print(path)
 
-                with open(file_path, "r", encoding="utf-8") as result_file:
+                with open(file_path, encoding="utf-8") as result_file:
                     print(result_file)
                     gerbil_url, gerbil_id, _, commit_id = decode_experiment_filename(
                         file

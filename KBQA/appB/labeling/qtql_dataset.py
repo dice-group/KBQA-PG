@@ -28,7 +28,6 @@ class Question:
         triples: List[str],
         labels: Union[List[str], None] = None,
     ) -> None:
-
         if labels is None:
             labels = list()
 
@@ -52,7 +51,7 @@ class QTQLDataset:
         path : str
             Path to QTQ dataset.
         """
-        with open(path, "r", encoding="utf-8") as file_handle:
+        with open(path, encoding="utf-8") as file_handle:
             qtq_data = json.load(file_handle)
 
         questions = qtq_data["questions"]

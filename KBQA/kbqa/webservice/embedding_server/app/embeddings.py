@@ -61,7 +61,6 @@ class EntityHashTable:
         """
         with open(
             os.path.join(self.root_path, "hash_table_config.json"),
-            "r",
             encoding="UTF-8",
         ) as config_file:
             data = json.load(config_file)
@@ -96,7 +95,6 @@ class EntityHashTable:
         num_collisions = 0
         with open(
             os.path.join(self.root_path, self.entity_file),
-            "r",
             newline="",
             encoding="utf-8",
         ) as tsv_file:
@@ -209,7 +207,6 @@ class RelationEmbeddings:
         self.load_config()
         with open(
             self.root_path + "/" + self.relation_file,
-            "r",
             newline="",
             encoding="utf-8",
         ) as tsv_file:
@@ -260,7 +257,6 @@ class RelationEmbeddings:
         """
         with open(
             os.path.join(self.root_path, "relation_config.json"),
-            "r",
             encoding="UTF-8",
         ) as config_file:
             data = json.load(config_file)

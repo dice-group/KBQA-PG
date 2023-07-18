@@ -428,7 +428,6 @@ def filter_table_until_last_rank(
     for triple_item, rank in sorted(
         subgraph_triples_ranked.items(), key=lambda x: x[1], reverse=True
     ):
-
         if len(ranked_triples) < limit:
             ranked_triples[triple_item] = rank
             last_rank = rank
@@ -452,7 +451,6 @@ def filter_table(subgraph_triples_ranked: dict, limit: int) -> dict:
     for triple_item, rank in sorted(
         subgraph_triples_ranked.items(), key=lambda x: x[1], reverse=True
     ):
-
         if len(ranked_triples) < limit:
             ranked_triples[triple_item] = rank
     return ranked_triples

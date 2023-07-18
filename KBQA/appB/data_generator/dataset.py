@@ -47,7 +47,7 @@ class Question:
             Path to QTQ dataset json file
         """
         try:
-            with open(dataset_path, "r", encoding="utf-8") as file_handle:
+            with open(dataset_path, encoding="utf-8") as file_handle:
                 dataset = json.load(file_handle)
         except OSError:
             dataset = {"questions": list()}
@@ -109,7 +109,7 @@ class Dataset:
         dataset_path : str
             Path to QALD dataset json file
         """
-        with open(dataset_path, "r", encoding="utf-8") as file_handle:
+        with open(dataset_path, encoding="utf-8") as file_handle:
             qald_data = json.load(file_handle)
 
         questions = qald_data["questions"]
@@ -139,7 +139,7 @@ class Dataset:
         dataset_path : str
             Path to LC-QuAD dataset json file
         """
-        with open(dataset_path, "r", encoding="utf-8") as file_handle:
+        with open(dataset_path, encoding="utf-8") as file_handle:
             qald_data = json.load(file_handle)
 
         for question in qald_data:

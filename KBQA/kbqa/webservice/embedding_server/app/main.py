@@ -30,7 +30,6 @@ def main(
     # Query entity embeddings
     with open(
         os.path.join(hash_table.root_path, hash_table.entity_file),
-        "r",
         newline="",
         encoding="utf-8",
     ) as tsv_file:

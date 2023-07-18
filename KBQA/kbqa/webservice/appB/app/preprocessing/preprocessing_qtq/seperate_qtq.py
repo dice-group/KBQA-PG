@@ -57,9 +57,8 @@ def seperate_qtq() -> None:
     ) as sparql_file, open(
         f"{sep_dir}/{subset}.triple", "w", encoding="utf-8"
     ) as triple_file, open(
-        f"{data_dir}/{subset}.json", "r", encoding="utf-8"
+        f"{data_dir}/{subset}.json", encoding="utf-8"
     ) as data_file:
-
         data = json.load(data_file)
 
         for element in data["questions"]:
