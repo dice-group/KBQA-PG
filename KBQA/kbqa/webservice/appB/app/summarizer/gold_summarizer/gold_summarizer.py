@@ -47,7 +47,7 @@ class GoldSummarizer(BaseSummarizer):
         """
         dataset = os.path.join(os.path.dirname(__file__), f"datasets/{self.dataset}")
 
-        with open(dataset, "r", encoding="utf-8") as file:
+        with open(dataset, encoding="utf-8") as file:
             content = json.load(file)
 
         for question_obj in content["questions"]:

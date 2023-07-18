@@ -207,7 +207,7 @@ def main() -> None:
 
     # Print returned triples.
     print("Num\tTriple")
-    for (i, triple_outer) in enumerate(triples):
+    for i, triple_outer in enumerate(triples):
         print(f"{i + 1}" + "\t", end="")
         print(triple_outer)
     sys.exit()

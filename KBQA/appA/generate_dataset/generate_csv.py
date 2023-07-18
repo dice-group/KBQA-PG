@@ -40,7 +40,7 @@ def read_json(file: str) -> Any:
     qald : Any
         Content of the json file as a dict or list.
     """
-    with open(file, "r", encoding="utf8") as f:
+    with open(file, encoding="utf8") as f:
         qald = json.load(f)
     return qald
 

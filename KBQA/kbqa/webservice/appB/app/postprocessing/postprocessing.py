@@ -32,7 +32,7 @@ def postprocess_prediction() -> Dict[str, str]:
 
     queries = {}
 
-    with open(f"{predict_dir}/{predict_file}", "r", encoding="utf-8") as output_file:
+    with open(f"{predict_dir}/{predict_file}", encoding="utf-8") as output_file:
         for line in output_file:
             line = re.sub(r"\s+", " ", line)
             query_pair = line.split(" ", 1)

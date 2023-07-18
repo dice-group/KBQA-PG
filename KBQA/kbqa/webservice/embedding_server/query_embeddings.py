@@ -15,7 +15,7 @@ def load_qtq_dataset(dataset_path: str) -> Dict:
     :param dataset_path: Path to QTQ dataset
     :return: The dataset in QTQ format
     """
-    with open(dataset_path, "r", encoding="utf-8") as file_handle:
+    with open(dataset_path, encoding="utf-8") as file_handle:
         qtq_data = json.load(file_handle)
 
     return qtq_data
