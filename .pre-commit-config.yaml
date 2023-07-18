@@ -2,13 +2,13 @@ default_language_version:
   node: 16.14.2
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.0
+    rev: v3.0.0
     hooks:
       - id: prettier
         name: Prettier - format code of web development files
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.37.3
+    rev: v3.9.0
     hooks:
       - id: pyupgrade
         name: pyupgrade - upgrade syntax for newer python versions
@@ -21,13 +21,13 @@ repos:
   #       name: zimports - reformat python imports
 
   - repo: https://github.com/psf/black
-    rev: 22.6.0
+    rev: 23.7.0
     hooks:
       - id: black
         name: Black - format python code
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.15.0
+    rev: v3.0.0a6
     hooks:
       - id: pylint
         name: Pylint - check for errors in Python code
@@ -71,13 +71,13 @@ repos:
         additional_dependencies: [flask==2.0.2, requests==2.26.0, numpy==1.21.3]
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 5.0.4
+    rev: 6.0.0
     hooks:
       - id: flake8
         name: Flake8 - check python source files for errors and style
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.971
+    rev: v1.4.1
     hooks:
       - id: mypy
         name: Mypy - check python static types
@@ -105,7 +105,7 @@ repos:
         additional_dependencies: [types-requests]
 
   - repo: https://github.com/PyCQA/pydocstyle
-    rev: 6.1.1
+    rev: 6.3.0
     hooks:
       - id: pydocstyle
         name: pydocstyle - check compliance with python docstring conventions
