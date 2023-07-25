@@ -3,7 +3,7 @@ requests==2.26.0
 uwsgi==2.0.20
 
 # tensorflow==2.8.0
-torch==1.11.0
+torch==1.13.1
 argparse==1.4.0
 numpy==1.22.1
 SPARQLWrapper==1.8.5
