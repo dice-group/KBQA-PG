@@ -9,4 +9,4 @@ numpy==1.22.1
 SPARQLWrapper==1.8.5
 gensim==3.8.3
 spacy_dbpedia_spotlight==0.2.2
-transformers==4.5.1
+transformers==4.30.0
